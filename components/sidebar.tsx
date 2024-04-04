@@ -1,19 +1,14 @@
+import { Button, Icon, IconType } from "@aragon/ods";
 import Image from "next/image";
 import Link from "next/link";
-import { Icon, IconType, Button } from "@aragon/ods";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { plugins } from "@/plugins";
-import { ParsedUrlQuery } from "querystring";
-import { resolveQueryParam } from "@/utils/query";
-import { PUB_DISCORD_URL } from "@/constants";
-import { Else, If, Then } from "./if";
 import { CloseIcon, MenuIcon } from "./icons";
+import { Else, If, Then } from "./if";
 
 const Sidebar = () => {
-  const { pathname, query } = useRouter();
+  const { pathname } = useRouter();
   const isHome = pathname === "/";
-  const pluginId = resolvePluginId(pathname, query);
   const [isOpen, setIsOpen] = useState(false);
 
   const SidebarSwitchButton = () => (
@@ -64,7 +59,7 @@ const Sidebar = () => {
               Aragonette
             </Link>
           </div>
-          <MenuList isHome={isHome} setIsOpen={setIsOpen} pluginId={pluginId} />
+          <MenuList isHome={isHome} setIsOpen={setIsOpen} />
         </div>
         <div className="w-full">
           <PoweredByAragon />
@@ -77,11 +72,9 @@ const Sidebar = () => {
 const MenuList = ({
   isHome,
   setIsOpen,
-  pluginId,
 }: {
   isHome: boolean;
   setIsOpen: (o: boolean) => any;
-  pluginId: string | null;
 }) => {
   return (
     <ul className="mt-6 px-6">
@@ -112,51 +105,6 @@ const MenuList = ({
           </span>
         </Link>
       </li>
-
-      {/* PLUGINS */}
-      {plugins.map((plugin, idx) => (
-        <li
-          key={idx}
-          onClick={() => setIsOpen(false)}
-          className={`flex w-full justify-between text-neutral-700 cursor-pointer items-center mb-2 ${
-            plugin.id === pluginId
-              ? "bg-neutral-100 md:bg-neutral-200 font-semibold text-primary-500 rounded-lg shadow-lg"
-              : ""
-          } rounded-lg shadow-lg hover:bg-neutral-100 md:hover:bg-neutral-200`}
-        >
-          <Link
-            href={"/plugins/" + plugin.id + "/#/"}
-            className="flex items-center focus:outline-none focus:ring-2 focus:ring-white w-full p-3"
-          >
-            <Icon
-              className="mr-2"
-              icon={plugin.icon}
-              size="md"
-              responsiveSize={{ md: "lg" }}
-            />
-            <span className="block py-2 pr-4 pl-3 lg:p-0">{plugin.title}</span>
-          </Link>
-        </li>
-      ))}
-
-      {/* EXTERNAL LINKS */}
-      <li
-        className={`flex w-full justify-between text-neutral-700 cursor-pointer items-center mb-2 rounded-lg shadow-lg hover:bg-neutral-100 md:hover:bg-neutral-200`}
-      >
-        <Link
-          href={PUB_DISCORD_URL}
-          target="_blank"
-          className="flex items-center w-full p-3"
-        >
-          <Icon
-            className="mr-2"
-            icon={IconType.HELP}
-            size="md"
-            responsiveSize={{ md: "lg" }}
-          />
-          <span className="block py-2 pr-4 pl-3 lg:p-0">Discord</span>
-        </Link>
-      </li>
     </ul>
   );
 };
@@ -185,14 +133,5 @@ const PoweredByAragon = () => {
     </div>
   );
 };
-
-function resolvePluginId(
-  pathname: string,
-  queryParams: ParsedUrlQuery
-): string | null {
-  if (pathname !== "/plugins/[id]") return null;
-
-  return resolveQueryParam(queryParams.id) || null;
-}
 
 export default Sidebar;
