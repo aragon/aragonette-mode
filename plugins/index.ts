@@ -12,12 +12,4 @@ type PluginItem = {
   pluginAddress: string;
 };
 
-export const plugins: PluginItem[] = [
-  {
-    id: "community-proposals",
-    folderName: "tokenVoting",
-    title: "Community proposals",
-    icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
-    pluginAddress: PUB_TOKEN_VOTING_PLUGIN_ADDRESS,
-  },
-];
+export const plugins: PluginItem[] = [];

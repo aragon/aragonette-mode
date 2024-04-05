@@ -7,9 +7,6 @@ export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ??
 export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ??
   "") as Address;
 
-export const PUB_TOKEN_VOTING_PLUGIN_ADDRESS = (process.env
-  .NEXT_PUBLIC_TOKEN_VOTING_PLUGIN_ADDRESS ?? "") as Address;
-
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ??
   "sepolia") as ChainName;
