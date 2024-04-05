@@ -1,4 +1,3 @@
-import { PUB_TOKEN_VOTING_PLUGIN_ADDRESS } from "@/constants";
 import { IconType } from "@aragon/ods";
 
 type PluginItem = {
