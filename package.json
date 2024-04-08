@@ -24,9 +24,7 @@
     "ipfs-http-client": "^60.0.1",
     "next": "14.1.0",
     "react": "^18",
-    "react-blockies": "^1.4.1",
     "react-dom": "^18",
-    "tailwindcss-fluid-type": "^2.0.3",
     "viem": "^2.7.22",
     "wagmi": "^2.5.6"
   },
