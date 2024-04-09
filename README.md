@@ -22,7 +22,7 @@ bun dev
 
 ## Documentation
 
-The Hub is built on Aragon's Aragonette makes use of a mixture of tools and technologies to achieve a consistent and seamless user experience. The tech stack consists of the following:
+The Hub is built on Aragon's Aragonette making use of a mixture of tools and technologies to achieve a consistent and seamless user experience. The tech stack consists of the following:
 
 - [ReactJS](https://reactjs.org)
 - [NextJS](https://nextjs.org)

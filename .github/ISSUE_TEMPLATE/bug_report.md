@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report to help us improve Aragonette
+about: Create a bug report to help us improve the Governance Hub
 title: "Bug: <add-text-here>"
 labels: bug
 assignees: ""

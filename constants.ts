@@ -1,5 +1,5 @@
-import { Address } from "viem";
-import { ChainName, getChain } from "./utils/chains";
+import { type Address } from "viem";
+import { type ChainName, getChain } from "./utils/chains";
 
 // Contract Addresses
 export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
@@ -22,10 +22,10 @@ export const PUB_IPFS_ENDPOINT = process.env.NEXT_PUBLIC_IPFS_ENDPOINT ?? "";
 export const PUB_IPFS_API_KEY = process.env.NEXT_PUBLIC_IPFS_API_KEY ?? "";
 
 // General
-export const PUB_APP_NAME = "Aragonette";
-export const PUB_APP_DESCRIPTION = "Simplified user interface for Aragon DAO's";
+export const PUB_APP_NAME = "Polygon Governance Hub";
+export const PUB_APP_DESCRIPTION = "Streamlined user interface for Polygon governance";
 
-export const PUB_PROJECT_URL = "https://aragon.org/";
-export const PUB_WALLET_ICON = "https://avatars.githubusercontent.com/u/37784886";
+export const PUB_PROJECT_URL = "https://polygon.technology/";
+export const PUB_WALLET_ICON = "https://avatars.githubusercontent.com/u/30753617";
 
 export const PUB_DISCORD_URL = "https://discord.com/";

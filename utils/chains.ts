@@ -1,4 +1,4 @@
-import { polygon, mainnet, sepolia, arbitrum, polygonMumbai, Chain } from "@wagmi/core/chains";
+import { polygon, mainnet, sepolia, arbitrum, polygonMumbai, type Chain } from "@wagmi/core/chains";
 
 const chainNames = ["mainnet", "polygon", "sepolia", "mumbai", "arbitrum"] as const;
 export type ChainName = (typeof chainNames)[number];
