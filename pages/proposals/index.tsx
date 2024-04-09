@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Link as StyledLink } from "@aragon/ods";
 
 export default function Proposals() {
   const mockPips = [
@@ -13,9 +12,7 @@ export default function Proposals() {
       <div>
         {mockPips.map((pip) => (
           <div key={pip.id}>
-            <Link href={`/proposals/${pip.id}`}>
-              <StyledLink>{`${pip.title} - ${pip.description}`}</StyledLink>
-            </Link>
+            <Link href={`/proposals/${pip.id}`}>{`${pip.title} - ${pip.description}`}</Link>
           </div>
         ))}
       </div>

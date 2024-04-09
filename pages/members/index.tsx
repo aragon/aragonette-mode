@@ -1,5 +1,4 @@
 import { formatHexString } from "@/utils/evm";
-import { Link as StyledLink } from "@aragon/ods";
 import Link from "next/link";
 import { zeroAddress } from "viem";
 
@@ -12,9 +11,7 @@ export default function Members() {
       <div>
         {mockedMembers.map((address) => (
           <div key={address}>
-            <Link href={`/members/${address}`}>
-              <StyledLink>{formatHexString(address)}</StyledLink>
-            </Link>
+            <Link href={`/members/${address}`}>{formatHexString(address)}</Link>
           </div>
         ))}
       </div>
