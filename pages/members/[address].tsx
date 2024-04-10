@@ -1,4 +1,6 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { MainSection } from "@/components/layout/mainSection";
+import { SectionView } from "@/components/layout/sectionView";
+import { type GetServerSideProps, type InferGetServerSidePropsType } from "next";
 import { isAddress } from "viem";
 
 interface IMemberProfileParams {
@@ -24,5 +26,16 @@ export const getServerSideProps = (async (context) => {
 type MemberProfilePageProps = Readonly<InferGetServerSidePropsType<typeof getServerSideProps>>;
 
 export default function MemberProfile({ address }: MemberProfilePageProps) {
-  return <div>{`Member Profile - ${address}`}</div>;
+  return (
+    <MainSection>
+      <SectionView>
+        <div className="flex flex-col gap-y-2">
+          <h1 className="text-2xl text-neutral-800">Member Profile</h1>
+          <div>
+            <div>{`Member Address -> ${address}`}</div>;
+          </div>
+        </div>
+      </SectionView>
+    </MainSection>
+  );
 }
