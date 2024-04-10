@@ -1,53 +1,36 @@
-# Aragonette 🚀
+# Polygon Governance Hub
 
-Welcome to **Aragonette**, the sleek and snappy UI template designed for lightning-fast prototyping with Aragon DAOs and plugins! Built with the power of Next.js and the speed of Bun.js, Aragonette is your go-to toolkit for bringing your Aragon DAO visions to life with style and efficiency. 🎨✨
+The Polygon Governance Hub serves as a comprehensive platform for the Polygon community. It facilitates the processes of proposal submission and voting and aims to be the definitive resource where users can find all the information needed to make educated decisions within the Polygon ecosystem. The platform priorities a seamless and transparent experience to enhance active and quality participation among community members.
 
-## Getting Started 🏁
+## Getting Started
 
-Before you dive into the world of DAOs and decentralized governance, make sure you have Bun installed on your machine. If not, hop over to [Bun's official documentation](https://bun.sh/) for installation instructions.
+Before setting up the Polygon Governance Hub locally, make sure you have Bun installed on your machine. If not, hop over to [Bun's official documentation](https://bun.sh/) for installation instructions.
 
-Once you're set with Bun, clone this repository to your local machine:
+Once you're set with Bun and have cloned the repo on your local machine, follow these steps to run the application locally:
 
-```bash
-git clone https://github.com/your-repo/aragonette.git
-cd aragonette
-```
-
-To get the development server running, simply execute:
+1. Install the project dependencies:
 
 ```bash
 bun install
+```
+
+2. Start the development server:
+
+```bash
 bun dev
 ```
 
-And voilà! You're now in the fast lane to DAO prototyping. 🌟
+## Documentation
 
-## Adding Your Plugin 🧩
+The Hub is built on Aragon's Aragonette makes use of a mixture of tools and technologies to achieve a consistent and seamless user experience. The tech stack consists of the following:
 
-Got a plugin idea that's going to revolutionize the Aragon ecosystem? Adding it to Aragonette is as easy as pie:
+- [ReactJS](https://reactjs.org)
+- [NextJS](https://nextjs.org)
+- [TypeScript](https://www.typescriptlang.org)
+- [Tailwind CSS](https://tailwindcss.com)
 
-1. **Duplicate a Plugin Directory**: Navigate to the `/plugins` directory, pick a plugin that closely resembles your idea, and duplicate its directory.
-2. **Rename Your Plugin**: Give your plugin a unique and catchy name that captures its essence.
-3. **Register Your Plugin**: Open the `index.tsx` file inside the `/plugins` directory and add an entry for your new plugin.
+The user interface is based on the [Aragon Open Design System](https://www.figma.com/community/file/1228026689149097807), and any underlying contracts leverage Aragon's [OSx Protocol](https://devs.aragon.org/docs/osx/).
 
-And that's it! Your plugin is now part of the Aragonette universe. 🌌
+## License
 
-## Leveraging Aragon OSx Primitives 🛠
-
-Aragonette is built to work seamlessly with Aragon OSx primitives, such as `IProposal` or `MajorityVoting`. This means you can focus on the fun part of creating and experimenting, without sweating the small stuff. Your plugin should integrate smoothly into the UI, making your development journey as breezy as a blockchain. 😉
-
-## Contributing 🤝
-
-Got ideas on how to make Aragonette even better? We're all ears! Whether it's a bug fix, a new feature, or a plugin that could benefit everyone, we welcome your contributions. Check out our [contributing guidelines](CONTRIBUTING.md) for more information on how to get involved.
-
-## Need Help? 🆘
-
-Stuck on something? Our community is here to help! Join our [Discord channel](https://discord.com/invite/eqQJkdp) for support, advice, or just to share your awesome plugin creations with fellow Aragon enthusiasts.
-
-## License 📜
-
-Aragonette is released under the AGPL v3 License.
-
----
-
-Happy prototyping! With Aragonette, the future of decentralized organizations is in your hands. Let's build something amazing together! 🚀🌈
+The Polygon Governance Hub is released under the AGPL v3 License.
