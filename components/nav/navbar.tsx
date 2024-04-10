@@ -23,7 +23,7 @@ export const Navbar: React.FC = () => {
               "outline-none focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset" // focus styles
             )}
           >
-            <Image src="/logo-bw-lg.png" width="60" height="60" className="w-9 shrink-0" alt="Aragonette" />
+            <Image src="/logo-bw-lg.png" width="36" height="36" className="shrink-0" alt="Polygon" />
             <span className="hidden py-1 text-lg font-semibold leading-tight text-[#22143D] sm:block md:text-xl">
               Polygon Governance Hub
             </span>
