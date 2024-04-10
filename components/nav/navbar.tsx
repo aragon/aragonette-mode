@@ -3,10 +3,10 @@ import { AvatarIcon, IconType } from "@aragon/ods";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
-import { NavLink, type INavLink } from "./navLink";
-import { Dashboard, Learn, Members, Proposals } from "./routes";
 import { useState } from "react";
 import { MobileNavDialog } from "./mobileNavDialog";
+import { NavLink, type INavLink } from "./navLink";
+import { Dashboard, Learn, Members, Proposals } from "./routes";
 
 export const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ export const Navbar: React.FC = () => {
             )}
           >
             <Image src="/logo-bw-lg.png" width="60" height="60" className="w-9 shrink-0" alt="Aragonette" />
-            <span className="py-1 text-lg font-semibold leading-tight text-neutral-700 md:text-xl">
+            <span className="hidden py-1 text-lg font-semibold leading-tight text-[#22143D] sm:block md:text-xl">
               Polygon Governance Hub
             </span>
           </Link>
