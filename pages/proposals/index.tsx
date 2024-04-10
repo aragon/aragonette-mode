@@ -1,21 +1,28 @@
+import { MainSection } from "@/components/layout/mainSection";
+import { SectionView } from "@/components/layout/sectionView";
+import { ProposalDetails } from "@/components/nav/routes";
 import Link from "next/link";
 
 export default function Proposals() {
   const mockPips = [
-    { id: 1, title: "PIP 1", description: "This is a description for PIP 1" },
-    { id: 2, title: "PIP 2", description: "This is a description for PIP 2" },
+    { id: 32, title: "PIP 32 - Ancient data pruning" },
+    { id: 33, title: "PIP 33 - Napoli" },
   ];
 
   return (
-    <div>
-      <h1>Pips List Page</h1>
-      <div>
-        {mockPips.map((pip) => (
-          <div key={pip.id}>
-            <Link href={`/proposals/${pip.id}`}>{`${pip.title} - ${pip.description}`}</Link>
+    <MainSection>
+      <SectionView>
+        <div className="flex flex-col gap-y-2">
+          <h1 className="text-2xl text-neutral-800">Proposal List Page</h1>
+          <div>
+            {mockPips.map((pip) => (
+              <div key={pip.id}>
+                <Link href={ProposalDetails.getPath(pip.id)}>{pip.title}</Link>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      </SectionView>
+    </MainSection>
   );
 }

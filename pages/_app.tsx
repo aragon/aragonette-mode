@@ -1,5 +1,5 @@
 import { RootContextProvider } from "@/context";
-import { Layout } from "@/components/layout";
+import { Layout } from "@/components/layout/layout";
 import AlertContainer from "@/components/alert/alert-container";
 import { Manrope } from "next/font/google";
 import "@aragon/ods/index.css";

@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { Navbar } from "./nav/navbar";
+import { Navbar } from "../nav/navbar";
 
 export const Layout: React.FC<{ children: ReactNode }> = (props) => {
   return (
