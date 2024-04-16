@@ -4,16 +4,72 @@
 
 @layer base {
   :root {
-    /* override ODS primary colors */
-    --ods-color-primary-50: 245 248 255;
-    --ods-color-primary-100: 196 215 255;
-    --ods-color-primary-200: 147 178 255;
-    --ods-color-primary-300: 98 140 254;
-    --ods-color-primary-400: 123 63 228;
-    --ods-color-primary-500: 123 59 245;
-    --ods-color-primary-600: 123 63 228;
-    --ods-color-primary-700: 123 49 173;
-    --ods-color-primary-800: 123 41 133;
-    --ods-color-primary-900: 123 31 92;
+    /* Primary */
+    --ods-color-primary-50: 245 248 255; /* #F5F8FF */
+    --ods-color-primary-100: 196 215 255; /* #C4D7FF */
+    --ods-color-primary-200: 147 178 255; /* #93B2FF */
+    --ods-color-primary-300: 98 140 254; /* #628CFE */
+    --ods-color-primary-400: 49 100 250; /* #3164FA */
+    --ods-color-primary-500: 0 59 245; /* #003BF5 */
+    --ods-color-primary-600: 0 55 210; /* #0037D2 */
+    --ods-color-primary-700: 0 49 173; /* #0031AD */
+    --ods-color-primary-800: 0 41 133; /* #002985 */
+    --ods-color-primary-900: 0 31 92; /* #001F5C */
+
+    /* Neutral */
+    --ods-neutral-0: 255 255 255; /* #FFFFFF */
+    --ods-neutral-5: 245 247 250; /* #F5F7FA */
+    --ods-neutral-100: 196 215 255; /* #C4D7FF */
+    --ods-neutral-200: 147 178 255; /* #93B2FF */
+    --ods-neutral-300: 98 140 254; /* #628CFE */
+    --ods-neutral-400: 49 100 250; /* #3164FA */
+    --ods-neutral-500: 0 59 245; /* #003BF5 */
+    --ods-neutral-600: 0 55 45; /* #00372D */
+    --ods-neutral-700: 0 41 133; /* #002985 */
+    --ods-neutral-800: 0 31 92; /* #001F5C */
+
+    /* Info */
+    --ods-info-100: 209 253 250; /* #D1FDFA */
+    --ods-info-200: 164 249 251; /* #A4F9FB */
+    --ods-info-300: 117 232 243; /* #75E8F3 */
+    --ods-info-400: 82 207 231; /* #52CFE7 */
+    --ods-info-500: 30 173 216; /* #1EADD8 */
+    --ods-info-600: 21 136 137; /* #158889 */
+    --ods-info-700: 15 102 152; /* #0F6698 */
+    --ods-info-800: 9 73 112; /* #094970 */
+    --ods-info-900: 5 52 103; /* #053467 */
+
+    /* Success */
+    --ods-success-100: 243 252 204; /* #F3FCCC */
+    --ods-success-200: 228 249 154; /* #E4F99A */
+    --ods-success-300: 204 239 102; /* #CCEF66 */
+    --ods-success-400: 178 224 64; /* #B2E040 */
+    --ods-success-500: 142 204 170; /* #8ECCOA */
+    --ods-success-600: 116 175 7; /* #74AF07 */
+    --ods-success-700: 92 146 5; /* #5C9205 */
+    --ods-success-800: 70 118 3; /* #467603 */
+    --ods-success-900: 54 97 1; /* #366101 */
+
+    /* Warning */
+    --ods-warning-100: 255 243 214; /* #FFF3D6 */
+    --ods-warning-200: 255 228 173; /* #FFE4AD */
+    --ods-warning-300: 255 208 131; /* #FFD083 */
+    --ods-warning-400: 255 190 101; /* #FFBE65 */
+    --ods-warning-500: 255 159 50; /* #FF9F32 */
+    --ods-warning-600: 219 125 36; /* #DB7D24 */
+    --ods-warning-700: 183 94 25; /* #B75E19 */
+    --ods-warning-800: 147 67 15; /* #93430F */
+    --ods-warning-900: 122 48 9; /* #7A3009 */
+
+    /* Critical */
+    --ods-critical-100: 254 228 214; /* #FEE4D6 */
+    --ods-critical-200: 254 195 174; /* #FEC3AE */
+    --ods-critical-300: 253 154 134; /* #FD9A86 */
+    --ods-critical-400: 251 116 103; /* #FB7467 */
+    --ods-critical-500: 249 54 54; /* #F93636 */
+    --ods-critical-600: 214 39 54; /* #D62736 */
+    --ods-critical-700: 179 24 53; /* #B31835 */
+    --ods-critical-800: 144 17 50; /* #901132 */
+    --ods-critical-900: 119 10 48; /* #770A30 */
   }
 }
