@@ -24,9 +24,9 @@ export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
               href="https://aragon.org"
               className="rounded-xl outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset"
             >
-              <span className="flex py-2 pl-3 pr-4">
-                Powered by <span className="mr-1 text-primary-400">&nbsp;Aragon</span>
-                <Image src="/logo.png" width="24" height="24" alt="Aragonette" />
+              <span className="flex gap-x-2 py-2 pl-3 pr-4">
+                Powered by Aragon
+                <Image src="/logo-aragon-bw-sm.png" width="24" height="24" alt="Aragonette" />
               </span>
             </Link>
           </div>
