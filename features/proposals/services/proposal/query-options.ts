@@ -7,7 +7,7 @@ import { fetchProposal, fetchProposals, fetchVotes } from "./proposal-service-mo
 
 export const proposalKeys = {
   all: ["proposals"] as const,
-  list: (params: IFetchProposalListParams) => [...proposalKeys.all, "list", params],
+  list: (params: IFetchProposalListParams) => [...proposalKeys.all, "list", params] as const,
   detail: (params: IFetchProposalParams) => [...proposalKeys.all, "details", params] as const,
   votes: (params: IFetchVotesParams) => [...proposalKeys.all, "votes", params] as const,
 };
