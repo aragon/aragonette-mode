@@ -5,62 +5,72 @@
 @layer base {
   :root {
     /* Primary */
-    --ods-color-primary-50: 245 248 255; /* #F5F8FF */
-    --ods-color-primary-100: 196 215 255; /* #C4D7FF */
-    --ods-color-primary-200: 147 178 255; /* #93B2FF */
-    --ods-color-primary-300: 98 140 254; /* #628CFE */
-    --ods-color-primary-400: 123 63 228;
-    --ods-color-primary-500: 123 59 245;
-    --ods-color-primary-600: 123 63 228;
-    --ods-color-primary-700: 123 49 173;
-    --ods-color-primary-800: 123 41 133;
-    --ods-color-primary-900: 123 31 92;
+    --ods-color-primary-50: 250 245 255;
+    --ods-color-primary-100: 235 216 253;
+    --ods-color-primary-200: 213 179 252;
+    --ods-color-primary-300: 186 139 246;
+    --ods-color-primary-400: 161 109 238;
+    --ods-color-primary-500: 123 63 288;
+    --ods-color-primary-600: 95 46 196;
+    --ods-color-primary-700: 70 31 164;
+    --ods-color-primary-800: 48 20 132;
+    --ods-color-primary-900: 33 12 109;
 
     /* Neutral */
-    /* TODO: add neutral channels and update primary ones */
+    --ods-color-neutral-0: 255 255 255;
+    --ods-color-neutral-50: 245 247 250;
+    --ods-color-neutral-100: 228 231 235;
+    --ods-color-neutral-200: 203 210 217;
+    --ods-color-neutral-300: 145 165 177;
+    --ods-color-neutral-400: 123 135 148;
+    --ods-color-neutral-500: 97 110 124;
+    --ods-color-neutral-600: 82 96 109;
+    --ods-color-neutral-700: 62 76 89;
+    --ods-color-neutral-800: 50 63 75;
+    --ods-color-neutral-900: 31 41 51;
 
     /* Info */
-    --ods-color-info-100: 209 253 250; /* #D1FDFA */
-    --ods-color-info-200: 164 249 251; /* #A4F9FB */
-    --ods-color-info-300: 117 232 243; /* #75E8F3 */
-    --ods-color-info-400: 82 207 231; /* #52CFE7 */
-    --ods-color-info-500: 30 173 216; /* #1EADD8 */
-    --ods-color-info-600: 21 136 137; /* #158889 */
-    --ods-color-info-700: 15 102 152; /* #0F6698 */
-    --ods-color-info-800: 9 73 112; /* #094970 */
-    --ods-color-info-900: 5 52 103; /* #053467 */
+    --ods-color-info-100: 206 236 254;
+    --ods-color-info-200: 157 214 254;
+    --ods-color-info-300: 108 187 253;
+    --ods-color-info-400: 71 161 251;
+    --ods-color-info-500: 12 119 249;
+    --ods-color-info-600: 8 92 214;
+    --ods-color-info-700: 6 68 179;
+    --ods-color-info-800: 3 48 144;
+    --ods-color-info-900: 2 33 229;
 
     /* Success */
-    --ods-color-success-100: 243 252 204; /* #F3FCCC */
-    --ods-color-success-200: 228 249 154; /* #E4F99A */
-    --ods-color-success-300: 204 239 102; /* #CCEF66 */
-    --ods-color-success-400: 178 224 64; /* #B2E040 */
-    --ods-color-success-500: 142 204 170; /* #8ECCOA */
-    --ods-color-success-600: 116 175 7; /* #74AF07 */
-    --ods-color-success-700: 92 146 5; /* #5C9205 */
-    --ods-color-success-800: 70 118 3; /* #467603 */
-    --ods-color-success-900: 54 97 1; /* #366101 */
+    --ods-color-success-100: 241 253 210;
+    --ods-color-success-200: 223 251 167;
+    --ods-color-success-300: 197 243 121;
+    --ods-color-success-400: 170 231 86;
+    --ods-color-success-500: 132 216 36;
+    --ods-color-success-600: 103 185 26;
+    --ods-color-success-700: 78 155 18;
+    --ods-color-success-800: 56 125 11;
+    --ods-color-success-900: 40 103 6;
 
     /* Warning */
-    --ods-color-warning-100: 255 243 214; /* #FFF3D6 */
-    --ods-color-warning-200: 255 228 173; /* #FFE4AD */
-    --ods-color-warning-300: 255 208 131; /* #FFD083 */
-    --ods-color-warning-400: 255 190 101; /* #FFBE65 */
-    --ods-color-warning-500: 255 159 50; /* #FF9F32 */
-    --ods-color-warning-600: 219 125 36; /* #DB7D24 */
-    --ods-color-warning-700: 183 94 25; /* #B75E19 */
-    --ods-color-warning-800: 147 67 15; /* #93430F */
-    --ods-color-warning-900: 122 48 9; /* #7A3009 */
+    --ods-color-warning-100: 255 244 204;
+    --ods-color-warning-200: 255 231 153;
+    --ods-color-warning-300: 255 214 102;
+    --ods-color-warning-400: 255 197 63;
+    --ods-color-warning-500: 255 170 0;
+    --ods-color-warning-600: 219 138 0;
+    --ods-color-warning-700: 183 109 0;
+    --ods-color-warning-800: 147 83 0;
+    --ods-color-warning-900: 122 64 0;
 
     /* Critical */
-    --ods-color-critical-100: 254 228 214; /* #FEE4D6 */
-    --ods-color-critical-200: 254 195 174; /* #FEC3AE */
-    --ods-color-critical-300: 253 154 134; /* #FD9A86 */
-    --ods-color-critical-400: 251 116 103; /* #FB7467 */
-    --ods-color-critical-500: 249 54 54; /* #F93636 */
-    --ods-color-critical-600: 214 39 54; /* #D62736 */
-    --ods-color-critical-700: 179 24 53; /* #B31835 */
-    --ods-color-critical-800: 144 17 50; /* #901132 */
-    --ods-color-critical-900: 119 10 48; /* #770A30 */
+    --ods-color-critical-100: 255 229 211;
+    --ods-color-critical-200: 255 196 168;
+    --ods-color-critical-300: 255 156 124;
+    --ods-color-critical-400: 255 119 92;
+    --ods-color-critical-500: 255 56 38;
+    --ods-color-critical-600: 219 27 27;
+    --ods-color-critical-700: 183 19 32;
+    --ods-color-critical-800: 147 12 34;
+    --ods-color-critical-900: 122 7 35;
   }
 }
