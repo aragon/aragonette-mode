@@ -1,0 +1,19 @@
+import { queryClient } from "@/utils/query-client";
+import { castVote } from "./proposal-service";
+import { proposalKeys } from "./query-options";
+import { type IVoteParams } from "./params";
+
+export function castVoteMutation(params: IVoteParams) {
+  const { proposalId, stageId } = params;
+
+  return {
+    mutateFunction: castVote,
+    onSettled: () => {
+      // invalidate the query for all the votes of the proposal being voted on
+      queryClient.invalidateQueries({ queryKey: proposalKeys.votes({ proposalId, stageId }) });
+
+      // invalidate the query for the proposal being voted on
+      queryClient.invalidateQueries({ queryKey: proposalKeys.detail({ proposalId }) });
+    },
+  };
+}
