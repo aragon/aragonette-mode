@@ -6,14 +6,13 @@ import "@aragon/ods/index.css";
 import "@/pages/globals.css";
 import { PUB_APP_NAME } from "@/constants";
 import Head from "next/head";
+import { HydrationBoundary } from "@tanstack/react-query";
 
 const manrope = Manrope({
   subsets: ["latin"],
 });
 
 export default function AragonetteApp({ Component, pageProps }: any) {
-  // const initialState = cookieToInitialState(config, headers().get('cookie'))
-
   return (
     <div className={manrope.className}>
       <Head>
@@ -21,7 +20,9 @@ export default function AragonetteApp({ Component, pageProps }: any) {
       </Head>
       <RootContextProvider>
         <Layout>
-          <Component {...pageProps} />
+          <HydrationBoundary state={pageProps.dehydratedState}>
+            <Component {...pageProps} />
+          </HydrationBoundary>
         </Layout>
         <AlertContainer />
       </RootContextProvider>
