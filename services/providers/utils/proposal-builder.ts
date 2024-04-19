@@ -1,7 +1,8 @@
 import { getGithubProposalData } from "@/services/providers/github/proposals";
+import { getSnapshotProposalData } from "@/services/providers/snapshot/proposals";
 import { ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { ProposalStage, ProposalStageResponse, ProposalResponse } from "@/services/providers/utils/types";
-import { GITHUB_REPO, GITHUB_USER, GITHUB_PATH } from "@/constants";
+import { GITHUB_REPO, GITHUB_USER, GITHUB_PATH, SNAPSHOT_SPACE } from "@/constants";
 
 function computeTitle(proposalStages: ProposalStage[]) {
   let title = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title;
@@ -36,7 +37,9 @@ export async function getProposalStages() {
     path: GITHUB_PATH,
   });
 
-  return [...proposalsGithubStage];
+  const proposalsSnapshotStage = await getSnapshotProposalData({ space: SNAPSHOT_SPACE });
+
+  return [...proposalsGithubStage, ...proposalsSnapshotStage];
 }
 
 async function matchProposalStages(proposalStages: ProposalStage[]) {

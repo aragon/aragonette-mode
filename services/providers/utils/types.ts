@@ -1,6 +1,8 @@
 import { ProposalStages, ProposalTypes } from "@/features/proposals/services/proposal/domain";
 
 export type Vote = {
+  id: string;
+  choice: string;
   voter: string;
   amount: string;
   timestamp: string;
@@ -67,4 +69,8 @@ export type Proposal = {
 
 export interface IProposalStageProvider {
   (params: any): Promise<ProposalStage[]>;
+}
+
+export interface IProposalVotesProvider {
+  (params: any): Promise<Vote[]>;
 }
