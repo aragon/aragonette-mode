@@ -108,5 +108,5 @@ export const getGithubProposalData: IProposalStageProvider = async function (par
   repo: string;
   path: string;
 }) {
-  return requestGithubData(GITHUB_API_URL + "/" + params.user + "/" + params.repo + "/contents/" + params.path);
+  return requestGithubData(GITHUB_API_URL + "/repos/" + params.user + "/" + params.repo + "/contents/" + params.path);
 };

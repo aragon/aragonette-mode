@@ -7,7 +7,8 @@ function computeTitle(proposalStages: ProposalStage[]) {
   let title = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title;
   if (!title) {
     title = proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.title;
-  } else {
+  }
+  if (!title) {
     title = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.title;
   }
   return title || "";
@@ -17,7 +18,8 @@ function computeDescription(proposalStages: ProposalStage[]) {
   let description = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.description;
   if (!description) {
     description = proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.description;
-  } else {
+  }
+  if (!description) {
     description = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.description;
   }
   return description || "";
