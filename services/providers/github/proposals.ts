@@ -4,7 +4,7 @@ import { IProposalStageProvider, ProposalStage } from "../utils/types";
 import { downloadPIPs } from "./queries";
 import { GITHUB_API_URL } from "@/constants";
 
-//TODO: Use regex to extract the header and body of the proposal
+//TODO: [RD-296] Use regex to extract the header and body of the proposal
 export function extractHeader(proposalBody: string) {
   const header = proposalBody
     .split("\n")
@@ -50,14 +50,6 @@ function parseStatus(status: string): ProposalStatus {
       return "rejected";
     case "Peer Review":
       return "draft";
-    case "closed":
-      return "rejected";
-    case "Accepted":
-      return "accepted";
-    case "Rejected":
-      return "rejected";
-    case "Implemented":
-      return "executed";
     case "Final":
       return "executed";
     default:
@@ -88,7 +80,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
 const requestGithubData = async function (url: string) {
   const files = await downloadPIPs(url);
 
-  const proposalPhases = files
+  const proposalStages = files
     .flatMap((file) => {
       const header = extractHeader(file.data);
       if (!header) return [];
@@ -100,7 +92,7 @@ const requestGithubData = async function (url: string) {
     })
     .map(({ header, body, link }) => parseHeader(header, body, link));
 
-  return proposalPhases;
+  return proposalStages;
 };
 
 export const getGithubProposalData: IProposalStageProvider = async function (params: {
@@ -108,5 +100,5 @@ export const getGithubProposalData: IProposalStageProvider = async function (par
   repo: string;
   path: string;
 }) {
-  return requestGithubData(GITHUB_API_URL + "/repos/" + params.user + "/" + params.repo + "/contents/" + params.path);
+  return requestGithubData(`${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents/${params.path}`);
 };

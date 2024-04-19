@@ -18,11 +18,11 @@ export interface IProposalStage {
 }
 
 export enum ProposalTypes {
-  CONTRACTS = "contracts",
-  CORE = "core",
-  CRITICAL = "critical",
-  INFORMATIONAL = "informational",
-  INTERFACE = "interface",
+  CONTRACTS = "Contracts",
+  CORE = "Core",
+  CRITICAL = "Critical",
+  INFORMATIONAL = "Informational",
+  INTERFACE = "Interface",
 }
 
 export interface IProposal {
@@ -38,8 +38,8 @@ export interface IProposal {
 
 // TODO: TBD - Snapshot
 export enum Votes {
-  YES = "yes",
-  NO = "no",
+  YES = "Yes",
+  NO = "No",
 }
 
 export interface IProposalVote {

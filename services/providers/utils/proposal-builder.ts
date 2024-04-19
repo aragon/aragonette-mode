@@ -11,7 +11,7 @@ function computeTitle(proposalStages: ProposalStage[]) {
   if (!title) {
     title = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.title;
   }
-  return title || "";
+  return title ?? "";
 }
 
 function computeDescription(proposalStages: ProposalStage[]) {
@@ -22,7 +22,7 @@ function computeDescription(proposalStages: ProposalStage[]) {
   if (!description) {
     description = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.description;
   }
-  return description || "";
+  return description ?? "";
 }
 
 function computeCurrentStage(proposalStages: ProposalStage[]) {

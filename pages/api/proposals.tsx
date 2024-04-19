@@ -7,6 +7,7 @@ type ResponseData = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+  //TODO: Handle error cases
   const proposals = await buildProposalResponse();
 
   res.status(200).json({ proposals });

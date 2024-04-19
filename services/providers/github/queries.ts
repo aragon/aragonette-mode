@@ -13,8 +13,7 @@ export async function downloadPIPs(url: string) {
   }).then((response) => response.json());
   let result: GithubData[] = [];
 
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i];
+  for (const item of data) {
     if (item.type === "file") {
       const fileUrl = item.download_url;
       const fileResponse = await fetch(fileUrl);
