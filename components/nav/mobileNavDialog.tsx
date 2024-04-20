@@ -1,6 +1,7 @@
-import { Dialog, type IDialogRootProps } from "@aragon/ods";
+import { PUB_DAO_ADDRESS } from "@/constants";
+import { formatHexString } from "@/utils/evm";
+import { Button, Dialog, IconType, clipboardUtils, type IDialogRootProps } from "@aragon/ods";
 import Image from "next/image";
-import Link from "next/link";
 import { NavLink, type INavLink } from "./navLink";
 
 interface IMobileNavDialogProps extends IDialogRootProps {
@@ -10,26 +11,37 @@ interface IMobileNavDialogProps extends IDialogRootProps {
 export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
   const { navLinks, ...dialogRootProps } = props;
 
+  const handleCopyAddress = async () => {
+    await clipboardUtils.copy(PUB_DAO_ADDRESS);
+  };
+
   return (
     <Dialog.Root {...dialogRootProps}>
       <Dialog.Content className="flex flex-col gap-y-6 px-3 py-7">
+        <div className="flex flex-col gap-y-3 px-4">
+          <div className="flex items-center justify-between">
+            <Image src="/logo-polygon-icon.svg" width="32" height="32" className="shrink-0" alt="Polygon" />
+            <Button
+              iconLeft={IconType.COPY}
+              size="sm"
+              variant="tertiary"
+              className="shrink-0 rounded-[100%]"
+              onClick={handleCopyAddress}
+            />
+          </div>
+          <div className="flex flex-col gap-y-1">
+            <span className="text-lg leading-tight text-neutral-800">Polygon Governance Hub</span>
+            <span className="text-sm leading-tight text-neutral-500">{formatHexString(PUB_DAO_ADDRESS)}</span>
+          </div>
+        </div>
         <ul className="flex w-full flex-col gap-y-1">
           {navLinks.map((navLink) => (
             <NavLink key={navLink.id} {...navLink} onClick={() => dialogRootProps.onOpenChange?.(false)} />
           ))}
         </ul>
-        <div className="flex items-center justify-between px-4">
-          <div className="flex w-full justify-center">
-            <Link
-              href="https://aragon.org"
-              className="rounded-xl outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset"
-            >
-              <span className="flex gap-x-2 py-2 pl-3 pr-4">
-                Powered by Aragon
-                <Image src="/logo-aragon-bw-sm.png" width="24" height="24" alt="Aragonette" />
-              </span>
-            </Link>
-          </div>
+        <div className="flex items-center gap-x-2 px-4">
+          <span className="text-sm leading-tight text-neutral-500">Powered by</span>
+          <Image src="/logo-aragon-bw-sm.png" width="24" height="24" alt="Aragon" />
         </div>
       </Dialog.Content>
     </Dialog.Root>

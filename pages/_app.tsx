@@ -26,14 +26,14 @@ const generalSans = localFont({
 export default function AragonetteApp({ Component, pageProps }: any) {
   return (
     <>
-      {
-        <style jsx={true} global={true}>{`
-          html {
-            font-family: ${generalSans.style.fontFamily};
-          }
-        `}</style>
-      }
       <Head>
+        {
+          <style jsx={true} global={true}>{`
+            html {
+              font-family: ${generalSans.style.fontFamily};
+            }
+          `}</style>
+        }
         <title>{PUB_APP_NAME}</title>
       </Head>
       <RootContextProvider>

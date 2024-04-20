@@ -24,7 +24,14 @@ export const Navbar: React.FC = () => {
                 "outline-none focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset" // focus styles
               )}
             >
-              <Image src="/logo-polygon.svg" width="164" height="32" className="shrink-0" alt="Polygon" />
+              <Image
+                src="/logo-polygon.svg"
+                width="164"
+                height="32"
+                className="hidden shrink-0 sm:block"
+                alt="Polygon"
+              />
+              <Image src="/logo-polygon-icon.svg" width="40" height="40" className="shrink-0 sm:hidden" alt="Polygon" />
             </Link>
 
             <div className="flex items-center gap-x-2">
