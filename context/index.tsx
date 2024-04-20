@@ -1,4 +1,5 @@
 import { PUB_WALLET_CONNECT_PROJECT_ID } from "@/constants";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { config } from "@/context/Web3Modal";
 import { queryClient } from "@/utils/query-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,6 +28,7 @@ export function RootContextProvider({ children, initialState }: { children: Reac
     <WagmiProvider config={config} initialState={initialState}>
       <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
         <AlertProvider>{children}</AlertProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </PersistQueryClientProvider>
     </WagmiProvider>
   );
