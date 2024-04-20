@@ -1,8 +1,19 @@
-import { ProposalStages } from "@/features/proposals/services/proposal/domain";
-import { VotingData, VotingScores, IProposalStageProvider } from "@/services/providers/utils/types";
-import { snapshotProposalsQuery, SnapshotProposalData, requestProposalData } from "./queries";
+import { SNAPSHOT_API_URL } from "@/constants";
+import { ProposalStages } from "../../services";
+import { type ProposalStage, type VotingScores, type VotingData } from "../utils/types";
+import { type SnapshotProposalData } from "./types";
 
-function parseSnapshotData(data: SnapshotProposalData[]) {
+export const requestProposalData = async function (query: string) {
+  return fetch(SNAPSHOT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+  }).then((response) => response.json());
+};
+
+export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[] {
   return data.map((proposal) => {
     const scores: VotingScores[] = proposal.scores.map((score, index) => {
       return {
@@ -34,9 +45,3 @@ function parseSnapshotData(data: SnapshotProposalData[]) {
     };
   });
 }
-
-export const getSnapshotProposalData: IProposalStageProvider = async function (params: { space: string }) {
-  return requestProposalData(snapshotProposalsQuery(params.space))
-    .then((res) => res.data.proposals as SnapshotProposalData[])
-    .then(parseSnapshotData);
-};

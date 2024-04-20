@@ -1,8 +1,14 @@
-import { getGithubProposalData } from "@/services/providers/github/proposals";
-import { getSnapshotProposalData } from "@/services/providers/snapshot/proposals";
-import { ProposalStages } from "@/features/proposals/services/proposal/domain";
-import { ProposalStage, ProposalStageResponse, ProposalResponse } from "@/services/providers/utils/types";
+import {
+  type IProposal,
+  type IProposalStage,
+  ProposalStages,
+  ProposalStageTitles,
+} from "@/features/proposals/services/proposal/domain";
 import { GITHUB_REPO, GITHUB_USER, GITHUB_PATH, SNAPSHOT_SPACE } from "@/constants";
+import { getGitHubProposalStagesData } from "../github/proposalStages";
+import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
+import { type ProposalStage } from "./types";
+import { type ProposalStatus } from "@aragon/ods";
 
 function computeTitle(proposalStages: ProposalStage[]) {
   let title = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title;
@@ -31,13 +37,13 @@ function computeCurrentStage(proposalStages: ProposalStage[]) {
 }
 
 export async function getProposalStages() {
-  const proposalsGithubStage = await getGithubProposalData({
+  const proposalsGithubStage = await getGitHubProposalStagesData({
     user: GITHUB_USER,
     repo: GITHUB_REPO,
     path: GITHUB_PATH,
   });
 
-  const proposalsSnapshotStage = await getSnapshotProposalData({ space: SNAPSHOT_SPACE });
+  const proposalsSnapshotStage = await getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE });
 
   return [...proposalsGithubStage, ...proposalsSnapshotStage];
 }
@@ -56,23 +62,25 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
   return proposals;
 }
 
-function buildProposalStageResponse(proposalStages: ProposalStage[]): ProposalStageResponse[] {
+function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalStage[] {
   function parseId(id: ProposalStages) {
     switch (id) {
       case ProposalStages.DRAFT:
-        return "draft";
+        return ProposalStageTitles.DRAFT;
       case ProposalStages.COUNCIL_APPROVAL:
-        return "council_approval";
+        return ProposalStageTitles.COUNCIL_APPROVAL;
       case ProposalStages.COMMUNITY_VOTING:
-        return "community_voting";
+        return ProposalStageTitles.COMMUNITY_VOTING;
       default:
-        return "draft";
+        return ProposalStageTitles.DRAFT;
     }
   }
+
   return proposalStages.map((proposalStage) => {
     return {
-      id: parseId(proposalStage.id),
-      status: proposalStage.status,
+      id: proposalStage.id,
+      title: parseId(proposalStage.id),
+      status: proposalStage.status as ProposalStatus,
       creator: proposalStage.creator,
       link: proposalStage.link,
       voting: proposalStage.voting,
@@ -80,7 +88,7 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): ProposalSt
   });
 }
 
-export async function buildProposalResponse(): Promise<ProposalResponse[]> {
+export async function buildProposalResponse(): Promise<IProposal[]> {
   const proposalStages = await getProposalStages();
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
@@ -88,7 +96,7 @@ export async function buildProposalResponse(): Promise<ProposalResponse[]> {
     const title = computeTitle(matchedProposalStages);
     const description = computeDescription(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
-    const status = matchedProposalStages.find((stage) => stage.id === currentStage)?.status || "draft";
+    const status = matchedProposalStages.find((stage) => stage.id === currentStage)?.status ?? "draft";
 
     const proposalStageResponses = buildProposalStageResponse(matchedProposalStages);
 

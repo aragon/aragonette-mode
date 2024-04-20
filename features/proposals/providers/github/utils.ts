@@ -1,8 +1,39 @@
-import { ProposalTypes, ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { type ProposalStatus } from "@aragon/ods";
-import { IProposalStageProvider, ProposalStage } from "../utils/types";
-import { downloadPIPs } from "./queries";
-import { GITHUB_API_URL } from "@/constants";
+import { ProposalStages, ProposalTypes } from "../../services/proposal/domain";
+import { type ProposalStage } from "../utils/types";
+import { GITHUB_TOKEN } from "@/constants";
+
+type GithubData = {
+  link: string;
+  data: string;
+};
+
+export async function downloadPIPs(url: string) {
+  const data = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+    },
+  }).then((response) => response.json());
+  let result: GithubData[] = [];
+
+  for (const item of data) {
+    if (item.type === "file") {
+      const fileUrl = item.download_url;
+      const fileResponse = await fetch(fileUrl);
+      const fileData = await fileResponse.text();
+
+      result.push({
+        link: item.html_url,
+        data: fileData,
+      });
+    } else if (item.type === "dir") {
+      const res = await downloadPIPs(item.url);
+      result = result.concat(res);
+    }
+  }
+
+  return result;
+}
 
 //TODO: [RD-296] Use regex to extract the header and body of the proposal
 export function extractHeader(proposalBody: string) {
@@ -76,29 +107,3 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     link,
   };
 }
-
-const requestGithubData = async function (url: string) {
-  const files = await downloadPIPs(url);
-
-  const proposalStages = files
-    .flatMap((file) => {
-      const header = extractHeader(file.data);
-      if (!header) return [];
-
-      const body = extractBody(file.data);
-      const link = file.link;
-
-      return { header, body, link };
-    })
-    .map(({ header, body, link }) => parseHeader(header, body, link));
-
-  return proposalStages;
-};
-
-export const getGithubProposalData: IProposalStageProvider = async function (params: {
-  user: string;
-  repo: string;
-  path: string;
-}) {
-  return requestGithubData(`${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents/${params.path}`);
-};

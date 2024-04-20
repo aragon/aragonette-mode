@@ -15,9 +15,9 @@ export default function Proposals() {
           <h1 className="text-2xl text-neutral-800">Proposal List Page</h1>
           <div>
             {pips?.map((pip) => (
-              <div key={pip.id}>
+              <div key={pip.pip}>
                 <Link
-                  href={ProposalDetails.getPath(pip.id)}
+                  href={ProposalDetails.getPath(pip.pip)}
                 >{`${pip.title} - ${pip.description} - ${pip.status}`}</Link>
               </div>
             ))}

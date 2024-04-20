@@ -1,5 +1,7 @@
-import { Vote, IProposalVotesProvider } from "@/services/providers/utils/types";
-import { snapshotVotesQuery, SnapshotVoteData, requestProposalData } from "./queries";
+import { type Vote, type IProposalVotesProvider } from "../utils/types";
+import { snapshotVotesQuery } from "./gql";
+import { type SnapshotVoteData } from "./types";
+import { requestProposalData } from "./utils";
 
 function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
   return data.map((vote) => {
