@@ -29,7 +29,7 @@ export const GITHUB_REPO = process.env.GITHUB_REPO ?? "";
 export const GITHUB_PATH = process.env.GITHUB_PATH ?? "";
 
 // Snapshot
-export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/api";
+export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/graphql";
 export const SNAPSHOT_SPACE = process.env.SNAPSHOT_SPACE ?? "";
 
 // General
