@@ -21,6 +21,17 @@ export const PUB_WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLET_CONN
 export const PUB_IPFS_ENDPOINT = process.env.NEXT_PUBLIC_IPFS_ENDPOINT ?? "";
 export const PUB_IPFS_API_KEY = process.env.NEXT_PUBLIC_IPFS_API_KEY ?? "";
 
+// Github
+export const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? "";
+export const GITHUB_API_URL = process.env.GITHUB_API_URL ?? "https://api.github.com";
+export const GITHUB_USER = process.env.GITHUB_USER ?? "";
+export const GITHUB_REPO = process.env.GITHUB_REPO ?? "";
+export const GITHUB_PATH = process.env.GITHUB_PATH ?? "";
+
+// Snapshot
+export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/api";
+export const SNAPSHOT_SPACE = process.env.SNAPSHOT_SPACE ?? "";
+
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";
 export const PUB_APP_DESCRIPTION = "Streamlined user interface for Polygon governance";

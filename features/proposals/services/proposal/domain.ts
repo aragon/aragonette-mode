@@ -1,7 +1,7 @@
 import { type ProposalStatus } from "@aragon/ods";
 import { type Address } from "viem";
 
-export enum ProposalStage {
+export enum ProposalStages {
   DRAFT,
   COUNCIL_APPROVAL,
   COMMUNITY_VOTING,
@@ -9,8 +9,7 @@ export enum ProposalStage {
 }
 
 export interface IProposalStage {
-  id: ProposalStage;
-  name: string;
+  id: ProposalStages;
   status: ProposalStatus;
   startTimestamp: string;
   endTimestamp: string;
@@ -19,11 +18,11 @@ export interface IProposalStage {
 }
 
 export enum ProposalTypes {
-  CONTRACT = "CONTRACT",
-  CORE = "CORE",
-  CRITICAL = "CRITICAL",
-  INFORMATIONAL = "INFORMATIONAL",
-  INTERFACE = "INTERFACE",
+  CONTRACTS = "Contracts",
+  CORE = "Core",
+  CRITICAL = "Critical",
+  INFORMATIONAL = "Informational",
+  INTERFACE = "Interface",
 }
 
 export interface IProposal {
@@ -39,14 +38,14 @@ export interface IProposal {
 
 // TODO: TBD - Snapshot
 export enum Votes {
-  YES = "YES",
-  NO = "NO",
+  YES = "Yes",
+  NO = "No",
 }
 
 export interface IProposalVote {
   address: Address;
   proposalId: string;
-  stageId: ProposalStage;
+  stageId: ProposalStages;
   vote: Votes;
   weight: number;
 }
