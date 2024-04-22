@@ -1,9 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { type IFetchProposalListParams, type IFetchProposalParams, type IFetchVotesParams } from "./params";
-import { fetchProposal, fetchProposals, fetchVotes } from "./proposal-service-mock";
-
-// TODO: use live service
-// import { fetchProposal, fetchProposals, fetchVotes } from "./proposal-service";
+import { fetchProposal, fetchProposals, fetchVotes } from "./proposal-service";
 
 export const proposalKeys = {
   all: ["proposals"] as const,

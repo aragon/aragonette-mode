@@ -1,20 +1,38 @@
 import { RootContextProvider } from "@/context";
 import { Layout } from "@/components/layout/layout";
 import AlertContainer from "@/components/alert/alert-container";
-import { Manrope } from "next/font/google";
+import localFont from "next/font/local";
 import "@aragon/ods/index.css";
 import "@/pages/globals.css";
 import { PUB_APP_NAME } from "@/constants";
 import Head from "next/head";
 import { HydrationBoundary } from "@tanstack/react-query";
 
-const manrope = Manrope({
-  subsets: ["latin"],
+const generalSans = localFont({
+  src: [
+    {
+      path: "../public/fonts/GeneralSans-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/GeneralSans-Medium.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
 });
 
 export default function AragonetteApp({ Component, pageProps }: any) {
   return (
-    <div className={manrope.className}>
+    <>
+      {
+        <style jsx={true} global={true}>{`
+          html {
+            font-family: ${generalSans.style.fontFamily};
+          }
+        `}</style>
+      }
       <Head>
         <title>{PUB_APP_NAME}</title>
       </Head>
@@ -26,6 +44,6 @@ export default function AragonetteApp({ Component, pageProps }: any) {
         </Layout>
         <AlertContainer />
       </RootContextProvider>
-    </div>
+    </>
   );
 }

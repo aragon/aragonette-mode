@@ -2,18 +2,11 @@ import { MainSection } from "@/components/layout/mainSection";
 import { SectionView } from "@/components/layout/sectionView";
 import { ProposalDetails } from "@/components/nav/routes";
 import { proposalList } from "@/features/proposals";
-import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-export async function getServerSideProps() {
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery(proposalList("unknown"));
-
-  return { props: { dehydratedState: dehydrate(queryClient) } };
-}
-
 export default function Proposals() {
-  const { data: pips } = useQuery(proposalList("unknown"));
+  const { data: pips } = useQuery({ ...proposalList("unknown"), enabled: false });
 
   return (
     <MainSection>
