@@ -1,5 +1,5 @@
 import { type ProposalStatus } from "@aragon/ods";
-import { ProposalStages, ProposalTypes } from "../../services/proposal/domain";
+import { type ICreator, ProposalStages, ProposalTypes } from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 import { GITHUB_TOKEN } from "@/constants";
 
@@ -101,9 +101,19 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     title: values[1],
     description: values[2],
     body: body,
-    creator: values[3],
+    creator: parseCreators(values[3]),
     status: parseStatus(values[5]),
     type: parseProposalType(values[6]),
     link,
   };
+}
+
+export function parseCreators(creatorList: string): ICreator[] {
+  const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)/;
+
+  return creatorList.split(",").map((creator) => {
+    const parts = creator.match(markdownLinkRegex);
+
+    return parts != null ? { name: parts[1], profileLink: parts[2] } : { name: creator };
+  });
 }
