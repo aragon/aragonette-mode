@@ -70,7 +70,6 @@ export const ProposalDataList: React.FC = () => {
       pageSize={DEFAULT_PAGE_SIZE}
       state={dataListState}
       onLoadMore={fetchNextPage}
-      className="w-full"
     >
       <DataList.Container
         SkeletonElement={ProposalDataListItemSkeleton}
