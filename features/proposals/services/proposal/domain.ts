@@ -16,13 +16,18 @@ export enum ProposalStageTitles {
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
 }
 
+export interface ICreator {
+  name?: string;
+  link?: string;
+}
+
 export interface IProposalStage {
   id: ProposalStages;
   title: ProposalStageTitles;
   status: ProposalStatus;
   startTimestamp?: string;
   endTimestamp?: string;
-  creator: string;
+  creator: ICreator[];
   link: string;
   voting?: VotingData;
 }
