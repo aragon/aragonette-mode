@@ -7,7 +7,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
   return proposals.map((proposal) => {
     const { pip, status, type, stages, currentStage, description, title } = proposal;
 
-    // get active state
+    // get active stage
     const stageIndex = stages.findIndex((stage) => stage.id === currentStage)!;
     const activeStage = stages[stageIndex];
 
@@ -21,7 +21,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     return {
       // TODO - map date relative to status
       date: status === "active" ? undefined : activeStage.startTimestamp,
-      id: pip,
+      id: `PIP-${pip}`,
       type: isMajorityVoting ? "majorityVoting" : "approvalThreshold",
       tag: type,
       publisher,

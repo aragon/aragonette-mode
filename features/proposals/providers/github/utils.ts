@@ -114,6 +114,6 @@ export function parseCreators(creatorList: string): ICreator[] {
   return creatorList.split(",").map((creator) => {
     const parts = creator.match(markdownLinkRegex);
 
-    return parts != null ? { name: parts[1], profileLink: parts[2] } : { name: creator };
+    return parts != null ? { name: parts[1], link: parts[2] } : { name: creator };
   });
 }
