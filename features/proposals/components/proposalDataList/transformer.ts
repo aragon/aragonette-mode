@@ -5,44 +5,37 @@ type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
 export function toProposalDataListItems(proposals: IProposal[]): ProposalListItem[] {
   return proposals.map((proposal) => {
-    const stageIndex = proposal.stages.findIndex((s) => s.id === proposal.currentStage)!;
-    const stage = proposal.stages[stageIndex];
-    const publisherString =
-      proposal.type === ProposalTypes.CRITICAL ? proposal.stages[1].creator : proposal.stages[0].creator;
-    const publishers = publisherString.split(",").map((publisher) => ({ name: publisher, address: "" }));
+    const { pip, status, type, stages, currentStage, description, title } = proposal;
 
-    const commonProps = {
-      id: proposal.pip,
-      date: proposal.status === "active" ? undefined : stage.startTimestamp,
-      tag: proposal.type,
-      publisher: publishers,
-      status: proposal.status,
-      summary: proposal.description,
-      title: `${proposal.pip} ${proposal.title}`,
+    // get active state
+    const stageIndex = stages.findIndex((stage) => stage.id === currentStage)!;
+    const activeStage = stages[stageIndex];
+
+    // pick the draft state creator unless proposal is critical
+    const originalCreators = type === ProposalTypes.CRITICAL ? stages[1].creator : stages[0].creator;
+    const publisher = originalCreators.map((creator) => ({ ...creator, address: "" }));
+
+    // only community voting is mjv; draft has no voting data
+    const isMajorityVoting = activeStage.id === ProposalStages.COMMUNITY_VOTING;
+
+    return {
+      // TODO - map date relative to status
+      date: status === "active" ? undefined : activeStage.startTimestamp,
+      id: pip,
+      type: isMajorityVoting ? "majorityVoting" : "approvalThreshold",
+      tag: type,
+      publisher,
+      status,
+      summary: description,
+      title,
       voted: false,
+      result: {
+        ...activeStage.voting,
+        stage: {
+          id: stageIndex,
+          title: activeStage.title,
+        },
+      },
     };
-
-    const isMajorityVoting = stage.id === ProposalStages.COMMUNITY_VOTING;
-    if (isMajorityVoting) {
-      return {
-        ...commonProps,
-        type: "majorityVoting",
-        result: {
-          ...stage.voting,
-          stageId: stageIndex.toString(),
-          stageTitle: stage.title,
-        },
-      } as ProposalListItem;
-    } else {
-      return {
-        ...commonProps,
-        type: "approvalThreshold",
-        result: {
-          ...stage.voting,
-          stageId: stageIndex.toString(),
-          stageTitle: stage.title,
-        },
-      } as ProposalListItem;
-    }
-  });
+  }) as Array<ProposalListItem>;
 }

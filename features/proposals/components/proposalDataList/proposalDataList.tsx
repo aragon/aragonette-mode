@@ -10,7 +10,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { proposalList } from "../../services/proposal";
 
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 6;
 
 export const ProposalDataList: React.FC = () => {
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
@@ -77,13 +77,12 @@ export const ProposalDataList: React.FC = () => {
         errorState={errorState}
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
-        className="w-full"
       >
         {data?.pages.flatMap((page) =>
-          page.map((p) => (
+          page.map((proposal) => (
             // TODO: update with router agnostic ODS DataListItem
-            <Link legacyBehavior={true} key={p.id} href={ProposalDetails.getPath(p.id)} passHref={true}>
-              <ProposalDataListItem.Structure {...p} />
+            <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
+              <ProposalDataListItem.Structure {...proposal} />
             </Link>
           ))
         )}
