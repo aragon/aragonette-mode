@@ -1,35 +1,31 @@
+import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, SNAPSHOT_SPACE } from "@/constants";
 import {
+  ProposalStageTitles,
+  ProposalStages,
   type IProposal,
   type IProposalStage,
-  ProposalStages,
-  ProposalStageTitles,
 } from "@/features/proposals/services/proposal/domain";
-import { GITHUB_REPO, GITHUB_USER, GITHUB_PATH, SNAPSHOT_SPACE } from "@/constants";
+import { type ProposalStatus } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
-import { type ProposalStatus } from "@aragon/ods";
 
 function computeTitle(proposalStages: ProposalStage[]) {
-  let title = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title;
-  if (!title) {
-    title = proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.title;
-  }
-  if (!title) {
-    title = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.title;
-  }
-  return title ?? "";
+  return (
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title ??
+    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.title ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.title ??
+    ""
+  );
 }
 
 function computeDescription(proposalStages: ProposalStage[]) {
-  let description = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.description;
-  if (!description) {
-    description = proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.description;
-  }
-  if (!description) {
-    description = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.description;
-  }
-  return description ?? "";
+  return (
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.description ??
+    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.description ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.description ??
+    ""
+  );
 }
 
 function computeCurrentStage(proposalStages: ProposalStage[]) {
@@ -44,7 +40,6 @@ export async function getProposalStages() {
   });
 
   const proposalsSnapshotStage = await getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE });
-
   return [...proposalsGithubStage, ...proposalsSnapshotStage];
 }
 
@@ -53,11 +48,19 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
   // Manual matching for testing purposes
   const proposals = proposalStages.map((proposalStage) => [proposalStage]);
 
-  const pip4DraftProposal = proposals.find((stage) => stage[0].pip === "4");
-  const pip4CommunityVotingProposal = proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);
+  const pip4DraftProposal = proposals.find((stages) => stages[0].pip === "4");
 
-  if (!pip4DraftProposal || !pip4CommunityVotingProposal) return [];
-  pip4DraftProposal.push(pip4CommunityVotingProposal);
+  const foundIndex = proposals.findIndex((stages) => stages[0].id === ProposalStages.COMMUNITY_VOTING);
+  const pip4CommunityVotingProposal = proposals[foundIndex][0];
+
+  if (!pip4DraftProposal || !pip4CommunityVotingProposal) {
+    return [];
+  } else {
+    pip4DraftProposal.push(pip4CommunityVotingProposal);
+
+    // remove from proposalStages
+    proposals.splice(foundIndex, 1);
+  }
 
   return proposals;
 }
@@ -92,12 +95,13 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   const proposalStages = await getProposalStages();
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
-  return allMatchedProposalStages.map((matchedProposalStages) => {
+  const response = allMatchedProposalStages.map((matchedProposalStages) => {
     const title = computeTitle(matchedProposalStages);
     const description = computeDescription(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
-    const status = matchedProposalStages.find((stage) => stage.id === currentStage)?.status ?? "draft";
 
+    // TODO: Implement function to calculate overall status
+    const status = matchedProposalStages.find((stage) => stage.id === currentStage)?.status ?? "draft";
     const proposalStageResponses = buildProposalStageResponse(matchedProposalStages);
 
     return {
@@ -110,4 +114,6 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       stages: proposalStageResponses,
     };
   });
+
+  return response;
 }
