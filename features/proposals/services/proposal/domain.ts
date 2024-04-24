@@ -16,7 +16,6 @@ export interface ICreator {
 
 export interface IProposalStage {
   id: ProposalStages;
-  title: ProposalStages;
   status: ProposalStatus;
   startTimestamp?: string;
   endTimestamp?: string;

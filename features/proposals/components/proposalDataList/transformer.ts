@@ -22,7 +22,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     // only community voting is mjv; draft has no voting data
     const isMajorityVoting = activeStage.id === ProposalStages.COMMUNITY_VOTING;
     const result =
-      status !== "draft" ? { ...activeStage.voting, stage: { id: stageIndex, title: activeStage.title } } : undefined;
+      status !== "draft" ? { ...activeStage.voting, stage: { id: stageIndex, title: activeStage.id } } : undefined;
 
     return {
       // TODO - map date relative to status

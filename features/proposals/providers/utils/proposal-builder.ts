@@ -75,7 +75,6 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
   return sortProposalStages(proposalStages).map((proposalStage) => {
     return {
       id: proposalStage.id,
-      title: proposalStage.id,
       status: proposalStage.status as ProposalStatus,
       creator: proposalStage.creator,
       link: proposalStage.link,
