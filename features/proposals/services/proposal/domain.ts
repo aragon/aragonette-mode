@@ -1,47 +1,50 @@
 import { type ProposalStatus } from "@aragon/ods";
 import { type Address } from "viem";
+import { type VotingData } from "../../providers/utils/types";
 
 export enum ProposalStages {
-  DRAFT,
-  COUNCIL_APPROVAL,
-  COMMUNITY_VOTING,
-  COUNCIL_CONFIRMATION,
+  DRAFT = "Draft",
+  COUNCIL_APPROVAL = "Protocol Council Approval",
+  COMMUNITY_VOTING = "Community Voting",
+  COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
+}
+
+export interface ICreator {
+  name?: string;
+  link?: string;
 }
 
 export interface IProposalStage {
   id: ProposalStages;
   status: ProposalStatus;
-  startTimestamp: string;
-  endTimestamp: string;
-  creator: string;
+  startTimestamp?: string;
+  endTimestamp?: string;
+  creator: ICreator[];
   link: string;
+  voting?: VotingData;
 }
 
-export enum ProposalTypes {
-  CONTRACTS = "Contracts",
-  CORE = "Core",
-  CRITICAL = "Critical",
-  INFORMATIONAL = "Informational",
-  INTERFACE = "Interface",
+export enum ProposalTracks {
+  EMERGENCY = "Emergency",
+  STANDARD = "Standard",
 }
 
 export interface IProposal {
-  id: string;
+  pip: string;
   title: string;
   description: string;
   status: string;
-  actions: unknown[];
-  type: ProposalTypes;
-  currentStage: number;
+  type: string;
+  isEmergency?: boolean;
+  currentStage: ProposalStages;
   stages: IProposalStage[];
+  actions?: string[];
 }
 
-// TODO: TBD - Snapshot
 export enum Votes {
   YES = "Yes",
   NO = "No",
 }
-
 export interface IProposalVote {
   address: Address;
   proposalId: string;

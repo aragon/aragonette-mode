@@ -17,3 +17,14 @@ export interface IAlert {
 
 type JsonLiteral = string | number | boolean;
 export type JsonValue = JsonLiteral | Record<string, JsonLiteral> | Array<JsonLiteral>;
+
+// Response type
+export interface IPaginatedResponse<T> {
+  data: T[];
+
+  // TODO: fill ut pagination metadata
+  pagination: {
+    // page: number;
+    total: number;
+  };
+}
