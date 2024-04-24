@@ -108,7 +108,15 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   };
 }
 
+/**
+ * Parse a list of creators from a comma separated string.
+ * This also handles parsing markdown links for the creators.
+ *
+ * @param creatorList list of comma separated creators
+ * @returns array of ICreator objects
+ */
 export function parseCreators(creatorList: string): ICreator[] {
+  // matches markdown link; ex: [FirstName LastName](https://github.com/profile)
   const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)/;
 
   return creatorList.split(",").map((creator) => {

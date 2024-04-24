@@ -14,11 +14,15 @@ export function proposalList(params: IFetchProposalListParams) {
   return infiniteQueryOptions({
     queryKey: proposalKeys.list(params),
     queryFn: async () => {
-      const fetched = await fetchProposals(params);
-      return toProposalDataListItems(fetched);
+      const result = await fetchProposals(params);
+      return { ...result, data: toProposalDataListItems(result.data) };
     },
     initialPageParam: 1,
     getNextPageParam: () => undefined,
+    select: (data) => ({
+      proposals: data.pages.flatMap((p) => p.data),
+      pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
+    }),
   });
 }
 

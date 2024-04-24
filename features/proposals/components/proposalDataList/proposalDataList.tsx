@@ -31,7 +31,7 @@ export const ProposalDataList: React.FC = () => {
     dataListState = "fetchingNextPage";
   }
 
-  const totalProposals = data?.pages[0]?.length;
+  const totalProposals = data?.pagination?.total;
   const entityLabel = totalProposals === 1 ? "Proposal" : "Proposals";
 
   const emptyFilteredState = {
@@ -77,14 +77,12 @@ export const ProposalDataList: React.FC = () => {
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
       >
-        {data?.pages.flatMap((page) =>
-          page.map((proposal) => (
-            // TODO: update with router agnostic ODS DataListItem
-            <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
-              <ProposalDataListItem.Structure {...proposal} />
-            </Link>
-          ))
-        )}
+        {data?.proposals?.map((proposal) => (
+          // TODO: update with router agnostic ODS DataListItem
+          <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
+            <ProposalDataListItem.Structure {...proposal} />
+          </Link>
+        ))}
       </DataList.Container>
       <DataList.Pagination />
     </DataList.Root>
