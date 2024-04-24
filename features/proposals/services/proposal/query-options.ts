@@ -1,7 +1,7 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { toProposalDataListItems } from "../../components/proposalDataList/transformer";
 import { type IFetchProposalListParams, type IFetchProposalParams, type IFetchVotesParams } from "./params";
 import { fetchProposal, fetchProposals, fetchVotes } from "./proposal-service";
-import { toProposalDataListItems } from "../../components/proposalDataList/transformer";
 
 export const proposalKeys = {
   all: ["proposals"] as const,
@@ -13,14 +13,11 @@ export const proposalKeys = {
 export function proposalList(params: IFetchProposalListParams) {
   return infiniteQueryOptions({
     queryKey: proposalKeys.list(params),
-    queryFn: async () => {
-      const result = await fetchProposals(params);
-      return { ...result, data: toProposalDataListItems(result.data) };
-    },
+    queryFn: async () => await fetchProposals(params),
     initialPageParam: 1,
     getNextPageParam: () => undefined,
     select: (data) => ({
-      proposals: data.pages.flatMap((p) => p.data),
+      proposals: data.pages.flatMap((p) => toProposalDataListItems(p.data)),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
     }),
   });

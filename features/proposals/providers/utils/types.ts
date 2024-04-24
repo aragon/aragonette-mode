@@ -1,7 +1,7 @@
-import { type ICreator } from "@/features/proposals/services/proposal/domain";
+import { type ProposalStages, type ICreator } from "@/features/proposals/services/proposal/domain";
 
 export type ProposalStage = {
-  id: number;
+  id: ProposalStages;
   pip?: string;
   title: string;
   description: string;

@@ -1,4 +1,4 @@
-import { SNAPSHOT_API_URL } from "@/constants";
+import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
 import { ProposalStages } from "../../services";
 import { type ProposalStage, type VotingScores, type VotingData } from "../utils/types";
 import { type SnapshotProposalData } from "./types";
@@ -33,13 +33,20 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
       total_votes: proposal.votes,
     };
 
+    const creator = [
+      {
+        link: `${PUB_CHAIN.blockExplorers?.default.url}/address/${proposal.author}`,
+        address: proposal.author,
+      },
+    ];
+
     return {
       id: ProposalStages.COMMUNITY_VOTING,
       title: proposal.title,
       description: proposal.title,
       body: proposal.body,
       status: proposal.state,
-      creator: proposal.author,
+      creator,
       link: proposal.link,
       voting,
     };

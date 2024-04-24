@@ -1,10 +1,5 @@
 import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, SNAPSHOT_SPACE } from "@/constants";
-import {
-  ProposalStageTitles,
-  ProposalStages,
-  type IProposal,
-  type IProposalStage,
-} from "@/features/proposals/services/proposal/domain";
+import { ProposalStages, type IProposal, type IProposalStage } from "@/features/proposals/services/proposal/domain";
 import { type ProposalStatus } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
@@ -28,8 +23,19 @@ function computeDescription(proposalStages: ProposalStage[]) {
   );
 }
 
-function computeCurrentStage(proposalStages: ProposalStage[]) {
-  return Math.max(...proposalStages.map((stage) => stage.id));
+function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
+  return sortProposalStages(proposalStages)[proposalStages.length - 1].id;
+}
+
+function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
+  const stageOrder = {
+    [ProposalStages.DRAFT]: 0,
+    [ProposalStages.COUNCIL_APPROVAL]: 1,
+    [ProposalStages.COMMUNITY_VOTING]: 2,
+    [ProposalStages.COUNCIL_CONFIRMATION]: 3,
+  };
+
+  return proposalStages.sort((a, b) => stageOrder[a.id] - stageOrder[b.id]);
 }
 
 export async function getProposalStages() {
@@ -66,23 +72,10 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
 }
 
 function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalStage[] {
-  function parseId(id: ProposalStages) {
-    switch (id) {
-      case ProposalStages.DRAFT:
-        return ProposalStageTitles.DRAFT;
-      case ProposalStages.COUNCIL_APPROVAL:
-        return ProposalStageTitles.COUNCIL_APPROVAL;
-      case ProposalStages.COMMUNITY_VOTING:
-        return ProposalStageTitles.COMMUNITY_VOTING;
-      default:
-        return ProposalStageTitles.DRAFT;
-    }
-  }
-
-  return proposalStages.map((proposalStage) => {
+  return sortProposalStages(proposalStages).map((proposalStage) => {
     return {
       id: proposalStage.id,
-      title: parseId(proposalStage.id),
+      title: proposalStage.id,
       status: proposalStage.status as ProposalStatus,
       creator: proposalStage.creator,
       link: proposalStage.link,

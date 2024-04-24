@@ -3,13 +3,6 @@ import { type Address } from "viem";
 import { type VotingData } from "../../providers/utils/types";
 
 export enum ProposalStages {
-  DRAFT,
-  COUNCIL_APPROVAL,
-  COMMUNITY_VOTING,
-  COUNCIL_CONFIRMATION,
-}
-
-export enum ProposalStageTitles {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
   COMMUNITY_VOTING = "Community Voting",
@@ -23,7 +16,7 @@ export interface ICreator {
 
 export interface IProposalStage {
   id: ProposalStages;
-  title: ProposalStageTitles;
+  title: ProposalStages;
   status: ProposalStatus;
   startTimestamp?: string;
   endTimestamp?: string;
@@ -44,7 +37,7 @@ export interface IProposal {
   status: string;
   type: string;
   isEmergency?: boolean;
-  currentStage: number;
+  currentStage: ProposalStages;
   stages: IProposalStage[];
   actions?: string[];
 }
