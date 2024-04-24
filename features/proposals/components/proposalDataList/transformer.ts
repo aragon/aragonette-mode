@@ -1,5 +1,6 @@
 import { type IProposalDataListItemStructureProps } from "@aragon/ods";
 import { ProposalStages, ProposalTracks, type IProposal } from "../../services";
+import { capitalizeFirstLetter } from "@/utils/case";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
@@ -28,7 +29,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       date: status === "active" ? undefined : activeStage.startTimestamp,
       id: `PIP-${pip}`,
       type: isMajorityVoting ? "majorityVoting" : "approvalThreshold",
-      tag: isEmergency ? ProposalTracks.EMERGENCY : type,
+      tag: isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(type),
       publisher,
       status,
       summary: description,

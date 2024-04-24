@@ -1,7 +1,7 @@
-import { type ProposalStatus } from "@aragon/ods";
-import { type ICreator, ProposalStages, ProposalTypes } from "../../services/proposal/domain";
-import { type ProposalStage } from "../utils/types";
 import { GITHUB_TOKEN } from "@/constants";
+import { type ProposalStatus } from "@aragon/ods";
+import { ProposalStages, type ICreator } from "../../services/proposal/domain";
+import { type ProposalStage } from "../utils/types";
 
 type GithubData = {
   link: string;
@@ -52,31 +52,16 @@ export function extractBody(proposalBody: string) {
   return proposalBody.slice(bodyStart);
 }
 
-function parseProposalType(type: string): ProposalTypes {
-  switch (type) {
-    case "Contracts":
-      return ProposalTypes.CONTRACTS;
-    case "Core":
-      return ProposalTypes.CORE;
-    case "Informational":
-      return ProposalTypes.INFORMATIONAL;
-    case "Interface":
-      return ProposalTypes.INTERFACE;
-    default:
-      return ProposalTypes.INFORMATIONAL;
-  }
-}
-
 function parseStatus(status: string): ProposalStatus {
   switch (status) {
     case "Draft":
       return "draft";
     case "Last Call":
-      return "draft";
+      return "queued";
     case "Continuous":
       return "accepted";
     case "Stagnant":
-      return "rejected";
+      return "draft";
     case "Peer Review":
       return "draft";
     case "Final":
@@ -101,7 +86,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     body: body,
     creator: parseCreators(values[3]),
     status: parseStatus(values[5]),
-    type: parseProposalType(values[6]),
+    type: values[6] ?? "Informational",
     link,
   };
 }

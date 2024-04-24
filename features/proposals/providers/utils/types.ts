@@ -1,4 +1,4 @@
-import { type ICreator, type ProposalTypes } from "@/features/proposals/services/proposal/domain";
+import { type ICreator } from "@/features/proposals/services/proposal/domain";
 
 export type ProposalStage = {
   id: number;
@@ -9,7 +9,7 @@ export type ProposalStage = {
   status: string;
   creator: ICreator[];
   link: string;
-  type?: ProposalTypes;
+  type?: string;
   voting?: VotingData;
 };
 

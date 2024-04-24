@@ -32,13 +32,6 @@ export interface IProposalStage {
   voting?: VotingData;
 }
 
-export enum ProposalTypes {
-  CONTRACTS = "Contracts",
-  CORE = "Core",
-  INFORMATIONAL = "Informational",
-  INTERFACE = "Interface",
-}
-
 export enum ProposalTracks {
   EMERGENCY = "Emergency",
   STANDARD = "Standard",
@@ -49,7 +42,7 @@ export interface IProposal {
   title: string;
   description: string;
   status: string;
-  type: ProposalTypes;
+  type: string;
   isEmergency?: boolean;
   currentStage: number;
   stages: IProposalStage[];
