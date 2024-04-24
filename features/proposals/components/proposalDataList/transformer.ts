@@ -1,21 +1,20 @@
 import { type IProposalDataListItemStructureProps } from "@aragon/ods";
-import { ProposalStages, ProposalTypes, type IProposal } from "../../services";
+import { ProposalStages, ProposalTracks, type IProposal } from "../../services";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
 export function toProposalDataListItems(proposals: IProposal[]): ProposalListItem[] {
   return proposals.map((proposal) => {
-    const { pip, status, type, stages, currentStage, description, title } = proposal;
+    const { pip, status, type, stages, currentStage, description, title, isEmergency } = proposal;
 
     // get active stage
-    const stageIndex = stages.findIndex((stage) => stage.id === currentStage)!;
+    const stageIndex = stages.findIndex((stage) => stage.id === currentStage) ?? 0;
     const activeStage = stages[stageIndex];
 
     // pick the draft state creator unless proposal is critical
-    const originalCreators =
-      type === ProposalTypes.CRITICAL
-        ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
-        : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
+    const originalCreators = isEmergency
+      ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
+      : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
 
     const publisher = originalCreators?.map((creator) => ({ address: "", ...creator }));
 
@@ -29,7 +28,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       date: status === "active" ? undefined : activeStage.startTimestamp,
       id: `PIP-${pip}`,
       type: isMajorityVoting ? "majorityVoting" : "approvalThreshold",
-      tag: type,
+      tag: isEmergency ? ProposalTracks.EMERGENCY : type,
       publisher,
       status,
       summary: description,

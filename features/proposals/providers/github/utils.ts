@@ -58,8 +58,6 @@ function parseProposalType(type: string): ProposalTypes {
       return ProposalTypes.CONTRACTS;
     case "Core":
       return ProposalTypes.CORE;
-    case "Critical":
-      return ProposalTypes.CRITICAL;
     case "Informational":
       return ProposalTypes.INFORMATIONAL;
     case "Interface":
