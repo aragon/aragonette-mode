@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { buildProposalResponse } from "../../services/providers/utils/proposal-builder";
-import { ProposalResponse } from "@/services/providers/utils/types";
+import { type ProposalResponse } from "@/services/providers/utils/types";
 
 type ResponseData = {
   proposals: ProposalResponse[];
