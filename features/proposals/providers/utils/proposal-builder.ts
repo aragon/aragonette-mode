@@ -56,6 +56,14 @@ export async function getProposalStages() {
   return [...proposalsGithubStage, ...proposalsSnapshotStage, ...proposalsMultisigStage];
 }
 
+const getProposalBindingId = (stage: ProposalStage) => {
+  // For development purposes, we are using the PIP number as the binding ID
+  // TODO: remove this
+  if (stage.id === ProposalStages.DRAFT) return stage.pip?.split("-").pop();
+  if (stage.id === ProposalStages.COMMUNITY_VOTING) return stage.link.split("/").pop();
+  return stage.title;
+};
+
 async function matchProposalStages(proposalStages: ProposalStage[]) {
   const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
   const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
@@ -69,7 +77,7 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
   proposals.forEach((proposal) => {
     const draftBindingLink = proposal[0].bindings?.find((binding) => binding.id === ProposalStages.DRAFT)?.link;
     if (draftBindingLink) {
-      const draftProposal = draftProposals.find((stage) => stage.pip?.split("-").pop() === draftBindingLink);
+      const draftProposal = draftProposals.find((stage) => getProposalBindingId(stage) === draftBindingLink);
       if (draftProposal) {
         proposal.push(draftProposal);
         draftProposals.splice(draftProposals.indexOf(draftProposal), 1);
@@ -81,7 +89,7 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
     )?.link;
     if (communityVotingBindingLink) {
       const communityVotingProposal = communityVotingProposals.find(
-        (stage) => stage.link.split("/").pop() === communityVotingBindingLink
+        (stage) => getProposalBindingId(stage) === communityVotingBindingLink
       );
       if (communityVotingProposal) {
         proposal.push(communityVotingProposal);
