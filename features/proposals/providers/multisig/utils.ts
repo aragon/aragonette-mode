@@ -7,24 +7,19 @@ import { Action } from "@/utils/types";
 import { ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { ProposalCreatedLogResponse, Metadata, ProposalParameters, MultisigProposal } from "./types";
 import { type ProposalStatus } from "@aragon/ods";
-import { ETHERSCAN_URL } from "@/constants";
+import { ProposalStage } from "@/features/proposals/providers/utils/types";
+import { PUB_CHAIN, ETHERSCAN_URL } from "@/constants";
 
 const computeStatus = (startDate: bigint, endDate: bigint, minApprovals: number, approvals: number): ProposalStatus => {
   const now = BigInt(Math.floor(Date.now() / 1000));
   if (now < startDate) {
     return "pending";
+  } else if (approvals >= minApprovals) {
+    return "accepted";
   } else if (now < endDate) {
-    if (approvals >= minApprovals) {
-      return "accepted";
-    } else {
-      return "active";
-    }
+    return "active";
   } else {
-    if (approvals >= minApprovals) {
-      return "accepted";
-    } else {
-      return "rejected";
-    }
+    return "rejected";
   }
 };
 
@@ -100,6 +95,65 @@ const getProposalBindings = async function (metadata: Metadata) {
     snapshotId,
   };
 };
+
+export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage[] {
+  if (!proposals) return [];
+
+  return proposals.map((proposal) => {
+    const bindings = [];
+
+    if (proposal.githubId) {
+      bindings.push({
+        id: ProposalStages.DRAFT,
+        link: proposal.githubId,
+      });
+    }
+
+    if (proposal.snapshotId) {
+      bindings.push({
+        id: ProposalStages.COMMUNITY_VOTING,
+        link: proposal.snapshotId,
+      });
+    }
+
+    const voting = proposal.voting && {
+      startDate: proposal.voting.startDate,
+      endDate: proposal.voting.endDate,
+      approvals: proposal.voting.approvals,
+      quorum: proposal.voting.quorum,
+      snapshotBlock: proposal.voting.snapshotBlock,
+      choices: ["approve"],
+      scores: [
+        {
+          choice: "approve",
+          votes: proposal.voting.approvals,
+          percentage: (proposal.voting.approvals / proposal.voting.quorum) * 100,
+        },
+      ],
+      total_votes: proposal.voting.approvals,
+    };
+
+    const creator = [
+      {
+        link: `${PUB_CHAIN.blockExplorers?.default.url}/address/${proposal.creator}`,
+        address: proposal.creator,
+      },
+    ];
+
+    return {
+      id: proposal.id,
+      title: proposal.title,
+      description: proposal.summary,
+      body: proposal.description,
+      status: proposal.status,
+      creator,
+      link: proposal.link,
+      voting,
+      actions: proposal.actions,
+      bindings,
+    };
+  });
+}
 
 export const requestProposalData = async function (chain: number, contractAddress: Address) {
   const numProposals = await getNumProposals(chain, contractAddress);
