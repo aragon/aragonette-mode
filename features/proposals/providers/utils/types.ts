@@ -25,14 +25,6 @@ export type VotingData = {
   total_votes: number;
 };
 
-export type ProposalStageResponse = {
-  id: string;
-  status: ProposalStatus;
-  creator: string;
-  link: string;
-  voting?: VotingData;
-};
-
 export type ProposalStage = {
   id: ProposalStages;
   pip?: string;
