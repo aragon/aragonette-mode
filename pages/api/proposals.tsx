@@ -3,7 +3,7 @@ import { buildProposalResponse } from "@/features/proposals/providers/utils/prop
 import { type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<IPaginatedResponse<IProposal>>) {
+export default async function handler(_: NextApiRequest, res: NextApiResponse<IPaginatedResponse<IProposal>>) {
   //TODO: Handle error cases
   const proposals = await buildProposalResponse();
 

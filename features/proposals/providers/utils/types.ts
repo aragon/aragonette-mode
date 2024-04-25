@@ -1,17 +1,5 @@
+import { type ProposalStatus } from "@aragon/ods";
 import { type ProposalStages, type ICreator } from "@/features/proposals/services/proposal/domain";
-
-export type ProposalStage = {
-  id: ProposalStages;
-  pip?: string;
-  title: string;
-  description: string;
-  body: string;
-  status: string;
-  creator: ICreator[];
-  link: string;
-  type?: string;
-  voting?: VotingData;
-};
 
 export type Vote = {
   id: string;
@@ -37,10 +25,28 @@ export type VotingData = {
   total_votes: number;
 };
 
+export type ProposalStage = {
+  id: ProposalStages;
+  pip?: string;
+  title: string;
+  description: string;
+  body: string;
+  status: ProposalStatus;
+  isEmergency?: boolean;
+  creator: ICreator[];
+  link: string;
+  type?: string;
+  voting?: VotingData;
+  bindings?: {
+    id: ProposalStages;
+    link: string;
+  }[];
+};
+
 export interface IProposalStageProvider {
-  (params: any): Promise<ProposalStage[]>;
+  (params?: any): Promise<ProposalStage[]>;
 }
 
 export interface IProposalVotesProvider {
-  (params: any): Promise<Vote[]>;
+  (params?: any): Promise<Vote[]>;
 }

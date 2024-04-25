@@ -17,6 +17,7 @@ export const snapshotProposalsQuery = (space: string) => `
         id
       }
       scores
+      scores_total
       votes
     }
   }

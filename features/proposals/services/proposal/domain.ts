@@ -33,7 +33,7 @@ export interface IProposal {
   pip: string;
   title: string;
   description: string;
-  status: string;
+  status: ProposalStatus;
   type: string;
   isEmergency?: boolean;
   currentStage: ProposalStages;

@@ -15,6 +15,7 @@ export type SnapshotProposalData = {
     id: string;
   };
   scores: number[];
+  scores_total: number;
   votes: number;
 };
 
