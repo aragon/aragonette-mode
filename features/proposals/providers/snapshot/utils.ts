@@ -37,7 +37,7 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
       return {
         choice: proposal.choices[index],
         votes: score,
-        percentage: score / proposal.votes,
+        percentage: (score / proposal.scores_total) * 100,
       };
     });
 

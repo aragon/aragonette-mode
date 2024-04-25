@@ -33,17 +33,6 @@ export type ProposalStageResponse = {
   voting?: VotingData;
 };
 
-export type ProposalResponse = {
-  pip: string;
-  title: string;
-  description: string;
-  status: ProposalStatus;
-  type: string;
-  currentStage: number;
-  stages: ProposalStageResponse[];
-  actions?: string[];
-};
-
 export type ProposalStage = {
   id: ProposalStages;
   pip?: string;
@@ -60,17 +49,6 @@ export type ProposalStage = {
     id: ProposalStages;
     link: string;
   }[];
-};
-
-export type Proposal = {
-  pip: string;
-  title: string;
-  description: string;
-  status: ProposalStatus;
-  type: string;
-  currentStage: number;
-  stages: ProposalStage[];
-  actions?: string[];
 };
 
 export interface IProposalStageProvider {

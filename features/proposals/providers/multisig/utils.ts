@@ -7,8 +7,9 @@ import { Action } from "@/utils/types";
 import { ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { ProposalCreatedLogResponse, Metadata, ProposalParameters, MultisigProposal } from "./types";
 import { type ProposalStatus } from "@aragon/ods";
-import { ProposalStage } from "@/features/proposals/providers/utils/types";
-import { PUB_CHAIN, ETHERSCAN_URL } from "@/constants";
+import { type ProposalStage } from "@/features/proposals/providers/utils/types";
+import { PUB_CHAIN } from "@/constants";
+import { logger } from "@/services/logger";
 
 const computeStatus = (startDate: bigint, endDate: bigint, minApprovals: number, approvals: number): ProposalStatus => {
   const now = BigInt(Math.floor(Date.now() / 1000));
@@ -67,7 +68,7 @@ const getProposalCreationData = async function (
       toBlock: startDate,
     })
     .then((logs) => {
-      if (!logs || !logs.length) throw new Error("No creation logs");
+      if (!logs?.length) throw new Error("No creation logs");
       const log = logs[0] as any;
       const tx = log.transactionHash;
       const block = log.blockNumber;
@@ -77,7 +78,7 @@ const getProposalCreationData = async function (
       return { metadata: logData.args.metadata, creator: logData.args.creator, tx, block };
     })
     .catch((err) => {
-      console.error("Could not fetch the proposal details", err);
+      logger.error("Could not fetch the proposal details", err);
     });
 
   return logs;
@@ -190,7 +191,7 @@ export const requestProposalData = async function (chain: number, contractAddres
         proposalData.approvals
       );
 
-      const link = `${ETHERSCAN_URL}/tx/${creationData.tx}`;
+      const link = `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`;
 
       proposals.push({
         id: ProposalStages.COUNCIL_APPROVAL,
