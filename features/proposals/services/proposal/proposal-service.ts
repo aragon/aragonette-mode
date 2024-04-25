@@ -1,11 +1,12 @@
+import { type IPaginatedResponse } from "@/utils/types";
 import { type IProposal, type IProposalVote } from "./domain";
 import type { IFetchProposalParams, IFetchProposalListParams, IFetchVotesParams, IVoteParams } from "./params";
 
 const BASE_URL = "/api/proposals";
 
-export async function fetchProposals(params: IFetchProposalListParams): Promise<IProposal[]> {
+export async function fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
   const response = await fetch(BASE_URL);
-  const parsed: IProposal[] = await response.json();
+  const parsed: IPaginatedResponse<IProposal> = await response.json();
   return parsed;
 }
 

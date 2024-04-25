@@ -1,3 +1,9 @@
+/**
+ * Decodes a camel case string by adding spaces between words and capitalizing the first letter of each word.
+ *
+ * @param input - The camel case string to decode.
+ * @returns The decoded string.
+ */
 export function decodeCamelCase(input?: string): string {
   if (!input || typeof input !== "string") return "";
 
@@ -11,4 +17,15 @@ export function decodeCamelCase(input?: string): string {
       // uppercase the first character
       .replace(/^./, (str) => str.toUpperCase())
   );
+}
+
+/**
+ * Capitalizes the first letter of a string.
+ *
+ * @param str - The string to capitalize.
+ * @returns The string with the first letter capitalized.
+ */
+export function capitalizeFirstLetter(str: string) {
+  if (!str) return str; // Return the original string if it's empty or undefined
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
