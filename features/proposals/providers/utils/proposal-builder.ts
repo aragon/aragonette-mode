@@ -104,6 +104,8 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
     }
   });
 
+  proposals.push(...draftProposals.map((proposal) => [proposal]));
+
   //TODO: Match proposal PIP-4
   //const pip4DraftProposal = proposalStages.find((stage) => stage.pip === "4");
   //const pip4CommunityVotingProposal = proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);
