@@ -1,8 +1,9 @@
-import { IProposalStageProvider, ProposalStage } from "@/services/providers/utils/types";
+import { IProposalStageProvider, ProposalStage } from "@/features/proposals/providers/utils/types";
 import { ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { requestProposalData } from "./queries";
 import { MultisigProposal } from "./types";
 import { Address } from "viem";
+import { PUB_CHAIN } from "@/constants";
 
 function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage[] {
   if (!proposals) return [];
@@ -41,13 +42,20 @@ function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage[] {
       total_votes: proposal.voting.approvals,
     };
 
+    const creator = [
+      {
+        link: `${PUB_CHAIN.blockExplorers?.default.url}/address/${proposal.creator}`,
+        address: proposal.creator,
+      },
+    ];
+
     return {
       id: proposal.id,
       title: proposal.title,
       description: proposal.summary,
       body: proposal.description,
       status: proposal.status,
-      creator: proposal.creator,
+      creator,
       link: proposal.link,
       voting,
       actions: proposal.actions,
