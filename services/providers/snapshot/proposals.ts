@@ -1,6 +1,24 @@
 import { ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { VotingData, VotingScores, IProposalStageProvider } from "@/services/providers/utils/types";
 import { snapshotProposalsQuery, SnapshotProposalData, requestProposalData } from "./queries";
+import { ProposalStatus } from "@aragon/ods";
+
+const computeStatus = (proposalState: string): ProposalStatus => {
+  switch (proposalState) {
+    case "active":
+      return "active";
+    case "closed":
+      return "rejected";
+    case "pending":
+      return "pending";
+    case "approved":
+      return "accepted";
+    case "rejected":
+      return "rejected";
+    default:
+      return "active";
+  }
+};
 
 function parseSnapshotData(data: SnapshotProposalData[]) {
   return data.map((proposal) => {
@@ -27,7 +45,7 @@ function parseSnapshotData(data: SnapshotProposalData[]) {
       title: proposal.title,
       description: proposal.title,
       body: proposal.body,
-      status: proposal.state,
+      status: computeStatus(proposal.state),
       creator: proposal.author,
       link: proposal.link,
       voting,
