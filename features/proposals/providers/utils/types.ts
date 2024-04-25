@@ -1,4 +1,4 @@
-import { ProposalStatus } from "@aragon/ods";
+import { type ProposalStatus } from "@aragon/ods";
 import { type ProposalStages, type ICreator } from "@/features/proposals/services/proposal/domain";
 
 export type Vote = {

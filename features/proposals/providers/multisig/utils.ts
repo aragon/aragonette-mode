@@ -2,10 +2,15 @@ import { fetchJsonFromIpfs } from "@/utils/ipfs";
 import { readContract, getPublicClient } from "@wagmi/core";
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
-import { Address, fromHex, Hex, getAbiItem } from "viem";
-import { Action } from "@/utils/types";
+import { type Address, fromHex, type Hex, getAbiItem } from "viem";
+import { type Action } from "@/utils/types";
 import { ProposalStages } from "@/features/proposals/services/proposal/domain";
-import { ProposalCreatedLogResponse, Metadata, ProposalParameters, MultisigProposal } from "./types";
+import {
+  type ProposalCreatedLogResponse,
+  type Metadata,
+  type ProposalParameters,
+  type MultisigProposal,
+} from "./types";
 import { type ProposalStatus } from "@aragon/ods";
 import { type ProposalStage } from "@/features/proposals/providers/utils/types";
 import { PUB_CHAIN } from "@/constants";

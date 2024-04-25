@@ -1,5 +1,5 @@
-import { Action } from "@/utils/types";
-import { ProposalStages } from "@/features/proposals/services/proposal/domain";
+import { type Action } from "@/utils/types";
+import { type ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { type ProposalStatus } from "@aragon/ods";
 
 export type ProposalCreatedLogResponse = {

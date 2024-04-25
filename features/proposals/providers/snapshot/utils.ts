@@ -2,7 +2,7 @@ import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
 import { ProposalStages } from "../../services";
 import { type ProposalStage, type VotingScores, type VotingData } from "../utils/types";
 import { type SnapshotProposalData } from "./types";
-import { ProposalStatus } from "@aragon/ods";
+import { type ProposalStatus } from "@aragon/ods";
 
 const computeStatus = (proposalState: string): ProposalStatus => {
   switch (proposalState) {
