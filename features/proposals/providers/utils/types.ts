@@ -51,6 +51,7 @@ export type ProposalStage = {
   description: string;
   body: string;
   status: ProposalStatus;
+  isEmergency?: boolean;
   creator: ICreator[];
   link: string;
   type?: string;

@@ -57,9 +57,6 @@ export async function getProposalStages() {
 }
 
 async function matchProposalStages(proposalStages: ProposalStage[]) {
-  // TODO: Implement this function
-  // Manual matching for testing purposes
-
   const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
   const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
   const communityVotingProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);
@@ -140,12 +137,14 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     // TODO: Implement function to calculate overall status
     const status = matchedProposalStages.find((stage) => stage.id === currentStage)?.status ?? "draft";
     const proposalStageResponses = buildProposalStageResponse(matchedProposalStages);
+    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
 
     return {
       pip: matchedProposalStages[0].pip!,
       title,
       description,
       status,
+      isEmergency,
       type: matchedProposalStages[0].type!,
       currentStage,
       stages: proposalStageResponses,

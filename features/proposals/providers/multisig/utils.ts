@@ -146,6 +146,8 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       description: proposal.summary,
       body: proposal.description,
       status: proposal.status,
+      //TODO: Get the emergency status from the contract
+      isEmergency: false,
       creator,
       link: proposal.link,
       voting,
