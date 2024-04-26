@@ -49,7 +49,6 @@ const getProposalData = async function (chain: number, contractAddress: Address,
 };
 
 const getProposalCreationData = async function (
-  chain: number,
   contractAddress: Address,
   proposalId: bigint,
   snapshotBlock: bigint,
@@ -65,7 +64,7 @@ const getProposalCreationData = async function (
   const logs = await publicClient
     ?.getLogs({
       address: contractAddress,
-      event: ProposalCreatedEvent as any,
+      event: ProposalCreatedEvent,
       args: {
         proposalId,
       } as any,
@@ -74,13 +73,13 @@ const getProposalCreationData = async function (
     })
     .then((logs) => {
       if (!logs?.length) throw new Error("No creation logs");
-      const log = logs[0] as any;
+      const log = logs[0];
       const tx = log.transactionHash;
       const block = log.blockNumber;
 
-      const logData: ProposalCreatedLogResponse = log as any;
+      const logData: ProposalCreatedLogResponse = log.args as ProposalCreatedLogResponse;
 
-      return { metadata: logData.args.metadata, creator: logData.args.creator, tx, block };
+      return { metadata: logData.metadata, creator: logData.creator, tx, block };
     })
     .catch((err) => {
       logger.error("Could not fetch the proposal details", err);
@@ -173,7 +172,6 @@ export const requestProposalData = async function (chain: number, contractAddres
 
     if (proposalData) {
       const creationData = await getProposalCreationData(
-        chain,
         contractAddress,
         BigInt(i),
         proposalData.parameters.snapshotBlock,

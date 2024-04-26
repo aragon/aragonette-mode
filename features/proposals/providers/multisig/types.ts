@@ -3,15 +3,13 @@ import { type ProposalStages } from "@/features/proposals/services/proposal/doma
 import { type ProposalStatus } from "@aragon/ods";
 
 export type ProposalCreatedLogResponse = {
-  args: {
-    actions: Action[];
-    allowFailureMap: bigint;
-    creator: string;
-    endDate: bigint;
-    startDate: bigint;
-    metadata: string;
-    proposalId: bigint;
-  };
+  actions: Action[];
+  allowFailureMap: bigint;
+  creator: string;
+  endDate: bigint;
+  startDate: bigint;
+  metadata: string;
+  proposalId: bigint;
 };
 
 export type Metadata = {
