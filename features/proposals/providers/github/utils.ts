@@ -53,22 +53,7 @@ export function extractBody(proposalBody: string) {
 }
 
 function parseStatus(status: string): ProposalStatus {
-  switch (status) {
-    case "Draft":
-      return "draft";
-    case "Last Call":
-      return "queued";
-    case "Continuous":
-      return "accepted";
-    case "Stagnant":
-      return "draft";
-    case "Peer Review":
-      return "draft";
-    case "Final":
-      return "executed";
-    default:
-      return "draft";
-  }
+  return status === "Final" ? "executed" : (status as ProposalStatus);
 }
 
 export function parseHeader(header: string, body: string, link: string): ProposalStage {

@@ -29,6 +29,11 @@ export type ProposalParameters = {
   snapshotBlock: bigint;
   startDate: bigint;
   endDate: bigint;
+
+  // new multisig data
+  delayDuration?: bigint;
+  emergency: boolean;
+  emergencyMinApprovals?: bigint;
 };
 
 export type MultiSigProposalVotingData = {
