@@ -5,9 +5,16 @@ import { type VotingData } from "../../providers/utils/types";
 export enum ProposalStages {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
-  COMMUNITY_VOTING = "Community Voting",
+  COMMUNITY_VOTING = "vePOL Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
 }
+
+export const StageOrder = {
+  [ProposalStages.DRAFT]: 0,
+  [ProposalStages.COUNCIL_APPROVAL]: 1,
+  [ProposalStages.COMMUNITY_VOTING]: 2,
+  [ProposalStages.COUNCIL_CONFIRMATION]: 3,
+} as const;
 
 export interface ICreator {
   name?: string;
