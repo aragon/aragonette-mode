@@ -1,41 +1,103 @@
-import { type IProposalDataListItemStructureProps } from "@aragon/ods";
-import { ProposalStages, ProposalTracks, type IProposal } from "../../services";
 import { capitalizeFirstLetter } from "@/utils/case";
+import type {
+  IApprovalThresholdResult,
+  IMajorityVotingResult,
+  IProposalDataListItemStructureProps,
+  ProposalStatus,
+  ProposalType,
+} from "@aragon/ods";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { ProposalStages, ProposalTracks, StageOrder, type IProposal } from "../../services";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
 export function toProposalDataListItems(proposals: IProposal[]): ProposalListItem[] {
   return proposals.map((proposal) => {
-    const { pip, status, type, stages, currentStage, description, title, isEmergency } = proposal;
+    const {
+      pip: id,
+      status,
+      type: proposalType,
+      stages,
+      currentStage,
+      description: summary,
+      title,
+      isEmergency,
+    } = proposal;
 
     // get active stage
     const stageIndex = stages.findIndex((stage) => stage.id === currentStage) ?? 0;
     const activeStage = stages[stageIndex];
+
+    // compute date based off of stage
+    const date = computeRelativeDate(status, activeStage.voting?.startDate, activeStage.voting?.endDate);
 
     // pick the draft state creator unless proposal is critical
     const originalCreators = isEmergency
       ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
       : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
 
-    const publisher = originalCreators?.map((creator) => ({ address: "", ...creator }));
+    const publisher = (
+      originalCreators ?? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
+    )?.map((creator) => ({ address: "", ...creator }));
+
+    const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
 
     // only community voting is mjv; draft has no voting data
     const isMajorityVoting = activeStage.id === ProposalStages.COMMUNITY_VOTING;
-    const result =
-      status !== "draft" ? { ...activeStage.voting, stage: { id: stageIndex, title: activeStage.id } } : undefined;
+    const type: ProposalType = isMajorityVoting ? "majorityVoting" : "approvalThreshold";
+
+    // stage result
+    let result: IMajorityVotingResult | IApprovalThresholdResult | undefined;
+    if (status !== "draft" && (activeStage.voting?.total_votes ?? 0) > 0) {
+      const winningOption = activeStage.voting?.scores.sort((a, b) => b.votes - a.votes)[0];
+      const id = StageOrder[activeStage.id];
+
+      result = {
+        stage: { id, title: activeStage.id },
+        ...(isMajorityVoting
+          ? ({
+              option: winningOption?.choice,
+              voteAmount: winningOption?.votes?.toString() ?? "0",
+              votePercentage: (winningOption?.percentage ?? 0) * 100,
+            } as IMajorityVotingResult)
+          : ({
+              approvalAmount: activeStage.voting?.total_votes ?? 0,
+              approvalThreshold: activeStage.voting?.quorum ?? 0,
+            } as IApprovalThresholdResult)),
+      };
+    }
 
     return {
-      // TODO - map date relative to status
-      date: status === "active" ? undefined : activeStage.startTimestamp,
-      id: `PIP-${pip}`,
-      type: isMajorityVoting ? "majorityVoting" : "approvalThreshold",
-      tag: isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(type),
+      date,
+      id,
+      type,
+      tag,
       publisher,
       status,
-      summary: description,
+      summary,
       title,
       voted: false,
       result,
     };
   }) as Array<ProposalListItem>;
+}
+
+function computeRelativeDate(status: ProposalStatus, startDate?: string, endDate?: string): string | undefined {
+  dayjs.extend(relativeTime);
+
+  switch (status) {
+    case "pending":
+      return startDate ? dayjs.unix(Number(startDate)).toNow() : undefined;
+    case "rejected":
+    case "queued":
+    case "accepted":
+    case "partiallyExecuted":
+    case "executed":
+    case "expired":
+    case "failed":
+      return endDate ? dayjs.unix(Number(endDate)).fromNow() : undefined;
+    default:
+      return;
+  }
 }
