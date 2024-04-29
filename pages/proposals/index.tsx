@@ -8,7 +8,7 @@ export default function Proposals() {
         <Heading as="h1" className="line-clamp-1 flex flex-1 shrink-0">
           Polygon Improvement Proposals
         </Heading>
-        <Button iconLeft={IconType.PLUS} size="lg">
+        <Button iconLeft={IconType.PLUS} size="lg" className="!rounded-full">
           Onchain PIP
         </Button>
       </div>
