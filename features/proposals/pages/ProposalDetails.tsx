@@ -17,8 +17,8 @@ export default function ProposalDetails() {
     return (
       <>
         <HeaderProposal breadcrumbs={breadcrumbs} proposal={proposal} />
-        <MainSection className="md:px-16 md:pb-20 xl:px-16 xl:pb-20">
-          <div className="flex w-full gap-x-12">
+        <MainSection className="md:px-16 md:pb-20 md:pt-10">
+          <div className="flex w-full flex-col gap-x-12 gap-y-6 md:flex-row">
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
               <Card>Abstract</Card>

@@ -20,7 +20,7 @@ interface IHeaderProposalProps {
 export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const {
     breadcrumbs,
-    proposal: { status, title, isEmergency, description, publisher, type },
+    proposal: { status, title, isEmergency, description, publisher, type, endDate },
   } = props;
 
   const statusToTagVariant: Record<ProposalStatus, TagVariant> = {
@@ -41,7 +41,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   return (
     <div className="flex w-full justify-center bg-neutral-0">
       {/* Wrapper */}
-      <MainSection className="flex flex-col gap-y-6 md:px-16 md:pb-20 xl:px-16 xl:pb-20">
+      <MainSection className="flex flex-col gap-y-6 md:px-16 md:py-10">
         <Breadcrumbs
           links={breadcrumbs}
           tag={
@@ -74,13 +74,15 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
             <AvatarIcon icon={IconType.APP_MEMBERS} size="sm" variant="primary" />
             <Publisher publisher={publisher} />
           </div>
-          <div className="flex gap-x-2">
-            <AvatarIcon icon={IconType.APP_MEMBERS} size="sm" variant="primary" />
-            <div className="flex gap-x-0.5 text-base leading-tight ">
-              <span className="text-neutral-800">4 weeks left</span>
-              <span className="text-neutral-500">left until expiration</span>
+          {endDate && (
+            <div className="flex gap-x-2">
+              <AvatarIcon icon={IconType.APP_MEMBERS} size="sm" variant="primary" />
+              <div className="flex gap-x-0.5 text-base leading-tight ">
+                <span className="text-neutral-800">4 weeks left</span>
+                <span className="text-neutral-500">left until expiration</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </MainSection>
     </div>
