@@ -9,12 +9,12 @@ import {
   type ProposalStatus,
   type TagVariant,
 } from "@aragon/ods";
-import { type IProposal } from "../../services/proposal";
+import { type ProposalDetail } from "../../services/proposal/selectors";
 import { Publisher } from "./publisher";
 
 interface IHeaderProposalProps {
   breadcrumbs: IBreadcrumbsLink[];
-  proposal: IProposal;
+  proposal: ProposalDetail;
 }
 
 export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {

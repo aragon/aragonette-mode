@@ -7,7 +7,7 @@ import type {
 } from "@aragon/ods";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ProposalStages, ProposalTracks, StageOrder, type IProposal } from "../../services";
+import { ProposalStages, ProposalTracks, StageOrder, type IProposal } from "../domain";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 

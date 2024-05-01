@@ -1,8 +1,8 @@
 import { queryClient } from "@/utils/query-client";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { toProposalDataListItems } from "../../components/proposalDataList/transformer";
 import { type IFetchProposalListParams, type IFetchProposalParams, type IFetchVotesParams } from "./params";
 import { fetchProposals, fetchVotes } from "./proposal-service";
+import { toProposalDataListItems, toProposalDetails } from "./selectors";
 
 export const proposalKeys = {
   all: ["proposals"] as const,
@@ -29,7 +29,8 @@ export function proposal(params: IFetchProposalParams) {
     queryKey: proposalKeys.detail(params),
     // TODO: use for singular proposal
     // queryFn: () => fetchProposal(params),
-    queryFn: () => queryClient.getQueryData(proposalList().queryKey)?.pages[0].data[Number(params.proposalId)],
+    queryFn: () =>
+      toProposalDetails(queryClient.getQueryData(proposalList().queryKey)?.pages[0].data[Number(params.proposalId)]),
   });
 }
 
