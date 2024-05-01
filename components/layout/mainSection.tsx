@@ -1,5 +1,17 @@
-import { type ReactNode } from "react";
+import classNames from "classnames";
+import React, { type ReactNode } from "react";
 
-export function MainSection({ children }: { children: ReactNode }) {
-  return <main className="flex w-screen max-w-full flex-col items-center pt-6">{children}</main>;
+interface IMainSectionProps {
+  children?: ReactNode;
+  className?: string;
 }
+
+export const MainSection: React.FC<IMainSectionProps> = (props) => {
+  const { children, className } = props;
+
+  return (
+    <div className={classNames("mx-auto w-full max-w-screen-xl px-4 py-6 md:px-6 md:py-6 xl:px-6 xl:py-10", className)}>
+      {children}
+    </div>
+  );
+};
