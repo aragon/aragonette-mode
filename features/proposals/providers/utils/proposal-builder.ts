@@ -6,6 +6,7 @@ import {
   type IProposal,
   type IProposalStage,
 } from "@/features/proposals/services/proposal/domain";
+import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
@@ -154,12 +155,13 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
   return allMatchedProposalStages.map((matchedProposalStages) => {
+    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
     const title = computeTitle(matchedProposalStages);
     const description = computeDescription(matchedProposalStages);
     const stages = buildProposalStageResponse(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
+    const publisher = computePublisher(matchedProposalStages, isEmergency);
 
-    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
     const pip = `${isEmergency ? "SOS" : "PIP"}-${matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? ""}`;
 
     // build the proposal status
@@ -183,6 +185,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       // TODO: use onchain proposal type as fallback
       type: matchedProposalStages[0].type!,
       currentStage,
+      publisher,
       stages,
     };
   });
@@ -215,4 +218,17 @@ function computeOverlappingStageStatus(currentStageStatus: string, nextStageStar
   } else {
     return "queued";
   }
+}
+
+function computePublisher(stages: ProposalStage[], isEmergency: boolean): IPublisher[] {
+  // pick the draft state creator unless proposal is critical
+  const originalCreators = isEmergency
+    ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
+    : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
+
+  return (
+    (originalCreators ?? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator)?.map(
+      (creator) => ({ address: "", ...creator })
+    ) ?? [{ address: "", name: "Unknown" }]
+  );
 }

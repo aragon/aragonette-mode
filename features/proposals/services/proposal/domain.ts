@@ -1,6 +1,6 @@
+import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
 import { type Address } from "viem";
 import { type VotingData } from "../../providers/utils/types";
-import { type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
 
 export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
 
@@ -47,6 +47,7 @@ export interface IProposal {
   isEmergency?: boolean;
   currentStage: ProposalStages;
   stages: IProposalStage[];
+  publisher: IPublisher[];
   actions?: string[];
 }
 
