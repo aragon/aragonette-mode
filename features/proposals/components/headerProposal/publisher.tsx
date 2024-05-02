@@ -1,6 +1,5 @@
 import { formatHexString } from "@/utils/evm";
 import { Link, type IPublisher } from "@aragon/ods";
-import classNames from "classnames";
 
 const MAX_PUBLISHERS_SHOWN = 3;
 
@@ -15,7 +14,7 @@ export const Publisher: React.FC<IPublisherProps> = (props) => {
 
   return (
     <div className="flex gap-x-0.5 text-base leading-tight">
-      <div className={classNames("inline-grid auto-cols-auto grid-flow-col content-center", "gap-x-0.5 leading-tight")}>
+      <div className="inline-grid auto-cols-auto grid-flow-col content-center gap-x-1 leading-tight">
         <span className="text-neutral-500">Published by</span>
         {showParsedPublisher === false && <button>3+ creators</button>}
         {showParsedPublisher &&
