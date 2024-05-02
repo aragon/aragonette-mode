@@ -1,4 +1,3 @@
-import { type ProposalStatus } from "@aragon/ods";
 import { type Address } from "viem";
 import { type VotingData } from "../../providers/utils/types";
 
@@ -23,7 +22,7 @@ export interface ICreator {
 
 export interface IProposalStage {
   id: ProposalStages;
-  status: ProposalStatus;
+  status: string;
   startTimestamp?: string;
   endTimestamp?: string;
   creator: ICreator[];
@@ -40,7 +39,7 @@ export interface IProposal {
   pip: string;
   title: string;
   description: string;
-  status: ProposalStatus;
+  status: string;
   type: string;
   isEmergency?: boolean;
   currentStage: ProposalStages;

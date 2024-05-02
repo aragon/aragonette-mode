@@ -5,7 +5,6 @@ import {
   type IProposal,
   type IProposalStage,
 } from "@/features/proposals/services/proposal/domain";
-import { type ProposalStatus } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
@@ -188,7 +187,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   });
 }
 
-function computeProposalStatus(currentStage: ProposalStage, nextStage?: ProposalStage): ProposalStatus {
+function computeProposalStatus(currentStage: ProposalStage, nextStage?: ProposalStage): string {
   switch (currentStage.id) {
     case ProposalStages.DRAFT:
       return currentStage.status;
@@ -203,7 +202,7 @@ function computeProposalStatus(currentStage: ProposalStage, nextStage?: Proposal
   }
 }
 
-function computeOverlappingStageStatus(currentStageStatus: ProposalStatus, nextStageStartDate?: string) {
+function computeOverlappingStageStatus(currentStageStatus: string, nextStageStartDate?: string) {
   const now = Date.now();
   const parsedStartDate = Number(nextStageStartDate) / 1000;
 

@@ -1,5 +1,4 @@
-import { type ProposalStatus } from "@aragon/ods";
-import { type ProposalStages, type ICreator } from "@/features/proposals/services/proposal/domain";
+import { type ICreator, type ProposalStages } from "@/features/proposals/services/proposal/domain";
 
 export type Vote = {
   id: string;
@@ -31,7 +30,7 @@ export type ProposalStage = {
   title: string;
   description: string;
   body: string;
-  status: ProposalStatus;
+  status: string;
   isEmergency?: boolean;
   creator: ICreator[];
   link: string;

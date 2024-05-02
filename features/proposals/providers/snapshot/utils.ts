@@ -1,10 +1,9 @@
 import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
 import { ProposalStages } from "../../services";
-import { type ProposalStage, type VotingScores, type VotingData } from "../utils/types";
+import { type ProposalStage, type VotingData, type VotingScores } from "../utils/types";
 import { type SnapshotProposalData } from "./types";
-import { type ProposalStatus } from "@aragon/ods";
 
-const computeStatus = (proposalState: string, scores: VotingScores[]): ProposalStatus => {
+const computeStatus = (proposalState: string, scores: VotingScores[]): string => {
   switch (proposalState) {
     case "active":
       return "active";
@@ -70,7 +69,7 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
 }
 
 // Function to evaluate the result based on votes
-function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
+function evaluateVotingResult(votingData: VotingScores[]): string {
   let yesVotes = 0;
   let noVotes = 0;
 

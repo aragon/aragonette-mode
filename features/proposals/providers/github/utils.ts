@@ -1,5 +1,4 @@
 import { GITHUB_TOKEN } from "@/constants";
-import { type ProposalStatus } from "@aragon/ods";
 import { ProposalStages, type ICreator } from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 
@@ -52,8 +51,8 @@ export function extractBody(proposalBody: string) {
   return proposalBody.slice(bodyStart);
 }
 
-function parseStatus(status: string): ProposalStatus {
-  return status === "Final" ? "executed" : (status as ProposalStatus);
+function parseStatus(status: string): string {
+  return status === "Final" ? "executed" : status;
 }
 
 export function parseHeader(header: string, body: string, link: string): ProposalStage {

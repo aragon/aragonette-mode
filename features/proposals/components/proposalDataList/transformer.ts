@@ -3,7 +3,6 @@ import type {
   IApprovalThresholdResult,
   IMajorityVotingResult,
   IProposalDataListItemStructureProps,
-  ProposalStatus,
   ProposalType,
 } from "@aragon/ods";
 import dayjs from "dayjs";
@@ -83,7 +82,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
   }) as Array<ProposalListItem>;
 }
 
-function computeRelativeDate(status: ProposalStatus, startDate?: string, endDate?: string): string | undefined {
+function computeRelativeDate(status: string, startDate?: string, endDate?: string): string | undefined {
   dayjs.extend(relativeTime);
 
   switch (status) {

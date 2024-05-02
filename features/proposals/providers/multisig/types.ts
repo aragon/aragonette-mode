@@ -1,6 +1,5 @@
-import { type Action } from "@/utils/types";
 import { type ProposalStages } from "@/features/proposals/services/proposal/domain";
-import { type ProposalStatus } from "@aragon/ods";
+import { type Action } from "@/utils/types";
 
 export type ProposalCreatedLogResponse = {
   args: {
@@ -79,7 +78,7 @@ export type MultisigProposal = {
   description: string;
   creator: string;
   link: string;
-  status: ProposalStatus;
+  status: string;
   voting?: MultiSigProposalVotingData;
   actions: Array<Action>;
   githubId?: string;
