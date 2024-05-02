@@ -68,8 +68,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
             <div className="flex items-center gap-x-2">
               <AvatarIcon icon={IconType.CALENDAR} size="sm" variant="primary" />
               <div className="flex gap-x-0.5 text-base leading-tight ">
-                <span className="text-neutral-500">{currentStage === ProposalStages.DRAFT && "Created at"}</span>
-                <span className="text-neutral-500">{currentStage !== ProposalStages.DRAFT && "Published at"}</span>
+                <span className="text-neutral-500">Published at</span>
                 <span className="text-neutral-800">{startDate}</span>
               </div>
             </div>
