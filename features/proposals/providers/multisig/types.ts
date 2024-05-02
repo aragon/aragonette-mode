@@ -77,6 +77,7 @@ export type MultisigProposal = {
   summary: string;
   description: string;
   creator: string;
+  createdAt: string;
   link: string;
   status: ProposalStatus;
   voting?: MultiSigProposalVotingData;

@@ -144,6 +144,7 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
       id: proposalStage.id,
       status: proposalStage.status,
       creator: proposalStage.creator,
+      createdAt: proposalStage.createdAt,
       link: proposalStage.link,
       voting: proposalStage.voting,
     };
