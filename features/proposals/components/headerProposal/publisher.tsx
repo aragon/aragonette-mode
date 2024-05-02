@@ -26,7 +26,7 @@ export const Publisher: React.FC<IPublisherProps> = (props) => {
               <span key={label} className="truncate">
                 {link != null && <Link href={link}>{label}</Link>}
                 {link == null && <span className="truncate text-neutral-800">{label}</span>}
-                {index < publisher.length - 1 && ","}
+                {index < publisher.length - 1 && publisher.length > 2 && ","}
                 {index === publisher.length - 2 && ` &`}
               </span>
             );
