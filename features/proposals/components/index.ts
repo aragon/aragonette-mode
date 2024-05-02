@@ -1,2 +1,2 @@
-export * from "./headerProposal";
+export * from "./cardResources";
 export * from "./proposalDataList";
