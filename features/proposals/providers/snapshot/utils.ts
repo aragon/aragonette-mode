@@ -1,9 +1,9 @@
 import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
-import { ProposalStages } from "../../services";
+import { ProposalStages, type ProposalStatus } from "../../services";
 import { type ProposalStage, type VotingData, type VotingScores } from "../utils/types";
 import { type SnapshotProposalData } from "./types";
 
-const computeStatus = (proposalState: string, scores: VotingScores[]): string => {
+const computeStatus = (proposalState: string, scores: VotingScores[]): ProposalStatus => {
   switch (proposalState) {
     case "active":
       return "active";
@@ -69,7 +69,7 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
 }
 
 // Function to evaluate the result based on votes
-function evaluateVotingResult(votingData: VotingScores[]): string {
+function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
   let yesVotes = 0;
   let noVotes = 0;
 

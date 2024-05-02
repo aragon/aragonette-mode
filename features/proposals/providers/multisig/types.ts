@@ -1,4 +1,4 @@
-import { type ProposalStages } from "@/features/proposals/services/proposal/domain";
+import { type ProposalStatus, type ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
 
 export type ProposalCreatedLogResponse = {
@@ -78,7 +78,7 @@ export type MultisigProposal = {
   description: string;
   creator: string;
   link: string;
-  status: string;
+  status: ProposalStatus;
   voting?: MultiSigProposalVotingData;
   actions: Array<Action>;
   githubId?: string;

@@ -1,6 +1,7 @@
 import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
 import {
   ProposalStages,
+  type ProposalStatus,
   StageOrder,
   type IProposal,
   type IProposalStage,
@@ -187,7 +188,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   });
 }
 
-function computeProposalStatus(currentStage: ProposalStage, nextStage?: ProposalStage): string {
+function computeProposalStatus(currentStage: ProposalStage, nextStage?: ProposalStage): ProposalStatus {
   switch (currentStage.id) {
     case ProposalStages.DRAFT:
       return currentStage.status;

@@ -2,7 +2,7 @@ import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { PUB_CHAIN } from "@/constants";
 import { config } from "@/context/Web3Modal";
 import { type ProposalStage } from "@/features/proposals/providers/utils/types";
-import { ProposalStages } from "@/features/proposals/services/proposal/domain";
+import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { fetchJsonFromIpfs } from "@/utils/ipfs";
 import { type Action } from "@/utils/types";
@@ -304,7 +304,7 @@ function computeApprovalStatus({
   executed,
   approvals,
   minApprovals,
-}: IComputeApprovalStatus): string {
+}: IComputeApprovalStatus): ProposalStatus {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const approvalsReached = approvals >= minApprovals;
 
@@ -344,7 +344,7 @@ function computeEmergencyStatus({
   executed,
   startDate,
   endDate,
-}: IComputeEmergencyStatus): string {
+}: IComputeEmergencyStatus): ProposalStatus {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const superMajorityReached = approvals >= emergencyMinApprovals;
 
@@ -389,7 +389,7 @@ function computeConfirmationStatus({
   confirmations,
   minApprovals,
   isSignaling,
-}: IComputeConfirmationStatus): string {
+}: IComputeConfirmationStatus): ProposalStatus {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const confirmationsReached = confirmations >= minApprovals;
 

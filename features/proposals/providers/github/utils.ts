@@ -1,5 +1,5 @@
 import { GITHUB_TOKEN } from "@/constants";
-import { ProposalStages, type ICreator } from "../../services/proposal/domain";
+import { ProposalStages, type ProposalStatus, type ICreator } from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 
 type GithubData = {
@@ -51,8 +51,14 @@ export function extractBody(proposalBody: string) {
   return proposalBody.slice(bodyStart);
 }
 
-function parseStatus(status: string): string {
-  return status === "Final" ? "executed" : status;
+function parseStatus(status: string): ProposalStatus {
+  if (status === "Final") {
+    return "executed";
+  } else if (status === "Draft") {
+    return "draft";
+  } else {
+    return status as ProposalStatus;
+  }
 }
 
 export function parseHeader(header: string, body: string, link: string): ProposalStage {

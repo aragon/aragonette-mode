@@ -1,5 +1,8 @@
 import { type Address } from "viem";
 import { type VotingData } from "../../providers/utils/types";
+import { type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
+
+export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
 
 export enum ProposalStages {
   DRAFT = "Draft",
@@ -22,7 +25,7 @@ export interface ICreator {
 
 export interface IProposalStage {
   id: ProposalStages;
-  status: string;
+  status: ProposalStatus;
   startTimestamp?: string;
   endTimestamp?: string;
   creator: ICreator[];
@@ -39,7 +42,7 @@ export interface IProposal {
   pip: string;
   title: string;
   description: string;
-  status: string;
+  status: ProposalStatus;
   type: string;
   isEmergency?: boolean;
   currentStage: ProposalStages;
