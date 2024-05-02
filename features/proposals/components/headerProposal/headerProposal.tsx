@@ -11,7 +11,6 @@ import {
 } from "@aragon/ods";
 import { type ProposalDetail } from "../../services/proposal/selectors";
 import { Publisher } from "./publisher";
-import { ProposalStages } from "../../services/proposal";
 
 interface IHeaderProposalProps {
   breadcrumbs: IBreadcrumbsLink[];
@@ -21,8 +20,11 @@ interface IHeaderProposalProps {
 export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const {
     breadcrumbs,
-    proposal: { status, title, isEmergency, description, publisher, type, createdAt: startDate, endDate, currentStage },
+    proposal: { status, title, isEmergency, description, publisher, type, createdAt: startDate, endDate },
   } = props;
+
+  const showExpirationDate =
+    !!endDate && (status === "active" || status === "pending" || status === "queued" || status === "vetoed");
 
   const statusToTagVariant: Record<ProposalStatus, TagVariant> = {
     accepted: "success",
@@ -67,7 +69,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
           {startDate && (
             <div className="flex items-center gap-x-2">
               <AvatarIcon icon={IconType.CALENDAR} size="sm" variant="primary" />
-              <div className="flex gap-x-0.5 text-base leading-tight ">
+              <div className="flex gap-x-1 text-base leading-tight ">
                 <span className="text-neutral-500">Published at</span>
                 <span className="text-neutral-800">{startDate}</span>
               </div>
@@ -77,11 +79,11 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
             <AvatarIcon icon={IconType.APP_MEMBERS} size="sm" variant="primary" />
             <Publisher publisher={publisher} />
           </div>
-          {endDate && (
+          {showExpirationDate && (
             <div className="flex items-center gap-x-2">
               <AvatarIcon icon={IconType.APP_MEMBERS} size="sm" variant="primary" />
-              <div className="flex gap-x-0.5 text-base leading-tight ">
-                <span className="text-neutral-800">4 weeks left</span>
+              <div className="flex gap-x-1 text-base leading-tight ">
+                <span className="text-neutral-800">{endDate}</span>
                 <span className="text-neutral-500">left until expiration</span>
               </div>
             </div>
