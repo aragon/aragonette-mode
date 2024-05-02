@@ -29,8 +29,8 @@ export function proposal(params: IFetchProposalParams) {
     queryKey: proposalKeys.detail(params),
     // TODO: use for singular proposal
     // queryFn: () => fetchProposal(params),
-    queryFn: () =>
-      toProposalDetails(queryClient.getQueryData(proposalList().queryKey)?.pages[0].data[Number(params.proposalId)]),
+    queryFn: () => queryClient.getQueryData(proposalList().queryKey)?.pages[0].data[Number(params.proposalId)],
+    select: (data) => toProposalDetails(data),
   });
 }
 
