@@ -6,7 +6,6 @@ import { ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { fetchJsonFromIpfs } from "@/utils/ipfs";
 import { type Action } from "@/utils/types";
-import { type ProposalStatus } from "@aragon/ods";
 import { getPublicClient, readContract } from "@wagmi/core";
 import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 import {
@@ -195,7 +194,6 @@ export const requestProposalData = async function (chain: number, contractAddres
           endDate: proposalData.parameters.endDate,
           executed: proposalData.executed,
           approvals: proposalData.approvals,
-          minApprovals: proposalData.parameters.minApprovals,
           emergencyMinApprovals: proposalData.parameters.minApprovals,
           isSignaling: proposalData.actions.length === 0,
         })
@@ -306,7 +304,7 @@ function computeApprovalStatus({
   executed,
   approvals,
   minApprovals,
-}: IComputeApprovalStatus): ProposalStatus {
+}: IComputeApprovalStatus): string {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const approvalsReached = approvals >= minApprovals;
 
@@ -336,22 +334,19 @@ interface IComputeEmergencyStatus {
   endDate: bigint;
   executed: boolean;
   approvals: number;
-  minApprovals: number;
   emergencyMinApprovals: number;
   isSignaling: boolean;
 }
 function computeEmergencyStatus({
   approvals,
-  minApprovals,
   emergencyMinApprovals,
   isSignaling,
   executed,
   startDate,
   endDate,
-}: IComputeEmergencyStatus): ProposalStatus {
+}: IComputeEmergencyStatus): string {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const superMajorityReached = approvals >= emergencyMinApprovals;
-  const approvalsReached = approvals >= minApprovals;
 
   if (executed) {
     return "executed";
@@ -364,19 +359,19 @@ function computeEmergencyStatus({
   // proposal is within time boundaries
   if (now <= endDate) {
     if (superMajorityReached) {
-      return isSignaling ? "accepted" : "queued";
+      return "accepted";
     }
 
     return "active";
   }
 
-  // proposal end date has passed
-  if (!approvalsReached) {
+  // end date is passed
+  // approvals reached
+  if (superMajorityReached) {
+    return isSignaling ? "accepted" : "expired";
+  } else {
     return "rejected";
   }
-
-  // approvals reached
-  return isSignaling ? "accepted" : "expired";
 }
 
 interface IComputeConfirmationStatus {
@@ -394,7 +389,7 @@ function computeConfirmationStatus({
   confirmations,
   minApprovals,
   isSignaling,
-}: IComputeConfirmationStatus): ProposalStatus {
+}: IComputeConfirmationStatus): string {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const confirmationsReached = confirmations >= minApprovals;
 
