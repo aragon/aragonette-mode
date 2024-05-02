@@ -1,14 +1,6 @@
 import { MainSection } from "@/components/layout/mainSection";
-import {
-  AvatarIcon,
-  Breadcrumbs,
-  Heading,
-  IconType,
-  Tag,
-  type IBreadcrumbsLink,
-  type ProposalStatus,
-  type TagVariant,
-} from "@aragon/ods";
+import { AvatarIcon, Breadcrumbs, Heading, IconType, Tag, type IBreadcrumbsLink, type TagVariant } from "@aragon/ods";
+import { type ProposalStatus } from "../../services/proposal/domain";
 import { type ProposalDetail } from "../../services/proposal/selectors";
 import { Publisher } from "./publisher";
 
@@ -26,20 +18,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const showExpirationDate =
     !!endDate && (status === "active" || status === "pending" || status === "queued" || status === "vetoed");
 
-  const statusToTagVariant: Record<ProposalStatus, TagVariant> = {
-    accepted: "success",
-    active: "info",
-    challenged: "warning",
-    draft: "neutral",
-    executed: "success",
-    expired: "critical",
-    failed: "critical",
-    partiallyExecuted: "warning",
-    pending: "neutral",
-    queued: "success",
-    rejected: "critical",
-    vetoed: "warning",
-  };
+  const tagVariant = getTagVariantFromStatus(status);
 
   return (
     <div className="flex w-full justify-center bg-neutral-0">
@@ -51,7 +30,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
             status && {
               label: status,
               className: "capitalize",
-              variant: statusToTagVariant[status],
+              variant: tagVariant,
             }
           }
         />
@@ -92,4 +71,35 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
       </MainSection>
     </div>
   );
+};
+
+const getTagVariantFromStatus = (status: ProposalStatus): TagVariant => {
+  switch (status) {
+    case "accepted":
+      return "success";
+    case "active":
+      return "info";
+    case "challenged":
+      return "warning";
+    case "draft":
+      return "neutral";
+    case "executed":
+      return "success";
+    case "expired":
+      return "critical";
+    case "failed":
+      return "critical";
+    case "partiallyExecuted":
+      return "warning";
+    case "pending":
+      return "neutral";
+    case "queued":
+      return "success";
+    case "rejected":
+      return "critical";
+    case "vetoed":
+      return "warning";
+    default:
+      return "neutral";
+  }
 };
