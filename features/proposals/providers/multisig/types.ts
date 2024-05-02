@@ -1,6 +1,5 @@
+import { type ProposalStatus, type ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
-import { type ProposalStages } from "@/features/proposals/services/proposal/domain";
-import { type ProposalStatus } from "@aragon/ods";
 
 export type ProposalCreatedLogResponse = {
   args: {
@@ -24,11 +23,44 @@ export type Metadata = {
   }>;
 };
 
+export type ProposalBindings = {
+  githubId: string | undefined;
+  snapshotId: string | undefined;
+};
+
+export type ProposalData = {
+  active: boolean;
+  approvals: number;
+  parameters: ProposalParameters;
+  actions: Array<Action>;
+  allowFailureMap: bigint;
+  executed: boolean;
+
+  // new multisig data
+  firstDelayStartBlock: bigint | null;
+  confirmations: number;
+};
+
+export type ProposalCreationData =
+  | {
+      metadata: string;
+      creator: string;
+      tx: any;
+      block: any;
+    }
+  | void
+  | undefined;
+
 export type ProposalParameters = {
   minApprovals: number;
   snapshotBlock: bigint;
   startDate: bigint;
   endDate: bigint;
+
+  // new multisig data
+  delayDuration: bigint;
+  emergency: boolean;
+  emergencyMinApprovals: bigint;
 };
 
 export type MultiSigProposalVotingData = {
