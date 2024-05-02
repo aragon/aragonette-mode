@@ -138,7 +138,6 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
         address: proposal.creator,
       },
     ];
-    console.log("Parse", proposal.createdAt);
 
     return {
       id: proposal.id,
@@ -147,8 +146,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       body: proposal.description,
       status: proposal.status,
       createdAt: proposal.createdAt,
-      //TODO: Get the emergency status from the contract
-      isEmergency: false,
+      isEmergency: proposal.isEmergency,
       creator,
       link: proposal.link,
       voting,
@@ -196,6 +194,7 @@ export const requestProposalData = async function (
       creator: creationData.creator,
       link: `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`,
       actions: proposalData.actions,
+      isEmergency: proposalData.parameters.emergency,
       githubId,
       snapshotId,
     };

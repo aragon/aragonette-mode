@@ -82,6 +82,7 @@ export type MultisigProposal = {
   status: ProposalStatus;
   voting?: MultiSigProposalVotingData;
   actions: Array<Action>;
+  isEmergency: boolean;
   githubId?: string;
   snapshotId?: string;
 };
