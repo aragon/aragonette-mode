@@ -5,6 +5,7 @@ import {
   StageOrder,
   type IProposal,
   type IProposalStage,
+  type IProposalResource,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
@@ -217,7 +218,13 @@ const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
   if (stage.id === ProposalStages.DRAFT) return stage.pip?.split("-").pop();
-  if (stage.id === ProposalStages.COMMUNITY_VOTING) return stage.link.split("/").pop();
+  if (stage.id === ProposalStages.COMMUNITY_VOTING) {
+    stage.resources
+      ?.find((r) => r?.description === "Snapshot" && r.link != null)
+      ?.link?.split("/")
+      .pop();
+  }
+  // .find(r => r.description === "Snapshot").split("/").pop();
   return stage.title;
 };
 
@@ -304,10 +311,21 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
       status: proposalStage.status,
       creator: proposalStage.creator,
       createdAt: proposalStage.createdAt,
-      link: proposalStage.link,
+      resources: proposalStage.resources,
       voting: proposalStage.voting,
     };
   });
+}
+
+function computeProposalResources(proposalStages: ProposalStage[]): IProposalResource[] | undefined {
+  const resources = proposalStages.reduce((acc, stage) => {
+    if (stage.resources) {
+      acc.push(...stage.resources);
+    }
+    return acc;
+  }, [] as IProposalResource[]);
+
+  return resources.length > 0 ? resources : undefined;
 }
 
 /**
@@ -328,6 +346,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const currentStage = computeCurrentStage(matchedProposalStages);
     const publisher = computePublisher(matchedProposalStages, isEmergency);
     const type = computeProposalType(matchedProposalStages);
+    const resources = computeProposalResources(matchedProposalStages);
     const status = computeProposalStatus(
       stages,
       stages.findIndex((stage) => stage.id === currentStage)
@@ -340,6 +359,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       pip,
       title,
       description,
+      resources,
       status,
       isEmergency,
       type,
