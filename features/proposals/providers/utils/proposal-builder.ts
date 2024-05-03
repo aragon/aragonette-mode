@@ -174,6 +174,16 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     // if there is no onchain proposal, use the draft stage status as source of truth for the status
     const status = approvalStageStatus ? calculatedStatus : draftStageStatus ?? "draft";
 
+    const actions = matchedProposalStages
+      .find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)
+      ?.actions?.map((action) => {
+        return {
+          to: action.to,
+          value: action.value.toString(),
+          data: action.data,
+        };
+      });
+
     return {
       pip,
       title,
@@ -184,6 +194,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       type: matchedProposalStages[0].type!,
       currentStage,
       stages,
+      actions,
     };
   });
 }

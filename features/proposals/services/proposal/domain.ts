@@ -1,4 +1,5 @@
 import { type Address } from "viem";
+import { type Action } from "@/utils/types";
 import { type VotingData } from "../../providers/utils/types";
 import { type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
 
@@ -38,6 +39,12 @@ export enum ProposalTracks {
   STANDARD = "Standard",
 }
 
+export interface IAction {
+  to: string;
+  value: string;
+  data: string;
+}
+
 export interface IProposal {
   pip: string;
   title: string;
@@ -47,7 +54,7 @@ export interface IProposal {
   isEmergency?: boolean;
   currentStage: ProposalStages;
   stages: IProposalStage[];
-  actions?: string[];
+  actions?: IAction[];
 }
 
 export interface IProposalVote {
