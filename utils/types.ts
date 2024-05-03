@@ -28,3 +28,9 @@ export interface IPaginatedResponse<T> {
     total: number;
   };
 }
+
+export interface IError {
+  error: {
+    message: string;
+  };
+}

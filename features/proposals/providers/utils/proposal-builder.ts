@@ -64,7 +64,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
   return stage.title;
 };
 
-async function matchProposalStages(proposalStages: ProposalStage[]) {
+export async function matchProposalStages(proposalStages: ProposalStage[]) {
   const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
   const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
   const communityVotingProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);

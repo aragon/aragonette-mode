@@ -1,6 +1,7 @@
 import { type Action } from "@/utils/types";
 import { type ProposalStages } from "@/features/proposals/services/proposal/domain";
 import { type ProposalStatus } from "@aragon/ods";
+import { Address } from "viem";
 
 export type ProposalCreatedLogResponse = {
   actions: Action[];
@@ -30,6 +31,7 @@ export type ProposalParameters = {
 };
 
 export type MultiSigProposalVotingData = {
+  providerId: string;
   startDate: string;
   endDate: string;
   approvals: number;
@@ -49,4 +51,15 @@ export type MultisigProposal = {
   actions: Array<Action>;
   githubId?: string;
   snapshotId?: string;
+};
+
+export type ApprovedLogResponse = {
+  proposalId: bigint;
+  approver: Address;
+};
+
+export type VotesData = {
+  logData: ApprovedLogResponse;
+  tx: string;
+  blockTimestamp: string;
 };
