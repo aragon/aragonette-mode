@@ -48,3 +48,8 @@ export interface IProposalVote {
   amount: number;
   timestamp: string;
 }
+
+export interface IHasVoted {
+  address: Address;
+  hasVoted: boolean;
+}
