@@ -16,19 +16,6 @@ import { ProposalStages, type ProposalStatus } from "@/features/proposals/servic
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
 
-const computeStatus = (startDate: bigint, endDate: bigint, minApprovals: number, approvals: number): ProposalStatus => {
-  const now = BigInt(Math.floor(Date.now() / 1000));
-  if (now < startDate) {
-    return "pending";
-  } else if (approvals >= minApprovals) {
-    return "accepted";
-  } else if (now < endDate) {
-    return "active";
-  } else {
-    return "rejected";
-  }
-};
-
 const getNumProposals = async function (chain: number, contractAddress: Address) {
   return await readContract(config, {
     chainId: chain,
