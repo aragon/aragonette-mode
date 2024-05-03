@@ -44,7 +44,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
           <p className="text-lg leading-normal text-neutral-500">{description}</p>
         </div>
         {/* Metadata */}
-        <div className="flex gap-x-10">
+        <div className="flex flex-wrap gap-x-10 gap-y-2">
           {startDate && (
             <div className="flex items-center gap-x-2">
               <AvatarIcon icon={IconType.CALENDAR} size="sm" variant="primary" />
