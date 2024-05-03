@@ -9,10 +9,11 @@ import { type Action } from "@/utils/types";
 import { getPublicClient, readContract } from "@wagmi/core";
 import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 import {
-  type Metadata,
   type MultisigProposal,
+  type PrimaryMetadata,
   type ProposalCreatedLogResponse,
   type ProposalParameters,
+  type SecondaryMetadata,
 } from "./types";
 
 const getNumProposals = async function (chain: number, contractAddress: Address) {
@@ -35,7 +36,6 @@ const getProposalData = async function (chain: number, contractAddress: Address,
 };
 
 const getProposalCreationData = async function (
-  chain: number,
   contractAddress: Address,
   proposalId: bigint,
   snapshotBlock: bigint,
@@ -68,7 +68,8 @@ const getProposalCreationData = async function (
 
       const blockData = await publicClient.getBlock({ blockNumber: block });
       return {
-        metadata: logData.args.metadata,
+        primaryMetadata: logData.args.metadata,
+        secondaryMetadata: logData.args.secondaryMetadata ?? "",
         creator: logData.args.creator,
         tx,
         block,
@@ -82,9 +83,10 @@ const getProposalCreationData = async function (
   return logs;
 };
 
-const getProposalBindings = async function (metadata: Metadata) {
-  const githubLink = metadata.resources.find((resource) => resource.name === "GITHUB");
-  const snapshotLink = metadata.resources.find((resource) => resource.name === "SNAPSHOT");
+const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
+  const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
+  const snapshotLink =
+    secondaryMetadata ?? metadata.resources.find((resource) => resource.name.toLowerCase() === "snapshot");
 
   const githubFileName = githubLink?.url.split("/").pop();
   const snapshotId = snapshotLink?.url.split("/").pop();
@@ -147,6 +149,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       status: proposal.status,
       createdAt: proposal.createdAt,
       isEmergency: proposal.isEmergency,
+      resources: proposal.resources,
       creator,
       link: proposal.link,
       voting,
@@ -170,7 +173,6 @@ export const requestProposalData = async function (
     // skip proposal if no proposal data can be fetched
     if (!proposalData) continue;
     const creationData = await getProposalCreationData(
-      chain,
       contractAddress,
       BigInt(i),
       proposalData.parameters.snapshotBlock,
@@ -179,22 +181,31 @@ export const requestProposalData = async function (
 
     // skip to next proposal if no creation data can be found for the current proposal
     if (!creationData) continue;
-    const metadataCid = fromHex(creationData.metadata as Hex, "string");
+    const primaryMetadataCid = fromHex(creationData.primaryMetadata as Hex, "string");
+    const secondaryMetadataCid = fromHex(creationData.secondaryMetadata as Hex, "string");
 
     //TODO: Use IPFS hash from proposalData instead of logs
-    const metadata = await fetchJsonFromIpfs(metadataCid);
-    const { githubId, snapshotId } = await getProposalBindings(metadata);
+    const primaryMetadata: PrimaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
+    const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
+    const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
+
+    // get resources
+    const resources = primaryMetadata.resources.map((resource) => ({
+      name: resource.name,
+      link: resource.url,
+    }));
 
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
-      title: metadata.title,
-      summary: metadata.summary,
-      description: metadata.description,
+      title: primaryMetadata.title,
+      summary: primaryMetadata.summary,
+      description: primaryMetadata.description,
       createdAt: creationData.createdAt.toString(),
       creator: creationData.creator,
       link: `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`,
       actions: proposalData.actions,
       isEmergency: proposalData.parameters.emergency,
+      resources,
       githubId,
       snapshotId,
     };

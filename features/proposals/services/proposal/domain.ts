@@ -24,7 +24,7 @@ export interface ICreator {
 }
 
 export type IProposalResource = {
-  description?: string;
+  name: string;
   link: string;
 };
 

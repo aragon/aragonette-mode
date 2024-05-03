@@ -1,10 +1,9 @@
 import { GITHUB_TOKEN } from "@/constants";
 import {
   ProposalStages,
-  type ProposalStatus,
   type ICreator,
-  IProposal,
   type IProposalResource,
+  type ProposalStatus,
 } from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 
@@ -15,7 +14,7 @@ type GithubData = {
 
 type MarkdownLink = {
   link?: string;
-  description: string;
+  name: string;
 };
 
 export async function downloadPIPs(url: string) {
@@ -79,15 +78,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     .slice(1)
     .map((v) => v.trim());
 
-  const resources = [
-    ...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]),
-    { description: "GitHub", link },
-  ];
-
-  const parsedCreators: ICreator[] = values[3].split(",").map((creator) => {
-    const { link, description } = parseMarkdownLink(creator);
-    return { name: description, link };
-  });
+  const resources = [...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]), { name: "GitHub", link }];
+  const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
 
   return {
     id: ProposalStages.DRAFT,
@@ -104,11 +96,10 @@ export function parseHeader(header: string, body: string, link: string): Proposa
 }
 
 /**
- * Parse a list of creators from a comma separated string.
- * This also handles parsing markdown links for the creators.
+ * Parse a markdown link.
  *
- * @param links list of comma separated creators
- * @returns array of ICreator objects
+ * @param value markdown link
+ * @returns object with name and link
  */
 export function parseMarkdownLink(value: string): MarkdownLink {
   // matches markdown link; ex: [FirstName LastName](https://github.com/profile)
@@ -116,5 +107,5 @@ export function parseMarkdownLink(value: string): MarkdownLink {
 
   const parts = value.match(markdownLinkRegex);
 
-  return parts != null ? { description: parts[1], link: parts[2] } : { description: value };
+  return parts != null ? { name: parts[1], link: parts[2] } : { name: value };
 }
