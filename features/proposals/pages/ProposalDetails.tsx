@@ -34,8 +34,8 @@ export default function ProposalDetails() {
             </div>
 
             {/* Additional Information */}
-            <div className="flex flex-col gap-y-6 md:w-[37%]">
-              <CardResources resources={mockResources} />
+            <div className="flex flex-col gap-y-6 md:w-[33%]">
+              <CardResources resources={proposal.resources} />
               <Card>Card Status stub</Card>
             </div>
           </div>
