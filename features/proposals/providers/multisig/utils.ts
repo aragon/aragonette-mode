@@ -58,15 +58,22 @@ const getProposalCreationData = async function (
       fromBlock: snapshotBlock,
       toBlock: startDate,
     })
-    .then((logs) => {
+    .then(async (logs) => {
       if (!logs?.length) throw new Error("No creation logs");
+
       const log = logs[0] as any;
+      const block = log.blockNumber as bigint;
       const tx = log.transactionHash;
-      const block = log.blockNumber;
+      const logData = log as ProposalCreatedLogResponse;
 
-      const logData: ProposalCreatedLogResponse = log as any;
-
-      return { metadata: logData.args.metadata, creator: logData.args.creator, tx, block };
+      const blockData = await publicClient.getBlock({ blockNumber: block });
+      return {
+        metadata: logData.args.metadata,
+        creator: logData.args.creator,
+        tx,
+        block,
+        createdAt: blockData.timestamp,
+      };
     })
     .catch((err) => {
       logger.error("Could not fetch the proposal details", err);
@@ -138,8 +145,8 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       description: proposal.summary,
       body: proposal.description,
       status: proposal.status,
-      //TODO: Get the emergency status from the contract
-      isEmergency: false,
+      createdAt: proposal.createdAt,
+      isEmergency: proposal.isEmergency,
       creator,
       link: proposal.link,
       voting,
@@ -149,7 +156,10 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
   });
 }
 
-export const requestProposalData = async function (chain: number, contractAddress: Address) {
+export const requestProposalData = async function (
+  chain: number,
+  contractAddress: Address
+): Promise<MultisigProposal[]> {
   const numProposals = await getNumProposals(chain, contractAddress);
 
   const proposals: MultisigProposal[] = [];
@@ -180,9 +190,11 @@ export const requestProposalData = async function (chain: number, contractAddres
       title: metadata.title,
       summary: metadata.summary,
       description: metadata.description,
+      createdAt: creationData.createdAt.toString(),
       creator: creationData.creator,
       link: `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`,
       actions: proposalData.actions,
+      isEmergency: proposalData.parameters.emergency,
       githubId,
       snapshotId,
     };

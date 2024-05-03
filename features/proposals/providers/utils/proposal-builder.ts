@@ -6,12 +6,25 @@ import {
   type IProposal,
   type IProposalStage,
 } from "@/features/proposals/services/proposal/domain";
+import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
 
-function computeTitle(proposalStages: ProposalStage[]) {
+/**
+ * Computes the title of a proposal based on its stages. It searches through
+ * the provided stages in a specific order:
+ * 1. COUNCIL_APPROVAL
+ * 2. DRAFT
+ * 3. COMMUNITY_VOTING
+ * It returns the title of the first stage found in this priority order.
+ * If none of these stages have a title, it returns an empty string.
+ *
+ * @param  proposalStages - Array of proposal stage objects.
+ * @returns the title of the current proposal stage or an empty string if not found.
+ */
+function computeTitle(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title ??
     proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.title ??
@@ -20,7 +33,19 @@ function computeTitle(proposalStages: ProposalStage[]) {
   );
 }
 
-function computeDescription(proposalStages: ProposalStage[]) {
+/**
+ * Computes the description of a proposal based on its stages. Similar to computeTitle,
+ * it searches through the stages in the order of:
+ * 1. COUNCIL_APPROVAL
+ * 2. DRAFT
+ * 3. COMMUNITY_VOTING
+ * It returns the description of the first stage found in this priority order.
+ * If none of these stages have a description, it returns an empty string.
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @returns The description of the current proposal stage or an empty string if not found.
+ */
+function computeDescription(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.description ??
     proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.description ??
@@ -29,6 +54,14 @@ function computeDescription(proposalStages: ProposalStage[]) {
   );
 }
 
+/**
+ * Determines the current stage of a proposal by examining the proposal stages.
+ * The function sorts the stages, looks for specific stages (DRAFT, COUNCIL_CONFIRMATION),
+ * and uses a set of rules to determine the current stage based on the presence and order of these stages.
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @returns The identifier of the current proposal stage.
+ */
 function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   const sortedStages = sortProposalStages(proposalStages);
   const draftStage = sortedStages.find((stage) => stage.id === ProposalStages.DRAFT);
@@ -39,7 +72,6 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   // all the stages, we have to check whether that "last stage" (in this case COMMUNITY_VOTING) is
   // ongoing or not. If it's not, we should use the DRAFT stage as the current stage.
   // By default only the Peer Review proposals are allowed to go onchain and be voted on by the community
-  // THIS IS TEMPORARY AND SHOULD BE REMOVED.
   // TODO: Handle with RD-303
   if (lastKnownStage.id === ProposalStages.COMMUNITY_VOTING && draftStage && confirmationStage == null) {
     return draftStage.id;
@@ -48,6 +80,118 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   return lastKnownStage.id;
 }
 
+/**
+ * Calculates the relative status of a proposal based on the current stage and the next stage.
+ * The function uses the current stage status and the start date of the next stage to determine the relative status.
+ *
+ * @param currentStage - The current proposal stage.
+ * @param nextStage - The next proposal stage.
+ * @returns The relative status of the proposal.
+ */
+function calculateRelativeProposalStatus(currentStage: IProposalStage, nextStage?: IProposalStage): ProposalStatus {
+  switch (currentStage.id) {
+    case ProposalStages.DRAFT:
+      return currentStage.status;
+    case ProposalStages.COUNCIL_APPROVAL:
+      return currentStage.status;
+    case ProposalStages.COMMUNITY_VOTING:
+      return computeOverlappingStageStatus(currentStage.status, nextStage?.voting?.startDate);
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return currentStage.status;
+    default:
+      return "draft";
+  }
+}
+
+/**
+ * Computes the overlapping status of a proposal stage based on the current stage status and the start date of the next stage.
+ * The function determines whether the current stage is still active or queued based on the start date of the next stage.
+ *
+ * @param currentStageStatus - The status of the current proposal stage.
+ * @param nextStageStartDate - The start date of the next proposal stage.
+ * @returns The overlapping status of the proposal stage.
+ */
+function computeOverlappingStageStatus(currentStageStatus: ProposalStatus, nextStageStartDate?: string) {
+  const now = Date.now();
+  const parsedStartDate = Number(nextStageStartDate) / 1000;
+
+  if (
+    (currentStageStatus === "accepted" || (currentStageStatus === "rejected" && nextStageStartDate)) &&
+    parsedStartDate < now
+  ) {
+    return "active";
+  } else {
+    return "queued";
+  }
+}
+
+/**
+ * Computes the current status of a proposal based on its stages and the current stage index.
+ * It checks for a status in the COUNCIL_APPROVAL stage; if not found, it defaults to the DRAFT stage's status.
+ * If neither are present, it returns 'draft'. This function also considers the status based on the relative position
+ * of the current and next stages.
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @param currentStageIndex - The index of the current stage in the proposal stages array.
+ * @returns The computed status of the proposal.
+ */
+function computeProposalStatus(proposalStages: IProposalStage[], currentStageIndex: number): ProposalStatus {
+  const draftStageStatus = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.status;
+  const approvalStageStatus = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.status;
+  const calculatedStatus = calculateRelativeProposalStatus(
+    proposalStages[currentStageIndex], // current stage
+    proposalStages[currentStageIndex + 1] // next stage
+  );
+
+  return approvalStageStatus ? calculatedStatus : draftStageStatus ?? "draft";
+}
+
+/**
+ * Computes the publisher(s) of a proposal based on whether the proposal is marked as an emergency.
+ * If the proposal is an emergency, it fetches the creator from the COUNCIL_APPROVAL stage;
+ * otherwise, it takes from the DRAFT stage.
+ *
+ * @param stages - Array of proposal stage objects.
+ * @param isEmergency - Indicates whether the proposal is an emergency.
+ * @returns Array of publishers for the proposal.
+ */
+function computePublisher(stages: ProposalStage[], isEmergency: boolean): IPublisher[] {
+  const originalCreators = isEmergency
+    ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
+    : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
+
+  return (
+    (originalCreators ?? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator)?.map(
+      (creator) => ({ address: "", ...creator })
+    ) ?? [{ address: "", name: "Unknown" }]
+  );
+}
+
+/**
+ * Determines the type of a proposal by checking the proposal stages in a specific order:
+ * COUNCIL_APPROVAL, DRAFT, COMMUNITY_VOTING. It returns the type of the first found stage.
+ * If none of these stages have a type, it returns "unknown".
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @returns The type of the proposal or 'unknown' if no type is found.
+ */
+function computeProposalType(proposalStages: ProposalStage[]): string {
+  return (
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.type ??
+    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.type ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.type ??
+    "unknown"
+  );
+}
+
+/**
+ * Sorts proposal stages based on a predefined order of stage identifiers.
+ * This order is determined by a mapping of stage identifiers to numerical values,
+ * allowing the stages to be sorted in a logical progression.
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @returns Sorted array of proposal stages.
+ */
 function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
   return proposalStages.sort((a, b) => StageOrder[a.id] - StageOrder[b.id]);
 }
@@ -77,7 +221,16 @@ const getProposalBindingId = (stage: ProposalStage) => {
   return stage.title;
 };
 
-async function matchProposalStages(proposalStages: ProposalStage[]) {
+/**
+ * Matches proposal stages based on their identifiers and specific linking criteria. This function organizes
+ * proposals into coherent groups by linking stages such as DRAFT, COUNCIL_APPROVAL, COMMUNITY_VOTING, and
+ * COUNCIL_CONFIRMATION based on bindings and other criteria. It also handles special cases like manually binding
+ * specific proposals together.
+ *
+ * @param  proposalStages - Array of proposal stage objects.
+ * @returns An array of arrays, where each inner array contains linked proposal stages.
+ */
+async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
   const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
   const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
   const communityVotingProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);
@@ -137,42 +290,51 @@ async function matchProposalStages(proposalStages: ProposalStage[]) {
   return proposals;
 }
 
+/**
+ * Builds an array of transformed proposal stage objects from the given proposal stages. Each stage is transformed
+ * to include only selected properties. This function also sorts the proposal stages before transforming them.
+ *
+ * @param proposalStages - Array of proposal stage objects to be transformed.
+ * @returns an array of proposal stages with selected properties for each stage.
+ */
 function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalStage[] {
   return sortProposalStages(proposalStages).map((proposalStage) => {
     return {
       id: proposalStage.id,
       status: proposalStage.status,
       creator: proposalStage.creator,
+      createdAt: proposalStage.createdAt,
       link: proposalStage.link,
       voting: proposalStage.voting,
     };
   });
 }
 
+/**
+ * Builds a comprehensive array of proposal responses by first fetching the proposal stages,
+ * matching them based on specific criteria, and then constructing detailed proposal objects from these matched stages.
+ *
+ * @returns an array of fully constructed proposal objects.
+ */
 export async function buildProposalResponse(): Promise<IProposal[]> {
   const proposalStages = await getProposalStages();
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
   return allMatchedProposalStages.map((matchedProposalStages) => {
+    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
     const title = computeTitle(matchedProposalStages);
     const description = computeDescription(matchedProposalStages);
     const stages = buildProposalStageResponse(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
-
-    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
-    const pip = `${isEmergency ? "SOS" : "PIP"}-${matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? ""}`;
-
-    // build the proposal status
-    const currentStageIndex = matchedProposalStages.findIndex((stage) => stage.id === currentStage);
-    const draftStageStatus = stages.find((stage) => stage.id === ProposalStages.DRAFT)?.status;
-    const approvalStageStatus = stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.status;
-    const calculatedStatus = computeProposalStatus(
-      matchedProposalStages[currentStageIndex], // current stage
-      matchedProposalStages[currentStageIndex + 1] // next stage
+    const publisher = computePublisher(matchedProposalStages, isEmergency);
+    const type = computeProposalType(matchedProposalStages);
+    const status = computeProposalStatus(
+      stages,
+      stages.findIndex((stage) => stage.id === currentStage)
     );
 
-    // if there is no onchain proposal, use the draft stage status as source of truth for the status
-    const status = approvalStageStatus ? calculatedStatus : draftStageStatus ?? "draft";
+    // TODO: Get emergency proposal prefix from polygon
+    const pip = `${isEmergency ? "TBD" : "PIP"}-${matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? ""}`;
 
     return {
       pip,
@@ -180,39 +342,10 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       description,
       status,
       isEmergency,
-      // TODO: use onchain proposal type as fallback
-      type: matchedProposalStages[0].type!,
+      type,
       currentStage,
+      publisher,
       stages,
     };
   });
-}
-
-function computeProposalStatus(currentStage: ProposalStage, nextStage?: ProposalStage): ProposalStatus {
-  switch (currentStage.id) {
-    case ProposalStages.DRAFT:
-      return currentStage.status;
-    case ProposalStages.COUNCIL_APPROVAL:
-      return currentStage.status;
-    case ProposalStages.COMMUNITY_VOTING:
-      return computeOverlappingStageStatus(currentStage.status, nextStage?.voting?.startDate);
-    case ProposalStages.COUNCIL_CONFIRMATION:
-      return currentStage.status;
-    default:
-      return "draft";
-  }
-}
-
-function computeOverlappingStageStatus(currentStageStatus: string, nextStageStartDate?: string) {
-  const now = Date.now();
-  const parsedStartDate = Number(nextStageStartDate) / 1000;
-
-  if (
-    (currentStageStatus === "accepted" || (currentStageStatus === "rejected" && nextStageStartDate)) &&
-    parsedStartDate < now
-  ) {
-    return "active";
-  } else {
-    return "queued";
-  }
 }

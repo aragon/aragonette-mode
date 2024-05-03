@@ -14,7 +14,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="h-30 sticky top-0 flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
+      <nav className="h-30 sticky top-0 z-[var(--hub-navbar-z-index)] flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
         <div className="w-full max-w-[1280px] flex-col gap-2 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-3">
           <div className="flex w-full items-center justify-between">
             <Link
@@ -53,7 +53,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Tab wrapper */}
-          <ul className="hidden gap-x-10 md:flex lg:pl-14">
+          <ul className="hidden gap-x-10 md:flex lg:pl-10">
             {navLinks.map(({ id, name, path }) => (
               <NavLink name={name} path={path} id={id} key={id} />
             ))}

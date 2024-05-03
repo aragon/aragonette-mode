@@ -14,7 +14,7 @@ const DEFAULT_PAGE_SIZE = 6;
 
 export const ProposalDataList: React.FC = () => {
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
-    ...proposalList({ pageSize: DEFAULT_PAGE_SIZE }),
+    ...proposalList(),
     // TODO: update cache time once data has been cached on the backend
     gcTime: Infinity,
     staleTime: Infinity,
