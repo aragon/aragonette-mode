@@ -1,20 +1,17 @@
 import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
-import { ProposalStages } from "../../services";
-import { type ProposalStage, type VotingScores, type VotingData } from "../utils/types";
+import { ProposalStages, type ProposalStatus } from "../../services";
+import { type ProposalStage, type VotingData, type VotingScores } from "../utils/types";
 import { type SnapshotProposalData } from "./types";
-import { type ProposalStatus } from "@aragon/ods";
 
-const computeStatus = (proposalState: string): ProposalStatus => {
+const computeStatus = (proposalState: string, scores: VotingScores[]): ProposalStatus => {
   switch (proposalState) {
     case "active":
       return "active";
     case "closed":
-      return "rejected";
+      return evaluateVotingResult(scores);
     case "pending":
       return "pending";
-    case "approved":
-      return "accepted";
-    case "rejected":
+    case "cancelled":
       return "rejected";
     default:
       return "active";
@@ -64,10 +61,29 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
       title: proposal.title,
       description: proposal.title,
       body: proposal.body,
-      status: computeStatus(proposal.state),
+      status: computeStatus(proposal.state, scores),
       creator,
       link: proposal.link,
       voting,
     };
   });
+}
+
+// Function to evaluate the result based on votes
+function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
+  let yesVotes = 0;
+  let noVotes = 0;
+
+  // Loop through the array to count votes for 'Yes' and 'No'
+  for (const vote of votingData) {
+    if (vote.choice.toLowerCase() === "accept") {
+      yesVotes += vote.votes;
+    } else if (vote.choice.toLowerCase() === "reject") {
+      noVotes += vote.votes;
+    }
+  }
+
+  // Determine the result based on the counts
+  // update with proper calculation
+  return yesVotes > noVotes ? "accepted" : "rejected";
 }

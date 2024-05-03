@@ -1,6 +1,5 @@
 import { GITHUB_TOKEN } from "@/constants";
-import { type ProposalStatus } from "@aragon/ods";
-import { ProposalStages, type ICreator } from "../../services/proposal/domain";
+import { ProposalStages, type ProposalStatus, type ICreator } from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 
 type GithubData = {
@@ -53,21 +52,12 @@ export function extractBody(proposalBody: string) {
 }
 
 function parseStatus(status: string): ProposalStatus {
-  switch (status) {
-    case "Draft":
-      return "draft";
-    case "Last Call":
-      return "queued";
-    case "Continuous":
-      return "accepted";
-    case "Stagnant":
-      return "draft";
-    case "Peer Review":
-      return "draft";
-    case "Final":
-      return "executed";
-    default:
-      return "draft";
+  if (status === "Final") {
+    return "executed";
+  } else if (status === "Draft") {
+    return "draft";
+  } else {
+    return status as ProposalStatus;
   }
 }
 

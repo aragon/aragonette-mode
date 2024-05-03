@@ -1,9 +1,14 @@
-import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, SNAPSHOT_SPACE, PUB_CHAIN, PUB_MULTISIG_ADDRESS } from "@/constants";
-import { ProposalStages, type IProposal, type IProposalStage } from "@/features/proposals/services/proposal/domain";
-import { type ProposalStatus } from "@aragon/ods";
+import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
+import {
+  ProposalStages,
+  type ProposalStatus,
+  StageOrder,
+  type IProposal,
+  type IProposalStage,
+} from "@/features/proposals/services/proposal/domain";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
-import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
+import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
 
 function computeTitle(proposalStages: ProposalStage[]) {
@@ -25,18 +30,26 @@ function computeDescription(proposalStages: ProposalStage[]) {
 }
 
 function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
-  return sortProposalStages(proposalStages)[proposalStages.length - 1].id;
+  const sortedStages = sortProposalStages(proposalStages);
+  const draftStage = sortedStages.find((stage) => stage.id === ProposalStages.DRAFT);
+  const confirmationStage = sortedStages.find((stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION);
+  const lastKnownStage = sortedStages[sortedStages.length - 1];
+
+  // usually the last stage is the current stage, but because some proposals were created without
+  // all the stages, we have to check whether that "last stage" (in this case COMMUNITY_VOTING) is
+  // ongoing or not. If it's not, we should use the DRAFT stage as the current stage.
+  // By default only the Peer Review proposals are allowed to go onchain and be voted on by the community
+  // THIS IS TEMPORARY AND SHOULD BE REMOVED.
+  // TODO: Handle with RD-303
+  if (lastKnownStage.id === ProposalStages.COMMUNITY_VOTING && draftStage && confirmationStage == null) {
+    return draftStage.id;
+  }
+
+  return lastKnownStage.id;
 }
 
 function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
-  const stageOrder = {
-    [ProposalStages.DRAFT]: 0,
-    [ProposalStages.COUNCIL_APPROVAL]: 1,
-    [ProposalStages.COMMUNITY_VOTING]: 2,
-    [ProposalStages.COUNCIL_CONFIRMATION]: 3,
-  };
-
-  return proposalStages.sort((a, b) => stageOrder[a.id] - stageOrder[b.id]);
+  return proposalStages.sort((a, b) => StageOrder[a.id] - StageOrder[b.id]);
 }
 
 export async function getProposalStages() {
@@ -58,7 +71,7 @@ export async function getProposalStages() {
 
 const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
-  // TODO: remove this
+  // TODO: Handle with RD-303
   if (stage.id === ProposalStages.DRAFT) return stage.pip?.split("-").pop();
   if (stage.id === ProposalStages.COMMUNITY_VOTING) return stage.link.split("/").pop();
   return stage.title;
@@ -112,10 +125,11 @@ export async function matchProposalStages(proposalStages: ProposalStage[]) {
   proposals.push(...draftProposals.map((proposal) => [proposal]));
 
   // Manually bind PIP-4 draft and community voting stages
-  const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "PIP-4"));
+  // TODO: Handle with RD-303
+  const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "4"));
   if (pip4ProposalStages) {
     const pip4CommunityVotingProposal = proposalStages.find(
-      (stage) => stage.id === ProposalStages.COMMUNITY_VOTING && stage.pip === "PIP-4"
+      (stage) => stage.id === ProposalStages.COMMUNITY_VOTING && stage.title.startsWith("PIP-4")
     );
     if (pip4CommunityVotingProposal) pip4ProposalStages.push(pip4CommunityVotingProposal);
   }
@@ -127,7 +141,7 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
   return sortProposalStages(proposalStages).map((proposalStage) => {
     return {
       id: proposalStage.id,
-      status: proposalStage.status as ProposalStatus,
+      status: proposalStage.status,
       creator: proposalStage.creator,
       link: proposalStage.link,
       voting: proposalStage.voting,
@@ -139,27 +153,66 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   const proposalStages = await getProposalStages();
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
-  const response = allMatchedProposalStages.map((matchedProposalStages) => {
+  return allMatchedProposalStages.map((matchedProposalStages) => {
     const title = computeTitle(matchedProposalStages);
     const description = computeDescription(matchedProposalStages);
+    const stages = buildProposalStageResponse(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
 
-    // TODO: Implement function to calculate overall status
-    const status = matchedProposalStages.find((stage) => stage.id === currentStage)?.status ?? "draft";
-    const proposalStageResponses = buildProposalStageResponse(matchedProposalStages);
     const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
+    const pip = `${isEmergency ? "SOS" : "PIP"}-${matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? ""}`;
+
+    // build the proposal status
+    const currentStageIndex = matchedProposalStages.findIndex((stage) => stage.id === currentStage);
+    const draftStageStatus = stages.find((stage) => stage.id === ProposalStages.DRAFT)?.status;
+    const approvalStageStatus = stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.status;
+    const calculatedStatus = computeProposalStatus(
+      matchedProposalStages[currentStageIndex], // current stage
+      matchedProposalStages[currentStageIndex + 1] // next stage
+    );
+
+    // if there is no onchain proposal, use the draft stage status as source of truth for the status
+    const status = approvalStageStatus ? calculatedStatus : draftStageStatus ?? "draft";
 
     return {
-      pip: matchedProposalStages[0].pip!,
+      pip,
       title,
       description,
       status,
       isEmergency,
+      // TODO: use onchain proposal type as fallback
       type: matchedProposalStages[0].type!,
       currentStage,
-      stages: proposalStageResponses,
+      stages,
     };
   });
+}
 
-  return response;
+function computeProposalStatus(currentStage: ProposalStage, nextStage?: ProposalStage): ProposalStatus {
+  switch (currentStage.id) {
+    case ProposalStages.DRAFT:
+      return currentStage.status;
+    case ProposalStages.COUNCIL_APPROVAL:
+      return currentStage.status;
+    case ProposalStages.COMMUNITY_VOTING:
+      return computeOverlappingStageStatus(currentStage.status, nextStage?.voting?.startDate);
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return currentStage.status;
+    default:
+      return "draft";
+  }
+}
+
+function computeOverlappingStageStatus(currentStageStatus: string, nextStageStartDate?: string) {
+  const now = Date.now();
+  const parsedStartDate = Number(nextStageStartDate) / 1000;
+
+  if (
+    (currentStageStatus === "accepted" || (currentStageStatus === "rejected" && nextStageStartDate)) &&
+    parsedStartDate < now
+  ) {
+    return "active";
+  } else {
+    return "queued";
+  }
 }

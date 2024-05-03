@@ -1,6 +1,6 @@
-import { IProposalStageProvider } from "@/features/proposals/providers/utils/types";
+import { type IProposalStageProvider } from "@/features/proposals/providers/utils/types";
 import { requestProposalData, parseMultisigData } from "./utils";
-import { Address } from "viem";
+import { type Address } from "viem";
 
 interface IGetMultisigProposalStagesDataParams {
   chain: number;
