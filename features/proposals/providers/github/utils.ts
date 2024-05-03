@@ -1,10 +1,21 @@
 import { GITHUB_TOKEN } from "@/constants";
-import { ProposalStages, type ProposalStatus, type ICreator } from "../../services/proposal/domain";
+import {
+  ProposalStages,
+  type ProposalStatus,
+  type ICreator,
+  IProposal,
+  type IProposalResource,
+} from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 
 type GithubData = {
   link: string;
   data: string;
+};
+
+type MarkdownLink = {
+  link?: string;
+  description: string;
 };
 
 export async function downloadPIPs(url: string) {
@@ -68,17 +79,27 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     .slice(1)
     .map((v) => v.trim());
 
+  const resources = [
+    ...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]),
+    { description: "GitHub", link },
+  ];
+
+  const parsedCreators: ICreator[] = values[3].split(",").map((creator) => {
+    const { link, description } = parseMarkdownLink(creator);
+    return { name: description, link };
+  });
+
   return {
     id: ProposalStages.DRAFT,
     pip: values[0],
     title: values[1],
     description: values[2],
     body: body,
-    creator: parseCreators(values[3]),
+    creator: parsedCreators,
     status: parseStatus(values[5]),
     type: values[6] ?? "Informational",
     createdAt: values[7],
-    link,
+    resources,
   };
 }
 
@@ -86,16 +107,14 @@ export function parseHeader(header: string, body: string, link: string): Proposa
  * Parse a list of creators from a comma separated string.
  * This also handles parsing markdown links for the creators.
  *
- * @param creatorList list of comma separated creators
+ * @param links list of comma separated creators
  * @returns array of ICreator objects
  */
-export function parseCreators(creatorList: string): ICreator[] {
+export function parseMarkdownLink(value: string): MarkdownLink {
   // matches markdown link; ex: [FirstName LastName](https://github.com/profile)
   const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)/;
 
-  return creatorList.split(",").map((creator) => {
-    const parts = creator.match(markdownLinkRegex);
+  const parts = value.match(markdownLinkRegex);
 
-    return parts != null ? { name: parts[1], link: parts[2] } : { name: creator };
-  });
+  return parts != null ? { description: parts[1], link: parts[2] } : { description: value };
 }
