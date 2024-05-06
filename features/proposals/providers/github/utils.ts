@@ -77,6 +77,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     creator: parseCreators(values[3]),
     status: parseStatus(values[5]),
     type: values[6] ?? "Informational",
+    createdAt: values[7],
     link,
   };
 }
