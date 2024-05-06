@@ -1,5 +1,4 @@
 import { type Address } from "viem";
-import { type Action } from "@/utils/types";
 import { type VotingData } from "../../providers/utils/types";
 import { type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
 
