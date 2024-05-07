@@ -1,4 +1,8 @@
-import { type ProposalStatus, type ProposalStages } from "@/features/proposals/services/proposal/domain";
+import {
+  type ProposalStatus,
+  type ProposalStages,
+  type IProposalResource,
+} from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
 import { Address } from "viem";
 
@@ -9,10 +13,11 @@ export type ProposalCreatedLogResponse = {
   endDate: bigint;
   startDate: bigint;
   metadata: string;
+  secondaryMetadata: string;
   proposalId: bigint;
 };
 
-export type Metadata = {
+export type PrimaryMetadata = {
   title: string;
   description: string;
   summary: string;
@@ -20,6 +25,11 @@ export type Metadata = {
     name: string;
     url: string;
   }>;
+};
+
+export type SecondaryMetadata = {
+  name: string;
+  url: string;
 };
 
 export type ProposalBindings = {
@@ -77,10 +87,13 @@ export type MultisigProposal = {
   summary: string;
   description: string;
   creator: string;
+  createdAt: string;
+  resources?: IProposalResource[];
   link: string;
   status: ProposalStatus;
   voting?: MultiSigProposalVotingData;
   actions: Array<Action>;
+  isEmergency: boolean;
   githubId?: string;
   snapshotId?: string;
 };

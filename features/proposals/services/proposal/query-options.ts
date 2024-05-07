@@ -1,7 +1,8 @@
+import { queryClient } from "@/utils/query-client";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { toProposalDataListItems } from "../../components/proposalDataList/transformer";
 import { type IFetchProposalListParams, type IFetchProposalParams, type IFetchVotesParams } from "./params";
-import { fetchProposal, fetchProposals, fetchVotes } from "./proposal-service";
+import { fetchProposals, fetchVotes } from "./proposal-service";
+import { toProposalDataListItems, toProposalDetails } from "./selectors";
 
 export const proposalKeys = {
   all: ["proposals"] as const,
@@ -10,7 +11,7 @@ export const proposalKeys = {
   votes: (params: IFetchVotesParams) => [...proposalKeys.all, "votes", params] as const,
 };
 
-export function proposalList(params: IFetchProposalListParams) {
+export function proposalList(params: IFetchProposalListParams = "unknown") {
   return infiniteQueryOptions({
     queryKey: proposalKeys.list(params),
     queryFn: async () => await fetchProposals(params),
@@ -26,7 +27,10 @@ export function proposalList(params: IFetchProposalListParams) {
 export function proposal(params: IFetchProposalParams) {
   return queryOptions({
     queryKey: proposalKeys.detail(params),
-    queryFn: () => fetchProposal(params),
+    // TODO: use for singular proposal
+    // queryFn: () => fetchProposal(params),
+    queryFn: () => queryClient.getQueryData(proposalList().queryKey)?.pages[0].data[Number(params.proposalId)],
+    select: (data) => toProposalDetails(data),
   });
 }
 

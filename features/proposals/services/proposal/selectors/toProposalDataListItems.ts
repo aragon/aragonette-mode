@@ -7,7 +7,7 @@ import type {
 } from "@aragon/ods";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ProposalStages, ProposalTracks, StageOrder, type IProposal } from "../../services";
+import { ProposalStages, ProposalTracks, StageOrder, type IProposal } from "../domain";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
@@ -22,6 +22,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       description: summary,
       title,
       isEmergency,
+      publisher,
     } = proposal;
 
     // get active stage
@@ -30,16 +31,6 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
 
     // compute date based off of stage
     const date = computeRelativeDate(status, activeStage.voting?.startDate, activeStage.voting?.endDate);
-
-    // pick the draft state creator unless proposal is critical
-    const originalCreators = isEmergency
-      ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
-      : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
-
-    const publisher = (
-      originalCreators ?? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
-    )?.map((creator) => ({ address: "", ...creator }));
-
     const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
 
     // only community voting is mjv; draft has no voting data

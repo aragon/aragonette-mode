@@ -1,10 +1,20 @@
 import { GITHUB_TOKEN } from "@/constants";
-import { ProposalStages, type ProposalStatus, type ICreator } from "../../services/proposal/domain";
+import {
+  ProposalStages,
+  type ICreator,
+  type IProposalResource,
+  type ProposalStatus,
+} from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
 
 type GithubData = {
   link: string;
   data: string;
+};
+
+type MarkdownLink = {
+  link?: string;
+  name: string;
 };
 
 export async function downloadPIPs(url: string) {
@@ -68,33 +78,34 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     .slice(1)
     .map((v) => v.trim());
 
+  const resources = [...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]), { name: "GitHub", link }];
+  const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
+
   return {
     id: ProposalStages.DRAFT,
     pip: values[0],
     title: values[1],
     description: values[2],
     body: body,
-    creator: parseCreators(values[3]),
+    creator: parsedCreators,
     status: parseStatus(values[5]),
     type: values[6] ?? "Informational",
-    link,
+    createdAt: values[7],
+    resources,
   };
 }
 
 /**
- * Parse a list of creators from a comma separated string.
- * This also handles parsing markdown links for the creators.
+ * Parse a markdown link.
  *
- * @param creatorList list of comma separated creators
- * @returns array of ICreator objects
+ * @param value markdown link
+ * @returns object with name and link
  */
-export function parseCreators(creatorList: string): ICreator[] {
+export function parseMarkdownLink(value: string): MarkdownLink {
   // matches markdown link; ex: [FirstName LastName](https://github.com/profile)
   const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)/;
 
-  return creatorList.split(",").map((creator) => {
-    const parts = creator.match(markdownLinkRegex);
+  const parts = value.match(markdownLinkRegex);
 
-    return parts != null ? { name: parts[1], link: parts[2] } : { name: creator };
-  });
+  return parts != null ? { name: parts[1], link: parts[2] } : { name: value };
 }
