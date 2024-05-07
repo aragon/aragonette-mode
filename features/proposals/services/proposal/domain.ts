@@ -23,6 +23,11 @@ export interface ICreator {
   link?: string;
 }
 
+export type IProposalResource = {
+  name: string;
+  link: string;
+};
+
 export interface IProposalStage {
   id: ProposalStages;
   status: ProposalStatus;
@@ -30,7 +35,7 @@ export interface IProposalStage {
   startTimestamp?: string;
   endTimestamp?: string;
   creator: ICreator[];
-  link: string;
+  resources?: IProposalResource[];
   voting?: VotingData;
 }
 
@@ -43,6 +48,7 @@ export interface IProposal {
   pip: string;
   title: string;
   description: string;
+  resources?: IProposalResource[];
   status: ProposalStatus;
   type: string;
   isEmergency?: boolean;

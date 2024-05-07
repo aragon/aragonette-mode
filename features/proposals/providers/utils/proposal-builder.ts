@@ -5,6 +5,7 @@ import {
   StageOrder,
   type IProposal,
   type IProposalStage,
+  type IProposalResource,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
@@ -185,6 +186,22 @@ function computeProposalType(proposalStages: ProposalStage[]): string {
 }
 
 /**
+ * Get all the proposal resources from the sorted stages.
+ * The later stages will overwrite the resources of the previous stages.
+ *
+ * @param sortedStages Sorted proposal stages
+ * @returns an array of proposal resources.
+ */
+function computeProposalResources(sortedStages: IProposalStage[]): IProposalResource[] | undefined {
+  const resourcesMap = new Map<string, IProposalResource>();
+  sortedStages
+    .flatMap((stage) => stage.resources ?? [])
+    .forEach((resource) => resourcesMap.set(resource.name.toLowerCase(), resource));
+
+  return resourcesMap.size > 0 ? Array.from(resourcesMap.values()) : undefined;
+}
+
+/**
  * Sorts proposal stages based on a predefined order of stage identifiers.
  * This order is determined by a mapping of stage identifiers to numerical values,
  * allowing the stages to be sorted in a logical progression.
@@ -217,7 +234,13 @@ const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
   if (stage.id === ProposalStages.DRAFT) return stage.pip?.split("-").pop();
-  if (stage.id === ProposalStages.COMMUNITY_VOTING) return stage.link.split("/").pop();
+  if (stage.id === ProposalStages.COMMUNITY_VOTING) {
+    return stage.resources
+      ?.find((r) => r?.name === "Snapshot" && r.link != null)
+      ?.link?.split("/")
+      .pop();
+  }
+
   return stage.title;
 };
 
@@ -304,7 +327,7 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
       status: proposalStage.status,
       creator: proposalStage.creator,
       createdAt: proposalStage.createdAt,
-      link: proposalStage.link,
+      resources: proposalStage.resources,
       voting: proposalStage.voting,
     };
   });
@@ -321,25 +344,28 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
   return allMatchedProposalStages.map((matchedProposalStages) => {
-    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
     const title = computeTitle(matchedProposalStages);
-    const description = computeDescription(matchedProposalStages);
-    const stages = buildProposalStageResponse(matchedProposalStages);
-    const currentStage = computeCurrentStage(matchedProposalStages);
-    const publisher = computePublisher(matchedProposalStages, isEmergency);
     const type = computeProposalType(matchedProposalStages);
-    const status = computeProposalStatus(
-      stages,
-      stages.findIndex((stage) => stage.id === currentStage)
-    );
+    const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
+    const publisher = computePublisher(matchedProposalStages, isEmergency);
+    const description = computeDescription(matchedProposalStages);
+    const currentStage = computeCurrentStage(matchedProposalStages);
+
+    // sorted stages
+    const stages = buildProposalStageResponse(matchedProposalStages);
+    const resources = computeProposalResources(stages);
+    const currentStageIndex = stages.findIndex((stage) => stage.id === currentStage);
+    const status = computeProposalStatus(stages, currentStageIndex);
 
     // TODO: Get emergency proposal prefix from polygon
-    const pip = `${isEmergency ? "TBD" : "PIP"}-${matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? ""}`;
+    const proposalNumber = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? "";
+    const pip = `${isEmergency ? "TBD" : "PIP"}-${proposalNumber}`;
 
     return {
       pip,
       title,
       description,
+      resources,
       status,
       isEmergency,
       type,

@@ -1,4 +1,9 @@
-import { type ProposalStatus, type ICreator, type ProposalStages } from "@/features/proposals/services/proposal/domain";
+import {
+  type ProposalStatus,
+  type ICreator,
+  type ProposalStages,
+  type IProposalResource,
+} from "@/features/proposals/services/proposal/domain";
 
 export type Vote = {
   id: string;
@@ -34,7 +39,7 @@ export type ProposalStage = {
   isEmergency?: boolean;
   createdAt?: string;
   creator: ICreator[];
-  link: string;
+  resources?: IProposalResource[];
   type?: string;
   voting?: VotingData;
   bindings?: {
