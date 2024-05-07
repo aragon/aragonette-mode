@@ -361,6 +361,16 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const proposalNumber = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? "";
     const pip = `${isEmergency ? "TBD" : "PIP"}-${proposalNumber}`;
 
+    const actions = matchedProposalStages
+      .find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)
+      ?.actions?.map((action) => {
+        return {
+          to: action.to,
+          value: action.value.toString(),
+          data: action.data,
+        };
+      });
+
     return {
       pip,
       title,
@@ -372,6 +382,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       currentStage,
       publisher,
       stages,
+      actions,
     };
   });
 }

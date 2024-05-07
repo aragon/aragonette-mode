@@ -44,6 +44,12 @@ export enum ProposalTracks {
   STANDARD = "Standard",
 }
 
+export interface IAction {
+  to: string;
+  value: string;
+  data: string;
+}
+
 export interface IProposal {
   pip: string;
   title: string;
@@ -54,8 +60,8 @@ export interface IProposal {
   isEmergency?: boolean;
   currentStage: ProposalStages;
   stages: IProposalStage[];
+  actions?: IAction[];
   publisher: IPublisher[];
-  actions?: string[];
 }
 
 export interface IProposalVote {
