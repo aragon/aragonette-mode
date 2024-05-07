@@ -58,29 +58,31 @@ const getProposalCreationData = async function (
       fromBlock: snapshotBlock,
       toBlock: startDate,
     })
-    .then(async (logs) => {
-      if (!logs?.length) throw new Error("No creation logs");
-
-      const log = logs[0];
-      const block = log.blockNumber as bigint;
-      const tx = log.transactionHash;
-
-      const logData: ProposalCreatedLogResponse = log.args as ProposalCreatedLogResponse;
-
-      const blockData = await publicClient.getBlock({ blockNumber: block });
-      return {
-        metadata: logData.metadata,
-        creator: logData.creator,
-        tx,
-        block,
-        createdAt: blockData.timestamp,
-      };
-    })
     .catch((err) => {
       logger.error("Could not fetch the proposal details", err);
     });
 
-  return logs;
+  if (!logs?.length) throw new Error("No creation logs");
+
+  const log = logs[0];
+  const block = log.blockNumber as bigint;
+  const tx = log.transactionHash;
+
+  const logData: ProposalCreatedLogResponse = log.args as ProposalCreatedLogResponse;
+
+  const blockData = await publicClient?.getBlock({ blockNumber: block }).catch((err) => {
+    logger.error("Could not fetch the proposal blocknumber", err);
+  });
+
+  if (!blockData) throw new Error("No block data");
+
+  return {
+    metadata: logData.metadata,
+    creator: logData.creator,
+    tx,
+    block,
+    createdAt: blockData.timestamp,
+  };
 };
 
 const getProposalBindings = async function (metadata: Metadata) {
