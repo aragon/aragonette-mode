@@ -1,20 +1,21 @@
-import { fetchJsonFromIpfs } from "@/utils/ipfs";
-import { readContract, getPublicClient, getBlock } from "@wagmi/core";
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
-import { type Address, fromHex, type Hex, getAbiItem } from "viem";
-import { type Action } from "@/utils/types";
-import {
-  type ProposalCreatedLogResponse,
-  type Metadata,
-  type ProposalParameters,
-  type MultisigProposal,
-} from "./types";
-import { type ProposalStage, type Vote } from "@/features/proposals/providers/utils/types";
 import { PUB_CHAIN } from "@/constants";
+import { type ProposalStage, type Vote } from "@/features/proposals/providers/utils/types";
 import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
+import { fetchJsonFromIpfs } from "@/utils/ipfs";
+import { type Action } from "@/utils/types";
+import { getBlock, getPublicClient, readContract } from "@wagmi/core";
+import {
+  type PrimaryMetadata,
+  type ProposalCreatedLogResponse,
+  type ProposalParameters,
+  type MultisigProposal,
+  type SecondaryMetadata,
+} from "./types";
+import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 
 const getNumProposals = async function (chain: number, contractAddress: Address) {
   return await readContract(config, {
@@ -77,7 +78,8 @@ const getProposalCreationData = async function (
   if (!blockData) throw new Error("No block data");
 
   return {
-    metadata: logData.metadata,
+    primaryMetadata: logData.metadata,
+    secondaryMetadata: logData.secondaryMetadata ?? "",
     creator: logData.creator,
     tx,
     block,
@@ -85,9 +87,10 @@ const getProposalCreationData = async function (
   };
 };
 
-const getProposalBindings = async function (metadata: Metadata) {
-  const githubLink = metadata.resources.find((resource) => resource.name === "GITHUB");
-  const snapshotLink = metadata.resources.find((resource) => resource.name === "SNAPSHOT");
+const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
+  const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
+  const snapshotLink =
+    secondaryMetadata ?? metadata.resources.find((resource) => resource.name.toLowerCase() === "snapshot");
 
   const githubFileName = githubLink?.url.split("/").pop();
   const snapshotId = snapshotLink?.url.split("/").pop();
@@ -151,6 +154,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       status: proposal.status,
       createdAt: proposal.createdAt,
       isEmergency: proposal.isEmergency,
+      resources: proposal.resources,
       creator,
       link: proposal.link,
       voting,
@@ -182,22 +186,31 @@ export const requestProposalData = async function (
 
     // skip to next proposal if no creation data can be found for the current proposal
     if (!creationData) continue;
-    const metadataCid = fromHex(creationData.metadata as Hex, "string");
+    const primaryMetadataCid = fromHex(creationData.primaryMetadata as Hex, "string");
+    const secondaryMetadataCid = fromHex(creationData.secondaryMetadata as Hex, "string");
 
     //TODO: Use IPFS hash from proposalData instead of logs
-    const metadata = await fetchJsonFromIpfs(metadataCid);
-    const { githubId, snapshotId } = await getProposalBindings(metadata);
+    const primaryMetadata: PrimaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
+    const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
+    const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
+
+    // get resources
+    const resources = primaryMetadata.resources.map((resource) => ({
+      name: resource.name,
+      link: resource.url,
+    }));
 
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
-      title: metadata.title,
-      summary: metadata.summary,
-      description: metadata.description,
+      title: primaryMetadata.title,
+      summary: primaryMetadata.summary,
+      description: primaryMetadata.description,
       createdAt: creationData.createdAt.toString(),
       creator: creationData.creator,
       link: `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`,
       actions: proposalData.actions,
       isEmergency: proposalData.parameters.emergency,
+      resources,
       githubId,
       snapshotId,
     };

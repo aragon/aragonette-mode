@@ -3,8 +3,14 @@ import { generateBreadcrumbs } from "@/utils/nav";
 import { Card } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { HeaderProposal } from "../components";
+import { CardResources, HeaderProposal } from "../components";
 import { proposal as proposalQueryOptions } from "../services/proposal/query-options";
+
+const mockResources = [
+  { name: "github", url: "https://github.com" },
+  { name: "documentation", url: "https://docs.example.com" },
+  { name: "demo", url: "https://demo.example.com" },
+];
 
 export default function ProposalDetails() {
   const router = useRouter();
@@ -28,9 +34,9 @@ export default function ProposalDetails() {
             </div>
 
             {/* Additional Information */}
-            <div className="flex flex-col gap-y-6 md:w-[27%]">
-              <Card>Card Resources stub</Card>
-              <Card>Card Status Stub</Card>
+            <div className="flex flex-col gap-y-6 md:w-[33%]">
+              <CardResources resources={proposal.resources} />
+              <Card>Card Status stub</Card>
             </div>
           </div>
         </MainSection>
