@@ -19,15 +19,11 @@ export type SnapshotProposalData = {
   votes: number;
 };
 
-type SnapshotChoiceData = {
-  [key: string]: number;
-};
-
 export type SnapshotVoteData = {
   id: string;
   voter: string;
   created: number;
-  choice: SnapshotChoiceData;
+  choice: number;
   vp: string;
   vp_state: string;
   reason: string;

@@ -10,6 +10,5 @@ interface IGetMultisigProposalStagesDataParams {
 export const getMultisigProposalData: IProposalStageProvider = async function (
   params: IGetMultisigProposalStagesDataParams
 ) {
-  const data = await requestProposalData(params.chain, params.contractAddress);
-  return parseMultisigData(data);
+  return requestProposalData(params.chain, params.contractAddress).then(parseMultisigData);
 };

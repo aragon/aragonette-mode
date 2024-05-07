@@ -20,6 +20,7 @@ export type VotingScores = {
 };
 
 export type VotingData = {
+  providerId: string;
   startDate: string;
   endDate: string;
   choices: string[];

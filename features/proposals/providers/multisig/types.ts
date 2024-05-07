@@ -4,18 +4,17 @@ import {
   type IProposalResource,
 } from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
+import { Address } from "viem";
 
 export type ProposalCreatedLogResponse = {
-  args: {
-    actions: Action[];
-    allowFailureMap: bigint;
-    creator: string;
-    endDate: bigint;
-    startDate: bigint;
-    metadata: string;
-    secondaryMetadata: string;
-    proposalId: bigint;
-  };
+  actions: Action[];
+  allowFailureMap: bigint;
+  creator: string;
+  endDate: bigint;
+  startDate: bigint;
+  metadata: string;
+  secondaryMetadata: string;
+  proposalId: bigint;
 };
 
 export type PrimaryMetadata = {
@@ -74,6 +73,7 @@ export type ProposalParameters = {
 };
 
 export type MultiSigProposalVotingData = {
+  providerId: string;
   startDate: string;
   endDate: string;
   approvals: number;
@@ -96,4 +96,15 @@ export type MultisigProposal = {
   isEmergency: boolean;
   githubId?: string;
   snapshotId?: string;
+};
+
+export type ApprovedLogResponse = {
+  proposalId: bigint;
+  approver: Address;
+};
+
+export type VotesData = {
+  logData: ApprovedLogResponse;
+  tx: string;
+  blockTimestamp: string;
 };

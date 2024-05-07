@@ -253,7 +253,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
  * @param  proposalStages - Array of proposal stage objects.
  * @returns An array of arrays, where each inner array contains linked proposal stages.
  */
-async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
+export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
   const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
   const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
   const communityVotingProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);

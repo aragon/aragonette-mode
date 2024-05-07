@@ -58,14 +58,15 @@ export interface IProposal {
   actions?: string[];
 }
 
-export enum Votes {
-  YES = "Yes",
-  NO = "No",
-}
 export interface IProposalVote {
+  id: string;
   address: Address;
-  proposalId: string;
-  stageId: ProposalStages;
-  vote: Votes;
-  weight: number;
+  vote: string;
+  amount: number;
+  timestamp: string;
+}
+
+export interface IHasVoted {
+  address: Address;
+  hasVoted: boolean;
 }

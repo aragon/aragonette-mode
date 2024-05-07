@@ -39,6 +39,7 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
     });
 
     const voting: VotingData = {
+      providerId: proposal.id,
       startDate: proposal.start.toString(),
       endDate: proposal.end.toString(),
       choices: proposal.choices,
