@@ -10,7 +10,7 @@ import { checkIfProxyContract, fetchAbi } from "@/hooks/useAbi";
 import { type DecodedAction, decodeActionData } from "@/hooks/useAction";
 import { logger } from "@/services/logger";
 
-export type DetailedAction = { decoded?: DecodedAction & { contractName?: string }; raw: Action };
+export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
 export type ProposalDetail = Omit<IProposal, "actions"> & {
   actions?: DetailedAction[];
@@ -30,11 +30,14 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   dayjs.extend(relativeTime);
 
   // decode actions
-  const publicClient = getPublicClient(config, { chainId: PUB_CHAIN.id });
-  const decodedActions =
-    proposal.actions && publicClient
-      ? await Promise.all(proposal.actions.map((action) => decodeAction(action, publicClient)))
+  const client = getPublicClient(config, { chainId: PUB_CHAIN.id });
+  const transformedActions =
+    !!proposal.actions && client
+      ? await Promise.all(proposal.actions.map((action) => decodeAction(action, client)))
       : [];
+
+  // parse dates
+  const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
 
   // end date is specified on the Council Confirmation stage or
   // when proposal is an emergency -> the Council Approval stage
@@ -43,15 +46,9 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
     proposal.stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
 
   const parsedEndDate = parseDate(endDate);
+  const formattedEndDate = parsedEndDate ? getSimpleRelativeTimeFromDate(parsedEndDate) : undefined;
 
-  let formattedEndDate;
-
-  if (parsedEndDate) {
-    formattedEndDate = getSimpleRelativeTimeFromDate(parsedEndDate);
-  }
-  const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
-
-  return { ...proposal, actions: decodedActions, createdAt, endDate: formattedEndDate };
+  return { ...proposal, actions: transformedActions, createdAt, endDate: formattedEndDate };
 }
 
 // parse a date string or unix timestamp as a string
@@ -80,12 +77,13 @@ function getSimpleRelativeTimeFromDate(value: Dayjs) {
 
 /**
  * Decodes an action using the provided ABI and returns the raw and decoded action.
+ *
  * @param action - The action to decode.
  * @param client - The PublicClient instance used for fetching ABI and checking proxy contracts.
- * @returns An object containing the raw and decoded action.
+ * @returns an object containing the raw and decoded action.
  * If the action failed to decode, the decoded action will be undefined.
  */
-async function decodeAction(action: IAction, client: PublicClient) {
+async function decodeAction(action: IAction, client: PublicClient): Promise<DetailedAction> {
   const rawAction = { ...action, value: BigInt(action.to) };
 
   try {
@@ -100,6 +98,6 @@ async function decodeAction(action: IAction, client: PublicClient) {
     return { raw: rawAction, decoded: actionFailedToDecode ? undefined : decodedAction };
   } catch (error) {
     logger.error("Failed to decode action", error, { action });
-    return { raw: rawAction, decoded: undefined };
+    return { raw: rawAction };
   }
 }
