@@ -1,8 +1,19 @@
+import { PUB_CHAIN } from "@/constants";
+import { config } from "@/context/Web3Modal";
+import { type Action } from "@/utils/types";
+import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
-import { ProposalStages, type IProposal } from "../domain";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { type Address, type PublicClient } from "viem";
+import { ProposalStages, type IAction, type IProposal } from "../domain";
+import { checkIfProxyContract, fetchAbi } from "@/hooks/useAbi";
+import { type DecodedAction, decodeActionData } from "@/hooks/useAction";
+import { logger } from "@/services/logger";
 
-export type ProposalDetail = IProposal & {
+export type DetailedAction = { decoded?: DecodedAction & { contractName?: string }; raw: Action };
+
+export type ProposalDetail = Omit<IProposal, "actions"> & {
+  actions?: DetailedAction[];
   createdAt?: string;
   endDate?: string;
 };
@@ -14,12 +25,16 @@ export type ProposalDetail = IProposal & {
  * @param proposal - The proposal object to be transformed.
  * @returns the transformed proposal object.
  */
-export function toProposalDetails(proposal: IProposal | undefined): ProposalDetail | undefined {
+export async function toProposalDetails(proposal: IProposal | undefined): Promise<ProposalDetail | undefined> {
+  if (!proposal) return;
   dayjs.extend(relativeTime);
 
-  if (!proposal) return;
-
-  const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
+  // decode actions
+  const publicClient = getPublicClient(config, { chainId: PUB_CHAIN.id });
+  const decodedActions =
+    proposal.actions && publicClient
+      ? await Promise.all(proposal.actions.map((action) => decodeAction(action, publicClient)))
+      : [];
 
   // end date is specified on the Council Confirmation stage or
   // when proposal is an emergency -> the Council Approval stage
@@ -34,8 +49,9 @@ export function toProposalDetails(proposal: IProposal | undefined): ProposalDeta
   if (parsedEndDate) {
     formattedEndDate = getSimpleRelativeTimeFromDate(parsedEndDate);
   }
+  const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
 
-  return { ...proposal, createdAt, endDate: formattedEndDate };
+  return { ...proposal, actions: decodedActions, createdAt, endDate: formattedEndDate };
 }
 
 // parse a date string or unix timestamp as a string
@@ -59,5 +75,31 @@ function getSimpleRelativeTimeFromDate(value: Dayjs) {
     return `${Math.abs(diffWeeks)} weeks`;
   } else {
     return `${Math.abs(diffDays)} days`;
+  }
+}
+
+/**
+ * Decodes an action using the provided ABI and returns the raw and decoded action.
+ * @param action - The action to decode.
+ * @param client - The PublicClient instance used for fetching ABI and checking proxy contracts.
+ * @returns An object containing the raw and decoded action.
+ * If the action failed to decode, the decoded action will be undefined.
+ */
+async function decodeAction(action: IAction, client: PublicClient) {
+  const rawAction = { ...action, value: BigInt(action.to) };
+
+  try {
+    const implementationAddress = await checkIfProxyContract(action.to as Address, client);
+    const resolvedAddress = implementationAddress ?? (action.to as Address);
+    const abi = await fetchAbi(resolvedAddress, client);
+    const decodedAction = decodeActionData(abi, rawAction);
+
+    const actionFailedToDecode =
+      decodedAction.args.length === 0 && decodedAction.functionName === null && decodedAction.functionAbi === null;
+
+    return { raw: rawAction, decoded: actionFailedToDecode ? undefined : decodedAction };
+  } catch (error) {
+    logger.error("Failed to decode action", error, { action });
+    return { raw: rawAction, decoded: undefined };
   }
 }
