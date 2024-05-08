@@ -1,32 +1,21 @@
-import { Address } from "viem";
-import { whatsabi } from "@shazow/whatsabi";
-import { usePublicClient } from "wagmi";
-import { AbiFunction } from "abitype";
-import { useQuery } from "@tanstack/react-query";
-import { isAddress } from "@/utils/evm";
 import { PUB_CHAIN, PUB_ETHERSCAN_API_KEY } from "@/constants";
-import { useAlerts } from "@/context/Alerts";
+import { type ChainName } from "@/utils/chains";
+import { isAddress } from "@/utils/evm";
 import { getImplementation, isProxyContract } from "@/utils/proxies";
-import { ChainName } from "@/utils/chains";
+import { whatsabi } from "@shazow/whatsabi";
+import { useQuery } from "@tanstack/react-query";
+import { type AbiFunction } from "abitype";
+import { type Address, type PublicClient } from "viem";
+import { usePublicClient } from "wagmi";
 
 const CHAIN_NAME = PUB_CHAIN.name.toLowerCase() as ChainName;
 
 export const useAbi = (contractAddress: Address) => {
-  const { addAlert } = useAlerts();
   const publicClient = usePublicClient({ chainId: PUB_CHAIN.id });
 
   const { data: implementationAddress, isLoading: isLoadingImpl } = useQuery<Address | null>({
     queryKey: ["proxy-check", contractAddress, !!publicClient],
-    queryFn: () => {
-      if (!contractAddress || !publicClient) return null;
-
-      return isProxyContract(publicClient, contractAddress)
-        .then((isProxy) => {
-          if (!isProxy) return null;
-          return getImplementation(publicClient, contractAddress);
-        })
-        .catch(() => null);
-    },
+    queryFn: () => checkIfProxyContract(contractAddress, publicClient),
     retry: 4,
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -41,53 +30,8 @@ export const useAbi = (contractAddress: Address) => {
     isLoading,
     error,
   } = useQuery<AbiFunction[], Error>({
-    queryKey: ["abi", resolvedAddress || "", !!publicClient],
-    queryFn: () => {
-      if (!resolvedAddress || !isAddress(resolvedAddress) || !publicClient) {
-        return Promise.resolve([]);
-      }
-
-      const abiLoader = getEtherscanAbiLoader();
-      return whatsabi
-        .autoload(resolvedAddress, {
-          provider: publicClient,
-          abiLoader,
-          followProxies: false,
-          enableExperimentalMetadata: true,
-        })
-        .then(({ abi }) => {
-          const functionItems: AbiFunction[] = [];
-          for (const item of abi) {
-            if (item.type === "event") continue;
-
-            functionItems.push({
-              name: (item as any).name ?? "(function)",
-              inputs: item.inputs ?? [],
-              outputs: item.outputs ?? [],
-              stateMutability: item.stateMutability || "payable",
-              type: item.type,
-            });
-          }
-          functionItems.sort((a, b) => {
-            const a_RO = ["pure", "view"].includes(a.stateMutability);
-            const b_RO = ["pure", "view"].includes(b.stateMutability);
-
-            if (a_RO === b_RO) return 0;
-            else if (a_RO) return 1;
-            else if (b_RO) return -1;
-            return 0;
-          });
-          return functionItems;
-        })
-        .catch((err) => {
-          console.error(err);
-          addAlert("Cannot fetch", {
-            description: "The details of the contract could not be fetched",
-            type: "error",
-          });
-          throw err;
-        });
-    },
+    queryKey: ["abi", resolvedAddress ?? "", !!publicClient],
+    queryFn: () => fetchAbi(resolvedAddress, publicClient),
     retry: 4,
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -104,7 +48,48 @@ export const useAbi = (contractAddress: Address) => {
   };
 };
 
-function getEtherscanAbiLoader() {
+export function checkIfProxyContract(contractAddress: Address, publicClient: PublicClient | undefined) {
+  if (!contractAddress || !publicClient) return null;
+
+  return isProxyContract(publicClient, contractAddress)
+    .then((isProxy) => (isProxy ? getImplementation(publicClient, contractAddress) : null))
+    .catch(() => null);
+}
+
+export async function fetchAbi(resolvedAddress: Address | null | undefined, publicClient: PublicClient | undefined) {
+  if (!resolvedAddress || !isAddress(resolvedAddress) || !publicClient) {
+    return [];
+  }
+
+  const abiLoader = getEtherscanAbiLoader();
+  const { abi } = await whatsabi.autoload(resolvedAddress, {
+    provider: publicClient,
+    abiLoader,
+    followProxies: false,
+    enableExperimentalMetadata: true,
+  });
+
+  return abi
+    .flatMap((item) =>
+      item.type !== "event"
+        ? ({
+            name: item.name ?? "(function)",
+            inputs: item.inputs ?? [],
+            outputs: item.outputs ?? [],
+            stateMutability: item.stateMutability ?? "payable",
+            type: item.type,
+          } as AbiFunction)
+        : []
+    )
+    .sort((a, b) => {
+      const a_RO = ["pure", "view"].includes(a.stateMutability);
+      const b_RO = ["pure", "view"].includes(b.stateMutability);
+
+      return a_RO ? (b_RO ? 0 : 1) : b_RO ? -1 : 0;
+    });
+}
+
+export function getEtherscanAbiLoader() {
   switch (CHAIN_NAME) {
     case "mainnet":
       return new whatsabi.loaders.EtherscanABILoader({
