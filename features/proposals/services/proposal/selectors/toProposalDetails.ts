@@ -30,11 +30,14 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   dayjs.extend(relativeTime);
 
   // decode actions
-  const client = getPublicClient(config, { chainId: PUB_CHAIN.id });
-  const transformedActions =
-    !!proposal.actions && client
-      ? await Promise.all(proposal.actions.map((action) => decodeAction(action, client)))
-      : [];
+  let transformedActions: DetailedAction[] = [];
+  if (proposal.actions) {
+    const client = getPublicClient(config, { chainId: PUB_CHAIN.id });
+
+    if (client) {
+      transformedActions = await Promise.all(proposal.actions.map((action) => decodeAction(action, client)));
+    }
+  }
 
   // parse dates
   const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
@@ -84,7 +87,7 @@ function getSimpleRelativeTimeFromDate(value: Dayjs) {
  * If the action failed to decode, the decoded action will be undefined.
  */
 async function decodeAction(action: IAction, client: PublicClient): Promise<DetailedAction> {
-  const rawAction = { ...action, value: BigInt(action.to) };
+  const rawAction = { ...action, value: BigInt(action.value) };
 
   try {
     const implementationAddress = await checkIfProxyContract(action.to as Address, client);
