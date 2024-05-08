@@ -15,6 +15,8 @@ export default function ProposalDetails() {
 
   if (proposal) {
     const showActions = (proposal.actions?.length ?? 0) > 0;
+    const showVoting = false;
+    const showIncludedPIPS = false;
 
     return (
       <>
@@ -24,7 +26,7 @@ export default function ProposalDetails() {
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
               {proposal.body && <BodySection body={proposal.body} />}
-              <Card>Voting terminal</Card>
+              {showVoting && <Card>Voting terminal</Card>}
               {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
               {showActions && <ProposalAction actions={proposal.actions} />}
             </div>
@@ -32,7 +34,7 @@ export default function ProposalDetails() {
             {/* Additional Information */}
             <div className="flex flex-col gap-y-6 md:w-[33%]">
               <CardResources resources={proposal.resources} />
-              <Card>Card Status stub</Card>
+              {showIncludedPIPS && <Card>Card Status stub</Card>}
             </div>
           </div>
         </MainSection>
