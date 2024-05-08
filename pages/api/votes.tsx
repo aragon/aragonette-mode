@@ -1,8 +1,8 @@
 import { type IProposalVote } from "@/features/proposals";
-import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
-import { checkParam, parseStageParam } from "@/utils/api-utils";
+import { checkParam, parseStageParam, printStageParam } from "@/utils/api-utils";
 import { type IPaginatedResponse, type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import VercelCache from "@/services/cache/VercelCache";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,10 +14,15 @@ export default async function handler(
     const parsedProposalId = checkParam(proposalId, "proposalId");
     const parsedStage = checkParam(stage, "stage");
 
-    const votes = await buildVotesResponse(parsedProposalId, parseStageParam(parsedStage));
+    const cache = new VercelCache();
+
+    const stageEnum = printStageParam(parseStageParam(parsedStage));
+
+    const votes = (await cache.get<IProposalVote[]>(`votes-PIP-${parsedProposalId}-${stageEnum}`)) ?? [];
 
     res.status(200).json({ data: votes, pagination: { total: votes.length } });
   } catch (error: any) {
+    // TODO: Handle error cases
     res.status(400).json({ error: { message: error.message } });
   }
 }
