@@ -3,7 +3,7 @@ import { generateBreadcrumbs } from "@/utils/nav";
 import { Card } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { BodySection, CardResources, HeaderProposal, TransparencyReport } from "../components";
+import { BodySection, CardResources, HeaderProposal, ProposalAction, TransparencyReport } from "../components";
 import { proposal as proposalQueryOptions } from "../services/proposal/query-options";
 
 export default function ProposalDetails() {
@@ -26,7 +26,7 @@ export default function ProposalDetails() {
               {proposal.body && <BodySection body={proposal.body} />}
               <Card>Voting terminal</Card>
               {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
-              {showActions && <ActionsModule actions={proposal.actions} />}
+              {showActions && <ProposalAction actions={proposal.actions} />}
             </div>
 
             {/* Additional Information */}
