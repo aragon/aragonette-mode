@@ -1,7 +1,7 @@
 import { decodeCamelCase } from "@/utils/case";
 import { InputText } from "@aragon/ods";
 import { type AbiFunction } from "viem";
-import { type CallParameterFieldType, resolveValue, resolveAddon } from "./decoderUtils";
+import { resolveAddon, resolveValue, type CallParameterFieldType } from "./decoderUtils";
 
 interface ICallParamFiledProps {
   value: CallParameterFieldType;
