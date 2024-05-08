@@ -253,7 +253,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
  * @param  proposalStages - Array of proposal stage objects.
  * @returns An array of arrays, where each inner array contains linked proposal stages.
  */
-async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
+export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
   const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
   const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
   const communityVotingProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);
@@ -361,6 +361,16 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const proposalNumber = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? "";
     const pip = `${isEmergency ? "TBD" : "PIP"}-${proposalNumber}`;
 
+    const actions = matchedProposalStages
+      .find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)
+      ?.actions?.map((action) => {
+        return {
+          to: action.to,
+          value: action.value.toString(),
+          data: action.data,
+        };
+      });
+
     return {
       pip,
       title,
@@ -372,6 +382,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       currentStage,
       publisher,
       stages,
+      actions,
     };
   });
 }

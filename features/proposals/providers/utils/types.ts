@@ -4,6 +4,7 @@ import {
   type ProposalStages,
   type IProposalResource,
 } from "@/features/proposals/services/proposal/domain";
+import { type Action } from "@/utils/types";
 
 export type Vote = {
   id: string;
@@ -20,6 +21,7 @@ export type VotingScores = {
 };
 
 export type VotingData = {
+  providerId: string;
   startDate: string;
   endDate: string;
   choices: string[];
@@ -46,6 +48,7 @@ export type ProposalStage = {
     id: ProposalStages;
     link: string;
   }[];
+  actions?: Action[];
 };
 
 export interface IProposalStageProvider {
