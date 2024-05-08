@@ -19,23 +19,20 @@ interface ITransparencyReportProps {
 
 export const TransparencyReport: React.FC<IHeaderProposalProps> = (props) => {
   const {
-    proposal: { status, title, isEmergency, description, publisher, type, createdAt: startDate, endDate },
+    proposal: { body },
   } = props;
-  console.log("Proposal: ", props);
 
   return (
     <CardCollapsible
       buttonLabelClosed="Read full report"
       buttonLabelOpened="Read less"
-      collapsedSize="sm"
+      collapsedSize="md"
       onToggle={function noRefCheck() {}}
       className="flex w-full flex-col bg-neutral-0"
     >
-      {/* Wrapper */}
-      {/* Title & description */}
       <Heading size="h2">Council Transparency Report</Heading>
       <hr className="mt-4 rounded-full border-neutral-100" />
-      <DocumentParser document={description} />
+      <DocumentParser document={body} />
     </CardCollapsible>
   );
 };

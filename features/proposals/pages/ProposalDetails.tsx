@@ -3,7 +3,7 @@ import { generateBreadcrumbs } from "@/utils/nav";
 import { Card } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { CardResources, HeaderProposal, TransparencyReport, AbstractSection } from "../components";
+import { CardResources, HeaderProposal, TransparencyReport, BodySection } from "../components";
 import { proposal as proposalQueryOptions } from "../services/proposal/query-options";
 
 const mockResources = [
@@ -27,7 +27,7 @@ export default function ProposalDetails() {
           <div className="flex w-full flex-col gap-x-12 gap-y-6 md:flex-row">
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
-              <AbstractSection proposal={proposal} />
+              <BodySection proposal={proposal} />
               <Card>Voting terminal</Card>
               <TransparencyReport proposal={proposal} />
               <Card>Actions</Card>
