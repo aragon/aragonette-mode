@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import { Action } from "@/utils/types";
-import { AbiFunction, Address, Hex, decodeFunctionData, toFunctionSelector } from "viem";
+import { useState, useEffect } from "react";
+import { type AbiFunction, type Hex, decodeFunctionData, toFunctionSelector, type Address } from "viem";
 import { useAbi } from "./useAbi";
-
-type EvmValue = string | Hex | Address | number | bigint | boolean;
+import { type Action } from "@/utils/types";
 
 export function useAction(action: Action) {
   const { abi, isLoading } = useAbi(action.to as Address);
@@ -12,23 +10,46 @@ export function useAction(action: Action) {
   const [actionArgs, setActionArgs] = useState<EvmValue[]>([]);
 
   useEffect(() => {
-    const hexSelector = action.data.slice(0, 10) as Hex;
-    const func = abi.find((item) => item.type === "function" && hexSelector === toFunctionSelector(item));
-    if (!func || func.type !== "function") return;
+    if (isLoading) return;
 
-    const { args, functionName } = decodeFunctionData({
-      abi,
-      data: action.data as Hex,
-    });
-    setFunctionAbi(func);
+    const { args, functionAbi, functionName } = decodeActionData(abi, action);
+    setActionArgs(args);
+    setFunctionAbi(functionAbi);
     setFunctionName(functionName);
-    setActionArgs((args as any as EvmValue[]) || []);
-  }, [action.data, action.to, isLoading]);
+  }, [abi, action, isLoading]);
 
   return {
     isLoading,
     functionName,
     functionAbi,
-    args: actionArgs || [],
+    args: actionArgs,
+  };
+}
+
+type EvmValue = string | Hex | Address | number | bigint | boolean;
+
+export interface DecodedAction {
+  functionName: string | null;
+  functionAbi: AbiFunction | null;
+  args: EvmValue[];
+}
+
+export function decodeActionData(abi: AbiFunction[], action: Action): DecodedAction {
+  const hexSelector = action.data.slice(0, 10) as Hex;
+  const functionAbi = abi.find((item) => item.type === "function" && hexSelector === toFunctionSelector(item));
+
+  if (!functionAbi || functionAbi.type !== "function") {
+    return { functionName: null, functionAbi: null, args: [] };
+  }
+
+  const { args, functionName } = decodeFunctionData({
+    abi,
+    data: action.data as Hex,
+  });
+
+  return {
+    functionName,
+    functionAbi,
+    args: args as EvmValue[],
   };
 }

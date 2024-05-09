@@ -23,9 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const votes = (await cache.get<IProposalVote[]>(`votes-PIP-${parsedProposalId}-${stageEnum}`)) ?? [];
 
-    const filteredVotes = votes.filter((vote) => vote.address === parsedAddress);
+    const hasVoted = votes.some((vote) => vote.address === parsedAddress);
 
-    return res.status(200).json({ address: parsedAddress, hasVoted: filteredVotes.length > 0 });
+    return res.status(200).json({ address: parsedAddress, hasVoted });
   } catch (error: any) {
     res.status(400).json({ error: { message: error.message } });
   }

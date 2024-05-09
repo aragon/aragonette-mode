@@ -3,7 +3,7 @@ import { generateBreadcrumbs } from "@/utils/nav";
 import { Card } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { HeaderProposal } from "../components";
+import { BodySection, CardResources, HeaderProposal, ProposalAction, TransparencyReport } from "../components";
 import { proposal as proposalQueryOptions } from "../services/proposal/query-options";
 
 export default function ProposalDetails() {
@@ -14,6 +14,10 @@ export default function ProposalDetails() {
   const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
 
   if (proposal) {
+    const showActions = (proposal.actions?.length ?? 0) > 0;
+    const showVoting = false;
+    const showIncludedPIPS = false;
+
     return (
       <>
         <HeaderProposal breadcrumbs={breadcrumbs} proposal={proposal} />
@@ -21,16 +25,16 @@ export default function ProposalDetails() {
           <div className="flex w-full flex-col gap-x-12 gap-y-6 md:flex-row">
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
-              <Card>Abstract</Card>
-              <Card>Voting terminal</Card>
-              <Card>Transparency report</Card>
-              <Card>Actions</Card>
+              {proposal.body && <BodySection body={proposal.body} />}
+              {showVoting && <Card>Voting terminal</Card>}
+              {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
+              {showActions && <ProposalAction actions={proposal.actions} />}
             </div>
 
             {/* Additional Information */}
-            <div className="flex flex-col gap-y-6 md:w-[27%]">
-              <Card>Card Resources stub</Card>
-              <Card>Card Status Stub</Card>
+            <div className="flex flex-col gap-y-6 md:w-[33%]">
+              <CardResources resources={proposal.resources} />
+              {showIncludedPIPS && <Card>Card Status stub</Card>}
             </div>
           </div>
         </MainSection>

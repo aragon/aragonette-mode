@@ -17,8 +17,6 @@ function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
 
 export const getSnapshotVotesData: IProposalVotesProvider = async function (params: { providerId: string }) {
   return requestProposalData(snapshotVotesQuery(params.providerId))
-    .then((res) => {
-      return res.data.votes as SnapshotVoteData[];
-    })
+    .then((res) => res.data.votes as SnapshotVoteData[])
     .then(parseSnapshotVoteData);
 };

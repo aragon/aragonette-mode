@@ -23,6 +23,11 @@ export interface ICreator {
   link?: string;
 }
 
+export type IProposalResource = {
+  name: string;
+  link: string;
+};
+
 export interface IProposalStage {
   id: ProposalStages;
   status: ProposalStatus;
@@ -30,7 +35,7 @@ export interface IProposalStage {
   startTimestamp?: string;
   endTimestamp?: string;
   creator: ICreator[];
-  link: string;
+  resources?: IProposalResource[];
   voting?: VotingData;
 }
 
@@ -39,17 +44,26 @@ export enum ProposalTracks {
   STANDARD = "Standard",
 }
 
+export interface IAction {
+  to: string;
+  value: string;
+  data: string;
+}
+
 export interface IProposal {
   pip: string;
   title: string;
   description: string;
+  body?: string;
+  transparencyReport?: string;
+  resources?: IProposalResource[];
   status: ProposalStatus;
   type: string;
   isEmergency?: boolean;
   currentStage: ProposalStages;
   stages: IProposalStage[];
+  actions?: IAction[];
   publisher: IPublisher[];
-  actions?: string[];
 }
 
 export interface IProposalVote {
@@ -63,4 +77,9 @@ export interface IProposalVote {
 export interface IHasVoted {
   address: Address;
   hasVoted: boolean;
+}
+
+export enum Votes {
+  YES = "Yes",
+  NO = "No",
 }
