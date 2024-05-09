@@ -1,27 +1,24 @@
-import { type IHasVoted, type IProposalVote } from "@/features/proposals";
+import { type IHasVoted, type IProposalVote, type IProposal } from "@/features/proposals";
 import { checkParam, parseStageParam, printStageParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
+import { getCachedVotes } from "@/features/proposals/providers/utils/votes-builder";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
-import VercelCache from "@/services/cache/VercelCache";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IHasVoted | IError>) {
-  const { proposal_id: proposalId, stage, address } = req.query;
+  const { proposal_id: proposalId, stage: stageId, address } = req.query;
 
   try {
     const parsedProposalId = checkParam(proposalId, "proposalId");
-    const parsedStage = checkParam(stage, "stage");
+    const parsedStage = checkParam(stageId, "stage");
+    const stageEnum = parseStageParam(parsedStage);
     const parsedAddress = checkParam(address, "address");
 
     if (!isAddress(parsedAddress)) {
       throw new Error("Invalid address parameter");
     }
 
-    const cache = new VercelCache();
-
-    const stageEnum = printStageParam(parseStageParam(parsedStage));
-
-    const votes = (await cache.get<IProposalVote[]>(`votes-PIP-${parsedProposalId}-${stageEnum}`)) ?? [];
+    const votes = await getCachedVotes(parsedProposalId, stageEnum);
 
     const hasVoted = votes.some((vote) => vote.address === parsedAddress);
 
