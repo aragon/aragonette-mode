@@ -5,7 +5,7 @@ import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-b
 import { printStageParam } from "@/utils/api-utils";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
-  // Enable authentication for cron job
+  // TODO: Enable authentication for cron job
   /*
   const authHeader = req.headers.get('authorization');
   if (
@@ -27,6 +27,9 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
     for (const proposal of proposals) {
       for (const stage of proposal.stages) {
         if (!stage.voting) {
+          continue;
+        }
+        if (stage.status === "active") {
           continue;
         }
         const votes = await buildVotesResponse(stage.voting.providerId, stage.id);
