@@ -12,6 +12,7 @@ import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
+import VercelCache from "@/services/cache/VercelCache";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -408,4 +409,12 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       actions,
     };
   });
+}
+
+export async function getCacheProposals(): Promise<IProposal[]> {
+  const cache = new VercelCache();
+
+  const proposals = (await cache.get<IProposal[]>("proposals")) ?? [];
+
+  return proposals;
 }
