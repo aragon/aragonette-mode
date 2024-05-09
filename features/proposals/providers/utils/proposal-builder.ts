@@ -414,7 +414,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
 export async function getCacheProposals(): Promise<IProposal[]> {
   const cache = new VercelCache();
 
-  const proposals = (await cache.get<IProposal[]>("proposals")) ?? [];
+  const proposals = (await cache.get<IProposal[]>("proposals")) ?? (await buildProposalResponse());
 
   return proposals;
 }
