@@ -14,7 +14,7 @@ export const CardResources: React.FC<ICardResourcesProps> = (props) => {
   }
 
   return (
-    <Card className="flex flex-col gap-y-4 p-6">
+    <Card className="flex flex-col gap-y-4 p-6 shadow-neutral">
       <Heading size="h3">Resources</Heading>
       <div className="flex flex-col gap-y-3">
         {resources?.map((resource) => (

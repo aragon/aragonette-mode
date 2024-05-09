@@ -78,3 +78,8 @@ export interface IHasVoted {
   address: Address;
   hasVoted: boolean;
 }
+
+export enum Votes {
+  YES = "Yes",
+  NO = "No",
+}
