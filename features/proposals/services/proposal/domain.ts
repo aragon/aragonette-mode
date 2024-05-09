@@ -55,6 +55,7 @@ export interface IProposal {
   title: string;
   description: string;
   body?: string;
+  transparencyReport?: string;
   resources?: IProposalResource[];
   status: ProposalStatus;
   type: string;
