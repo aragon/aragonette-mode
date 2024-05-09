@@ -1,38 +1,20 @@
-import { MainSection } from "@/components/layout/mainSection";
-import {
-  AvatarIcon,
-  Breadcrumbs,
-  CardCollapsible,
-  DocumentParser,
-  Heading,
-  IconType,
-  Tag,
-  type IBreadcrumbsLink,
-  type TagVariant,
-} from "@aragon/ods";
-import { type ProposalStatus } from "../../services/proposal/domain";
-import { type ProposalDetail } from "../../services/proposal/selectors";
+import { CardCollapsible, DocumentParser, Heading } from "@aragon/ods";
+import { proseClasses } from "../bodySection/bodySection";
 
 interface ITransparencyReportProps {
-  proposal: ProposalDetail;
+  report: string;
 }
 
-export const TransparencyReport: React.FC<IHeaderProposalProps> = (props) => {
-  const {
-    proposal: { body },
-  } = props;
+export const TransparencyReport: React.FC<ITransparencyReportProps> = (props) => {
+  const { report } = props;
 
   return (
-    <CardCollapsible
-      buttonLabelClosed="Read full report"
-      buttonLabelOpened="Read less"
-      collapsedSize="md"
-      onToggle={function noRefCheck() {}}
-      className="flex w-full flex-col bg-neutral-0"
-    >
-      <Heading size="h2">Council Transparency Report</Heading>
-      <hr className="mt-4 rounded-full border-neutral-100" />
-      <DocumentParser document={body} />
+    <CardCollapsible buttonLabelClosed="Read full report" buttonLabelOpened="Read less" collapsedSize="md">
+      <div className="flex flex-col gap-y-4">
+        <Heading size="h2">Council Transparency Report</Heading>
+        <hr className="rounded-full border-neutral-100" />
+        <DocumentParser document={report} className={proseClasses} />
+      </div>
     </CardCollapsible>
   );
 };
