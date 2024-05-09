@@ -83,9 +83,13 @@ export async function getCachedVotes(proposalId: string, stageEnum: ProposalStag
       votes = await buildVotesResponse(stage.voting.providerId, stage.id);
     } else {
       // Cached votes
-      votes =
-        (await cache.get<IProposalVote[]>(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`)) ??
-        (await buildVotesResponse(stage.voting.providerId, stage.id));
+      let cachedVotes = await cache.get<IProposalVote[]>(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`);
+
+      if (!cachedVotes) {
+        const upVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
+        await cache.set(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`, upVotes);
+        cachedVotes = upVotes;
+      }
     }
   }
 

@@ -411,10 +411,16 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   });
 }
 
-export async function getCacheProposals(): Promise<IProposal[]> {
+export async function getCachedProposals(): Promise<IProposal[]> {
   const cache = new VercelCache();
 
-  const proposals = (await cache.get<IProposal[]>("proposals")) ?? (await buildProposalResponse());
+  let proposals = await cache.get<IProposal[]>("proposals");
+
+  if (!proposals) {
+    const freshProposals = await buildProposalResponse();
+    await cache.set("proposals", freshProposals);
+    proposals = freshProposals;
+  }
 
   return proposals;
 }
