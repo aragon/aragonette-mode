@@ -56,6 +56,27 @@ function computeDescription(proposalStages: ProposalStage[]): string {
 }
 
 /**
+ * Computes the body of a proposal based on its stages. Similar to computeDescription,
+ * it searches through the stages in the order of:
+ * 1. COUNCIL_APPROVAL
+ * 2. DRAFT
+ * 3. COMMUNITY_VOTING
+ * It returns the description of the first stage found in this priority order.
+ * If none of these stages have a description, it returns an empty string.
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @returns The description of the current proposal stage or an empty string if not found.
+ */
+function computeBody(proposalStages: ProposalStage[]): string {
+  return (
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.body ??
+    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.body ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.body ??
+    ""
+  );
+}
+
+/**
  * Determines the current stage of a proposal by examining the proposal stages.
  * The function sorts the stages, looks for specific stages (DRAFT, COUNCIL_CONFIRMATION),
  * and uses a set of rules to determine the current stage based on the presence and order of these stages.
@@ -349,6 +370,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const isEmergency = matchedProposalStages.some((stage) => stage.isEmergency);
     const publisher = computePublisher(matchedProposalStages, isEmergency);
     const description = computeDescription(matchedProposalStages);
+    const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
 
     // sorted stages
@@ -375,6 +397,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       pip,
       title,
       description,
+      body,
       resources,
       status,
       isEmergency,
