@@ -3,13 +3,12 @@ import { checkParam, parseStageParam, printStageParam } from "@/utils/api-utils"
 import { type IPaginatedResponse, type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCachedVotes } from "@/features/proposals/providers/utils/votes-builder";
-import VercelCache from "@/services/cache/VercelCache";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IPaginatedResponse<IProposalVote> | IError>
 ) {
-  const { proposal_id: proposalId, stage: stageId } = req.query;
+  const { proposalId, stageId } = req.query;
 
   try {
     const parsedProposalId = checkParam(proposalId, "proposalId");

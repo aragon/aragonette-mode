@@ -28,6 +28,7 @@
     "@tanstack/react-query-devtools": "^5.29.2",
     "@tanstack/react-query-persist-client": "^5.28.8",
     "@typescript-eslint/eslint-plugin": "latest",
+    "@vercel/kv": "^1.0.1",
     "@web3modal/wagmi": "^4.1.1",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.11",
