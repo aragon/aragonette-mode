@@ -11,7 +11,7 @@ import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
-import { type ProposalStage } from "./types";
+import { type ProposalStage } from "../../models/proposals";
 import VercelCache from "@/services/cache/VercelCache";
 
 /**

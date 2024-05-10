@@ -1,5 +1,5 @@
 import { GITHUB_API_URL } from "@/constants";
-import { type IProposalStageProvider } from "../utils/types";
+import { type IProposalStageProvider } from "../../models/proposals";
 import { extractHeader, extractBody, parseHeader, downloadPIPs } from "./utils";
 
 interface IGetGitHubProposalStagesDataParams {

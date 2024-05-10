@@ -1,4 +1,4 @@
-import { IProposalVotesProvider } from "@/features/proposals/providers/utils/types";
+import { IProposalVotesProvider } from "@/features/proposals/models/proposals";
 import { requestVotesData, parseMultisigVotesData } from "./utils";
 import { Address } from "viem";
 

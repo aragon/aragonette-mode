@@ -1,6 +1,6 @@
 import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
 import { type Address } from "viem";
-import { type VotingData } from "../../providers/utils/types";
+import { type VotingData } from "../../models/proposals";
 
 export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
 

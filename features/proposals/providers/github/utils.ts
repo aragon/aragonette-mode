@@ -5,7 +5,7 @@ import {
   type IProposalResource,
   type ProposalStatus,
 } from "../../services/proposal/domain";
-import { type ProposalStage } from "../utils/types";
+import { type ProposalStage } from "../../models/proposals";
 
 type GithubData = {
   link: string;

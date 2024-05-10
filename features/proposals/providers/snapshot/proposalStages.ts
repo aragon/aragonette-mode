@@ -1,4 +1,4 @@
-import { type IProposalStageProvider } from "../utils/types";
+import { type IProposalStageProvider } from "../../models/proposals";
 import { snapshotProposalsQuery } from "./gql";
 import { type SnapshotProposalData } from "./types";
 import { parseSnapshotData, requestProposalData } from "./utils";

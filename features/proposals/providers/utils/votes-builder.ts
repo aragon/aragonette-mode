@@ -2,7 +2,7 @@ import { PUB_CHAIN, PUB_MULTISIG_ADDRESS } from "@/constants";
 import { getSnapshotVotesData } from "../snapshot/votes";
 import { getMultisigVotesData } from "../multisig/votes";
 import { ProposalStages } from "../../services";
-import { type Vote } from "@/features/proposals/providers/utils/types";
+import { type Vote } from "@/features/proposals/models/proposals";
 import { Address } from "viem";
 import VercelCache from "@/services/cache/VercelCache";
 import { type IProposalVote, type IProposal } from "@/features/proposals";

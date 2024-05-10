@@ -1,6 +1,6 @@
 import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
 import { ProposalStages, type ProposalStatus } from "../../services";
-import { type ProposalStage, type VotingData, type VotingScores } from "../utils/types";
+import { type ProposalStage, type VotingData, type VotingScores } from "../../models/proposals";
 import { type SnapshotProposalData } from "./types";
 
 const computeStatus = (proposalState: string, scores: VotingScores[]): ProposalStatus => {
