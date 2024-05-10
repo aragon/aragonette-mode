@@ -1,6 +1,6 @@
 import { IProposalVotesProvider } from "@/features/proposals/providers/utils/types";
 import { requestVotesData, parseMultisigVotesData } from "./utils";
-import { Address } from "viem";
+import { type Address } from "viem";
 
 interface IGetMultisigVotesDataParams {
   chain: number;

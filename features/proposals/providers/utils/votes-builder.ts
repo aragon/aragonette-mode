@@ -1,11 +1,12 @@
 import { PUB_CHAIN, PUB_MULTISIG_ADDRESS } from "@/constants";
-import { IProposalVote } from "@/features/proposals";
 import { getSnapshotVotesData } from "../snapshot/votes";
 import { getMultisigVotesData } from "../multisig/votes";
 import { ProposalStages } from "../../services";
 import { type Vote } from "@/features/proposals/providers/utils/types";
-import { Address } from "viem";
-import { getProposalStages, matchProposalStages } from "./proposal-builder";
+import { type Address } from "viem";
+import VercelCache from "@/services/cache/VercelCache";
+import { type IProposalVote, type IProposal } from "@/features/proposals";
+import { printStageParam } from "@/utils/api-utils";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {
@@ -53,19 +54,44 @@ const parseVotesData = (data: Vote[]): IProposalVote[] => {
   });
 };
 
-export async function buildVotesResponse(proposalId: string, proposalStage: ProposalStages): Promise<IProposalVote[]> {
-  // This is needed while we don't have a proper way to get the proposals and stages from the store (cache)
-  const proposalStages = await getProposalStages();
-  const allMatchedProposalStages = await matchProposalStages(proposalStages);
-  const currentProposal = allMatchedProposalStages.find((stage) => stage.some((s) => s.pip === proposalId));
-  const currentStage = currentProposal ? currentProposal.find((stage) => stage.id === proposalStage) : null;
-  const providerId = currentStage?.voting?.providerId;
-
-  if (!providerId) {
-    return [];
-  }
-
+export async function buildVotesResponse(providerId: string, proposalStage: ProposalStages): Promise<IProposalVote[]> {
   const proposalVotes = await getVotes(providerId, proposalStage);
 
   return parseVotesData(proposalVotes);
+}
+
+export async function getCachedVotes(proposalId: string, stageEnum: ProposalStages): Promise<IProposalVote[]> {
+  const cache = new VercelCache();
+
+  const proposals = await cache.get<IProposal[]>(`proposals`);
+  const proposal = proposals?.find((p) => p.pip === `PIP-${proposalId}`);
+
+  if (!proposal) {
+    throw new Error("Proposal not found");
+  }
+
+  const stage = proposal.stages.find((s) => s.id === stageEnum);
+
+  if (!stage) {
+    throw new Error("Stage not found");
+  }
+
+  let votes: IProposalVote[] = [];
+  if (stage.voting) {
+    if (stage.status === "active") {
+      // Fresh votes
+      votes = await buildVotesResponse(stage.voting.providerId, stage.id);
+    } else {
+      // Cached votes
+      const cachedVotes = await cache.get<IProposalVote[]>(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`);
+
+      if (!cachedVotes) {
+        const newVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
+        await cache.set(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`, newVotes);
+        votes = newVotes;
+      }
+    }
+  }
+
+  return votes;
 }
