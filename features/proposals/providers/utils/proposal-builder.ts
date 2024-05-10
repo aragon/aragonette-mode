@@ -372,6 +372,8 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const description = computeDescription(matchedProposalStages);
     const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
+    const includedPips = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.includedPips;
+    const parentPip = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.parentPip;
 
     // sorted stages
     const stages = buildProposalStageResponse(matchedProposalStages);
@@ -397,6 +399,8 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       pip,
       title,
       description,
+      includedPips,
+      parentPip,
       body,
       resources,
       status,
