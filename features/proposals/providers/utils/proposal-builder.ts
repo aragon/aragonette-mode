@@ -1,4 +1,12 @@
-import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
+import {
+  GITHUB_TRANSPARENCY_REPORTS_PATH,
+  GITHUB_PIPS_PATH,
+  GITHUB_REPO,
+  GITHUB_USER,
+  PUB_CHAIN,
+  PUB_MULTISIG_ADDRESS,
+  SNAPSHOT_SPACE,
+} from "@/constants";
 import {
   ProposalStages,
   type ProposalStatus,
@@ -239,7 +247,8 @@ export async function getProposalStages() {
   const proposalsGithubStage = await getGitHubProposalStagesData({
     user: GITHUB_USER,
     repo: GITHUB_REPO,
-    path: GITHUB_PATH,
+    pips_path: GITHUB_PIPS_PATH,
+    transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
   });
 
   const proposalsSnapshotStage = await getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE });
@@ -373,6 +382,9 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const description = computeDescription(matchedProposalStages);
     const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
+    const transparencyReport = matchedProposalStages.find(
+      (stage) => stage.id === ProposalStages.DRAFT
+    )?.transparency_report;
 
     // sorted stages
     const stages = buildProposalStageResponse(matchedProposalStages);
@@ -399,6 +411,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       title,
       description,
       body,
+      transparencyReport,
       resources,
       status,
       isEmergency,

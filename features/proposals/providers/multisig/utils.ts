@@ -154,7 +154,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       status: proposal.status,
       createdAt: proposal.createdAt,
       isEmergency: proposal.isEmergency,
-      resources: proposal.resources,
+      resources: proposal.resources ?? [],
       creator,
       link: proposal.link,
       voting,

@@ -78,7 +78,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     .slice(1)
     .map((v) => v.trim());
 
-  const resources = [...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]), { name: "GitHub", link }];
+  const resources = [...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]), { name: "GITHUB", link }];
   const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
 
   return {
