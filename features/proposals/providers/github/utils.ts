@@ -92,7 +92,7 @@ function parseIncludedPIPs(includedPips: string[]): IProposalResource[] {
 
   return includedPips.map((pip) => {
     const resource = parseMarkdownLink(pip);
-    const pipId = resource.name.match(pipPattern)?.[1];
+    const pipId = `PIP-${resource.name.match(pipPattern)?.[1]}`;
 
     return (
       // TODO use base url
