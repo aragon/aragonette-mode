@@ -3,7 +3,7 @@ import { getSnapshotVotesData } from "../snapshot/votes";
 import { getMultisigVotesData } from "../multisig/votes";
 import { ProposalStages } from "../../services";
 import { type Vote } from "@/features/proposals/providers/utils/types";
-import { Address } from "viem";
+import { type Address } from "viem";
 import VercelCache from "@/services/cache/VercelCache";
 import { type IProposalVote, type IProposal } from "@/features/proposals";
 import { printStageParam } from "@/utils/api-utils";
@@ -83,12 +83,12 @@ export async function getCachedVotes(proposalId: string, stageEnum: ProposalStag
       votes = await buildVotesResponse(stage.voting.providerId, stage.id);
     } else {
       // Cached votes
-      let cachedVotes = await cache.get<IProposalVote[]>(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`);
+      const cachedVotes = await cache.get<IProposalVote[]>(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`);
 
       if (!cachedVotes) {
-        const upVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
-        await cache.set(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`, upVotes);
-        cachedVotes = upVotes;
+        const newVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
+        await cache.set(`votes-PIP-${proposalId}-${printStageParam(stageEnum)}`, newVotes);
+        votes = newVotes;
       }
     }
   }

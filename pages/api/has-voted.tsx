@@ -6,7 +6,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IHasVoted | IError>) {
-  const { proposal_id: proposalId, stage: stageId, address } = req.query;
+  const { proposalId, stageId, address } = req.query;
 
   try {
     const parsedProposalId = checkParam(proposalId, "proposalId");
@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const stageEnum = parseStageParam(parsedStage);
     const parsedAddress = checkParam(address, "address");
 
-    if (!isAddress(parsedAddress)) {
+    if (!isAddress(parsedAddress, { strict: false })) {
       throw new Error("Invalid address parameter");
     }
 

@@ -4,7 +4,7 @@ import {
   type IProposalResource,
 } from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
-import { Address } from "viem";
+import { type Address } from "viem";
 
 export type ProposalCreatedLogResponse = {
   actions: Action[];
