@@ -33,7 +33,7 @@ export const getGitHubProposalStagesData: IProposalStageProvider = async functio
     .map((proposal) => {
       const transparency_report = transparency_report_files.find((file) => {
         const file_link = file.link.split("/").pop();
-        return proposal.pip && file_link ? extractPIPNumber(file_link) === proposal.pip : false;
+        return proposal.pip && file_link ? extractProposalNumber(file_link) === proposal.pip : false;
       });
 
       if (transparency_report) {
@@ -50,7 +50,7 @@ export const getGitHubProposalStagesData: IProposalStageProvider = async functio
   return proposalStages;
 };
 
-function extractPIPNumber(link: string) {
+function extractProposalNumber(link: string) {
   const match = link.match(/-(\d+)/);
   return match ? match[1] : null;
 }
