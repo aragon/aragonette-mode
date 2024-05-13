@@ -9,7 +9,12 @@ export const BodySection: React.FC<IBodySectionProps> = (props) => {
   const { body } = props;
 
   return (
-    <CardCollapsible buttonLabelClosed="Read full PIP" buttonLabelOpened="Read less" collapsedSize="md">
+    <CardCollapsible
+      buttonLabelClosed="Read full PIP"
+      buttonLabelOpened="Read less"
+      collapsedSize="md"
+      className="shadow-neutral"
+    >
       <div className="flex flex-col gap-y-4">
         <Heading size="h2">Community PIP</Heading>
         <hr className="rounded-full border-neutral-100" />
