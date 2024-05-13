@@ -1,4 +1,4 @@
-import { GITHUB_TOKEN } from "@/constants";
+import { GITHUB_TOKEN, PUB_API_BASE_URL } from "@/constants";
 import {
   ProposalStages,
   type ICreator,
@@ -88,18 +88,15 @@ function extractIncludedPIPS(body: string): string[] {
 }
 
 function parseIncludedPIPs(includedPips: string[]): IProposalResource[] {
-  const pipPattern = /PIP-(\d+)/;
+  const pipPattern = /AIP|PIP-(\d+)/;
 
   return includedPips.map((pip) => {
     const resource = parseMarkdownLink(pip);
     const pipId = `PIP-${resource.name.match(pipPattern)?.[1]}`;
 
     return (
-      // TODO use base url
-      (
-        pipId ? { ...resource, link: `http://localhost:3000${ProposalDetails.getPath(pipId)}` } : resource
-      ) as IProposalResource
-    );
+      pipId ? { ...resource, link: `${PUB_API_BASE_URL}${ProposalDetails.getPath(pipId)}` } : resource
+    ) as IProposalResource;
   });
 }
 
