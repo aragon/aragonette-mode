@@ -13,6 +13,7 @@ import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
 import VercelCache from "@/services/cache/VercelCache";
+import { getChain } from "@/utils/chains";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -427,4 +428,9 @@ export async function getCachedProposals(): Promise<IProposal[]> {
   }
 
   return proposals;
+}
+
+export async function getCachedProposalById(proposalId: string): Promise<IProposal | undefined> {
+  const proposals = await getCachedProposals();
+  return proposals.find((proposal) => proposal.pip.toLowerCase() === proposalId.toLowerCase());
 }

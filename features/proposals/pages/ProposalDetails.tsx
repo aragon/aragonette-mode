@@ -10,8 +10,7 @@ export default function ProposalDetails() {
   const router = useRouter();
   const breadcrumbs = generateBreadcrumbs(router.asPath);
 
-  const proposalId = (((router.query.id as string)?.split("-")[1] as unknown as number) - 1).toString() || "0";
-  const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
+  const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId: router.query.id as string }));
 
   if (proposal) {
     const showActions = (proposal.actions?.length ?? 0) > 0;
