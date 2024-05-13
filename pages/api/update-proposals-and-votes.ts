@@ -43,6 +43,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
     res.status(200).json({ success: true });
   } catch (error) {
+    console.log(error);
     // TODO: Handle error cases
     res.status(500).json({ error: { message: "Internal server error" } });
   }

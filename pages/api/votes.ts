@@ -1,8 +1,8 @@
-import { type IProposalVote, type IProposal } from "@/features/proposals";
-import { checkParam, parseStageParam, printStageParam } from "@/utils/api-utils";
-import { type IPaginatedResponse, type IError } from "@/utils/types";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { type IProposalVote } from "@/features/proposals";
 import { getCachedVotes } from "@/features/proposals/providers/utils/votes-builder";
+import { checkParam, parseStageParam } from "@/utils/api-utils";
+import { type IError, type IPaginatedResponse } from "@/utils/types";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
