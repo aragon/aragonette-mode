@@ -60,7 +60,7 @@ function encodeSearchParams(baseUrl: string, params: Record<string, any>): strin
 
   // Iterate over object properties
   Object.entries(params).forEach(([key, value]) => {
-    searchParams.append(key, String(value)); // Ensure the value is a string
+    searchParams.append(key, String(value));
   });
 
   // Construct the URL with encoded query parameters
