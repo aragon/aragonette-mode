@@ -32,25 +32,40 @@ export function proposalList(params: IFetchProposalListParams = {}) {
 }
 
 export function proposal(params: IFetchProposalParams) {
+  const enabled = areAllPropertiesDefined(params);
   return queryOptions({
     queryKey: proposalKeys.detail(params),
     queryFn: async () => {
       const proposal = await proposalService.fetchProposal(params);
       return await toProposalDetails(proposal);
     },
+    enabled,
   });
 }
 
 export function proposalVotes(params: IFetchVotesParams) {
+  const enabled = areAllPropertiesDefined(params);
   return queryOptions({
     queryKey: proposalKeys.votes(params),
     queryFn: () => proposalService.fetchVotes(params),
+    enabled,
   });
 }
 
 export function voted(params: IFetchVotedParams) {
+  const enabled = areAllPropertiesDefined(params);
   return queryOptions({
     queryKey: proposalKeys.voted(params),
     queryFn: () => proposalService.voted(params),
+    enabled,
   });
+}
+
+function areAllPropertiesDefined<T>(obj: T): boolean {
+  for (const key in obj) {
+    if (obj[key] == null) {
+      return false;
+    }
+  }
+  return true;
 }
