@@ -56,8 +56,8 @@ export interface IProposal {
   description: string;
   body?: string;
   transparencyReport?: string;
-  resources?: IProposalResource[];
-  includedPips?: IProposalResource[];
+  resources: IProposalResource[];
+  includedPips: IProposalResource[];
   parentPip?: IProposalResource;
   status: ProposalStatus;
   type: string;

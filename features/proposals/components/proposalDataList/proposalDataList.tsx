@@ -25,8 +25,6 @@ export const ProposalDataList: React.FC = () => {
     fetchNextPage,
   } = useInfiniteQuery({
     ...proposalList(),
-    gcTime: Infinity,
-    staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
@@ -36,15 +34,7 @@ export const ProposalDataList: React.FC = () => {
       proposalsQueryData && !!address
         ? proposalsQueryData.proposals.map(({ result, id: proposalId }) => {
             const stageId = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
-
-            return {
-              ...voted({ proposalId, stageId, address }),
-              gcTime: Infinity,
-              staleTime: Infinity,
-              refetchOnMount: false,
-              refetchOnWindowFocus: false,
-              enabled: !!address,
-            };
+            return voted({ proposalId, stageId, address });
           })
         : [],
   });
