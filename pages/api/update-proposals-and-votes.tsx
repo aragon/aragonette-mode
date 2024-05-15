@@ -3,6 +3,7 @@ import VercelCache from "@/services/cache/VercelCache";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
 import { printStageParam } from "@/utils/api-utils";
+import { logger } from "@/services/logger";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
   // TODO: Enable authentication for cron job
@@ -44,7 +45,8 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
     res.status(200).json({ success: true });
   } catch (error) {
     // TODO: Handle error cases
-    console.error(error);
+    if (error instanceof Error) logger.error(error.message);
+    else logger.error(JSON.stringify(error));
     res.status(500).json({ error: { message: "Internal server error" } });
   }
 }
