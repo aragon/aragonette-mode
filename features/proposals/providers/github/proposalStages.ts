@@ -39,7 +39,7 @@ export const getGitHubProposalStagesData: IProposalStageProvider = async functio
       if (transparency_report) {
         proposal.transparency_report = transparency_report.data;
         proposal.resources.push({
-          name: "TRANSPARENCY_REPORT",
+          name: "Transparency Report",
           link: transparency_report.link,
         });
       }
