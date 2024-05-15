@@ -10,13 +10,12 @@ export default function ProposalDetails() {
   const router = useRouter();
   const breadcrumbs = generateBreadcrumbs(router.asPath);
 
-  const proposalId = (((router.query.id as string)?.split("-")[1] as unknown as number) - 1).toString() || "0";
-  const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
+  const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId: router.query.id as string }));
 
   if (proposal) {
     const showActions = (proposal.actions?.length ?? 0) > 0;
     const showVoting = false;
-    const showIncludedPIPS = false;
+    const showIncludedPIPS = (proposal.includedPips?.length ?? 0) > 0;
 
     return (
       <>
@@ -33,8 +32,8 @@ export default function ProposalDetails() {
 
             {/* Additional Information */}
             <div className="flex flex-col gap-y-6 md:w-[33%]">
-              <CardResources resources={proposal.resources} />
-              {showIncludedPIPS && <Card>Card Status stub</Card>}
+              <CardResources resources={proposal.resources} title="Resources" />
+              {showIncludedPIPS && <CardResources resources={proposal.includedPips} title="Included PIPs" />}
             </div>
           </div>
         </MainSection>

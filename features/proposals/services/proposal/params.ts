@@ -19,3 +19,9 @@ export interface IFetchVotesParams {
   proposalId: string;
   stageId: ProposalStages;
 }
+
+export interface IFetchVotedParams {
+  proposalId: string;
+  stageId: ProposalStages;
+  address: Address;
+}

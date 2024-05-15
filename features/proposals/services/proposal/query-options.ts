@@ -1,20 +1,27 @@
-import { queryClient } from "@/utils/query-client";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
-import { type IFetchProposalListParams, type IFetchProposalParams, type IFetchVotesParams } from "./params";
-import { fetchProposals, fetchVotes } from "./proposal-service";
+import {
+  type IFetchProposalListParams,
+  type IFetchProposalParams,
+  type IFetchVotedParams,
+  type IFetchVotesParams,
+} from "./params";
+import { proposalService } from "./proposal-service";
 import { toProposalDataListItems, toProposalDetails } from "./selectors";
 
 export const proposalKeys = {
   all: ["proposals"] as const,
   list: (params: IFetchProposalListParams) => [...proposalKeys.all, "list", params] as const,
   detail: (params: IFetchProposalParams) => [...proposalKeys.all, "details", params] as const,
-  votes: (params: IFetchVotesParams) => [...proposalKeys.all, "votes", params] as const,
+  voted: (params: IFetchVotedParams) =>
+    [...proposalKeys.all, ...proposalKeys.detail({ proposalId: params.proposalId }), "voted", params] as const,
+  votes: (params: IFetchVotesParams) =>
+    [...proposalKeys.all, ...proposalKeys.detail({ proposalId: params.proposalId }), "votes", params] as const,
 };
 
-export function proposalList(params: IFetchProposalListParams = "unknown") {
+export function proposalList(params: IFetchProposalListParams = {}) {
   return infiniteQueryOptions({
     queryKey: proposalKeys.list(params),
-    queryFn: async () => await fetchProposals(params),
+    queryFn: async () => proposalService.fetchProposals(params),
     initialPageParam: 1,
     getNextPageParam: () => undefined,
     select: (data) => ({
@@ -27,10 +34,8 @@ export function proposalList(params: IFetchProposalListParams = "unknown") {
 export function proposal(params: IFetchProposalParams) {
   return queryOptions({
     queryKey: proposalKeys.detail(params),
-    // TODO: use for singular proposal
-    // queryFn: () => fetchProposal(params),
     queryFn: async () => {
-      const proposal = queryClient.getQueryData(proposalList().queryKey)?.pages[0].data[Number(params.proposalId)];
+      const proposal = await proposalService.fetchProposal(params);
       return await toProposalDetails(proposal);
     },
   });
@@ -39,6 +44,13 @@ export function proposal(params: IFetchProposalParams) {
 export function proposalVotes(params: IFetchVotesParams) {
   return queryOptions({
     queryKey: proposalKeys.votes(params),
-    queryFn: () => fetchVotes(params),
+    queryFn: () => proposalService.fetchVotes(params),
+  });
+}
+
+export function voted(params: IFetchVotedParams) {
+  return queryOptions({
+    queryKey: proposalKeys.voted(params),
+    queryFn: () => proposalService.voted(params),
   });
 }

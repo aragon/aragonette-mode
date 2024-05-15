@@ -44,6 +44,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
     res.status(200).json({ success: true });
   } catch (error) {
+    console.log(error);
     // TODO: Handle error cases
     if (error instanceof Error) logger.error(error.message);
     else logger.error(JSON.stringify(error));

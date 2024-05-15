@@ -6,20 +6,47 @@ import {
   ProposalDataListItemSkeleton,
   type DataListState,
 } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import Link from "next/link";
-import { proposalList } from "../../services/proposal";
+import { useAccount } from "wagmi";
+import { StageOrder, proposalList, voted, type ProposalStages } from "../../services/proposal";
 
 const DEFAULT_PAGE_SIZE = 6;
 
 export const ProposalDataList: React.FC = () => {
-  const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
+  const { address } = useAccount();
+
+  const {
+    data: proposalsQueryData,
+    isError,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+    fetchNextPage,
+  } = useInfiniteQuery({
     ...proposalList(),
-    // TODO: update cache time once data has been cached on the backend
     gcTime: Infinity,
     staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+  });
+
+  const votedData = useQueries({
+    queries:
+      proposalsQueryData && !!address
+        ? proposalsQueryData.proposals.map(({ result, id: proposalId }) => {
+            const stageId = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
+
+            return {
+              ...voted({ proposalId, stageId, address }),
+              gcTime: Infinity,
+              staleTime: Infinity,
+              refetchOnMount: false,
+              refetchOnWindowFocus: false,
+              enabled: !!address,
+            };
+          })
+        : [],
   });
 
   let dataListState: DataListState = "idle";
@@ -31,7 +58,7 @@ export const ProposalDataList: React.FC = () => {
     dataListState = "fetchingNextPage";
   }
 
-  const totalProposals = data?.pagination?.total;
+  const totalProposals = proposalsQueryData?.pagination?.total;
   const entityLabel = totalProposals === 1 ? "Proposal" : "Proposals";
 
   const emptyFilteredState = {
@@ -77,10 +104,10 @@ export const ProposalDataList: React.FC = () => {
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
       >
-        {data?.proposals?.map((proposal) => (
+        {proposalsQueryData?.proposals?.map((proposal, index) => (
           // TODO: update with router agnostic ODS DataListItem
           <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
-            <ProposalDataListItem.Structure {...proposal} />
+            <ProposalDataListItem.Structure {...proposal} voted={votedData[index]?.data?.hasVoted} />
           </Link>
         ))}
       </DataList.Container>

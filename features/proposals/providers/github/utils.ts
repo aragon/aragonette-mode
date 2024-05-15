@@ -1,4 +1,4 @@
-import { GITHUB_TOKEN } from "@/constants";
+import { GITHUB_TOKEN, PUB_API_BASE_URL } from "@/constants";
 import {
   ProposalStages,
   type ICreator,
@@ -6,6 +6,7 @@ import {
   type ProposalStatus,
 } from "../../services/proposal/domain";
 import { type ProposalStage } from "../utils/types";
+import { ProposalDetails } from "@/components/nav/routes";
 
 type GithubData = {
   link: string;
@@ -71,6 +72,34 @@ function parseStatus(status: string): ProposalStatus {
   }
 }
 
+function extractIncludedPIPS(body: string): string[] {
+  // Regex to isolate the "Included PIPs" section.
+  const sectionRegex = /### Included [AP]IPs\s+([^#]+)/;
+  const sectionMatch = body.match(sectionRegex);
+
+  if (sectionMatch) {
+    const includedSection = sectionMatch[1];
+    // regex to capture only the markdown links.
+    const pattern = /\[(.*?)\]\((.*?)\)/g;
+    return includedSection.match(pattern) ?? [];
+  }
+
+  return [];
+}
+
+function parseIncludedPIPs(includedPips: string[]): IProposalResource[] {
+  const pipPattern = /AIP|PIP-(\d+)/;
+
+  return includedPips.map((pip) => {
+    const resource = parseMarkdownLink(pip);
+    const pipId = `PIP-${resource.name.match(pipPattern)?.[1]}`;
+
+    return (
+      pipId ? { ...resource, link: `${PUB_API_BASE_URL}${ProposalDetails.getPath(pipId)}` } : resource
+    ) as IProposalResource;
+  });
+}
+
 export function parseHeader(header: string, body: string, link: string): ProposalStage {
   const parts = header.split("\n");
   const values = parts[2]
@@ -80,6 +109,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
 
   const resources = [...(values[4].split(",").map(parseMarkdownLink) as IProposalResource[]), { name: "Github", link }];
   const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
+  const includedPIPs = parseIncludedPIPs(extractIncludedPIPS(body));
+  const isMainProposal = includedPIPs.length > 0;
 
   return {
     id: ProposalStages.DRAFT,
@@ -92,6 +123,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     type: values[6] ?? "Informational",
     createdAt: values[7],
     resources,
+    includedPips: isMainProposal ? includedPIPs : undefined,
+    parentPip: isMainProposal ? undefined : { name: "tbd", link: "tbd" },
   };
 }
 

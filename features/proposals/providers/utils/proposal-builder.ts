@@ -21,6 +21,7 @@ import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
 import VercelCache from "@/services/cache/VercelCache";
+import { getChain } from "@/utils/chains";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -385,6 +386,8 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const transparencyReport = matchedProposalStages.find(
       (stage) => stage.id === ProposalStages.DRAFT
     )?.transparency_report;
+    const includedPips = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.includedPips;
+    const parentPip = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.parentPip;
 
     // sorted stages
     const stages = buildProposalStageResponse(matchedProposalStages);
@@ -410,6 +413,8 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       pip,
       title,
       description,
+      includedPips,
+      parentPip,
       body,
       transparencyReport,
       resources,
@@ -436,4 +441,9 @@ export async function getCachedProposals(): Promise<IProposal[]> {
   }
 
   return proposals;
+}
+
+export async function getCachedProposalById(proposalId: string): Promise<IProposal | undefined> {
+  const proposals = await getCachedProposals();
+  return proposals.find((proposal) => proposal.pip.toLowerCase() === proposalId.toLowerCase());
 }

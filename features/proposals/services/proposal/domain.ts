@@ -57,6 +57,8 @@ export interface IProposal {
   body?: string;
   transparencyReport?: string;
   resources?: IProposalResource[];
+  includedPips?: IProposalResource[];
+  parentPip?: IProposalResource;
   status: ProposalStatus;
   type: string;
   isEmergency?: boolean;
@@ -74,7 +76,7 @@ export interface IProposalVote {
   timestamp: string;
 }
 
-export interface IHasVoted {
+export interface IVoted {
   address: Address;
   hasVoted: boolean;
 }
