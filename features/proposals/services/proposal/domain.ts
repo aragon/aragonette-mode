@@ -76,7 +76,7 @@ export interface IProposalVote {
   timestamp: string;
 }
 
-export interface IHasVoted {
+export interface IVoted {
   address: Address;
   hasVoted: boolean;
 }

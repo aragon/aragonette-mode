@@ -67,7 +67,6 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       status,
       summary,
       title,
-      voted: false,
       result,
     };
   }) as Array<ProposalListItem>;

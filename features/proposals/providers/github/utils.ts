@@ -74,7 +74,7 @@ function parseStatus(status: string): ProposalStatus {
 
 function extractIncludedPIPS(body: string): string[] {
   // Regex to isolate the "Included PIPs" section.
-  const sectionRegex = /### Included PIPs\s+([^#]+)/;
+  const sectionRegex = /### Included [AP]IPs\s+([^#]+)/;
   const sectionMatch = body.match(sectionRegex);
 
   if (sectionMatch) {
