@@ -39,11 +39,12 @@ export type ProposalStage = {
   title: string;
   description: string;
   body: string;
+  transparency_report?: string;
   status: ProposalStatus;
   isEmergency?: boolean;
   createdAt?: string;
   creator: ICreator[];
-  resources?: IProposalResource[];
+  resources: IProposalResource[];
   type?: string;
   voting?: VotingData;
   bindings?: {

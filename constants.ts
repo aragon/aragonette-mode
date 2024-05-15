@@ -29,7 +29,8 @@ export const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? "";
 export const GITHUB_API_URL = process.env.GITHUB_API_URL ?? "https://api.github.com";
 export const GITHUB_USER = process.env.GITHUB_USER ?? "";
 export const GITHUB_REPO = process.env.GITHUB_REPO ?? "";
-export const GITHUB_PATH = process.env.GITHUB_PATH ?? "";
+export const GITHUB_PIPS_PATH = process.env.GITHUB_PIPS_PATH ?? "";
+export const GITHUB_TRANSPARENCY_REPORTS_PATH = process.env.GITHUB_TRANSPARENCY_REPORTS_PATH ?? "";
 
 // Snapshot
 export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/graphql";
