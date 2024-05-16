@@ -9,7 +9,7 @@ export const useUserCanConfirm = (proposalId = "") => {
   const { data: canVote, isFetched } = useReadContract({
     address: PUB_MULTISIG_ADDRESS,
     abi: MultisigAbi,
-    functionName: "canApprove", // switch to canConfirm
+    functionName: "canApprove", // TODO: switch to canConfirm
     args: [BigInt(proposalId), address as Address],
     query: { enabled: !!address && !!proposalId },
   });

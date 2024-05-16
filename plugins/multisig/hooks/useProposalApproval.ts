@@ -35,14 +35,14 @@ export function useProposalApproval(proposalId = "") {
     // success
     if (!votingTxHash) return;
     else if (isConfirming) {
-      addAlert("Vote submitted", {
+      addAlert("Approval submitted", {
         description: "Waiting for the transaction to be validated",
         txHash: votingTxHash,
       });
       return;
     } else if (!isConfirmed) return;
 
-    addAlert("Vote registered", {
+    addAlert("Approval registered", {
       description: "The transaction has been validated",
       type: "success",
       txHash: votingTxHash,

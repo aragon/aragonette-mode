@@ -26,8 +26,8 @@ export function useProposalConfirmation(proposalId = "") {
           timeout: 4 * 1000,
         });
       } else {
-        logger.error("Could not approve the proposal", votingError);
-        addAlert("Could not approve the proposal", { type: "error" });
+        logger.error("Could not confirm the proposal", votingError);
+        addAlert("Could not confirm the proposal", { type: "error" });
       }
       return;
     }
@@ -35,14 +35,14 @@ export function useProposalConfirmation(proposalId = "") {
     // success
     if (!votingTxHash) return;
     else if (isConfirming) {
-      addAlert("Vote submitted", {
+      addAlert("Confirmation submitted", {
         description: "Waiting for the transaction to be validated",
         txHash: votingTxHash,
       });
       return;
     } else if (!isConfirmed) return;
 
-    addAlert("Vote registered", {
+    addAlert("Confirmation registered", {
       description: "The transaction has been validated",
       type: "success",
       txHash: votingTxHash,
