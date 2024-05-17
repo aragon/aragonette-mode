@@ -1,7 +1,7 @@
 import {
-  GITHUB_TRANSPARENCY_REPORTS_PATH,
   GITHUB_PIPS_PATH,
   GITHUB_REPO,
+  GITHUB_TRANSPARENCY_REPORTS_PATH,
   GITHUB_USER,
   PUB_CHAIN,
   PUB_MULTISIG_ADDRESS,
@@ -9,19 +9,18 @@ import {
 } from "@/constants";
 import {
   ProposalStages,
-  type ProposalStatus,
   StageOrder,
   type IProposal,
-  type IProposalStage,
   type IProposalResource,
+  type IProposalStage,
+  type ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
+import VercelCache from "@/services/cache/VercelCache";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "./types";
-import VercelCache from "@/services/cache/VercelCache";
-import { getChain } from "@/utils/chains";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -223,13 +222,13 @@ function computeProposalType(proposalStages: ProposalStage[]): string {
  * @param sortedStages Sorted proposal stages
  * @returns an array of proposal resources.
  */
-function computeProposalResources(sortedStages: IProposalStage[]): IProposalResource[] | undefined {
+function computeProposalResources(sortedStages: IProposalStage[]): IProposalResource[] {
   const resourcesMap = new Map<string, IProposalResource>();
   sortedStages
     .flatMap((stage) => stage.resources ?? [])
     .forEach((resource) => resourcesMap.set(resource.name.toLowerCase(), resource));
 
-  return resourcesMap.size > 0 ? Array.from(resourcesMap.values()) : undefined;
+  return resourcesMap.size > 0 ? Array.from(resourcesMap.values()) : [];
 }
 
 /**
@@ -386,7 +385,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const transparencyReport = matchedProposalStages.find(
       (stage) => stage.id === ProposalStages.DRAFT
     )?.transparency_report;
-    const includedPips = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.includedPips;
+    const includedPips = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.includedPips ?? [];
     const parentPip = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.parentPip;
 
     // sorted stages
