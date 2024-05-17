@@ -18,6 +18,8 @@ export const parseProposal = (proposal: Proposal): IProposal => {
     currentStage: proposal.currentStage as ProposalStages,
     publisher: proposal.creators.map((creator) => JSON.parse(creator)),
     actions: proposal.actions?.map((action) => JSON.parse(action)),
+    includedPips: proposal.includedPips?.map((iPips) => JSON.parse(iPips)),
+    parentPip: proposal.parentPip ? JSON.parse(proposal.parentPip) : null,
     stages: [],
   };
 };
@@ -37,6 +39,8 @@ export const serializeProposals = (proposal: IProposal): Proposal => {
     resources: proposal.resources.map((resource) => JSON.stringify(resource)),
     type: proposal.type,
     actions: proposal.actions?.map((action) => JSON.stringify(action)),
+    includedPips: proposal.includedPips?.map((iPips) => JSON.stringify(iPips)),
+    parentPip: proposal.parentPip ? JSON.stringify(proposal.parentPip) : null,
   };
 };
 
@@ -48,9 +52,9 @@ export const parseStage = (stage: Stage): IProposalStage => {
   return {
     id: stage.id as ProposalStages,
     status: stage.status as ProposalStatus,
-    createdAt: stage.createdAt?.toISOString(),
-    startTimestamp: stage.startTimestamp?.toISOString(),
-    endTimestamp: stage.endTimestamp?.toISOString(),
+    createdAt: stage.createdAt ?? undefined,
+    startTimestamp: stage.startTimestamp ?? undefined,
+    endTimestamp: stage.endTimestamp ?? undefined,
     creator: stage.creator.map((creator) => JSON.parse(creator)),
     resources: stage.resources?.map((resource) => JSON.parse(resource)),
     voting: stage.voting ? JSON.parse(stage.voting) : null,
@@ -62,9 +66,9 @@ export const serializeStage = (proposalId: string, stage: IProposalStage) => {
     id: `${proposalId}-${stage.id}`,
     name: stage.id,
     status: stage.status,
-    createdAt: new Date(),
-    startTimestamp: new Date(),
-    endTimestamp: new Date(),
+    createdAt: stage.createdAt ?? null,
+    startTimestamp: stage.startTimestamp ?? null,
+    endTimestamp: stage.endTimestamp ?? null,
     creator: stage.creator.map((creator) => JSON.stringify(creator)),
     resources: stage.resources.map((resource) => JSON.stringify(resource)),
     voting: stage.voting ? JSON.stringify(stage.voting) : null,
