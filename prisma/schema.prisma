@@ -12,19 +12,6 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-//model Voting {
-//  providerId    String   @unique
-//  startDate     String
-//  endDate       String
-//  choices       String[]
-//  snapshotBlock String
-//  quorum        Int
-//  scores        String[]
-//  total_votes   Int
-//  Stage         Stage    @relation(fields: [stageId], references: [id])
-//  stageId       String   @unique
-//}
-
 model Stage {
   id             String    @id
   name           String
