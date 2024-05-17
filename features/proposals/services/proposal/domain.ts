@@ -35,7 +35,7 @@ export interface IProposalStage {
   startTimestamp?: string;
   endTimestamp?: string;
   creator: ICreator[];
-  resources?: IProposalResource[];
+  resources: IProposalResource[];
   voting?: VotingData;
 }
 
@@ -51,18 +51,19 @@ export interface IAction {
 }
 
 export interface IProposal {
-  pip: string;
+  id: string;
   title: string;
   description: string;
   body?: string;
   transparencyReport?: string;
-  resources?: IProposalResource[];
+  resources: IProposalResource[];
   status: ProposalStatus;
+  createdAt: string;
   type: string;
   isEmergency?: boolean;
   currentStage: ProposalStages;
   stages: IProposalStage[];
-  actions?: IAction[];
+  actions: IAction[];
   publisher: IPublisher[];
 }
 

@@ -1,5 +1,5 @@
-import { type IHasVoted, type IProposalVote, type IProposal } from "@/features/proposals";
-import { checkParam, parseStageParam, printStageParam } from "@/utils/api-utils";
+import { type IHasVoted } from "@/features/proposals";
+import { checkParam, parseStageParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
 import { getCachedVotes } from "@/features/proposals/providers/utils/votes-builder";
 import type { NextApiRequest, NextApiResponse } from "next";

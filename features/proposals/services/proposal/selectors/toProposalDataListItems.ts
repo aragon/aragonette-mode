@@ -14,7 +14,7 @@ type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 export function toProposalDataListItems(proposals: IProposal[]): ProposalListItem[] {
   return proposals.map((proposal) => {
     const {
-      pip: id,
+      id,
       status,
       type: proposalType,
       stages,

@@ -92,6 +92,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     type: values[6] ?? "Informational",
     createdAt: values[7],
     resources,
+    bindings: [],
+    actions: [],
   };
 }
 

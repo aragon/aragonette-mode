@@ -170,6 +170,24 @@ function computeProposalStatus(proposalStages: IProposalStage[], currentStageInd
 }
 
 /**
+ * Computes the proposal createdAt based on the DRAFT stage. If the DRAFT stage is not found, it uses the COUCIL_APPROVAL stage.
+ * If neither are present, it returns the COMMUNITY_VOTING stage, or the COUNCIL_CONFIRMATION stage if none of the previous stages are found.
+ * If none of these stages have a createdAt date, it returns an empty string.
+ *
+ * @param proposalStages - Array of proposal stage objects.
+ * @returns The createdAt date of the proposal.
+ */
+function computeProposalCreatedAt(proposalStages: ProposalStage[]): string {
+  return (
+    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.createdAt ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.createdAt ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.createdAt ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt ??
+    ""
+  );
+}
+
+/**
  * Computes the publisher(s) of a proposal based on whether the proposal is marked as an emergency.
  * If the proposal is an emergency, it fetches the creator from the COUNCIL_APPROVAL stage;
  * otherwise, it takes from the DRAFT stage.
@@ -214,13 +232,13 @@ function computeProposalType(proposalStages: ProposalStage[]): string {
  * @param sortedStages Sorted proposal stages
  * @returns an array of proposal resources.
  */
-function computeProposalResources(sortedStages: IProposalStage[]): IProposalResource[] | undefined {
+function computeProposalResources(sortedStages: IProposalStage[]): IProposalResource[] {
   const resourcesMap = new Map<string, IProposalResource>();
   sortedStages
     .flatMap((stage) => stage.resources ?? [])
     .forEach((resource) => resourcesMap.set(resource.name.toLowerCase(), resource));
 
-  return resourcesMap.size > 0 ? Array.from(resourcesMap.values()) : undefined;
+  return resourcesMap.size > 0 ? Array.from(resourcesMap.values()) : [];
 }
 
 /**
@@ -379,29 +397,32 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const resources = computeProposalResources(stages);
     const currentStageIndex = stages.findIndex((stage) => stage.id === currentStage);
     const status = computeProposalStatus(stages, currentStageIndex);
+    const createdAt = computeProposalCreatedAt(matchedProposalStages);
 
     // TODO: Get emergency proposal prefix from polygon
     const proposalNumber = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? "";
-    const pip = `${isEmergency ? "TBD" : "PIP"}-${proposalNumber}`;
+    const id = `${isEmergency ? "TBD" : "PIP"}-${proposalNumber}`;
 
-    const actions = matchedProposalStages
-      .find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)
-      ?.actions?.map((action) => {
-        return {
-          to: action.to,
-          value: action.value.toString(),
-          data: action.data,
-        };
-      });
+    const actions =
+      matchedProposalStages
+        .find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)
+        ?.actions?.map((action) => {
+          return {
+            to: action.to,
+            value: action.value.toString(),
+            data: action.data,
+          };
+        }) ?? [];
 
     return {
-      pip,
+      id,
       title,
       description,
       body,
       resources,
       status,
       isEmergency,
+      createdAt,
       type,
       currentStage,
       publisher,

@@ -24,7 +24,8 @@ export interface IPaginatedResponse<T> {
 
   // TODO: fill ut pagination metadata
   pagination: {
-    // page: number;
+    page: number;
+    limit: number;
     total: number;
   };
 }

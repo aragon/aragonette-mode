@@ -65,6 +65,9 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
       creator,
       link: proposal.link,
       voting,
+      resources: [],
+      actions: [],
+      bindings: [],
     };
   });
 }

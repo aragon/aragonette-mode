@@ -3,6 +3,7 @@ import VercelCache from "@/services/cache/VercelCache";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
 import { printStageParam } from "@/utils/api-utils";
+import proposalRepository from "@/features/proposals/repository/proposal";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
   // TODO: Enable authentication for cron job
@@ -25,6 +26,9 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
     await cache.set("proposals", proposals);
 
     for (const proposal of proposals) {
+      await proposalRepository.upsertProposal({
+        ...proposal,
+      });
       for (const stage of proposal.stages) {
         if (!stage.voting) {
           continue;
@@ -37,7 +41,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         const stageParam = printStageParam(stage.id);
 
         // TODO: Use a better key
-        await cache.set(`votes-${proposal.pip}-${stageParam}`, votes);
+        await cache.set(`votes-${proposal.id}-${stageParam}`, votes);
       }
     }
 

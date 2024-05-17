@@ -41,14 +41,14 @@ export type ProposalStage = {
   isEmergency?: boolean;
   createdAt?: string;
   creator: ICreator[];
-  resources?: IProposalResource[];
+  resources: IProposalResource[];
   type?: string;
   voting?: VotingData;
-  bindings?: {
+  bindings: {
     id: ProposalStages;
     link: string;
   }[];
-  actions?: Action[];
+  actions: Action[];
 };
 
 export interface IProposalStageProvider {
