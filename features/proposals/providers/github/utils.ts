@@ -7,6 +7,7 @@ import {
 } from "../../services/proposal/domain";
 import { type ProposalStage } from "../../models/proposals";
 import { ProposalDetails } from "@/components/nav/routes";
+import Cache from "@/services/cache/VercelCache";
 
 type GithubData = {
   link: string;
@@ -18,15 +19,40 @@ type MarkdownLink = {
   name: string;
 };
 
+const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promise<string> => {
+  const cache = new Cache();
+
+  const cachedData = await cache.get(url);
+
+  if (cachedData) {
+    if (typeof cachedData == "string") return cachedData;
+    if (typeof cachedData == "object") return JSON.stringify(cachedData);
+
+    throw new Error("Unknown type: ", cachedData);
+  }
+
+  const response = await fetch(url, headers);
+  const data = await response.text();
+  await cache.set(url, data, ttl);
+  return data;
+};
+
 export async function downloadPIPs(url: string) {
-  const data = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
+  const data: string = await cachedFetch(
+    url,
+    {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+      },
     },
-  }).then((response) => response.json());
+    60 * 15
+  );
+
+  const githubData = JSON.parse(data);
+
   let result: GithubData[] = [];
 
-  for (const item of data) {
+  for (const item of githubData) {
     if (item.type === "file") {
       const fileUrl = item.download_url;
       const fileResponse = await fetch(fileUrl);
