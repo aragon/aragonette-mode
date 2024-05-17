@@ -1,13 +1,13 @@
 import { PUB_CHAIN, PUB_MULTISIG_ADDRESS } from "@/constants";
-import { getSnapshotVotesData } from "../snapshot/votes";
-import { getMultisigVotesData } from "../multisig/votes";
-import { ProposalStages } from "../../services";
-import { type Vote } from "@/features/proposals/models/proposals";
-import { Address } from "viem";
-import VercelCache from "@/services/cache/VercelCache";
-import { type IProposalVote } from "@/features/proposals";
-import { printStageParam } from "@/utils/api-utils";
 import proposalRepository from "@/features/proposals/repository/proposal";
+import { type IProposalVote } from "@/features/proposals";
+import { type Vote } from "@/features/proposals/models/proposals";
+import VercelCache from "@/services/cache/VercelCache";
+import { printStageParam } from "@/utils/api-utils";
+import { type Address } from "viem";
+import { ProposalStages } from "../../services";
+import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
+import { getSnapshotVotesData } from "../snapshot/votes";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {
@@ -29,7 +29,7 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
       return snapshotVotes;
     }
     case ProposalStages.COUNCIL_CONFIRMATION: {
-      const multisigVotes = await getMultisigVotesData({
+      const multisigVotes = await getMultisigConfirmationData({
         chain: PUB_CHAIN.id,
         contractAddress: PUB_MULTISIG_ADDRESS,
         providerId: BigInt(providerId),
@@ -77,19 +77,22 @@ export async function getCachedVotes(proposalId: string, stageEnum: ProposalStag
   }
 
   let votes: IProposalVote[] = [];
+
   if (stage.voting) {
     if (stage.status === "active") {
       // Fresh votes
       votes = await buildVotesResponse(stage.voting.providerId, stage.id);
     } else {
       // Cached votes
-      let cachedVotes = await cache.get<IProposalVote[]>(`votes-${proposalId}-${printStageParam(stageEnum)}`);
+      const cachedVotes = await cache.get<IProposalVote[]>(`votes-${proposalId}-${printStageParam(stageEnum)}`);
 
-      if (!cachedVotes) {
-        const upVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
-        await cache.set(`votes-${proposalId}-${printStageParam(stageEnum)}`, upVotes);
-        cachedVotes = upVotes;
+      if (cachedVotes) {
+        return cachedVotes;
       }
+
+      const newVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
+      await cache.set(`votes-${proposalId}-${printStageParam(stageEnum)}`, newVotes);
+      return newVotes;
     }
   }
 

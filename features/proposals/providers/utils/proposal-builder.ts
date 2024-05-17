@@ -1,18 +1,26 @@
-import { GITHUB_PATH, GITHUB_REPO, GITHUB_USER, PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
+import {
+  GITHUB_PIPS_PATH,
+  GITHUB_REPO,
+  GITHUB_TRANSPARENCY_REPORTS_PATH,
+  GITHUB_USER,
+  PUB_CHAIN,
+  PUB_MULTISIG_ADDRESS,
+  SNAPSHOT_SPACE,
+} from "@/constants";
 import {
   ProposalStages,
-  type ProposalStatus,
   StageOrder,
   type IProposal,
-  type IProposalStage,
   type IProposalResource,
+  type IProposalStage,
+  type ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
+import VercelCache from "@/services/cache/VercelCache";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
 import { type ProposalStage } from "../../models/proposals";
-import VercelCache from "@/services/cache/VercelCache";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -257,7 +265,8 @@ export async function getProposalStages() {
   const proposalsGithubStage = await getGitHubProposalStagesData({
     user: GITHUB_USER,
     repo: GITHUB_REPO,
-    path: GITHUB_PATH,
+    pips_path: GITHUB_PIPS_PATH,
+    transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
   });
 
   const proposalsSnapshotStage = await getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE });
@@ -391,6 +400,11 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const description = computeDescription(matchedProposalStages);
     const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
+    const transparencyReport = matchedProposalStages.find(
+      (stage) => stage.id === ProposalStages.DRAFT
+    )?.transparency_report;
+    const includedPips = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.includedPips ?? [];
+    const parentPip = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.parentPip;
 
     // sorted stages
     const stages = buildProposalStageResponse(matchedProposalStages);
@@ -418,7 +432,10 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       id,
       title,
       description,
+      includedPips,
+      parentPip,
       body,
+      transparencyReport,
       resources,
       status,
       isEmergency,
@@ -444,4 +461,9 @@ export async function getCachedProposals(): Promise<IProposal[]> {
   }
 
   return proposals;
+}
+
+export async function getCachedProposalById(proposalId: string): Promise<IProposal | undefined> {
+  const proposals = await getCachedProposals();
+  return proposals.find((proposal) => proposal.id.toLowerCase() === proposalId.toLowerCase());
 }

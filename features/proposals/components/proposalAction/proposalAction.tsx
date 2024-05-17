@@ -25,7 +25,7 @@ export const ProposalAction: React.FC<IProposalActionProps> = (props) => {
       {/* Header */}
       <div className="flex flex-col gap-y-2 px-4 py-4 md:gap-y-3 md:px-6 md:py-6">
         <p className="text-xl leading-tight text-neutral-800 md:text-2xl">Actions</p>
-        <p className="text-sm leading-normal text-neutral-500 md:text-base">
+        <p className="text-base leading-normal text-neutral-500 md:text-lg">
           The proposal must pass all voting stages above before the binding onchain actions are able to be executed.
         </p>
       </div>

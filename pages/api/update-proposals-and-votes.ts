@@ -4,6 +4,7 @@ import { buildProposalResponse } from "@/features/proposals/providers/utils/prop
 import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
 import { printStageParam } from "@/utils/api-utils";
 import proposalRepository from "@/features/proposals/repository/proposal";
+import { logger } from "@/services/logger";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
   // TODO: Enable authentication for cron job
@@ -47,7 +48,10 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
     res.status(200).json({ success: true });
   } catch (error) {
+    console.log(error);
     // TODO: Handle error cases
+    if (error instanceof Error) logger.error(error.message);
+    else logger.error(JSON.stringify(error));
     res.status(500).json({ error: { message: "Internal server error" } });
   }
 }

@@ -66,7 +66,7 @@ const getProposalCreationData = async function (
   if (!logs?.length) throw new Error("No creation logs");
 
   const log = logs[0];
-  const block = log.blockNumber as bigint;
+  const block = log.blockNumber;
   const tx = log.transactionHash;
 
   const logData: ProposalCreatedLogResponse = log.args as ProposalCreatedLogResponse;
@@ -154,7 +154,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       status: proposal.status,
       createdAt: proposal.createdAt,
       isEmergency: proposal.isEmergency,
-      resources: proposal.resources,
+      resources: proposal.resources ?? [],
       creator,
       link: proposal.link,
       voting,

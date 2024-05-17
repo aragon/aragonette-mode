@@ -34,9 +34,12 @@ export type VotingData = {
 export type ProposalStage = {
   id: ProposalStages;
   pip?: string;
+  parentPip?: IProposalResource;
+  includedPips?: IProposalResource[];
   title: string;
   description: string;
   body: string;
+  transparency_report?: string;
   status: ProposalStatus;
   isEmergency?: boolean;
   createdAt?: string;
