@@ -63,9 +63,13 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
       body: proposal.body,
       status: computeStatus(proposal.state, scores),
       creator,
-      link: proposal.link,
       voting,
-      resources: [],
+      resources: [
+        {
+          name: "Snapshot",
+          link: proposal.link,
+        },
+      ],
       actions: [],
       bindings: [],
     };

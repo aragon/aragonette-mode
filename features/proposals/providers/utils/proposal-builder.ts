@@ -295,7 +295,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
   if (stage.id === ProposalStages.DRAFT) return parseInt(stage.pip?.split("-").pop() ?? "0").toString();
   if (stage.id === ProposalStages.COMMUNITY_VOTING) {
     return stage.resources
-      ?.find((r) => r?.name === "Snapshot" && r.link != null)
+      ?.find((r) => r?.name.toLowerCase() === "snapshot" && r.link != null)
       ?.link?.split("/")
       .pop();
   }

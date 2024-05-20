@@ -8,11 +8,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IPaginatedResponse<IProposalVote> | IError>
 ) {
-  const { proposalId, stageId } = req.query;
+  const { proposalId, stage } = req.query;
 
   try {
     const parsedProposalId = checkParam(proposalId, "proposalId");
-    const parsedStage = checkParam(stageId, "stage");
+    const parsedStage = checkParam(stage, "stage");
     const stageEnum = parseStageParam(parsedStage);
 
     const votes = await getCachedVotes(parsedProposalId, stageEnum);
