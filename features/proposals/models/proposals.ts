@@ -32,7 +32,7 @@ export type VotingData = {
 };
 
 export type ProposalStage = {
-  id: ProposalStages;
+  stageType: ProposalStages;
   pip?: string;
   parentPip?: IProposalResource;
   includedPips?: IProposalResource[];
@@ -54,8 +54,12 @@ export type ProposalStage = {
   actions: Action[];
 };
 
-export interface IProposalStageProvider {
+export interface IProposalStagesProvider {
   (params?: any): Promise<ProposalStage[]>;
+}
+
+export interface IProposalStageProvider {
+  (params?: any): Promise<ProposalStage | null>;
 }
 
 export interface IProposalVotesProvider {

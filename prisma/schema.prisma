@@ -14,7 +14,7 @@ datasource db {
 
 model Stage {
   id             String    @id
-  name           String
+  type           String @default("Stage")
   status         String
   createdAt      String? // TODO: DateTime?
   startTimestamp String? // TODO: DateTime?

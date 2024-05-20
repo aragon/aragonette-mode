@@ -147,7 +147,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
     ];
 
     return {
-      id: proposal.id,
+      stageType: proposal.stageType,
       title: proposal.title,
       description: proposal.summary,
       body: proposal.description,
@@ -239,7 +239,7 @@ export const requestProposalData = async function (
 
     proposals.push({
       ...baseProposalData,
-      id: ProposalStages.COUNCIL_APPROVAL,
+      stageType: ProposalStages.COUNCIL_APPROVAL,
       status,
       voting: {
         providerId: i.toString(),
@@ -270,7 +270,7 @@ export const requestProposalData = async function (
 
       proposals.push({
         ...baseProposalData,
-        id: ProposalStages.COUNCIL_CONFIRMATION,
+        stageType: ProposalStages.COUNCIL_CONFIRMATION,
         status: confirmationStatus,
         voting: {
           providerId: i.toString(),

@@ -3,6 +3,7 @@ import { getCachedVotes } from "@/features/proposals/providers/utils/votes-build
 import { checkParam, parseStageParam } from "@/utils/api-utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { logger } from "@/services/logger";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,6 +21,7 @@ export default async function handler(
     res.status(200).json({ data: votes, pagination: { page: 1, limit: 100, total: votes.length } });
   } catch (error: any) {
     // TODO: Handle error cases
-    res.status(400).json({ error: { message: error.message } });
+    logger.error(error.message);
+    res.status(500).json({ error: { message: "Internal server error" } });
   }
 }

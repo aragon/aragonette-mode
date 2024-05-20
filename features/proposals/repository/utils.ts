@@ -50,7 +50,8 @@ export const parseProposals = (proposals: Proposal[]): IProposal[] => {
 
 export const parseStage = (stage: Stage): IProposalStage => {
   return {
-    id: stage.id as ProposalStages,
+    id: stage.id,
+    type: stage.type as ProposalStages,
     status: stage.status as ProposalStatus,
     createdAt: stage.createdAt ?? undefined,
     startTimestamp: stage.startTimestamp ?? undefined,
@@ -63,8 +64,9 @@ export const parseStage = (stage: Stage): IProposalStage => {
 
 export const serializeStage = (proposalId: string, stage: IProposalStage) => {
   return {
+    // TODO: Fix this
     id: `${proposalId}-${stage.id}`,
-    name: stage.id,
+    type: stage.type,
     status: stage.status,
     createdAt: stage.createdAt ?? null,
     startTimestamp: stage.startTimestamp ?? null,

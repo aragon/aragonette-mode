@@ -29,51 +29,53 @@ export const requestProposalData = async function (query: string) {
 };
 
 export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[] {
-  return data.map((proposal) => {
-    const scores: VotingScores[] = proposal.scores.map((score, index) => {
-      return {
-        choice: proposal.choices[index],
-        votes: score,
-        percentage: (score / proposal.scores_total) * 100,
-      };
-    });
+  return data.map((proposal) => parseSnapshotProposalData(proposal));
+}
 
-    const voting: VotingData = {
-      providerId: proposal.id,
-      startDate: proposal.start.toString(),
-      endDate: proposal.end.toString(),
-      choices: proposal.choices,
-      snapshotBlock: proposal.snapshot,
-      quorum: proposal.quorum,
-      scores,
-      total_votes: proposal.votes,
-    };
-
-    const creator = [
-      {
-        link: `${PUB_CHAIN.blockExplorers?.default.url}/address/${proposal.author}`,
-        address: proposal.author,
-      },
-    ];
-
+export function parseSnapshotProposalData(proposal: SnapshotProposalData): ProposalStage {
+  const scores: VotingScores[] = proposal.scores.map((score, index) => {
     return {
-      id: ProposalStages.COMMUNITY_VOTING,
-      title: proposal.title,
-      description: proposal.title,
-      body: proposal.body,
-      status: computeStatus(proposal.state, scores),
-      creator,
-      voting,
-      resources: [
-        {
-          name: "Snapshot",
-          link: proposal.link,
-        },
-      ],
-      actions: [],
-      bindings: [],
+      choice: proposal.choices[index],
+      votes: score,
+      percentage: (score / proposal.scores_total) * 100,
     };
   });
+
+  const voting: VotingData = {
+    providerId: proposal.id,
+    startDate: proposal.start.toString(),
+    endDate: proposal.end.toString(),
+    choices: proposal.choices,
+    snapshotBlock: proposal.snapshot,
+    quorum: proposal.quorum,
+    scores,
+    total_votes: proposal.votes,
+  };
+
+  const creator = [
+    {
+      link: `${PUB_CHAIN.blockExplorers?.default.url}/address/${proposal.author}`,
+      address: proposal.author,
+    },
+  ];
+
+  return {
+    stageType: ProposalStages.COMMUNITY_VOTING,
+    title: proposal.title,
+    description: proposal.title,
+    body: proposal.body,
+    status: computeStatus(proposal.state, scores),
+    creator,
+    voting,
+    resources: [
+      {
+        name: "Snapshot",
+        link: proposal.link,
+      },
+    ],
+    actions: [],
+    bindings: [],
+  };
 }
 
 // Function to evaluate the result based on votes

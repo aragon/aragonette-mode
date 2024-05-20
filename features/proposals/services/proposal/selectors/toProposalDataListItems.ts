@@ -26,7 +26,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     } = proposal;
 
     // get active stage
-    const stageIndex = stages.findIndex((stage) => stage.id === currentStage) ?? 0;
+    const stageIndex = stages.findIndex((stage) => stage.type === currentStage) ?? 0;
     const activeStage = stages[stageIndex];
 
     // compute date based off of stage
@@ -34,17 +34,17 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
 
     // only community voting is mjv; draft has no voting data
-    const isMajorityVoting = activeStage.id === ProposalStages.COMMUNITY_VOTING;
+    const isMajorityVoting = activeStage.type === ProposalStages.COMMUNITY_VOTING;
     const type: ProposalType = isMajorityVoting ? "majorityVoting" : "approvalThreshold";
 
     // stage result
     let result: IMajorityVotingResult | IApprovalThresholdResult | undefined;
     if (status !== "draft" && (activeStage.voting?.total_votes ?? 0) > 0) {
       const winningOption = activeStage.voting?.scores.sort((a, b) => b.votes - a.votes)[0];
-      const id = StageOrder[activeStage.id];
+      const id = StageOrder[activeStage.type];
 
       result = {
-        stage: { id, title: activeStage.id },
+        stage: { id, title: activeStage.type },
         ...(isMajorityVoting
           ? ({
               option: winningOption?.choice,

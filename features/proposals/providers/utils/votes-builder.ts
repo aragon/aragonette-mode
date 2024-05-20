@@ -7,6 +7,7 @@ import { printStageParam } from "@/utils/api-utils";
 import { type Address } from "viem";
 import { ProposalStages } from "../../services";
 import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
+import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { getSnapshotVotesData } from "../snapshot/votes";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
@@ -25,8 +26,17 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
     }
     case ProposalStages.COMMUNITY_VOTING: {
       const snapshotVotes = await getSnapshotVotesData({ providerId });
+      const snapshotProposalData = await getSnapshotProposalStageData({ proposalId: providerId });
 
-      return snapshotVotes;
+      return snapshotVotes.map((vote) => {
+        const choices = snapshotProposalData?.voting?.choices || ["approve", "reject"];
+        const choiceIndex = parseInt(vote.choice);
+        const choice = isNaN(choiceIndex) ? vote.choice : choices[choiceIndex - 1];
+        return {
+          ...vote,
+          choice: choice,
+        };
+      });
     }
     case ProposalStages.COUNCIL_CONFIRMATION: {
       const multisigVotes = await getMultisigConfirmationData({
@@ -38,7 +48,7 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
       return multisigVotes;
     }
     default: {
-      throw new Error("Invalid stage");
+      throw new Error("Invalid stage: " + stage);
     }
   }
 }
@@ -81,7 +91,7 @@ export async function getCachedVotes(proposalId: string, stageEnum: ProposalStag
   if (stage.voting) {
     if (stage.status === "active") {
       // Fresh votes
-      votes = await buildVotesResponse(stage.voting.providerId, stage.id);
+      votes = await buildVotesResponse(stage.voting.providerId, stage.type);
     } else {
       // Cached votes
       const cachedVotes = await cache.get<IProposalVote[]>(`votes-${proposalId}-${printStageParam(stageEnum)}`);
@@ -90,7 +100,7 @@ export async function getCachedVotes(proposalId: string, stageEnum: ProposalStag
         return cachedVotes;
       }
 
-      const newVotes = await buildVotesResponse(stage.voting.providerId, stage.id);
+      const newVotes = await buildVotesResponse(stage.voting.providerId, stage.type);
       await cache.set(`votes-${proposalId}-${printStageParam(stageEnum)}`, newVotes);
       return newVotes;
     }

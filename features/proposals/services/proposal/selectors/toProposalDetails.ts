@@ -12,7 +12,7 @@ import { logger } from "@/services/logger";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
-export type ProposalDetail = Omit<IProposal, "actions"> & {
+export type ProposalDetail = Omit<IProposal, "actions" | "createdAt"> & {
   actions: DetailedAction[];
   createdAt?: string;
   endDate?: string;

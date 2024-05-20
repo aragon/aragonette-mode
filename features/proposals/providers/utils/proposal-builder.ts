@@ -36,9 +36,9 @@ import { type ProposalStage } from "../../models/proposals";
  */
 function computeTitle(proposalStages: ProposalStage[]): string {
   return (
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.title ??
-    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.title ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.title ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.title ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.title ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.title ??
     ""
   );
 }
@@ -57,9 +57,9 @@ function computeTitle(proposalStages: ProposalStage[]): string {
  */
 function computeDescription(proposalStages: ProposalStage[]): string {
   return (
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.description ??
-    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.description ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.description ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.description ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.description ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.description ??
     ""
   );
 }
@@ -78,9 +78,9 @@ function computeDescription(proposalStages: ProposalStage[]): string {
  */
 function computeBody(proposalStages: ProposalStage[]): string {
   return (
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.body ??
-    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.body ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.body ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.body ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.body ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.body ??
     ""
   );
 }
@@ -95,8 +95,8 @@ function computeBody(proposalStages: ProposalStage[]): string {
  */
 function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   const sortedStages = sortProposalStages(proposalStages);
-  const draftStage = sortedStages.find((stage) => stage.id === ProposalStages.DRAFT);
-  const confirmationStage = sortedStages.find((stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION);
+  const draftStage = sortedStages.find((stage) => stage.stageType === ProposalStages.DRAFT);
+  const confirmationStage = sortedStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION);
   const lastKnownStage = sortedStages[sortedStages.length - 1];
 
   // usually the last stage is the current stage, but because some proposals were created without
@@ -104,11 +104,11 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   // ongoing or not. If it's not, we should use the DRAFT stage as the current stage.
   // By default only the Peer Review proposals are allowed to go onchain and be voted on by the community
   // TODO: Handle with RD-303
-  if (lastKnownStage.id === ProposalStages.COMMUNITY_VOTING && draftStage && confirmationStage == null) {
-    return draftStage.id;
+  if (lastKnownStage.stageType === ProposalStages.COMMUNITY_VOTING && draftStage && confirmationStage == null) {
+    return draftStage.stageType;
   }
 
-  return lastKnownStage.id;
+  return lastKnownStage.stageType;
 }
 
 /**
@@ -120,7 +120,7 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
  * @returns The relative status of the proposal.
  */
 function calculateRelativeProposalStatus(currentStage: IProposalStage, nextStage?: IProposalStage): ProposalStatus {
-  switch (currentStage.id) {
+  switch (currentStage.type) {
     case ProposalStages.DRAFT:
       return currentStage.status;
     case ProposalStages.COUNCIL_APPROVAL:
@@ -167,8 +167,8 @@ function computeOverlappingStageStatus(currentStageStatus: ProposalStatus, nextS
  * @returns The computed status of the proposal.
  */
 function computeProposalStatus(proposalStages: IProposalStage[], currentStageIndex: number): ProposalStatus {
-  const draftStageStatus = proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.status;
-  const approvalStageStatus = proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.status;
+  const draftStageStatus = proposalStages.find((stage) => stage.type === ProposalStages.DRAFT)?.status;
+  const approvalStageStatus = proposalStages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.status;
   const calculatedStatus = calculateRelativeProposalStatus(
     proposalStages[currentStageIndex], // current stage
     proposalStages[currentStageIndex + 1] // next stage
@@ -187,10 +187,10 @@ function computeProposalStatus(proposalStages: IProposalStage[], currentStageInd
  */
 function computeProposalCreatedAt(proposalStages: ProposalStage[]): string {
   return (
-    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.createdAt ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.createdAt ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.createdAt ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.createdAt ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.createdAt ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.createdAt ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt ??
     ""
   );
 }
@@ -206,11 +206,11 @@ function computeProposalCreatedAt(proposalStages: ProposalStage[]): string {
  */
 function computePublisher(stages: ProposalStage[], isEmergency: boolean): IPublisher[] {
   const originalCreators = isEmergency
-    ? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator
-    : stages.find((stage) => stage.id === ProposalStages.DRAFT)?.creator;
+    ? stages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.creator
+    : stages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.creator;
 
   return (
-    (originalCreators ?? stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.creator)?.map(
+    (originalCreators ?? stages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.creator)?.map(
       (creator) => ({ address: "", ...creator })
     ) ?? [{ address: "", name: "Unknown" }]
   );
@@ -226,9 +226,9 @@ function computePublisher(stages: ProposalStage[], isEmergency: boolean): IPubli
  */
 function computeProposalType(proposalStages: ProposalStage[]): string {
   return (
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.type ??
-    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.type ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.type ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.type ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.type ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.type ??
     "unknown"
   );
 }
@@ -258,14 +258,14 @@ function computeProposalResources(sortedStages: IProposalStage[]): IProposalReso
  * @returns Sorted array of proposal stages.
  */
 function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
-  return proposalStages.sort((a, b) => StageOrder[a.id] - StageOrder[b.id]);
+  return proposalStages.sort((a, b) => StageOrder[a.stageType] - StageOrder[b.stageType]);
 }
 
 function computeProposalId(proposalStages: ProposalStage[]): string {
   const id =
-    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.pip ??
-    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.pip ??
     "unknown";
 
   return id;
@@ -292,8 +292,8 @@ export async function getProposalStages() {
 const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
-  if (stage.id === ProposalStages.DRAFT) return parseInt(stage.pip?.split("-").pop() ?? "0").toString();
-  if (stage.id === ProposalStages.COMMUNITY_VOTING) {
+  if (stage.stageType === ProposalStages.DRAFT) return parseInt(stage.pip?.split("-").pop() ?? "0").toString();
+  if (stage.stageType === ProposalStages.COMMUNITY_VOTING) {
     return stage.resources
       ?.find((r) => r?.name.toLowerCase() === "snapshot" && r.link != null)
       ?.link?.split("/")
@@ -313,11 +313,15 @@ const getProposalBindingId = (stage: ProposalStage) => {
  * @returns An array of arrays, where each inner array contains linked proposal stages.
  */
 export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
-  const draftProposals = proposalStages.filter((stage) => stage.id === ProposalStages.DRAFT);
-  const councilApprovalProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL);
-  const communityVotingProposals = proposalStages.filter((stage) => stage.id === ProposalStages.COMMUNITY_VOTING);
+  const draftProposals = proposalStages.filter((stage) => stage.stageType === ProposalStages.DRAFT);
+  const councilApprovalProposals = proposalStages.filter(
+    (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
+  );
+  const communityVotingProposals = proposalStages.filter(
+    (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING
+  );
   const councilConfirmationProposals = proposalStages.filter(
-    (stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION
+    (stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION
   );
 
   const proposals = councilApprovalProposals.map((proposal) => [proposal]);
@@ -364,7 +368,7 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
   const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "4"));
   if (pip4ProposalStages) {
     const pip4CommunityVotingProposal = proposalStages.find(
-      (stage) => stage.id === ProposalStages.COMMUNITY_VOTING && stage.title.startsWith("PIP-4")
+      (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING && stage.title.startsWith("PIP-4")
     );
     if (pip4CommunityVotingProposal) pip4ProposalStages.push(pip4CommunityVotingProposal);
   }
@@ -382,7 +386,8 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
 function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalStage[] {
   return sortProposalStages(proposalStages).map((proposalStage) => {
     return {
-      id: proposalStage.id,
+      id: proposalStage.stageType,
+      type: proposalStage.stageType,
       status: proposalStage.status,
       creator: proposalStage.creator,
       createdAt: proposalStage.createdAt,
@@ -411,15 +416,16 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
     const transparencyReport = matchedProposalStages.find(
-      (stage) => stage.id === ProposalStages.DRAFT
+      (stage) => stage.stageType === ProposalStages.DRAFT
     )?.transparency_report;
-    const includedPips = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.includedPips ?? [];
-    const parentPip = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.parentPip;
+    const includedPips =
+      matchedProposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedPips ?? [];
+    const parentPip = matchedProposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentPip;
 
     // sorted stages
     const stages = buildProposalStageResponse(matchedProposalStages);
     const resources = computeProposalResources(stages);
-    const currentStageIndex = stages.findIndex((stage) => stage.id === currentStage);
+    const currentStageIndex = stages.findIndex((stage) => stage.type === currentStage);
     const status = computeProposalStatus(stages, currentStageIndex);
     const createdAt = computeProposalCreatedAt(matchedProposalStages);
 
@@ -427,7 +433,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
 
     const actions =
       matchedProposalStages
-        .find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)
+        .find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)
         ?.actions?.map((action) => {
           return {
             to: action.to,

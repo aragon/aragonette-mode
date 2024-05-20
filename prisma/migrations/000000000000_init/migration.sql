@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "Stage" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'Stage',
     "status" TEXT NOT NULL,
     "createdAt" TEXT,
     "startTimestamp" TEXT,
@@ -29,6 +29,8 @@ CREATE TABLE "Proposal" (
     "resources" TEXT[],
     "type" TEXT NOT NULL,
     "actions" TEXT[],
+    "includedPips" TEXT[],
+    "parentPip" TEXT,
 
     CONSTRAINT "Proposal_pkey" PRIMARY KEY ("id")
 );

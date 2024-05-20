@@ -1,10 +1,16 @@
-import { type IProposalStageProvider } from "../../models/proposals";
-import { snapshotProposalsQuery } from "./gql";
+import { type IProposalStageProvider, type IProposalStagesProvider } from "../../models/proposals";
+import { snapshotProposalsQuery, snapshotProposalQuery } from "./gql";
 import { type SnapshotProposalData } from "./types";
-import { parseSnapshotData, requestProposalData } from "./utils";
+import { parseSnapshotData, parseSnapshotProposalData, requestProposalData } from "./utils";
 
-export const getSnapshotProposalStagesData: IProposalStageProvider = async function (params: { space: string }) {
+export const getSnapshotProposalStagesData: IProposalStagesProvider = async function (params: { space: string }) {
   return requestProposalData(snapshotProposalsQuery(params.space))
     .then((res) => res.data.proposals as SnapshotProposalData[])
     .then(parseSnapshotData);
+};
+
+export const getSnapshotProposalStageData: IProposalStageProvider = async function (params: { proposalId: string }) {
+  return requestProposalData(snapshotProposalQuery(params.proposalId))
+    .then((res) => res.data.proposal as SnapshotProposalData | null)
+    .then((data) => (data ? parseSnapshotProposalData(data) : null));
 };

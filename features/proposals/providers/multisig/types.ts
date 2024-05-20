@@ -82,7 +82,7 @@ export type MultiSigProposalVotingData = {
 };
 
 export type MultisigProposal = {
-  id: ProposalStages;
+  stageType: ProposalStages;
   title: string;
   summary: string;
   description: string;

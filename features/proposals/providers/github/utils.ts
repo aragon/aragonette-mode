@@ -142,7 +142,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const pip = link.split("/").pop()?.split(".").shift() ?? "";
 
   return {
-    id: ProposalStages.DRAFT,
+    stageType: ProposalStages.DRAFT,
     pip,
     title: values[1],
     description: values[2],

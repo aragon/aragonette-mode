@@ -37,9 +37,9 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         if (stage.status === "active") {
           continue;
         }
-        const votes = await buildVotesResponse(stage.voting.providerId, stage.id);
+        const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
 
-        const stageParam = printStageParam(stage.id);
+        const stageParam = printStageParam(stage.type);
 
         // TODO: Use a better key
         await cache.set(`votes-${proposal.id}-${stageParam}`, votes);

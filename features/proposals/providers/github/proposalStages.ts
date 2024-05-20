@@ -1,5 +1,5 @@
 import { GITHUB_API_URL } from "@/constants";
-import { type IProposalStageProvider } from "../../models/proposals";
+import { type IProposalStagesProvider } from "../../models/proposals";
 import { extractHeader, extractBody, parseHeader, downloadPIPs } from "./utils";
 
 interface IGetGitHubProposalStagesDataParams {
@@ -9,7 +9,7 @@ interface IGetGitHubProposalStagesDataParams {
   transparency_reports_path: string;
 }
 
-export const getGitHubProposalStagesData: IProposalStageProvider = async function (
+export const getGitHubProposalStagesData: IProposalStagesProvider = async function (
   params: IGetGitHubProposalStagesDataParams
 ) {
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;

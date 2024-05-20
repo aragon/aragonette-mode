@@ -29,7 +29,8 @@ export type IProposalResource = {
 };
 
 export interface IProposalStage {
-  id: ProposalStages;
+  id: string;
+  type: ProposalStages;
   status: ProposalStatus;
   createdAt?: string;
   startTimestamp?: string;
