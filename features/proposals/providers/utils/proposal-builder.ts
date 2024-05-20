@@ -261,6 +261,16 @@ function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
   return proposalStages.sort((a, b) => StageOrder[a.id] - StageOrder[b.id]);
 }
 
+function computeProposalId(proposalStages: ProposalStage[]): string {
+  const id =
+    proposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.pip ??
+    proposalStages.find((stage) => stage.id === ProposalStages.COMMUNITY_VOTING)?.pip ??
+    "unknown";
+
+  return id;
+}
+
 export async function getProposalStages() {
   const proposalsGithubStage = await getGitHubProposalStagesData({
     user: GITHUB_USER,
@@ -282,7 +292,7 @@ export async function getProposalStages() {
 const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
-  if (stage.id === ProposalStages.DRAFT) return stage.pip?.split("-").pop();
+  if (stage.id === ProposalStages.DRAFT) return parseInt(stage.pip?.split("-").pop() ?? "0").toString();
   if (stage.id === ProposalStages.COMMUNITY_VOTING) {
     return stage.resources
       ?.find((r) => r?.name === "Snapshot" && r.link != null)
@@ -413,9 +423,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const status = computeProposalStatus(stages, currentStageIndex);
     const createdAt = computeProposalCreatedAt(matchedProposalStages);
 
-    // TODO: Get emergency proposal prefix from polygon
-    const proposalNumber = matchedProposalStages.find((stage) => stage.id === ProposalStages.DRAFT)?.pip ?? "";
-    const id = `${isEmergency ? "TBD" : "PIP"}-${proposalNumber}`;
+    const id = computeProposalId(matchedProposalStages);
 
     const actions =
       matchedProposalStages

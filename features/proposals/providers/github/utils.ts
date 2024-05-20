@@ -20,6 +20,7 @@ type MarkdownLink = {
 };
 
 const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promise<string> => {
+  /*
   const cache = new Cache();
 
   const cachedData = await cache.get(url);
@@ -30,10 +31,11 @@ const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promi
 
     throw new Error("Unknown type: ", cachedData);
   }
+  */
 
   const response = await fetch(url, headers);
   const data = await response.text();
-  await cache.set(url, data, ttl);
+  //await cache.set(url, data, ttl);
   return data;
 };
 
@@ -137,10 +139,11 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
   const includedPIPs = parseIncludedPIPs(extractIncludedPIPS(body));
   const isMainProposal = includedPIPs.length > 0;
+  const pip = link.split("/").pop()?.split(".").shift() ?? "";
 
   return {
     id: ProposalStages.DRAFT,
-    pip: values[0],
+    pip,
     title: values[1],
     description: values[2],
     body: body,

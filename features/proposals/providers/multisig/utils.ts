@@ -194,6 +194,9 @@ export const requestProposalData = async function (
     const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
 
+    const pip =
+      githubId?.split("/")?.pop()?.split(".")?.shift() ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+
     // get resources
     const resources = primaryMetadata.resources.map((resource) => ({
       name: resource.name,
@@ -202,6 +205,7 @@ export const requestProposalData = async function (
 
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
+      pip,
       title: primaryMetadata.title,
       summary: primaryMetadata.summary,
       description: primaryMetadata.description,
