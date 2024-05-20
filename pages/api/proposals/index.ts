@@ -13,14 +13,14 @@ export default async function handler(
   try {
     const { page, limit, sortBy, sortDir, query } = req.query;
 
-    const parsedPage = checkParam(page, "page");
-    const parsedLimit = checkParam(limit, "limit");
+    const parsedPage = checkNullableParam(page, "page");
+    const parsedLimit = checkNullableParam(limit, "limit");
     const parsedSortBy = checkNullableParam(sortBy, "sortBy");
     const parsedSortDir = checkNullableParam(sortDir, "sortDir");
     const parsedQuery = checkNullableParam(query, "query");
 
-    let pageInt = parseInt(parsedPage, 10);
-    let limitInt = parseInt(parsedLimit, 10);
+    let pageInt = parseInt(parsedPage ?? "1", 10);
+    let limitInt = parseInt(parsedLimit ?? "10", 10);
 
     const totalProposals = await proposalRepository.countProposals();
 
