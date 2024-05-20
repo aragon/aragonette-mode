@@ -18,7 +18,7 @@ export default async function handler(
 
     const votes = await getCachedVotes(parsedProposalId, stageEnum);
 
-    res.status(200).json({ data: votes, pagination: { page: 1, limit: 100, total: votes.length } });
+    res.status(200).json({ data: votes, pagination: { page: 1, limit: 100, total: votes.length, pages: 1 } });
   } catch (error: any) {
     // TODO: Handle error cases
     logger.error(error.message);

@@ -21,10 +21,9 @@ export type JsonValue = JsonLiteral | Record<string, JsonLiteral> | Array<JsonLi
 // Response type
 export interface IPaginatedResponse<T> {
   data: T[];
-
-  // TODO: fill ut pagination metadata
   pagination: {
     page: number;
+    pages: number;
     limit: number;
     total: number;
   };

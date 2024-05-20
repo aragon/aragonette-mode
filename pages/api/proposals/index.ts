@@ -23,6 +23,7 @@ export default async function handler(
     let limitInt = parseInt(parsedLimit ?? "10", 10);
 
     const totalProposals = await proposalRepository.countProposals();
+    const totalPages = Math.ceil(totalProposals / limitInt);
 
     if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
       limitInt = 10;
@@ -46,6 +47,7 @@ export default async function handler(
       pagination: {
         total: totalProposals,
         page: pageInt,
+        pages: totalPages,
         limit: limitInt,
       },
     });
