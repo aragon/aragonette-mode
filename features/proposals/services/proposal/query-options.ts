@@ -7,6 +7,7 @@ import {
 } from "./params";
 import { proposalService } from "./proposal-service";
 import { toProposalDataListItems, toProposalDetails } from "./selectors";
+import { toProposalVotes } from "./selectors/toProposalVote";
 
 export const proposalKeys = {
   all: ["proposals"] as const,
@@ -45,9 +46,15 @@ export function proposal(params: IFetchProposalParams) {
 
 export function proposalVotes(params: IFetchVotesParams) {
   const enabled = areAllPropertiesDefined(params);
-  return queryOptions({
+  return infiniteQueryOptions({
+    initialPageParam: 1,
+    getNextPageParam: () => undefined,
     queryKey: proposalKeys.votes(params),
     queryFn: () => proposalService.fetchVotes(params),
+    select: (data) => ({
+      votes: data.pages.flatMap((p) => toProposalVotes(p.data, params.stageId)),
+      pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
+    }),
     enabled,
   });
 }
