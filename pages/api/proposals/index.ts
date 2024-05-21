@@ -3,7 +3,11 @@ import { IError, type IPaginatedResponse } from "@/utils/types";
 import { checkParam, checkNullableParam } from "@/utils/api-utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 import proposalRepository from "@/features/proposals/repository/proposal";
-import { parseProposalSortBy, parseProposalSortDir } from "@/features/proposals/repository/proposal";
+import {
+  parseProposalSortBy,
+  parseProposalSortDir,
+  parsedProposalStatus,
+} from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
 
 export default async function handler(
@@ -11,19 +15,21 @@ export default async function handler(
   res: NextApiResponse<IPaginatedResponse<IProposal> | IError>
 ) {
   try {
-    const { page, limit, sortBy, sortDir, query } = req.query;
+    const { page, limit, sortBy, sortDir, query, status } = req.query;
 
     const parsedPage = checkNullableParam(page, "page");
     const parsedLimit = checkNullableParam(limit, "limit");
     const parsedSortBy = checkNullableParam(sortBy, "sortBy");
     const parsedSortDir = checkNullableParam(sortDir, "sortDir");
     const parsedQuery = checkNullableParam(query, "query");
+    const parsedStatus = checkNullableParam(status, "status");
 
     let pageInt = parseInt(parsedPage ?? "1", 10);
     let limitInt = parseInt(parsedLimit ?? "10", 10);
 
-    const totalProposals = await proposalRepository.countProposals();
-    const totalPages = Math.ceil(totalProposals / limitInt);
+    const typedSortBy = parseProposalSortBy(parsedSortBy);
+    const typedSortDir = parseProposalSortDir(parsedSortDir);
+    const typedStatus = parsedProposalStatus(parsedStatus);
 
     if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
       limitInt = 10;
@@ -33,24 +39,16 @@ export default async function handler(
       pageInt = 1;
     }
 
-    if (pageInt > Math.ceil(totalProposals / limitInt)) {
-      pageInt = Math.ceil(totalProposals / limitInt);
-    }
+    const paginatedProposals = await proposalRepository.getProposals(
+      pageInt,
+      limitInt,
+      typedSortBy,
+      typedSortDir,
+      parsedQuery,
+      typedStatus
+    );
 
-    const typedSortBy = parseProposalSortBy(parsedSortBy);
-    const typedSortDir = parseProposalSortDir(parsedSortDir);
-
-    const proposals = await proposalRepository.getProposals(pageInt, limitInt, typedSortBy, typedSortDir, parsedQuery);
-
-    res.status(200).json({
-      data: proposals,
-      pagination: {
-        total: totalProposals,
-        page: pageInt,
-        pages: totalPages,
-        limit: limitInt,
-      },
-    });
+    res.status(200).json(paginatedProposals);
   } catch (error) {
     // TODO: Add error handling
     logger.error("Error fetching proposals:", error);

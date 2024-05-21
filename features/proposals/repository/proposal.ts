@@ -1,5 +1,7 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
 import { IProposal } from "..";
+import { type IPaginatedResponse } from "@/utils/types";
+import { type ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 
 export enum ProposalSortBy {
@@ -50,24 +52,34 @@ export const parseProposalSortDir = (value?: string): ProposalSortDir => {
   }
 };
 
-class ProposalRepository {
-  async countProposals(): Promise<number> {
-    try {
-      const count = await PrismaDatabase.proposal.count();
-      return count;
-    } catch (error) {
-      console.error("Error counting proposals:", error);
-      throw error;
-    }
+export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
+  if (!value) {
+    return [];
   }
 
+  switch (value) {
+    case "draft":
+      return ["draft", "Last Call", "Continuous", "Stagnant", "Peer Review"];
+    case "active":
+      return ["active", "challenged", "queued", "pending"];
+    case "accepted":
+      return ["accepted", "partiallyExecuted", "executed"];
+    case "rejected":
+      return ["rejected", "vetoed", "failed", "expired"];
+    default:
+      throw new Error(`Invalid status value: ${value}`);
+  }
+};
+
+class ProposalRepository {
   async getProposals(
     page: number,
     limit: number,
     sortBy: ProposalSortBy,
     sortDir: ProposalSortDir,
-    query?: string
-  ): Promise<IProposal[]> {
+    query?: string,
+    status?: ProposalStatus[]
+  ): Promise<IPaginatedResponse<IProposal>> {
     try {
       let where = {};
       if (query) {
@@ -84,6 +96,28 @@ class ProposalRepository {
         };
       }
 
+      if (status && status.length > 0) {
+        where = {
+          ...where,
+          status: {
+            in: status,
+          },
+        };
+      }
+
+      const totalProposals = await PrismaDatabase.proposal.count({ where });
+      if (totalProposals === 0) {
+        return {
+          data: [],
+          pagination: {
+            total: 0,
+            page: 1,
+            pages: 1,
+            limit: 10,
+          },
+        };
+      }
+
       let orderBy = {};
       if (sortBy === ProposalSortBy.Title) {
         orderBy = { title: sortDir };
@@ -93,6 +127,18 @@ class ProposalRepository {
         orderBy = { isEmergency: sortDir };
       } else if (sortBy === ProposalSortBy.CreatedAt) {
         orderBy = { createdAt: sortDir };
+      }
+
+      if (limit < 1 || limit > 100) {
+        limit = 10;
+      }
+
+      if (page < 1) {
+        page = 1;
+      }
+
+      if (page > Math.ceil(totalProposals / limit)) {
+        page = Math.ceil(totalProposals / limit);
       }
 
       const proposals = await PrismaDatabase.proposal.findMany({
@@ -106,12 +152,22 @@ class ProposalRepository {
         },
       });
 
-      return proposals.map((proposal) => {
+      const proposalsWithStages = proposals.map((proposal) => {
         return {
           ...parseProposal(proposal),
           stages: proposal.Stages.map(parseStage),
         };
       });
+
+      return {
+        data: proposalsWithStages,
+        pagination: {
+          total: totalProposals,
+          page,
+          pages: Math.ceil(totalProposals / limit),
+          limit,
+        },
+      };
     } catch (error) {
       console.error("Error fetching proposals from database:", error);
       throw error;
