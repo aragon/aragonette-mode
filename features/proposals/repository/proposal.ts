@@ -78,21 +78,21 @@ class ProposalRepository {
     limit: number,
     sortBy: ProposalSortBy,
     sortDir: ProposalSortDir,
-    query?: string,
+    search?: string,
     status?: ProposalStatus[]
   ): Promise<IPaginatedResponse<IProposal>> {
     try {
       let where = {};
-      if (query) {
+      if (search) {
         where = {
           title: {
-            search: query,
+            search: search,
           },
           description: {
-            search: query,
+            search: search,
           },
           body: {
-            search: query,
+            search: search,
           },
         };
       }

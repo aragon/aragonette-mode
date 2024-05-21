@@ -15,13 +15,13 @@ export default async function handler(
   res: NextApiResponse<IPaginatedResponse<IProposal> | IError>
 ) {
   try {
-    const { page, limit, sortBy, sortDir, query, status } = req.query;
+    const { page, limit, sortBy, sortDir, search, status } = req.query;
 
     const parsedPage = checkNullableParam(page, "page");
     const parsedLimit = checkNullableParam(limit, "limit");
     const parsedSortBy = checkNullableParam(sortBy, "sortBy");
     const parsedSortDir = checkNullableParam(sortDir, "sortDir");
-    const parsedQuery = checkNullableParam(query, "query");
+    const parsedSearch = checkNullableParam(search, "search");
     const parsedStatus = checkNullableParam(status, "status");
 
     let pageInt = parseInt(parsedPage ?? "1", 10);
@@ -44,7 +44,7 @@ export default async function handler(
       limitInt,
       typedSortBy,
       typedSortDir,
-      parsedQuery,
+      parsedSearch,
       typedStatus
     );
 
