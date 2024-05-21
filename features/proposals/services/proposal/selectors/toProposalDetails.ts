@@ -101,7 +101,7 @@ async function decodeAction(action: IAction, client: PublicClient): Promise<Deta
   }
 }
 
-interface ITransformedStage {
+export interface ITransformedStage {
   id: ProposalStages;
   title: string;
   status: string;

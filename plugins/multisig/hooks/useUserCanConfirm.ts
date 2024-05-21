@@ -10,7 +10,7 @@ export const useUserCanConfirm = (proposalId = "") => {
     address: PUB_MULTISIG_ADDRESS,
     abi: MultisigAbi,
     functionName: "canApprove", // TODO: switch to canConfirm
-    args: [BigInt(proposalId), address as Address],
+    args: [proposalId as any, address as Address],
     query: { enabled: !!address && !!proposalId },
   });
 

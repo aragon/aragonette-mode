@@ -1,26 +1,22 @@
 import { PUB_CHAIN } from "@/constants";
+import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
 import {
   AccordionItem,
   AccordionItemContent,
   AccordionItemHeader,
-  Button,
   Heading,
-  IconType,
-  Link,
   Tabs,
   formatterUtils,
   type IApprovalThresholdResult,
 } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
-import { type ReactNode, useRef, useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { type ProposalStages } from "../../services";
 import { VotesDataList } from "../votesDataList/votesDataList";
-import { VotingStageStatus } from "./votingStageStatus";
-import { ApprovalThresholdResult } from "./approvalThresholdResult";
-import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
+import { VotingBreakdown, type IVotingBreakdownCta } from "./votingBreakdown";
 import { VotingDetails } from "./votingDetails";
-import { VotingBreakdown } from "./votingBreakdown";
+import { VotingStageStatus } from "./votingStageStatus";
 
 export interface IVotingStageDetails {
   censusBlock: number;
@@ -37,15 +33,15 @@ export interface IVotingStageProps {
   number: number;
   disabled: boolean;
   status: "accepted" | "rejected" | "active";
-  accountVoted: boolean;
 
   proposalId?: string;
   result?: IApprovalThresholdResult;
   details?: IVotingStageDetails;
+  cta?: IVotingBreakdownCta;
 }
 
 export const VotingStage: React.FC<IVotingStageProps> = (props) => {
-  const { accountVoted, details, disabled, title, number, result, proposalId = "", status } = props;
+  const { cta, details, disabled, title, number, result, proposalId = "", status } = props;
 
   const [collapsibleHeight, setCollapsibleHeight] = useState<CSSProperties["height"]>();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -99,7 +95,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
             <Tabs.Trigger value="details" label="Details" />
           </Tabs.List>
           <Tabs.Content value="breakdown" asChild={true}>
-            <div className="py-4 pb-8">{result && <VotingBreakdown accountVoted={accountVoted} result={result} />}</div>
+            <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} result={result} />}</div>
           </Tabs.Content>
           <Tabs.Content value="voters">
             <div className="py-4 pb-8">

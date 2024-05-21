@@ -3,18 +3,17 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import React from "react";
-import { type ProposalDetail } from "../../services/proposal/selectors";
+import { type ITransformedStage } from "../../services/proposal/selectors";
 import { VotingStage, type IVotingStageProps } from "./votingStage";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
 
 interface IProposalVotingProps {
-  stages: ProposalDetail["stages"];
-  voted: boolean;
+  stages: ITransformedStage[];
 }
 
-export const ProposalVoting: React.FC<IProposalVotingProps> = ({ stages, voted: accountVoted }) => {
+export const ProposalVoting: React.FC<IProposalVotingProps> = ({ stages }) => {
   return (
     <Card className="overflow-hidden rounded-xl bg-neutral-0 shadow-neutral">
       {/* Header */}
@@ -28,7 +27,7 @@ export const ProposalVoting: React.FC<IProposalVotingProps> = ({ stages, voted: 
       {/* Stages */}
       <AccordionContainer isMulti={true} className="border-t border-t-neutral-100">
         {stages.map((stage, index) => (
-          <VotingStage key={stage.id} {...({ ...stage, number: index + 1, accountVoted } as IVotingStageProps)} />
+          <VotingStage key={stage.id} {...({ ...stage, number: index + 1 } as IVotingStageProps)} />
         ))}
       </AccordionContainer>
     </Card>
