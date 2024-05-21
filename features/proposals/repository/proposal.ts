@@ -3,6 +3,7 @@ import { IProposal } from "..";
 import { type IPaginatedResponse } from "@/utils/types";
 import { type ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
+import { logger } from "@/services/logger";
 
 export enum ProposalSortBy {
   Title = "title",
@@ -169,7 +170,7 @@ class ProposalRepository {
         },
       };
     } catch (error) {
-      console.error("Error fetching proposals from database:", error);
+      logger.error("Error fetching proposals from database:", error);
       throw error;
     }
   }
@@ -192,7 +193,7 @@ class ProposalRepository {
         };
       }
     } catch (error) {
-      console.error(`Error fetching proposal with ID ${id}:`, error);
+      logger.error(`Error fetching proposal with ID ${id}:`, error);
       throw error;
     }
   }
@@ -250,7 +251,7 @@ class ProposalRepository {
 
       return proposal;
     } catch (error) {
-      console.error("Error creating proposal:", error);
+      logger.error("Error creating proposal:", error);
       throw error;
     }
   }
