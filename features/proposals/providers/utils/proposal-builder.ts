@@ -18,9 +18,9 @@ import {
 import VercelCache from "@/services/cache/VercelCache";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
-import { getMultisigProposalData } from "../multisig/proposalStages";
-import { getSnapshotProposalStagesData } from "../snapshot/proposalStages";
-import { type ProposalStage } from "../../models/proposals";
+import { getMultisigProposalsData, getMultisigVotingData } from "../multisig/proposalStages";
+import { getSnapshotProposalStagesData, getSnapshotProposalStageData } from "../snapshot/proposalStages";
+import { type ProposalStage, type VotingData } from "../../models/proposals";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -281,7 +281,7 @@ export async function getProposalStages() {
 
   const proposalsSnapshotStage = await getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE });
 
-  const proposalsMultisigStage = await getMultisigProposalData({
+  const proposalsMultisigStage = await getMultisigProposalsData({
     chain: PUB_CHAIN.id,
     contractAddress: PUB_MULTISIG_ADDRESS,
   });
@@ -480,4 +480,27 @@ export async function getCachedProposals(): Promise<IProposal[]> {
 export async function getCachedProposalById(proposalId: string): Promise<IProposal | undefined> {
   const proposals = await getCachedProposals();
   return proposals.find((proposal) => proposal.id.toLowerCase() === proposalId.toLowerCase());
+}
+
+export async function getVotingData(stage: ProposalStages, providerId: string): Promise<VotingData | undefined> {
+  switch (stage) {
+    case ProposalStages.COMMUNITY_VOTING:
+      return (await getSnapshotProposalStageData(providerId))?.voting;
+    case ProposalStages.COUNCIL_APPROVAL:
+      return await getMultisigVotingData({
+        chain: PUB_CHAIN.id,
+        contractAddress: PUB_MULTISIG_ADDRESS,
+        stage: "approval",
+        providerId: BigInt(providerId),
+      });
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return await getMultisigVotingData({
+        chain: PUB_CHAIN.id,
+        contractAddress: PUB_MULTISIG_ADDRESS,
+        stage: "confirmation",
+        providerId: BigInt(providerId),
+      });
+    default:
+      return undefined;
+  }
 }

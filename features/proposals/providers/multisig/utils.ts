@@ -1,7 +1,7 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
-import { type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
+import { VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
 import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
@@ -13,6 +13,7 @@ import {
   type ProposalCreatedLogResponse,
   type ProposalParameters,
   type MultisigProposal,
+  type MultiSigProposalVotingData,
   type SecondaryMetadata,
 } from "./types";
 import { fromHex, getAbiItem, type Address, type Hex } from "viem";
@@ -101,6 +102,27 @@ const getProposalBindings = async function (metadata: PrimaryMetadata, secondary
   };
 };
 
+export function parseVotingData(voting?: MultiSigProposalVotingData): VotingData | undefined {
+  if (!voting) return;
+
+  return {
+    providerId: voting.providerId,
+    startDate: voting.startDate,
+    endDate: voting.endDate,
+    quorum: voting.quorum,
+    snapshotBlock: voting.snapshotBlock,
+    choices: ["approve"],
+    scores: [
+      {
+        choice: "approve",
+        votes: voting.approvals,
+        percentage: (voting.approvals / voting.quorum) * 100,
+      },
+    ],
+    total_votes: voting.approvals,
+  };
+}
+
 export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage[] {
   if (!proposals) return [];
 
@@ -121,23 +143,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       });
     }
 
-    const voting = proposal.voting && {
-      providerId: proposal.voting.providerId,
-      startDate: proposal.voting.startDate,
-      endDate: proposal.voting.endDate,
-      approvals: proposal.voting.approvals,
-      quorum: proposal.voting.quorum,
-      snapshotBlock: proposal.voting.snapshotBlock,
-      choices: ["approve"],
-      scores: [
-        {
-          choice: "approve",
-          votes: proposal.voting.approvals,
-          percentage: (proposal.voting.approvals / proposal.voting.quorum) * 100,
-        },
-      ],
-      total_votes: proposal.voting.approvals,
-    };
+    const voting = parseVotingData(proposal.voting);
 
     const creator = [
       {
@@ -164,7 +170,46 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
   });
 }
 
-export const requestProposalData = async function (
+export const requestVotingData = async function (
+  chain: number,
+  contractAddress: Address,
+  stage: "approval" | "confirmation",
+  proposalId: number
+): Promise<MultiSigProposalVotingData | undefined> {
+  const proposalData = await getProposalData(chain, contractAddress, BigInt(proposalId));
+
+  if (!proposalData) return;
+
+  if (stage === "approval") {
+    return {
+      providerId: proposalId.toString(),
+      startDate: proposalData.parameters.startDate.toString(),
+      endDate: proposalData.firstDelayStartBlock?.toString() ?? proposalData.parameters.endDate.toString(),
+      approvals: proposalData.approvals,
+      quorum: proposalData.parameters.minApprovals,
+      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
+    };
+  } else if (stage === "confirmation") {
+    if (!proposalData.firstDelayStartBlock) return;
+
+    const confirmationStartDate = proposalData.firstDelayStartBlock + proposalData.parameters.delayDuration;
+    const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
+
+    if (!lockedPeriodPassed) return;
+    return {
+      providerId: proposalId.toString(),
+      startDate: confirmationStartDate.toString(),
+      endDate: proposalData.parameters.endDate.toString(),
+      approvals: proposalData.confirmations,
+      quorum: proposalData.parameters.minApprovals,
+      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
+    };
+  }
+
+  return;
+};
+
+export const requestProposalsData = async function (
   chain: number,
   contractAddress: Address
 ): Promise<MultisigProposal[]> {

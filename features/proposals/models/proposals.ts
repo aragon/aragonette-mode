@@ -65,3 +65,7 @@ export interface IProposalStageProvider {
 export interface IProposalVotesProvider {
   (params?: any): Promise<Vote[]>;
 }
+
+export interface IProposalVotingDataProvider {
+  (params?: any): Promise<VotingData | undefined>;
+}
