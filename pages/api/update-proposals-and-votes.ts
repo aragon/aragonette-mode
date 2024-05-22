@@ -21,10 +21,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
   const cache = new VercelCache();
 
   try {
-    //TODO: Handle error cases
     const proposals = await buildProposalResponse();
-
-    await cache.set("proposals", proposals);
 
     for (const proposal of proposals) {
       await proposalRepository.upsertProposal({
@@ -41,7 +38,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
         const stageParam = printStageParam(stage.type);
 
-        // TODO: Use a better key
+        // TODO: Move to database
         await cache.set(`votes-${proposal.id}-${stageParam}`, votes);
       }
     }
