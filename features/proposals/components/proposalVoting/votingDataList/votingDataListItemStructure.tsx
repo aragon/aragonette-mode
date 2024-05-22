@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 export type IVoteChoice = "yes" | "approve" | "no" | "reject" | "abstain" | "veto";
 
-export interface IVotesDataListItemStructureProps extends IDataListItemProps {
+export interface IVotingDataListItemStructureProps extends IDataListItemProps {
   address: string;
   choice: IVoteChoice;
   ensAvatar?: string;
@@ -12,7 +12,7 @@ export interface IVotesDataListItemStructureProps extends IDataListItemProps {
   votingPower?: string;
 }
 
-export const VotesDataListItemStructure: React.FC<IVotesDataListItemStructureProps> = (props) => {
+export const VotingDataListItemStructure: React.FC<IVotingDataListItemStructureProps> = (props) => {
   const { address, ensAvatar, ensName, choice, className, votingPower, ...otherProps } = props;
 
   let tagVariant: TagVariant = "neutral";
