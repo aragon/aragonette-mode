@@ -34,12 +34,12 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         if (stage.status === "active") {
           continue;
         }
+        //TODO: Get from DB if it exists or update
         const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
 
         const stageParam = printStageParam(stage.type);
 
-        // TODO: Move to database
-        await cache.set(`votes-${proposal.id}-${stageParam}`, votes);
+        // TODO: Save to database
       }
     }
 
