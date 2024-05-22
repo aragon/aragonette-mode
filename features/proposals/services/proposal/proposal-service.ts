@@ -28,7 +28,7 @@ class ProposalService {
   async voted(params: IFetchVotedParams): Promise<IVoted> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/voted`, {
       ...params,
-      stageId: printStageParam(params.stageId),
+      stage: printStageParam(params.stage),
     });
     const response = await fetch(url);
     const parsed: IVoted = await response.json();
@@ -38,7 +38,7 @@ class ProposalService {
   async fetchVotes(params: IFetchVotesParams): Promise<IPaginatedResponse<IProposalVote>> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/votes`, {
       ...params,
-      stageId: printStageParam(params.stageId),
+      stage: printStageParam(params.stage),
     });
 
     const response = await fetch(url);

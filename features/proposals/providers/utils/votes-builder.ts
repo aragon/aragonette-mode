@@ -48,7 +48,7 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
       return multisigVotes;
     }
     default: {
-      throw new Error("Invalid stage: " + stage);
+      throw new Error(`Invalid stage: ${stage}`);
     }
   }
 }

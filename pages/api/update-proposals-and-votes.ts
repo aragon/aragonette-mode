@@ -1,9 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
-import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
-import { printStageParam } from "@/utils/api-utils";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
   // TODO: Enable authentication for cron job
@@ -31,12 +29,10 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         if (stage.status === "active") {
           continue;
         }
-        //TODO: Get from DB if it exists or update
-        const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
-
-        const stageParam = printStageParam(stage.type);
-
         // TODO: Save to database
+        // TODO: Get from DB if it exists or update
+        // const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
+        // const stageParam = printStageParam(stage.type);
       }
     }
 

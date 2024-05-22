@@ -34,8 +34,8 @@ export const ProposalDataList: React.FC = () => {
     queries:
       proposalsQueryData && !!address
         ? proposalsQueryData.proposals.map(({ result, id: proposalId }) => {
-            const stageId = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
-            return { ...voted({ proposalId, stageId, address }), enabled: stageId !== ProposalStages.DRAFT };
+            const stage = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
+            return { ...voted({ proposalId, stage, address }), enabled: stage !== ProposalStages.DRAFT };
           })
         : [],
   });

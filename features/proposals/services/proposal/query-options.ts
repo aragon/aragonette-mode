@@ -52,7 +52,7 @@ export function proposalVotes(params: IFetchVotesParams) {
     queryKey: proposalKeys.votes(params),
     queryFn: () => proposalService.fetchVotes(params),
     select: (data) => ({
-      votes: data.pages.flatMap((p) => toProposalVotes(p.data, params.stageId)),
+      votes: data.pages.flatMap((p) => toProposalVotes(p.data, params.stage)),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
     }),
     enabled,

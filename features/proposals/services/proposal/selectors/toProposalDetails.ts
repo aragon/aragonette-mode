@@ -102,7 +102,8 @@ async function decodeAction(action: IAction, client: PublicClient): Promise<Deta
 }
 
 export interface ITransformedStage {
-  id: ProposalStages;
+  id: string;
+  type: ProposalStages;
   title: string;
   status: string;
   disabled: boolean;
@@ -116,10 +117,10 @@ export interface ITransformedStage {
  * @param stages - The array of proposal stages to transform.
  * @returns the array of transformed stages.
  */
-function transformStages(stages: IProposalStage[]) {
+function transformStages(stages: IProposalStage[]): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
-    if (stage.id === ProposalStages.DRAFT) {
+    if (stage.type === ProposalStages.DRAFT) {
       return [];
     }
 
@@ -144,9 +145,10 @@ function transformStages(stages: IProposalStage[]) {
 
       return {
         id: stage.id,
+        type: stage.type,
         result,
         details,
-        title: stage.id,
+        title: stage.type,
         disabled: false,
         proposalId: providerId,
         status,
@@ -156,7 +158,8 @@ function transformStages(stages: IProposalStage[]) {
     // return pending or unreached stages
     return {
       id: stage.id,
-      title: stage.id,
+      type: stage.type ?? stage.id,
+      title: stage.type ?? stage.id,
       status,
       disabled: true,
     };
@@ -169,7 +172,7 @@ function transformStages(stages: IProposalStage[]) {
  * @returns the array of all possible stages.
  */
 function generateStages(stages: IProposalStage[]) {
-  const stageSet = new Map(stages.map((stage) => [stage.id, stage]));
+  const stageSet = new Map(stages.map((stage) => [stage.type, stage]));
 
   for (const stageId of Object.values(ProposalStages)) {
     if (!stageSet.has(stageId)) {

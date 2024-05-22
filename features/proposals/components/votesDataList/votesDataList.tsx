@@ -9,14 +9,14 @@ const DEFAULT_PAGE_SIZE = 6;
 
 interface IMemberListProps {
   proposalId: string;
-  stageId: ProposalStages;
+  stageTitle: string;
 }
 
 export const VotesDataList: React.FC<IMemberListProps> = (props) => {
-  const { proposalId, stageId } = props;
+  const { proposalId, stageTitle: stage } = props;
 
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
-    ...proposalVotes({ proposalId, stageId }),
+    ...proposalVotes({ proposalId, stage: stage as ProposalStages }),
     placeholderData: keepPreviousData,
     gcTime: Infinity,
     staleTime: Infinity,

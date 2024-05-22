@@ -99,7 +99,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
           </Tabs.Content>
           <Tabs.Content value="voters">
             <div className="py-4 pb-8">
-              <VotesDataList proposalId={proposalId} stageId={title as ProposalStages} />
+              <VotesDataList proposalId={proposalId} stageTitle={title as ProposalStages} />
             </div>
           </Tabs.Content>
           <Tabs.Content value="details">

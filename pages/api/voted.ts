@@ -6,11 +6,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IVoted | IError>) {
-  const { proposalId, stageId, address } = req.query;
+  const { proposalId, stage, address } = req.query;
 
   try {
     const parsedProposalId = checkParam(proposalId, "proposalId");
-    const parsedStage = checkParam(stageId, "stage");
+    const parsedStage = checkParam(stage, "stage");
     const stageEnum = parseStageParam(parsedStage);
     const parsedAddress = checkParam(address, "address");
 

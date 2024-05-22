@@ -10,18 +10,18 @@ export interface IFetchProposalListParams {}
 export interface IVoteParams {
   address: Address;
   proposalId: string;
-  stageId: ProposalStages;
+  stage: ProposalStages;
   vote: Votes;
   weight: number;
 }
 
 export interface IFetchVotesParams {
   proposalId: string;
-  stageId: ProposalStages;
+  stage: ProposalStages;
 }
 
 export interface IFetchVotedParams {
   proposalId: string;
-  stageId: ProposalStages;
+  stage: ProposalStages;
   address: Address;
 }

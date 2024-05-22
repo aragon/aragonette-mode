@@ -34,13 +34,13 @@ export default function ProposalDetails() {
   });
 
   const { data: approved } = useQuery(
-    voted({ address: address as Address, proposalId, stageId: proposal?.currentStage as ProposalStages })
+    voted({ address: address as Address, proposalId, stage: proposal?.currentStage as ProposalStages })
   );
 
   // proposal id for current stage
   const proposalVoteId = proposal?.stages?.find(
     (stage) => stage.type === (proposal?.currentStage ?? ProposalStages.DRAFT)
-  )?.voting?.providerId;
+  )?.proposalId;
 
   // check if user can vote on a proposal the proposal
   const userCanApprove = useUserCanApprove(proposalVoteId);

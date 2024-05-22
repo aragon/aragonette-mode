@@ -463,25 +463,6 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
   });
 }
 
-export async function getCachedProposals(): Promise<IProposal[]> {
-  const cache = new VercelCache();
-
-  let proposals = await cache.get<IProposal[]>("proposals");
-
-  if (!proposals) {
-    const freshProposals = await buildProposalResponse();
-    await cache.set("proposals", freshProposals);
-    proposals = freshProposals;
-  }
-
-  return proposals;
-}
-
-export async function getCachedProposalById(proposalId: string): Promise<IProposal | undefined> {
-  const proposals = await getCachedProposals();
-  return proposals.find((proposal) => proposal.id.toLowerCase() === proposalId.toLowerCase());
-}
-
 export async function getVotingData(stage: ProposalStages, providerId: string): Promise<VotingData | undefined> {
   switch (stage) {
     case ProposalStages.COMMUNITY_VOTING:
