@@ -1,20 +1,22 @@
 import { MemberProfile } from "@/components/nav/routes";
-import { DataList, IconType, MemberDataListItemSkeleton, type DataListState } from "@aragon/ods";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { VotingDataListItemStructure } from "./votingDataListItemStructure";
-import classNames from "classnames";
 import { type ProposalStages } from "@/features/proposals";
 import { proposalVotes } from "@/features/proposals/services/proposal";
+import { DataList, IconType, type DataListState } from "@aragon/ods";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { VotesDataListItemSkeleton } from "./votesDataListItemSkeleton";
+import { VotesDataListItemStructure } from "./votesDataListItemStructure";
+import { isAddressEqual } from "viem";
+import { useAccount } from "wagmi";
 
 const DEFAULT_PAGE_SIZE = 6;
 
-interface IVotingDataListProps {
+interface IVotesDataListProps {
   proposalId: string;
   stageTitle: string;
 }
 
-export const VotingDataList: React.FC<IVotingDataListProps> = (props) => {
+export const VotingDataList: React.FC<IVotesDataListProps> = (props) => {
   const { proposalId, stageTitle: stage } = props;
 
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
@@ -36,8 +38,8 @@ export const VotingDataList: React.FC<IVotingDataListProps> = (props) => {
   }
 
   const totalVoters = data?.pagination?.total;
+  const showPagination = (totalVoters ?? 0) > DEFAULT_PAGE_SIZE;
   const entityLabel = totalVoters === 1 ? "Voter" : "Voters";
-  const showGrid = (!isError && !!(totalVoters && totalVoters > 1)) || isLoading; // add more when filtering is available
 
   const emptyFilteredState = {
     heading: "No voters found",
@@ -77,23 +79,23 @@ export const VotingDataList: React.FC<IVotingDataListProps> = (props) => {
       onLoadMore={fetchNextPage}
     >
       <DataList.Container
-        SkeletonElement={MemberDataListItemSkeleton}
+        SkeletonElement={VotesDataListItemSkeleton}
         errorState={errorState}
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
-        className={classNames({
-          "grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] content-center gap-3": showGrid,
-        })}
       >
-        {data?.votes?.map(({ id, ...otherProps }) => {
-          return (
-            // TODO: update with router agnostic ODS DataListItem
-            <Link legacyBehavior={true} key={id} href={MemberProfile.getPath(otherProps.address)} passHref={true}>
-              <VotingDataListItemStructure {...otherProps} />
-            </Link>
-          );
-        })}
+        {data?.votes?.map(({ id, choice, ...otherProps }) => (
+          // TODO: update with router agnostic ODS DataListItem
+          <Link legacyBehavior={true} key={id} href={MemberProfile.getPath(otherProps.address)} passHref={true}>
+            <VotesDataListItemStructure
+              {...otherProps}
+              variant={choice}
+              connectedAccount={address && isAddressEqual(address, otherProps.address)}
+            />
+          </Link>
+        ))}
       </DataList.Container>
+      {showPagination && <DataList.Pagination />}
     </DataList.Root>
   );
 };

@@ -5,7 +5,7 @@ import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { type ProposalStages } from "../../../services";
-import { VotingDataList } from "../votingDataList";
+import { VotesDataList } from "../votesDataList";
 import {
   type IBreakdownMajorityVotingResult,
   VotingBreakdown,
