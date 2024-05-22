@@ -82,17 +82,17 @@ export type MultiSigProposalVotingData = {
 };
 
 export type MultisigProposal = {
-  id: ProposalStages;
+  stageType: ProposalStages;
   title: string;
   summary: string;
   description: string;
   creator: string;
   createdAt: string;
-  resources?: IProposalResource[];
+  resources: IProposalResource[];
   link: string;
   status: ProposalStatus;
   voting?: MultiSigProposalVotingData;
-  actions: Array<Action>;
+  actions: Action[];
   isEmergency: boolean;
   githubId?: string;
   snapshotId?: string;

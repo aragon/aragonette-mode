@@ -23,6 +23,31 @@ export const snapshotProposalsQuery = (space: string) => `
   }
 `;
 
+export const snapshotProposalQuery = (id: string) => `
+  query Proposal {
+    proposal(id: "${id}") {
+      id
+      title
+      body
+      choices
+      start
+      end
+      quorum
+      link
+      snapshot
+      state
+      author
+      app
+      space {
+        id
+      }
+      scores
+      scores_total
+      votes
+    }
+  }
+`;
+
 export const snapshotVotesQuery = (proposal: string) => `
   query Votes {
     votes(first: 1000, where: {proposal: "${proposal}"}) {

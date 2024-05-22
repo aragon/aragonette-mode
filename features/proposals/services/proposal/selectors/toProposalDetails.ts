@@ -17,7 +17,7 @@ import { ProposalStages, type IAction, type IProposal, type IProposalStage, type
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
-export type ProposalDetail = Omit<IProposal, "actions" | "stages"> & {
+export type ProposalDetail = Omit<IProposal, "actions" | "createdAt" | "stages"> & {
   actions: DetailedAction[];
   stages: ITransformedStage[];
   createdAt?: string;
