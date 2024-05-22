@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import VercelCache from "@/services/cache/VercelCache";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
 import { printStageParam } from "@/utils/api-utils";
@@ -18,13 +17,8 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
   }
   */
 
-  const cache = new VercelCache();
-
   try {
-    //TODO: Handle error cases
     const proposals = await buildProposalResponse();
-
-    await cache.set("proposals", proposals);
 
     for (const proposal of proposals) {
       await proposalRepository.upsertProposal({
@@ -37,12 +31,12 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         if (stage.status === "active") {
           continue;
         }
+        //TODO: Get from DB if it exists or update
         const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
 
         const stageParam = printStageParam(stage.type);
 
-        // TODO: Use a better key
-        await cache.set(`votes-${proposal.id}-${stageParam}`, votes);
+        // TODO: Save to database
       }
     }
 

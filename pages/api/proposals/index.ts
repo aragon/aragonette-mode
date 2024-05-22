@@ -1,10 +1,9 @@
 import { type IProposal } from "@/features/proposals";
 import { IError, type IPaginatedResponse } from "@/utils/types";
-import { checkParam, checkNullableParam } from "@/utils/api-utils";
+import { checkNullableParam } from "@/utils/api-utils";
 import type { NextApiRequest, NextApiResponse } from "next";
-import proposalRepository from "@/features/proposals/repository/proposal";
 import { getVotingData } from "@/features/proposals/providers";
-import {
+import proposalRepository, {
   parseProposalSortBy,
   parseProposalSortDir,
   parsedProposalStatus,

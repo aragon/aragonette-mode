@@ -20,7 +20,6 @@ type MarkdownLink = {
 };
 
 const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promise<string> => {
-  /*
   const cache = new Cache();
 
   const cachedData = await cache.get(url);
@@ -31,11 +30,10 @@ const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promi
 
     throw new Error("Unknown type: ", cachedData);
   }
-  */
 
   const response = await fetch(url, headers);
   const data = await response.text();
-  //await cache.set(url, data, ttl);
+  await cache.set(url, data, ttl);
   return data;
 };
 
