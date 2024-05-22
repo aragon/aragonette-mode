@@ -19,18 +19,17 @@ export const parseProposalSortBy = (value?: string): ProposalSortBy => {
     return ProposalSortBy.CreatedAt;
   }
 
-  if (value === "title") {
-    return ProposalSortBy.Title;
-  } else if (value === "status") {
-    return ProposalSortBy.Status;
-  } else if (value === "isEmergency") {
-    return ProposalSortBy.IsEmergency;
-  } else if (value === "createdAt") {
-    return ProposalSortBy.CreatedAt;
-  }
-
-  {
-    throw new Error(`Invalid sort by value: ${value}`);
+  switch (value) {
+    case "title":
+      return ProposalSortBy.Title;
+    case "status":
+      return ProposalSortBy.Status;
+    case "isEmergency":
+      return ProposalSortBy.IsEmergency;
+    case "createdAt":
+      return ProposalSortBy.CreatedAt;
+    default:
+      throw new Error(`Invalid sort by value: ${value}`);
   }
 };
 
