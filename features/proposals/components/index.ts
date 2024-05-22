@@ -4,5 +4,4 @@ export * from "./headerProposal/headerProposal";
 export * from "./proposalAction/proposalAction";
 export * from "./proposalDataList/proposalDataList";
 export * from "./transparencyReport/transparencyReport";
-export * from "./votesDataList/votesDataList";
 export * from "./proposalVoting/proposalVoting";

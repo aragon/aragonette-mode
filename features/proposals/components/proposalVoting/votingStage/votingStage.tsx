@@ -1,22 +1,20 @@
 import { PUB_CHAIN } from "@/constants";
 import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
-import {
-  AccordionItem,
-  AccordionItemContent,
-  AccordionItemHeader,
-  Heading,
-  Tabs,
-  formatterUtils,
-  type IApprovalThresholdResult,
-} from "@aragon/ods";
+import { AccordionItem, AccordionItemContent, AccordionItemHeader, Heading, Tabs, formatterUtils } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { type ProposalStages } from "../../services";
-import { VotesDataList } from "../votesDataList/votesDataList";
-import { VotingBreakdown, type IVotingBreakdownCta } from "./votingBreakdown";
-import { VotingDetails } from "./votingDetails";
+import { type ProposalStages } from "../../../services";
+import { VotingDataList } from "../votingDataList";
+import {
+  type IBreakdownMajorityVotingResult,
+  VotingBreakdown,
+  type VotingCta,
+  type ProposalType,
+} from "../votingBreakdown";
+import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
+import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
 
 export interface IVotingStageDetails {
   censusBlock: number;
@@ -26,22 +24,21 @@ export interface IVotingStageDetails {
   options: string;
 }
 
-export interface IVotingStageResults extends IApprovalThresholdResult {}
-
-export interface IVotingStageProps {
+export interface IVotingStageProps<TType extends ProposalType = ProposalType> {
   title: string;
   number: number;
   disabled: boolean;
   status: "accepted" | "rejected" | "active";
 
+  variant: TType;
   proposalId?: string;
-  result?: IApprovalThresholdResult;
+  result?: TType extends "approvalThreshold" ? IBreakdownApprovalThresholdResult : IBreakdownMajorityVotingResult;
   details?: IVotingStageDetails;
-  cta?: IVotingBreakdownCta;
+  cta?: VotingCta;
 }
 
 export const VotingStage: React.FC<IVotingStageProps> = (props) => {
-  const { cta, details, disabled, title, number, result, proposalId = "", status } = props;
+  const { cta, details, disabled, title, number, result, proposalId = "", status, variant } = props;
 
   const [node, setNode] = useState<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -111,7 +108,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
             <Tabs.Trigger value="details" label="Details" />
           </Tabs.List>
           <Tabs.Content value="breakdown" asChild={true}>
-            <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} result={result} />}</div>
+            <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} variant={variant} result={result} />}</div>
           </Tabs.Content>
           <Tabs.Content value="voters">
             <div className="py-4 pb-8">
