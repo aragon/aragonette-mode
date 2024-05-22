@@ -3,8 +3,8 @@ import { config } from "@/context/Web3Modal";
 import {
   type IBreakdownApprovalThresholdResult,
   type IBreakdownMajorityVotingResult,
-} from "@/features/proposals/components/proposalVoting/types";
-import { type IVotingStageDetails } from "@/features/proposals/components/proposalVoting/votingStage";
+  type IVotingStageDetails,
+} from "@/features/proposals/components";
 import { checkIfProxyContract, fetchAbi } from "@/hooks/useAbi";
 import { decodeActionData, type DecodedAction } from "@/hooks/useAction";
 import { logger } from "@/services/logger";
