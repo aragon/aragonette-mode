@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import VercelCache from "@/services/cache/VercelCache";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
 import { printStageParam } from "@/utils/api-utils";
+import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
@@ -17,15 +17,13 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
   }
   */
 
-  const cache = new VercelCache();
-
   try {
-    //TODO: Handle error cases
     const proposals = await buildProposalResponse();
 
-    await cache.set("proposals", proposals);
-
     for (const proposal of proposals) {
+      await proposalRepository.upsertProposal({
+        ...proposal,
+      });
       for (const stage of proposal.stages) {
         if (!stage.voting) {
           continue;
@@ -33,18 +31,17 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         if (stage.status === "active") {
           continue;
         }
-        const votes = await buildVotesResponse(stage.voting.providerId, stage.id);
+        //TODO: Get from DB if it exists or update
+        const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
 
-        const stageParam = printStageParam(stage.id);
+        const stageParam = printStageParam(stage.type);
 
-        // TODO: Use a better key
-        await cache.set(`votes-${proposal.pip}-${stageParam}`, votes);
+        // TODO: Save to database
       }
     }
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.log(error);
     // TODO: Handle error cases
     if (error instanceof Error) logger.error(error.message);
     else logger.error(JSON.stringify(error));

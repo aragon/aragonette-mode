@@ -9,3 +9,11 @@ export const checkParam = (param: string | string[] | undefined, name: string): 
 
   return param;
 };
+
+export const checkNullableParam = (param: string | string[] | undefined, name: string): string | undefined => {
+  if (Array.isArray(param)) {
+    throw new Error(`Invalid ${name} parameter`);
+  }
+
+  return param;
+};

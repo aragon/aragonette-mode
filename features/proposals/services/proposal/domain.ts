@@ -1,6 +1,6 @@
 import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
 import { type Address } from "viem";
-import { type VotingData } from "../../providers/utils/types";
+import { type VotingData } from "../../models/proposals";
 
 export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
 
@@ -29,13 +29,14 @@ export type IProposalResource = {
 };
 
 export interface IProposalStage {
-  id: ProposalStages;
+  id: string;
+  type: ProposalStages;
   status: ProposalStatus;
   createdAt?: string;
   startTimestamp?: string;
   endTimestamp?: string;
   creator: ICreator[];
-  resources?: IProposalResource[];
+  resources: IProposalResource[];
   voting?: VotingData;
 }
 
@@ -51,7 +52,7 @@ export interface IAction {
 }
 
 export interface IProposal {
-  pip: string;
+  id: string;
   title: string;
   description: string;
   body?: string;
@@ -60,11 +61,12 @@ export interface IProposal {
   includedPips: IProposalResource[];
   parentPip?: IProposalResource;
   status: ProposalStatus;
+  createdAt: string;
   type: string;
   isEmergency?: boolean;
   currentStage: ProposalStages;
   stages: IProposalStage[];
-  actions?: IAction[];
+  actions: IAction[];
   publisher: IPublisher[];
 }
 

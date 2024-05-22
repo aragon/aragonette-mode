@@ -1,7 +1,7 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
-import { type ProposalStage, type Vote } from "@/features/proposals/providers/utils/types";
+import { type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
 import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
@@ -147,7 +147,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
     ];
 
     return {
-      id: proposal.id,
+      stageType: proposal.stageType,
       title: proposal.title,
       description: proposal.summary,
       body: proposal.description,
@@ -194,6 +194,9 @@ export const requestProposalData = async function (
     const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
 
+    const pip =
+      githubId?.split("/")?.pop()?.split(".")?.shift() ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+
     // get resources
     const resources = primaryMetadata.resources.map((resource) => ({
       name: resource.name,
@@ -202,6 +205,7 @@ export const requestProposalData = async function (
 
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
+      pip,
       title: primaryMetadata.title,
       summary: primaryMetadata.summary,
       description: primaryMetadata.description,
@@ -235,7 +239,7 @@ export const requestProposalData = async function (
 
     proposals.push({
       ...baseProposalData,
-      id: ProposalStages.COUNCIL_APPROVAL,
+      stageType: ProposalStages.COUNCIL_APPROVAL,
       status,
       voting: {
         providerId: i.toString(),
@@ -266,7 +270,7 @@ export const requestProposalData = async function (
 
       proposals.push({
         ...baseProposalData,
-        id: ProposalStages.COUNCIL_CONFIRMATION,
+        stageType: ProposalStages.COUNCIL_CONFIRMATION,
         status: confirmationStatus,
         voting: {
           providerId: i.toString(),

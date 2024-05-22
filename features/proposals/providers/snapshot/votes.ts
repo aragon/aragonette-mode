@@ -1,4 +1,4 @@
-import { type Vote, type IProposalVotesProvider } from "../utils/types";
+import { type Vote, type IProposalVotesProvider } from "../../models/proposals";
 import { snapshotVotesQuery } from "./gql";
 import { type SnapshotVoteData } from "./types";
 import { requestProposalData } from "./utils";

@@ -1,5 +1,5 @@
 import { type IProposal } from "@/features/proposals";
-import { getCachedProposalById } from "@/features/proposals/providers/utils/proposal-builder";
+import proposalRepository from "@/features/proposals/repository/proposal";
 import { checkParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const parsedId = checkParam(id, "proposalId");
 
   try {
-    const proposal = await getCachedProposalById(parsedId);
+    const proposal = await proposalRepository.getProposalById(parsedId);
     if (!proposal) {
       return res.status(404).json({ error: { message: "Proposal not found" } });
     }
