@@ -1,5 +1,5 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
-import { IProposal } from "..";
+import { type IProposal } from "..";
 import { type IPaginatedResponse } from "@/utils/types";
 import { type ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
@@ -40,7 +40,7 @@ export enum ProposalSortDir {
 
 export const parseProposalSortDir = (value?: string): ProposalSortDir => {
   if (!value) {
-    return ProposalSortDir.Desc;
+    return ProposalSortDir.Asc;
   }
 
   if (value === "asc") {

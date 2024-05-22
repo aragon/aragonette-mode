@@ -64,7 +64,7 @@ export default function ProposalDetails() {
               cta: {
                 disabled: approved?.hasVoted ?? !userCanApprove,
                 onClick: approveProposal,
-                label: approved?.hasVoted ? "Approved" : "Approve PIP",
+                label: approved?.hasVoted ? "Approved" : "Approve",
               },
             };
           // case ProposalStages.COMMUNITY_VOTING:
@@ -73,7 +73,7 @@ export default function ProposalDetails() {
           //     cta: {
           //       disabled: approved?.hasVoted ?? !userCanApprove,
           //       onClick: approveProposal,
-          //       label: approved?.hasVoted ? "Voted" : "Cast vote",
+          //       label: approved?.hasVoted ? "Voted" : "Vote",
           //     },
           //   };
           case ProposalStages.COUNCIL_CONFIRMATION:
@@ -82,7 +82,7 @@ export default function ProposalDetails() {
               cta: {
                 disabled: approved?.hasVoted ?? !userCanConfirm,
                 onClick: confirmProposal,
-                label: approved?.hasVoted ? "Confirmed" : "Confirm PIP",
+                label: approved?.hasVoted ? "Confirmed" : "Confirm",
               },
             };
         }
