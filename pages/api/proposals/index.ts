@@ -2,6 +2,7 @@ import { type IProposal } from "@/features/proposals";
 import { IError, type IPaginatedResponse } from "@/utils/types";
 import { checkNullableParam } from "@/utils/api-utils";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getVotingData } from "@/features/proposals/providers";
 import proposalRepository, {
   parseProposalSortBy,
   parseProposalSortDir,
@@ -46,6 +47,16 @@ export default async function handler(
       parsedSearch,
       typedStatus
     );
+
+    for (const proposal of paginatedProposals.data) {
+      for (const stage of proposal.stages) {
+        //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
+        if (stage.voting) {
+          const voting = await getVotingData(stage.type, stage.voting.providerId);
+          stage.voting = voting;
+        }
+      }
+    }
 
     res.status(200).json(paginatedProposals);
   } catch (error) {
