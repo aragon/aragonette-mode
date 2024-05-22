@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import VercelCache from "@/services/cache/VercelCache";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
 import { printStageParam } from "@/utils/api-utils";
@@ -17,8 +16,6 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
     return response.status(401).json({ success: false });
   }
   */
-
-  const cache = new VercelCache();
 
   try {
     const proposals = await buildProposalResponse();
