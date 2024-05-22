@@ -31,7 +31,7 @@ export const ProposalAction: React.FC<IProposalActionProps> = (props) => {
       </div>
 
       {/* Content */}
-      <AccordionContainer isMulti={true} className="border-t border-t-neutral-100" defaultValue={["Action 1"]}>
+      <AccordionContainer isMulti={true} className="border-t border-t-neutral-100">
         {actions?.map((action, index) => {
           const itemKey = `Action ${index + 1}`;
           const isEthTransfer = !action.raw.data || action.raw.data === "0x";

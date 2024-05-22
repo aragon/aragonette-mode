@@ -7,14 +7,14 @@ import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { type ProposalStages } from "../../../services";
 import { VotesDataList } from "../votesDataList";
 import {
-  type IBreakdownMajorityVotingResult,
   VotingBreakdown,
-  type VotingCta,
+  type IBreakdownMajorityVotingResult,
   type ProposalType,
+  type VotingCta,
 } from "../votingBreakdown";
+import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
 import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
-import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
 
 export interface IVotingStageDetails {
   censusBlock: number;
@@ -104,13 +104,13 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
         <RadixTabsRoot defaultValue={defaultTab} ref={setRef}>
           <Tabs.List>
             <Tabs.Trigger value="breakdown" label="Breakdown" />
-            <Tabs.Trigger value="voters" label="Voters" />
+            <Tabs.Trigger value="votes" label="Votes" />
             <Tabs.Trigger value="details" label="Details" />
           </Tabs.List>
           <Tabs.Content value="breakdown" asChild={true}>
             <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} variant={variant} result={result} />}</div>
           </Tabs.Content>
-          <Tabs.Content value="voters">
+          <Tabs.Content value="votes">
             <div className="py-4 pb-8">
               <VotesDataList proposalId={proposalId} stageTitle={title as ProposalStages} />
             </div>

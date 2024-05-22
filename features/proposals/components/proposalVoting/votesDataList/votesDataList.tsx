@@ -16,12 +16,12 @@ interface IVotesDataListProps {
   stageTitle: string;
 }
 
-export const VotingDataList: React.FC<IVotesDataListProps> = (props) => {
+export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
   const { proposalId, stageTitle: stage } = props;
+  const { address } = useAccount();
 
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
     ...proposalVotes({ proposalId, stage: stage as ProposalStages }),
-    placeholderData: keepPreviousData,
     gcTime: Infinity,
     staleTime: Infinity,
     refetchOnMount: false,
@@ -37,12 +37,12 @@ export const VotingDataList: React.FC<IVotesDataListProps> = (props) => {
     dataListState = "fetchingNextPage";
   }
 
-  const totalVoters = data?.pagination?.total;
-  const showPagination = (totalVoters ?? 0) > DEFAULT_PAGE_SIZE;
-  const entityLabel = totalVoters === 1 ? "Voter" : "Voters";
+  const totalVotes = data?.pagination?.total;
+  const showPagination = (totalVotes ?? 0) > DEFAULT_PAGE_SIZE;
+  const entityLabel = totalVotes === 1 ? "Vote" : "Votes";
 
   const emptyFilteredState = {
-    heading: "No voters found",
+    heading: "No votes found",
     description: "Your applied filters are not matching with any results. Reset and search with other filters!",
     secondaryButton: {
       label: "Reset all filters",
@@ -51,20 +51,14 @@ export const VotingDataList: React.FC<IVotesDataListProps> = (props) => {
   };
 
   const emptyState = {
-    heading: "No voters found",
-    description: "Start by creating a voter",
-    primaryButton: {
-      label: "Create onChain PIP",
-      iconLeft: IconType.PLUS,
-      onClick: () => alert("create voter"),
-    },
+    heading: "No votes found",
   };
 
   const errorState = {
-    heading: "Error loading voters",
-    description: "There was an error loading the voters. Try again!",
+    heading: "Error loading votes",
+    description: "There was an error loading the votes. Try again!",
     secondaryButton: {
-      label: "Reload voters",
+      label: "Reload votes",
       iconLeft: IconType.RELOAD,
       onClick: () => refetch(),
     },
@@ -73,7 +67,7 @@ export const VotingDataList: React.FC<IVotesDataListProps> = (props) => {
   return (
     <DataList.Root
       entityLabel={entityLabel}
-      itemsCount={totalVoters}
+      itemsCount={totalVotes}
       pageSize={DEFAULT_PAGE_SIZE}
       state={dataListState}
       onLoadMore={fetchNextPage}
