@@ -1,15 +1,17 @@
 import { PUB_CHAIN } from "@/constants";
 import { config } from "@/context/Web3Modal";
 import {
-  type IVotingStageDetails,
-  type IVotingStageResults,
-} from "@/features/proposals/components/proposalVoting/votingStage";
+  type IBreakdownApprovalThresholdResult,
+  type IBreakdownMajorityVotingResult,
+} from "@/features/proposals/components/proposalVoting/types";
+import { type IVotingStageDetails } from "@/features/proposals/components/proposalVoting/votingStage";
 import { checkIfProxyContract, fetchAbi } from "@/hooks/useAbi";
 import { decodeActionData, type DecodedAction } from "@/hooks/useAction";
 import { logger } from "@/services/logger";
 import { capitalizeFirstLetter } from "@/utils/case";
 import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
 import { type Action } from "@/utils/types";
+import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
@@ -101,14 +103,15 @@ async function decodeAction(action: IAction, client: PublicClient): Promise<Deta
   }
 }
 
-export interface ITransformedStage {
+export interface ITransformedStage<TType extends ProposalType = ProposalType> {
   id: string;
   type: ProposalStages;
+  variant: TType;
   title: string;
   status: string;
   disabled: boolean;
   proposalId?: string;
-  result?: IVotingStageResults;
+  result?: TType extends "approvalThreshold" ? IBreakdownApprovalThresholdResult : IBreakdownMajorityVotingResult;
   details?: IVotingStageDetails;
 }
 
@@ -127,18 +130,32 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
     const status = getVotingStatus(stage.status, stage.voting?.startDate, stage.voting?.endDate);
 
     // prepare active & past voting stage data
+    // TODO: rely on stage dates instead
     if (stage.voting) {
-      const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId } = stage.voting;
+      const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
 
-      const result = {
-        approvalAmount: total_votes,
-        approvalThreshold: quorum,
-      };
+      const variant: ProposalType =
+        stage.id === ProposalStages.COMMUNITY_VOTING ? "majorityVoting" : "approvalThreshold";
+
+      const result =
+        variant === "approvalThreshold"
+          ? {
+              approvalAmount: total_votes,
+              approvalThreshold: quorum,
+            }
+          : {
+              votingScores: scores.map((score) => ({
+                option: mapChoice(score.choice),
+                voteAmount: score.votes.toString(),
+                votePercentage: score.percentage,
+                tokenSymbol: "vePOL",
+              })),
+            };
 
       const details = {
         startDate: startDate ? dayjs.unix(Number(startDate)).utc().format("YYYY/MM/DD h:mm A [UTC]") : "",
         endDate: endDate ? dayjs.unix(Number(endDate)).utc().format("YYYY/MM/DD h:mm A [UTC]") : "",
-        strategy: "1 Address → 1 Vote",
+        strategy: variant === "approvalThreshold" ? "1 Address → 1 Vote" : "1 Token → 1 Vote",
         censusBlock: Number(snapshotBlock),
         options: formatChoices(choices),
       };
@@ -149,6 +166,7 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
         result,
         details,
         title: stage.type,
+        variant,
         disabled: false,
         proposalId: providerId,
         status,
@@ -160,6 +178,7 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
       id: stage.id,
       type: stage.type ?? stage.id,
       title: stage.type ?? stage.id,
+      variant: "approvalThreshold",
       status,
       disabled: true,
     };
@@ -218,3 +237,16 @@ const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: s
     return "unreached";
   }
 };
+
+function mapChoice(choice: string) {
+  switch (choice.toLowerCase()) {
+    case "accept":
+      return "Yes";
+    case "reject":
+      return "No";
+    case "Veto":
+      return "No";
+    default:
+      return choice;
+  }
+}
