@@ -23,6 +23,7 @@ export const VotesDataListItemStructure: React.FC<IVotesDataListItemStructurePro
       tagVariant = "success";
       break;
     case "no":
+    case "reject":
       tagVariant = "critical";
       break;
   }
