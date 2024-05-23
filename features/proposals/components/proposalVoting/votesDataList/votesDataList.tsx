@@ -22,10 +22,6 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
 
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
     ...proposalVotes({ proposalId, stage: stage as ProposalStages }),
-    gcTime: Infinity,
-    staleTime: Infinity,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   });
 
   let dataListState: DataListState = "idle";

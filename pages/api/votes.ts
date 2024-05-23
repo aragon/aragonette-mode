@@ -4,6 +4,7 @@ import { checkParam, parseStageParam } from "@/utils/api-utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger } from "@/services/logger";
+import proposalRepository from "@/features/proposals/repository/proposal";
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,8 +17,24 @@ export default async function handler(
     const parsedStage = checkParam(stage, "stage");
     const stageEnum = parseStageParam(parsedStage);
 
-    const votes = await buildVotesResponse(parsedProposalId, stageEnum);
+    const proposal = await proposalRepository.getProposalById(parsedProposalId);
 
+    if (!proposal) {
+      return res.status(404).json({ error: { message: "Proposal not found" } });
+    }
+
+    const proposalStage = proposal.stages.find((s) => s.id === `${proposal.id}-${stageEnum}`);
+
+    if (!proposalStage) {
+      return res.status(404).json({ error: { message: "Stage not found" } });
+    }
+
+    //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
+    if (!proposalStage.voting) {
+      return res.status(404).json({ error: { message: "Voting not found" } });
+    }
+
+    const votes = await buildVotesResponse(proposalStage.voting.providerId, stageEnum);
     res.status(200).json({ data: votes, pagination: { page: 1, limit: 100, total: votes.length, pages: 1 } });
   } catch (error: any) {
     // TODO: Handle error cases
