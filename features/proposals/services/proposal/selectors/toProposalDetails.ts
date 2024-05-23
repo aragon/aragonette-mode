@@ -61,7 +61,7 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   return {
     ...proposal,
     actions: transformedActions,
-    stages: transformStages(proposal.stages),
+    stages: transformStages(proposal.stages, proposal.id),
     createdAt,
     endDate: formattedEndDate,
   };
@@ -111,6 +111,7 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
   status: string;
   disabled: boolean;
   proposalId?: string;
+  providerId?: string;
   result?: TType extends "approvalThreshold" ? IBreakdownApprovalThresholdResult : IBreakdownMajorityVotingResult;
   details?: IVotingStageDetails;
 }
@@ -120,7 +121,7 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
  * @param stages - The array of proposal stages to transform.
  * @returns the array of transformed stages.
  */
-function transformStages(stages: IProposalStage[]): ITransformedStage[] {
+function transformStages(stages: IProposalStage[], proposalId: string): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
     if (stage.type === ProposalStages.DRAFT) {
@@ -168,7 +169,8 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
         title: stage.type,
         variant,
         disabled: false,
-        proposalId: providerId,
+        proposalId,
+        providerId,
         status,
       };
     }
