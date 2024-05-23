@@ -11,12 +11,13 @@ import { toProposalVotes } from "./selectors/toProposalVote";
 
 export const proposalKeys = {
   all: ["proposals"] as const,
+  proposal: (params: { proposalId: string }) => [...proposalKeys.all, "details", params] as const,
   list: (params: IFetchProposalListParams) => [...proposalKeys.all, "list", params] as const,
   detail: (params: IFetchProposalParams) => [...proposalKeys.all, "details", params] as const,
   voted: (params: IFetchVotedParams) =>
-    [...proposalKeys.all, ...proposalKeys.detail({ proposalId: params.proposalId }), "voted", params] as const,
+    [...proposalKeys.detail({ proposalId: params.proposalId }), "voted", params] as const,
   votes: (params: IFetchVotesParams) =>
-    [...proposalKeys.all, ...proposalKeys.detail({ proposalId: params.proposalId }), "votes", params] as const,
+    [...proposalKeys.detail({ proposalId: params.proposalId }), "votes", params] as const,
 };
 
 export function proposalList(params: IFetchProposalListParams = {}) {
@@ -64,6 +65,7 @@ export function voted(params: IFetchVotedParams) {
   return queryOptions({
     queryKey: proposalKeys.voted(params),
     queryFn: () => proposalService.voted(params),
+    select: (data) => !!data.hasVoted,
     enabled,
   });
 }
