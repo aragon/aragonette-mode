@@ -1,7 +1,7 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
-import { VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
+import { type VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
 import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";

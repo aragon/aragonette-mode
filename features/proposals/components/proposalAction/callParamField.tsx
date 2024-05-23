@@ -13,18 +13,7 @@ export const CallParamField: React.FC<ICallParamFiledProps> = ({ value, idx, fun
   if (functionAbi?.type !== "function") return;
 
   const resolvedValue = resolveValue(value, functionAbi.inputs?.[idx]);
-  const addon =
-    Array.isArray(functionAbi.inputs) && functionAbi.inputs.length > 1
-      ? resolveAddon(functionAbi.inputs?.[idx].name ?? "", functionAbi.inputs?.[idx].type, idx)
-      : undefined;
+  const label = resolveAddon(functionAbi.inputs?.[idx].name ?? "", functionAbi.inputs?.[idx].type, idx);
 
-  return (
-    <InputText
-      className="w-full"
-      addon={decodeCamelCase(addon)}
-      value={resolvedValue}
-      readOnly={true}
-      addonPosition="left"
-    />
-  );
+  return <InputText label={decodeCamelCase(label)} className="w-full" value={resolvedValue} disabled={true} />;
 };

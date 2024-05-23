@@ -1,5 +1,5 @@
 import { type IProposal } from "@/features/proposals";
-import { IError, type IPaginatedResponse } from "@/utils/types";
+import { type IError, type IPaginatedResponse } from "@/utils/types";
 import { checkNullableParam } from "@/utils/api-utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getVotingData } from "@/features/proposals/providers";

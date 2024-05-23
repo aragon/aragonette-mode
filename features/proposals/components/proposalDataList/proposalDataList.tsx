@@ -6,10 +6,10 @@ import {
   ProposalDataListItemSkeleton,
   type DataListState,
 } from "@aragon/ods";
-import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { StageOrder, proposalList, voted, type ProposalStages } from "../../services/proposal";
+import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
 
 const DEFAULT_PAGE_SIZE = 6;
 
@@ -25,6 +25,7 @@ export const ProposalDataList: React.FC = () => {
     fetchNextPage,
   } = useInfiniteQuery({
     ...proposalList(),
+    placeholderData: keepPreviousData,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
@@ -33,8 +34,8 @@ export const ProposalDataList: React.FC = () => {
     queries:
       proposalsQueryData && !!address
         ? proposalsQueryData.proposals.map(({ result, id: proposalId }) => {
-            const stageId = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
-            return voted({ proposalId, stageId, address });
+            const stage = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
+            return { ...voted({ proposalId, stage, address }), enabled: stage !== ProposalStages.DRAFT };
           })
         : [],
   });

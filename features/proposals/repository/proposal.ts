@@ -1,5 +1,5 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
-import { IProposal } from "..";
+import { type IProposal } from "..";
 import { type IPaginatedResponse } from "@/utils/types";
 import { type ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
