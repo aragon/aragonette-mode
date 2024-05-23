@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
-export function useProposalApproval(proposalId = "") {
+export function useProposalApproval(proposalId = "", onSuccess?: () => void) {
   const { reload } = useRouter();
   const { addAlert } = useAlerts();
   const {
@@ -48,7 +48,7 @@ export function useProposalApproval(proposalId = "") {
       txHash: votingTxHash,
     });
 
-    reload();
+    onSuccess ? onSuccess() : reload();
   }, [approvalStatus, votingTxHash, isConfirming, isConfirmed]);
 
   const approveProposal = () => {
