@@ -1,3 +1,5 @@
+import { PUB_CHAIN } from "@/constants";
+import { capitalizeFirstLetter } from "@/utils/case";
 import { type Action } from "@/utils/types";
 import { InputText, NumberFormat, formatterUtils } from "@aragon/ods";
 import { formatEther } from "viem";
@@ -10,9 +12,7 @@ export const EncodedView: React.FC<IEncodedViewProps> = (props) => {
   const { rawAction } = props;
 
   return getEncodedArgs(rawAction).map((arg) => (
-    <div className="flex" key={arg.title}>
-      <InputText addon={arg.title} addonPosition="left" readOnly={true} value={arg.value} className="w-full" />
-    </div>
+    <InputText key={arg.title} label={arg.title} disabled={true} value={arg.value} className="w-full" />
   ));
 };
 
@@ -24,10 +24,10 @@ function getEncodedArgs(action: Action) {
       { title: "To", value: action.to },
       {
         title: "Value",
-        value: `${formatterUtils.formatNumber(formatEther(action.value, "wei"), { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ETH`,
+        value: `${formatterUtils.formatNumber(formatEther(action.value, "wei"), { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_CHAIN.nativeCurrency.symbol}`,
       },
     ];
   }
 
-  return Object.entries(action).map(([key, value]) => ({ title: key, value: value.toString() }));
+  return Object.entries(action).map(([key, value]) => ({ title: capitalizeFirstLetter(key), value: value.toString() }));
 }

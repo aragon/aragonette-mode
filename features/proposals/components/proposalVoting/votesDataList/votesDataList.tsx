@@ -1,23 +1,27 @@
 import { MemberProfile } from "@/components/nav/routes";
-import { DataList, IconType, MemberDataListItemSkeleton, type DataListState } from "@aragon/ods";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { type ProposalStages } from "@/features/proposals";
+import { proposalVotes } from "@/features/proposals/services/proposal";
+import { DataList, IconType, type DataListState } from "@aragon/ods";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { proposalVotes, type ProposalStages } from "../../services/proposal";
+import { VotesDataListItemSkeleton } from "./votesDataListItemSkeleton";
 import { VotesDataListItemStructure } from "./votesDataListItemStructure";
+import { isAddressEqual } from "viem";
+import { useAccount } from "wagmi";
 
 const DEFAULT_PAGE_SIZE = 6;
 
-interface IMemberListProps {
+interface IVotesDataListProps {
   proposalId: string;
   stageTitle: string;
 }
 
-export const VotesDataList: React.FC<IMemberListProps> = (props) => {
+export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
   const { proposalId, stageTitle: stage } = props;
+  const { address } = useAccount();
 
   const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
     ...proposalVotes({ proposalId, stage: stage as ProposalStages }),
-    placeholderData: keepPreviousData,
     gcTime: Infinity,
     staleTime: Infinity,
     refetchOnMount: false,
@@ -33,11 +37,12 @@ export const VotesDataList: React.FC<IMemberListProps> = (props) => {
     dataListState = "fetchingNextPage";
   }
 
-  const totalVoters = data?.pagination?.total;
-  const entityLabel = totalVoters === 1 ? "Voter" : "Voters";
+  const totalVotes = data?.pagination?.total;
+  const showPagination = (totalVotes ?? 0) > DEFAULT_PAGE_SIZE;
+  const entityLabel = totalVotes === 1 ? "Vote" : "Votes";
 
   const emptyFilteredState = {
-    heading: "No voters found",
+    heading: "No votes found",
     description: "Your applied filters are not matching with any results. Reset and search with other filters!",
     secondaryButton: {
       label: "Reset all filters",
@@ -46,20 +51,14 @@ export const VotesDataList: React.FC<IMemberListProps> = (props) => {
   };
 
   const emptyState = {
-    heading: "No voters found",
-    description: "Start by creating a voter",
-    primaryButton: {
-      label: "Create onChain PIP",
-      iconLeft: IconType.PLUS,
-      onClick: () => alert("create voter"),
-    },
+    heading: "No votes found",
   };
 
   const errorState = {
-    heading: "Error loading voters",
-    description: "There was an error loading the voters. Try again!",
+    heading: "Error loading votes",
+    description: "There was an error loading the votes. Try again!",
     secondaryButton: {
-      label: "Reload voters",
+      label: "Reload votes",
       iconLeft: IconType.RELOAD,
       onClick: () => refetch(),
     },
@@ -68,29 +67,29 @@ export const VotesDataList: React.FC<IMemberListProps> = (props) => {
   return (
     <DataList.Root
       entityLabel={entityLabel}
-      itemsCount={totalVoters}
+      itemsCount={totalVotes}
       pageSize={DEFAULT_PAGE_SIZE}
       state={dataListState}
       onLoadMore={fetchNextPage}
     >
       <DataList.Container
-        SkeletonElement={MemberDataListItemSkeleton}
+        SkeletonElement={VotesDataListItemSkeleton}
         errorState={errorState}
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
-        className={isLoading ? "grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] content-center gap-3" : ""}
       >
-        <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] content-center gap-3">
-          {data?.votes?.map(({ id, ...otherProps }) => {
-            return (
-              // TODO: update with router agnostic ODS DataListItem
-              <Link legacyBehavior={true} key={id} href={MemberProfile.getPath(otherProps.address)} passHref={true}>
-                <VotesDataListItemStructure {...otherProps} />
-              </Link>
-            );
-          })}
-        </div>
+        {data?.votes?.map(({ id, choice, ...otherProps }) => (
+          // TODO: update with router agnostic ODS DataListItem
+          <Link legacyBehavior={true} key={id} href={MemberProfile.getPath(otherProps.address)} passHref={true}>
+            <VotesDataListItemStructure
+              {...otherProps}
+              variant={choice}
+              connectedAccount={address && isAddressEqual(address, otherProps.address)}
+            />
+          </Link>
+        ))}
       </DataList.Container>
+      {showPagination && <DataList.Pagination />}
     </DataList.Root>
   );
 };

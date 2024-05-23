@@ -1,21 +1,19 @@
 import { PUB_CHAIN } from "@/constants";
 import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
-import {
-  AccordionItem,
-  AccordionItemContent,
-  AccordionItemHeader,
-  Heading,
-  Tabs,
-  formatterUtils,
-  type IApprovalThresholdResult,
-} from "@aragon/ods";
+import { AccordionItem, AccordionItemContent, AccordionItemHeader, Heading, Tabs, formatterUtils } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
-import { useRef, useState, type CSSProperties } from "react";
-import { type ProposalStages } from "../../services";
-import { VotesDataList } from "../votesDataList/votesDataList";
-import { VotingBreakdown, type IVotingBreakdownCta } from "./votingBreakdown";
-import { VotingDetails } from "./votingDetails";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { type ProposalStages } from "../../../services";
+import { VotesDataList } from "../votesDataList";
+import {
+  VotingBreakdown,
+  type IBreakdownMajorityVotingResult,
+  type ProposalType,
+  type VotingCta,
+} from "../votingBreakdown";
+import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
+import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
 
 export interface IVotingStageDetails {
@@ -26,47 +24,62 @@ export interface IVotingStageDetails {
   options: string;
 }
 
-export interface IVotingStageResults extends IApprovalThresholdResult {}
-
-export interface IVotingStageProps {
+export interface IVotingStageProps<TType extends ProposalType = ProposalType> {
   title: string;
   number: number;
   disabled: boolean;
   status: "accepted" | "rejected" | "active";
 
+  variant: TType;
   proposalId?: string;
-  result?: IApprovalThresholdResult;
+  result?: TType extends "approvalThreshold" ? IBreakdownApprovalThresholdResult : IBreakdownMajorityVotingResult;
   details?: IVotingStageDetails;
-  cta?: IVotingBreakdownCta;
+  cta?: VotingCta;
 }
 
 export const VotingStage: React.FC<IVotingStageProps> = (props) => {
-  const { cta, details, disabled, title, number, result, proposalId = "", status } = props;
+  const { cta, details, disabled, title, number, result, proposalId = "", status, variant } = props;
 
-  const [collapsibleHeight, setCollapsibleHeight] = useState<CSSProperties["height"]>();
-  const contentRef = useRef<HTMLDivElement>(null);
-  const tabRef = useRef<HTMLDivElement>(null);
+  const [node, setNode] = useState<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
-  // TODO: replace with resizeObserver
-  const updateHeight = () => {
-    requestAnimationFrame(() => {
-      if (tabRef.current) {
-        setCollapsibleHeight(`${tabRef.current.offsetHeight}px`);
-      }
-    });
-  };
+  // Callback ref to capture the portalled node when it is available
+  const setRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      setNode(node);
+    }
+  }, []);
 
-  const resetHeight = () => {
-    if (collapsibleHeight != null) setCollapsibleHeight(undefined);
-  };
+  const resize = useCallback(() => {
+    if (node) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const newHeight = `${entry.contentRect.height}px`;
+          const oldHeight = contentRef.current?.style["--radix-collapsible-content-height" as any];
+
+          // Only update if the height has actually changed
+          if (oldHeight !== newHeight) {
+            requestAnimationFrame(() => {
+              contentRef.current?.style.setProperty("--radix-collapsible-content-height", newHeight);
+            });
+          }
+        }
+      });
+
+      resizeObserver.observe(node);
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [node]);
+
+  useLayoutEffect(resize, [resize]);
 
   const defaultTab = status === "active" ? "breakdown" : "details";
   const stageKey = `Stage ${number}`;
   const formattedSnapshotBlock = formatterUtils.formatNumber(details?.censusBlock) ?? "";
   const snapshotBlockURL = `${PUB_CHAIN.blockExplorers?.default.url}/block/${details?.censusBlock}`;
-  const contentStyles = collapsibleHeight
-    ? ({ ["--radix-collapsible-content-height"]: collapsibleHeight } as CSSProperties)
-    : undefined;
 
   return (
     <AccordionItem
@@ -75,7 +88,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
       disabled={disabled}
       className="border-t border-t-neutral-100 bg-neutral-0"
     >
-      <AccordionItemHeader className="!items-start !gap-y-5" onClick={resetHeight}>
+      <AccordionItemHeader className="!items-start !gap-y-5">
         <div className="flex w-full gap-x-6">
           <div className="flex flex-1 flex-col items-start gap-y-2">
             <Heading size="h3" className="line-clamp-1 text-left">
@@ -87,17 +100,17 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
         </div>
       </AccordionItemHeader>
 
-      <AccordionItemContent ref={contentRef} style={contentStyles} asChild={true} className="!md:pb-0 !pb-0">
-        <RadixTabsRoot defaultValue={defaultTab} ref={tabRef} onValueChange={updateHeight}>
+      <AccordionItemContent ref={contentRef} asChild={true} className="!md:pb-0 !pb-0">
+        <RadixTabsRoot defaultValue={defaultTab} ref={setRef}>
           <Tabs.List>
             <Tabs.Trigger value="breakdown" label="Breakdown" />
-            <Tabs.Trigger value="voters" label="Voters" />
+            <Tabs.Trigger value="votes" label="Votes" />
             <Tabs.Trigger value="details" label="Details" />
           </Tabs.List>
           <Tabs.Content value="breakdown" asChild={true}>
-            <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} result={result} />}</div>
+            <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} variant={variant} result={result} />}</div>
           </Tabs.Content>
-          <Tabs.Content value="voters">
+          <Tabs.Content value="votes">
             <div className="py-4 pb-8">
               <VotesDataList proposalId={proposalId} stageTitle={title as ProposalStages} />
             </div>
