@@ -40,7 +40,7 @@ export enum ProposalSortDir {
 
 export const parseProposalSortDir = (value?: string): ProposalSortDir => {
   if (!value) {
-    return ProposalSortDir.Asc;
+    return ProposalSortDir.Desc;
   }
 
   if (value === "asc") {
