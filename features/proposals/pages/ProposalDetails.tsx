@@ -27,10 +27,6 @@ export default function ProposalDetails() {
   const proposalId = router.query.id as string;
   const { data: proposal, error } = useQuery({
     ...proposalQueryOptions({ proposalId }),
-    gcTime: Infinity,
-    staleTime: Infinity,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   });
 
   const { data: approved } = useQuery(
@@ -56,8 +52,8 @@ export default function ProposalDetails() {
     const showIncludedPIPS = isParentProposal;
 
     const augmentedStages = proposal.stages.map((stage) => {
-      if (proposal.currentStage === stage.id) {
-        switch (stage.id) {
+      if (proposal.currentStage === stage.type) {
+        switch (stage.type) {
           case ProposalStages.COUNCIL_APPROVAL:
             return {
               ...stage,
@@ -99,7 +95,7 @@ export default function ProposalDetails() {
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
               {proposal.body && <BodySection body={proposal.body} />}
-              {showVoting && <ProposalVoting stages={augmentedStages} />}
+              {showVoting && <ProposalVoting stages={augmentedStages} proposalId={proposal.id} />}
               {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
               {showActions && <ProposalAction actions={proposal.actions} />}
             </div>

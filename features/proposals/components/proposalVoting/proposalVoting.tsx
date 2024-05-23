@@ -11,9 +11,10 @@ dayjs.extend(relativeTime);
 
 interface IProposalVotingProps {
   stages: ITransformedStage[];
+  proposalId: string;
 }
 
-export const ProposalVoting: React.FC<IProposalVotingProps> = ({ stages }) => {
+export const ProposalVoting: React.FC<IProposalVotingProps> = ({ stages, proposalId }) => {
   return (
     <Card className="overflow-hidden rounded-xl bg-neutral-0 shadow-neutral">
       {/* Header */}
@@ -27,7 +28,11 @@ export const ProposalVoting: React.FC<IProposalVotingProps> = ({ stages }) => {
       {/* Stages */}
       <AccordionContainer isMulti={true} className="border-t border-t-neutral-100">
         {stages.map((stage, index) => (
-          <VotingStage key={stage.id} {...({ ...stage, number: index + 1 } as IVotingStageProps)} />
+          <VotingStage
+            key={stage.id}
+            {...({ ...stage, number: index + 1 } as IVotingStageProps)}
+            proposalId={proposalId}
+          />
         ))}
       </AccordionContainer>
     </Card>
