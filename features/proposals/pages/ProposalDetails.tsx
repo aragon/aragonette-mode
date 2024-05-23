@@ -4,9 +4,9 @@ import { useProposalConfirmation } from "@/plugins/multisig/hooks/useProposalCon
 import { useUserCanApprove } from "@/plugins/multisig/hooks/useUserCanApprove";
 import { useUserCanConfirm } from "@/plugins/multisig/hooks/useUserCanConfirm";
 import { generateBreadcrumbs } from "@/utils/nav";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { type Address } from "viem";
+import { useState } from "react";
 import { useAccount } from "wagmi";
 import {
   BodySection,
@@ -14,78 +14,134 @@ import {
   HeaderProposal,
   ProposalAction,
   ProposalVoting,
+  StageAdvancementDialog,
   TransparencyReport,
+  type IBreakdownApprovalThresholdResult,
 } from "../components";
-import { ProposalStages } from "../services";
-import { proposal as proposalQueryOptions, voted } from "../services/proposal/query-options";
+import { ProposalStages, proposalKeys } from "../services";
+import { proposal as proposalQueryOptions, voted as votedQueryOptions } from "../services/proposal/query-options";
 
 export default function ProposalDetails() {
-  const { address } = useAccount();
   const router = useRouter();
-  const breadcrumbs = generateBreadcrumbs(router.asPath);
+  const queryClient = useQueryClient();
+  const { address, isConnected } = useAccount();
 
+  // state variables
+  const [showAdvanceModal, setShowAdvanceModal] = useState(false);
+  const [_, setCommunityProposalId] = useState<string>();
+
+  // data queries
   const proposalId = router.query.id as string;
-  const { data: proposal, error } = useQuery({
-    ...proposalQueryOptions({ proposalId }),
-  });
+  const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
 
-  const { data: approved } = useQuery(
-    voted({ address: address as Address, proposalId, stage: proposal?.currentStage as ProposalStages })
+  const { data: userHasVoted } = useQuery(
+    votedQueryOptions({ address: address!, proposalId, stage: proposal?.currentStage as ProposalStages })
   );
 
   // proposal id for current stage
-  const proposalVoteId = proposal?.stages?.find(
-    (stage) => stage.type === (proposal?.currentStage ?? ProposalStages.DRAFT)
-  )?.proposalId;
-
-  // check if user can vote on a proposal the proposal
+  const proposalVoteId = proposal?.stages?.find((stage) => stage.type === proposal?.currentStage)?.providerId;
   const userCanApprove = useUserCanApprove(proposalVoteId);
   const userCanConfirm = useUserCanConfirm(proposalVoteId);
 
-  const { approveProposal } = useProposalApproval(proposalVoteId);
-  const { confirmProposal } = useProposalConfirmation(proposalVoteId);
+  const { approveProposal, isConfirming: isApproving } = useProposalApproval(proposalVoteId, invalidateDetailQueries);
+  const { confirmProposal, isConfirming } = useProposalConfirmation(proposalVoteId, invalidateDetailQueries);
+
+  // invalidates all the queries related to the proposal details
+  function invalidateDetailQueries() {
+    queryClient.invalidateQueries({
+      queryKey: proposalKeys.proposal({ proposalId }),
+      refetchType: "all",
+    });
+  }
+
+  function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
+    if (userHasVoted) {
+      return "Approved";
+    } else if (!isConnected) {
+      return "Login to approve";
+    } else if (isApproving) {
+      return "Approving...";
+    } else if (userCanApprove && canAdvanceWithNextApproval) {
+      return "Approve and advance";
+    } else {
+      return "Approve";
+    }
+  }
+
+  function getConfirmationLabel() {
+    if (userHasVoted) {
+      return "Confirmed";
+    } else if (!isConnected) {
+      return "Login to confirm";
+    } else {
+      return "Confirm";
+    }
+  }
+
+  function handleApproveProposal(canAdvanceWithNextApproval: boolean) {
+    if (canAdvanceWithNextApproval) {
+      setShowAdvanceModal(true);
+    } else {
+      approveProposal();
+    }
+  }
+
+  function augmentStages(canAdvanceWithNextApproval: boolean) {
+    return proposal?.stages.map((stage) => {
+      if (proposal.currentStage === ProposalStages.COUNCIL_APPROVAL) {
+        return {
+          ...stage,
+          cta: {
+            isLoading: isApproving,
+            disabled: !!userHasVoted || isApproving || !userCanApprove || !isConnected,
+            onClick: () => handleApproveProposal(canAdvanceWithNextApproval),
+            label: getApprovalLabel(canAdvanceWithNextApproval),
+          },
+        };
+      } else if (proposal.currentStage === ProposalStages.COMMUNITY_VOTING) {
+        return {
+          ...stage,
+          cta: {
+            disabled: !!userHasVoted || !userCanApprove,
+            onClick: approveProposal,
+            label: userHasVoted ? "Voted" : "Vote",
+          },
+        };
+      } else {
+        return {
+          ...stage,
+          cta: {
+            isLoading: isConfirming,
+            disabled: !!userHasVoted || isConfirming || !userCanConfirm || !isConnected,
+            onClick: confirmProposal,
+            label: getConfirmationLabel(),
+          },
+        };
+      }
+    });
+  }
 
   if (proposal) {
-    const isParentProposal = proposal.includedPips?.length > 0;
+    // intermediate values
+    const breadcrumbs = generateBreadcrumbs(router.asPath);
+    const isParentProposal = proposal.includedPips.length > 0;
     const showActions = proposal.actions.length > 0;
     const showVoting = true; // isParentProposal;
     const showIncludedPIPS = isParentProposal;
 
-    const augmentedStages = proposal.stages.map((stage) => {
-      if (proposal.currentStage === stage.type) {
-        switch (stage.type) {
-          case ProposalStages.COUNCIL_APPROVAL:
-            return {
-              ...stage,
-              cta: {
-                disabled: approved?.hasVoted ?? !userCanApprove,
-                onClick: approveProposal,
-                label: approved?.hasVoted ? "Approved" : "Approve",
-              },
-            };
-          // case ProposalStages.COMMUNITY_VOTING:
-          //   return {
-          //     ...stage,
-          //     cta: {
-          //       disabled: approved?.hasVoted ?? !userCanApprove,
-          //       onClick: approveProposal,
-          //       label: approved?.hasVoted ? "Voted" : "Vote",
-          //     },
-          //   };
-          case ProposalStages.COUNCIL_CONFIRMATION:
-            return {
-              ...stage,
-              cta: {
-                disabled: approved?.hasVoted ?? !userCanConfirm,
-                onClick: confirmProposal,
-                label: approved?.hasVoted ? "Confirmed" : "Confirm",
-              },
-            };
-        }
-      }
+    // calculate whether proposal can advance with next approval
+    let canAdvanceWithNextApproval = false;
+    const isApprovalStage = proposal.currentStage === ProposalStages.COUNCIL_APPROVAL;
+    const result = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.result;
 
-      return stage;
-    });
+    if (result && isApprovalStage) {
+      const { approvalAmount, approvalThreshold } = result as IBreakdownApprovalThresholdResult;
+      if (approvalAmount + 1 === approvalThreshold) {
+        canAdvanceWithNextApproval = true;
+      }
+    }
+
+    const augmentedStages = augmentStages(canAdvanceWithNextApproval) ?? [];
 
     return (
       <>
@@ -95,7 +151,7 @@ export default function ProposalDetails() {
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
               {proposal.body && <BodySection body={proposal.body} />}
-              {showVoting && <ProposalVoting stages={augmentedStages} proposalId={proposal.id} />}
+              {showVoting && <ProposalVoting stages={augmentedStages} />}
               {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
               {showActions && <ProposalAction actions={proposal.actions} />}
             </div>
@@ -109,6 +165,15 @@ export default function ProposalDetails() {
             </div>
           </div>
         </MainSection>
+
+        {/* Advance to community stage modal */}
+        {showAdvanceModal && (
+          <StageAdvancementDialog
+            open={showAdvanceModal}
+            onClose={() => setShowAdvanceModal(false)}
+            onConfirm={setCommunityProposalId}
+          />
+        )}
       </>
     );
   }
