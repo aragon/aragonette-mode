@@ -65,7 +65,7 @@ export const ProposalDataList: React.FC = () => {
     heading: "No proposals found",
     description: "Start by creating a proposal",
     primaryButton: {
-      label: "Create onChain PIP",
+      label: "Create onchain PIP",
       iconLeft: IconType.PLUS,
       onClick: () => alert("create proposal"),
     },
@@ -98,7 +98,7 @@ export const ProposalDataList: React.FC = () => {
         {proposalsQueryData?.proposals?.map((proposal, index) => (
           // TODO: update with router agnostic ODS DataListItem
           <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
-            <ProposalDataListItem.Structure {...proposal} voted={votedData[index]?.data?.hasVoted} />
+            <ProposalDataListItem.Structure {...proposal} voted={votedData[index]?.data} />
           </Link>
         ))}
       </DataList.Container>
