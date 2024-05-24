@@ -469,7 +469,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
 export async function getVotingData(stage: ProposalStages, providerId: string): Promise<VotingData | undefined> {
   switch (stage) {
     case ProposalStages.COMMUNITY_VOTING:
-      return (await getSnapshotProposalStageData(providerId))?.voting;
+      return (await getSnapshotProposalStageData({ providerId }))?.voting;
     case ProposalStages.COUNCIL_APPROVAL:
       return await getMultisigVotingData({
         chain: PUB_CHAIN.id,

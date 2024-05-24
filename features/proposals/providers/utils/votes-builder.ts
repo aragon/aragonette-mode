@@ -89,22 +89,9 @@ export async function getCachedVotes(proposalId: string, stageEnum: ProposalStag
   let votes: IProposalVote[] = [];
 
   if (stage.voting) {
-    if (stage.status === "active") {
-      // Fresh votes
-      votes = await buildVotesResponse(stage.voting.providerId, stage.type);
-    } else {
-      // TODO: Use database votes
-      // Cached votes
-      const cachedVotes = await cache.get<IProposalVote[]>(`votes-${proposalId}-${printStageParam(stageEnum)}`);
+    votes = await buildVotesResponse(stage.voting.providerId, stage.type);
 
-      if (cachedVotes) {
-        return cachedVotes;
-      }
-
-      const newVotes = await buildVotesResponse(stage.voting.providerId, stage.type);
-      await cache.set(`votes-${proposalId}-${printStageParam(stageEnum)}`, newVotes);
-      return newVotes;
-    }
+    // TODO: Save to database
   }
 
   return votes;
