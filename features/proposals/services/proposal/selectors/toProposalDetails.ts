@@ -15,7 +15,14 @@ import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
-import { ProposalStages, type IAction, type IProposal, type IProposalStage, type ProposalStatus } from "../domain";
+import {
+  ProposalStages,
+  StageOrder,
+  type IAction,
+  type IProposal,
+  type IProposalStage,
+  type ProposalStatus,
+} from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
@@ -201,7 +208,7 @@ function generateStages(stages: IProposalStage[]) {
     }
   }
 
-  return Array.from(stageSet.values());
+  return Array.from(stageSet.values()).sort((a, b) => StageOrder[a.type] - StageOrder[b.type]);
 }
 
 /**
@@ -246,7 +253,7 @@ function mapChoice(choice: string) {
       return "Yes";
     case "reject":
       return "No";
-    case "Veto":
+    case "veto":
       return "No";
     default:
       return choice;
