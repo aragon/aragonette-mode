@@ -17,22 +17,34 @@ export const Navbar: React.FC = () => {
       <nav className="h-30 sticky top-0 z-[var(--hub-navbar-z-index)] flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
         <div className="w-full max-w-[1280px] flex-col gap-2 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-3">
           <div className="flex w-full items-center justify-between">
-            <Link
-              href="/"
-              className={classNames(
-                "flex shrink-0 items-center gap-x-3 rounded-full md:rounded-lg",
-                "outline-none focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset" // focus styles
-              )}
-            >
-              <Image
-                src="/logo-polygon.svg"
-                width="164"
-                height="32"
-                className="hidden shrink-0 sm:-ml-1 sm:block"
-                alt="Polygon"
-              />
-              <Image src="/logo-polygon-icon.svg" width="40" height="40" className="shrink-0 sm:hidden" alt="Polygon" />
-            </Link>
+            <div className="flex">
+              <Link
+                href="/"
+                className={classNames(
+                  "flex shrink-0 items-center gap-x-3 rounded-full md:rounded-lg",
+                  "outline-none focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset" // focus styles
+                )}
+              >
+                <Image
+                  src="/logo-polygon.svg"
+                  width="164"
+                  height="32"
+                  className="hidden shrink-0 sm:-ml-1 sm:block"
+                  alt="Polygon"
+                />
+                <Image
+                  src="/logo-polygon-icon.svg"
+                  width="40"
+                  height="40"
+                  className="shrink-0 sm:hidden"
+                  alt="Polygon"
+                />
+              </Link>
+              <div className="flex items-center gap-x-2 px-4">
+                <span className="text-sm leading-tight text-neutral-500">Powered by</span>
+                <Image src="/logo-aragon-bw-sm.png" width="24" height="24" alt="Aragon" />
+              </div>
+            </div>
 
             <div className="flex items-center gap-x-2">
               <div className="shrink-0">
@@ -51,9 +63,8 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
           </div>
-
           {/* Tab wrapper */}
-          <ul className="hidden gap-x-10 md:flex lg:pl-10">
+          <ul className="hidden items-center gap-x-10 md:flex lg:pl-10">
             {navLinks.map(({ id, name, path }) => (
               <NavLink name={name} path={path} id={id} key={id} />
             ))}

@@ -1,13 +1,13 @@
-import { GITHUB_TOKEN, PUB_API_BASE_URL } from "@/constants";
+import { ProposalDetails } from "@/components/nav/routes";
+import { GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
+import Cache from "@/services/cache/VercelCache";
+import { type ProposalStage } from "../../models/proposals";
 import {
   ProposalStages,
   type ICreator,
   type IProposalResource,
   type ProposalStatus,
 } from "../../services/proposal/domain";
-import { type ProposalStage } from "../../models/proposals";
-import { ProposalDetails } from "@/components/nav/routes";
-import Cache from "@/services/cache/VercelCache";
 
 type GithubData = {
   link: string;
@@ -121,7 +121,7 @@ function parseIncludedPIPs(includedPips: string[]): IProposalResource[] {
     const pipId = `PIP-${resource.name.match(pipPattern)?.[1]}`;
 
     return (
-      pipId ? { ...resource, link: `${PUB_API_BASE_URL}${ProposalDetails.getPath(pipId)}` } : resource
+      pipId ? { ...resource, link: `${PUB_BASE_URL}${ProposalDetails.getPath(pipId)}` } : resource
     ) as IProposalResource;
   });
 }

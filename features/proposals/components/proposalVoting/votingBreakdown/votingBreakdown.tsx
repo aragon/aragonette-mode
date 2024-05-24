@@ -1,11 +1,10 @@
-import { Button } from "@aragon/ods";
+import { Button, type IButtonProps } from "@aragon/ods";
 import { BreakdownApprovalThresholdResult, type IBreakdownApprovalThresholdResult } from "./approvalThresholdResult";
 import { BreakdownMajorityVotingResult } from "./majorityVotingResult";
 
 export type ProposalType = "majorityVoting" | "approvalThreshold";
 
-export type VotingCta = {
-  disabled?: boolean;
+export type VotingCta = Pick<IButtonProps, "disabled" | "isLoading"> & {
   label?: string;
   onClick?: () => void;
 };
@@ -34,7 +33,13 @@ export const VotingBreakdown: React.FC<IVotingBreakdownProps> = (props) => {
       {/* Button */}
       {cta && (
         <span>
-          <Button size="md" className="!rounded-full" disabled={cta.disabled} onClick={cta.onClick}>
+          <Button
+            size="md"
+            className="!rounded-full"
+            disabled={cta.disabled}
+            onClick={cta.onClick}
+            isLoading={cta.isLoading}
+          >
             {cta?.label}
           </Button>
         </span>

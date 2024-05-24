@@ -95,7 +95,7 @@ function computeBody(proposalStages: ProposalStage[]): string {
 function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   const sortedStages = sortProposalStages(proposalStages);
   const draftStage = sortedStages.find((stage) => stage.stageType === ProposalStages.DRAFT);
-  const confirmationStage = sortedStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION);
+  const approvalStage = sortedStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL);
   const lastKnownStage = sortedStages[sortedStages.length - 1];
 
   // usually the last stage is the current stage, but because some proposals were created without
@@ -103,7 +103,7 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   // ongoing or not. If it's not, we should use the DRAFT stage as the current stage.
   // By default only the Peer Review proposals are allowed to go onchain and be voted on by the community
   // TODO: Handle with RD-303
-  if (lastKnownStage.stageType === ProposalStages.COMMUNITY_VOTING && draftStage && confirmationStage == null) {
+  if (lastKnownStage.stageType === ProposalStages.COMMUNITY_VOTING && draftStage && approvalStage == null) {
     return draftStage.stageType;
   }
 

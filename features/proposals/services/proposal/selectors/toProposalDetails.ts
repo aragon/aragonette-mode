@@ -15,7 +15,14 @@ import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
-import { ProposalStages, type IAction, type IProposal, type IProposalStage, type ProposalStatus } from "../domain";
+import {
+  ProposalStages,
+  StageOrder,
+  type IAction,
+  type IProposal,
+  type IProposalStage,
+  type ProposalStatus,
+} from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
@@ -52,8 +59,8 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   // end date is specified on the Council Confirmation stage or
   // when proposal is an emergency -> the Council Approval stage
   const endDate =
-    proposal.stages.find((stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION)?.voting?.endDate ??
-    proposal.stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
+    proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_CONFIRMATION)?.voting?.endDate ??
+    proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
 
   const parsedEndDate = parseDate(endDate);
   const formattedEndDate = parsedEndDate ? getSimpleRelativeTimeFromDate(parsedEndDate) : undefined;
@@ -61,7 +68,7 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   return {
     ...proposal,
     actions: transformedActions,
-    stages: transformStages(proposal.stages),
+    stages: transformStages(proposal.stages, proposal.id),
     createdAt,
     endDate: formattedEndDate,
   };
@@ -111,6 +118,7 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
   status: string;
   disabled: boolean;
   proposalId?: string;
+  providerId?: string;
   result?: TType extends "approvalThreshold" ? IBreakdownApprovalThresholdResult : IBreakdownMajorityVotingResult;
   details?: IVotingStageDetails;
 }
@@ -120,7 +128,7 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
  * @param stages - The array of proposal stages to transform.
  * @returns the array of transformed stages.
  */
-function transformStages(stages: IProposalStage[]): ITransformedStage[] {
+function transformStages(stages: IProposalStage[], proposalId: string): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
     if (stage.type === ProposalStages.DRAFT) {
@@ -135,7 +143,7 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
       const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
 
       const variant: ProposalType =
-        stage.id === ProposalStages.COMMUNITY_VOTING ? "majorityVoting" : "approvalThreshold";
+        stage.type === ProposalStages.COMMUNITY_VOTING ? "majorityVoting" : "approvalThreshold";
 
       const result =
         variant === "approvalThreshold"
@@ -144,12 +152,20 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
               approvalThreshold: quorum,
             }
           : {
-              votingScores: scores.map((score) => ({
-                option: mapChoice(score.choice),
-                voteAmount: score.votes.toString(),
-                votePercentage: score.percentage,
-                tokenSymbol: "vePOL",
-              })),
+              votingScores:
+                scores.length > 0
+                  ? scores.map((score) => ({
+                      option: mapChoice(score.choice),
+                      voteAmount: score.votes.toString(),
+                      votePercentage: score.percentage,
+                      tokenSymbol: "vePOL",
+                    }))
+                  : choices.map((choice) => ({
+                      option: mapChoice(choice),
+                      voteAmount: "0",
+                      votePercentage: 0,
+                      tokenSymbol: "vePOL",
+                    })),
             };
 
       const details = {
@@ -168,7 +184,8 @@ function transformStages(stages: IProposalStage[]): ITransformedStage[] {
         title: stage.type,
         variant,
         disabled: false,
-        proposalId: providerId,
+        proposalId,
+        providerId,
         status,
       };
     }
@@ -199,7 +216,7 @@ function generateStages(stages: IProposalStage[]) {
     }
   }
 
-  return Array.from(stageSet.values());
+  return Array.from(stageSet.values()).sort((a, b) => StageOrder[a.type] - StageOrder[b.type]);
 }
 
 /**
@@ -241,10 +258,10 @@ const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: s
 function mapChoice(choice: string) {
   switch (choice.toLowerCase()) {
     case "accept":
+    case "approve":
       return "Yes";
     case "reject":
-      return "No";
-    case "Veto":
+    case "veto":
       return "No";
     default:
       return choice;

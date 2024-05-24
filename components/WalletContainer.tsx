@@ -6,15 +6,17 @@ import classNames from "classnames";
 import { createClient, http } from "viem";
 import { normalize } from "viem/ens";
 import { createConfig, useAccount, useEnsAvatar, useEnsName } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { mainnet, sepolia } from "wagmi/chains";
 
 const config = createConfig({
-  chains: [mainnet],
+  chains: [mainnet, sepolia],
   ssr: true,
   client({ chain }) {
     return createClient({
       chain,
-      transport: http(`https://eth-mainnet.g.alchemy.com/v2/${PUB_ALCHEMY_API_KEY}`, { batch: true }),
+      // TODO: remove sepolia
+      // transport: http(`https://eth-mainnet.g.alchemy.com/v2/${PUB_ALCHEMY_API_KEY}`, { batch: true }),
+      transport: http(`https://eth-sepolia.g.alchemy.com/v2/${PUB_ALCHEMY_API_KEY}`, { batch: true }),
     });
   },
 });
@@ -26,15 +28,14 @@ const WalletContainer = () => {
 
   const { data: ensName } = useEnsName({
     config,
-    chainId: mainnet.id,
+    chainId: sepolia.id,
     address: address,
   });
 
   const { data: ensAvatar } = useEnsAvatar({
     config,
     name: normalize(ensName!),
-    chainId: mainnet.id,
-    gatewayUrls: ["https://cloudflare-ipfs.com"],
+    chainId: sepolia.id,
     query: { enabled: !!ensName },
   });
 
