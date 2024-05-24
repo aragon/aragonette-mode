@@ -152,12 +152,20 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
               approvalThreshold: quorum,
             }
           : {
-              votingScores: scores.map((score) => ({
-                option: mapChoice(score.choice),
-                voteAmount: score.votes.toString(),
-                votePercentage: score.percentage,
-                tokenSymbol: "vePOL",
-              })),
+              votingScores:
+                scores.length > 0
+                  ? scores.map((score) => ({
+                      option: mapChoice(score.choice),
+                      voteAmount: score.votes.toString(),
+                      votePercentage: score.percentage,
+                      tokenSymbol: "vePOL",
+                    }))
+                  : choices.map((choice) => ({
+                      option: mapChoice(choice),
+                      voteAmount: "0",
+                      votePercentage: 0,
+                      tokenSymbol: "vePOL",
+                    })),
             };
 
       const details = {
@@ -250,9 +258,9 @@ const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: s
 function mapChoice(choice: string) {
   switch (choice.toLowerCase()) {
     case "accept":
+    case "approve":
       return "Yes";
     case "reject":
-      return "No";
     case "veto":
       return "No";
     default:
