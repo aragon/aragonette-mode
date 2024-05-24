@@ -15,7 +15,6 @@ import {
   type IProposalStage,
   type ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
-import VercelCache from "@/services/cache/VercelCache";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
 import { getMultisigProposalsData, getMultisigVotingData } from "../multisig/proposalStages";
@@ -292,7 +291,10 @@ export async function getProposalStages() {
 const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
-  if (stage.stageType === ProposalStages.DRAFT) return parseInt(stage.pip?.split("-").pop() ?? "0").toString();
+  if (stage.stageType === ProposalStages.DRAFT) {
+    if (stage.pip) return stage.pip;
+    else return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+  }
   if (stage.stageType === ProposalStages.COMMUNITY_VOTING) {
     return stage.resources
       ?.find((r) => r?.name.toLowerCase() === "snapshot" && r.link != null)
@@ -300,7 +302,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
       .pop();
   }
 
-  return stage.title;
+  return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 };
 
 /**
@@ -317,6 +319,7 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
   const councilApprovalProposals = proposalStages.filter(
     (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
   );
+
   const communityVotingProposals = proposalStages.filter(
     (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING
   );
@@ -365,11 +368,11 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
 
   // Manually bind PIP-4 draft and community voting stages
   // TODO: Handle with RD-303
-  const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "4"));
+  const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "PIP-04"));
+  //console.log("proposals-4", pip4ProposalStages);
+  //console.log("proposals-4c", communityVotingProposals);
   if (pip4ProposalStages) {
-    const pip4CommunityVotingProposal = proposalStages.find(
-      (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING && stage.title.startsWith("PIP-4")
-    );
+    const pip4CommunityVotingProposal = communityVotingProposals.find((stage) => stage.title.startsWith("PIP-4"));
     if (pip4CommunityVotingProposal) pip4ProposalStages.push(pip4CommunityVotingProposal);
   }
 

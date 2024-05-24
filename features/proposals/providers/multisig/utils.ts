@@ -93,7 +93,7 @@ const getProposalBindings = async function (metadata: PrimaryMetadata, secondary
   const snapshotLink =
     secondaryMetadata ?? metadata.resources.find((resource) => resource.name.toLowerCase() === "snapshot");
 
-  const githubFileName = githubLink?.url.split("/").pop();
+  const githubFileName = githubLink?.url.split("/").pop()?.split(".")?.shift();
   const snapshotId = snapshotLink?.url.split("/").pop();
 
   return {
@@ -239,8 +239,9 @@ export const requestProposalsData = async function (
     const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
 
-    const pip =
-      githubId?.split("/")?.pop()?.split(".")?.shift() ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+    //TODO: Check
+    const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+    console.log(pip, githubId, primaryMetadata.title);
 
     // get resources
     const resources = primaryMetadata.resources.map((resource) => ({
