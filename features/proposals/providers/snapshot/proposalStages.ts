@@ -9,8 +9,8 @@ export const getSnapshotProposalStagesData: IProposalStagesProvider = async func
     .then(parseSnapshotData);
 };
 
-export const getSnapshotProposalStageData: IProposalStageProvider = async function (params: { proposalId: string }) {
-  return requestProposalData(snapshotProposalQuery(params.proposalId))
+export const getSnapshotProposalStageData: IProposalStageProvider = async function (params: { providerId: string }) {
+  return requestProposalData(snapshotProposalQuery(params.providerId))
     .then((res) => res.data.proposal as SnapshotProposalData | null)
     .then((data) => (data ? parseSnapshotProposalData(data) : null));
 };
