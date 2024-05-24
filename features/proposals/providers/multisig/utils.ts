@@ -55,7 +55,7 @@ const getProposalCreationData = async function (
       address: contractAddress,
       event: ProposalCreatedEvent,
       args: {
-        proposalId,
+        proposalId: proposalId.toString(),
       } as any,
       fromBlock: snapshotBlock,
       toBlock: startDate,
@@ -400,8 +400,8 @@ const getApproveLogs = async function (
       address: contractAddress,
       event: ApprovedEvent,
       args: {
-        proposalId,
-      },
+        proposalId: proposalId.toString(),
+      } as any,
       fromBlock: snapshotBlock,
       toBlock: endDate,
     })
