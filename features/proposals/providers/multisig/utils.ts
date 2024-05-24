@@ -239,9 +239,7 @@ export const requestProposalsData = async function (
     const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
 
-    //TODO: Check
     const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
-    console.log(pip, githubId, primaryMetadata.title);
 
     // get resources
     const resources = primaryMetadata.resources.map((resource) => ({

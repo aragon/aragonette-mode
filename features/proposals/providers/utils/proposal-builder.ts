@@ -369,8 +369,6 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
   // Manually bind PIP-4 draft and community voting stages
   // TODO: Handle with RD-303
   const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "PIP-04"));
-  //console.log("proposals-4", pip4ProposalStages);
-  //console.log("proposals-4c", communityVotingProposals);
   if (pip4ProposalStages) {
     const pip4CommunityVotingProposal = communityVotingProposals.find((stage) => stage.title.startsWith("PIP-4"));
     if (pip4CommunityVotingProposal) pip4ProposalStages.push(pip4CommunityVotingProposal);
