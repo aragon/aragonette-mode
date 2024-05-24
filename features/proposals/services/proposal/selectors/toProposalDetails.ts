@@ -59,8 +59,8 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   // end date is specified on the Council Confirmation stage or
   // when proposal is an emergency -> the Council Approval stage
   const endDate =
-    proposal.stages.find((stage) => stage.id === ProposalStages.COUNCIL_CONFIRMATION)?.voting?.endDate ??
-    proposal.stages.find((stage) => stage.id === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
+    proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_CONFIRMATION)?.voting?.endDate ??
+    proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
 
   const parsedEndDate = parseDate(endDate);
   const formattedEndDate = parsedEndDate ? getSimpleRelativeTimeFromDate(parsedEndDate) : undefined;
@@ -143,7 +143,7 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
       const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
 
       const variant: ProposalType =
-        stage.id === ProposalStages.COMMUNITY_VOTING ? "majorityVoting" : "approvalThreshold";
+        stage.type === ProposalStages.COMMUNITY_VOTING ? "majorityVoting" : "approvalThreshold";
 
       const result =
         variant === "approvalThreshold"
