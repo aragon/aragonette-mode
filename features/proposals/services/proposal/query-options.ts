@@ -25,7 +25,9 @@ export function proposalList(params: IFetchProposalListParams = {}) {
     queryKey: proposalKeys.list(params),
     queryFn: async () => proposalService.fetchProposals(params),
     initialPageParam: 1,
-    getNextPageParam: () => undefined,
+    getNextPageParam: (lastPage, _pages, lastPageParam) => {
+      return lastPage?.pagination?.pages > lastPageParam ? lastPageParam + 1 : undefined;
+    },
     select: (data) => ({
       proposals: data.pages.flatMap((p) => toProposalDataListItems(p.data)),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },

@@ -155,13 +155,13 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
               votingScores:
                 scores.length > 0
                   ? scores.map((score) => ({
-                      option: mapChoice(score.choice),
+                      option: mapBreakdownChoice(score.choice),
                       voteAmount: score.votes.toString(),
                       votePercentage: score.percentage,
                       tokenSymbol: "vePOL",
                     }))
                   : choices.map((choice) => ({
-                      option: mapChoice(choice),
+                      option: mapBreakdownChoice(choice),
                       voteAmount: "0",
                       votePercentage: 0,
                       tokenSymbol: "vePOL",
@@ -255,14 +255,13 @@ const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: s
   }
 };
 
-function mapChoice(choice: string) {
+function mapBreakdownChoice(choice: string) {
   switch (choice.toLowerCase()) {
     case "accept":
-    case "approve":
-      return "Yes";
+      return "yes";
     case "reject":
     case "veto":
-      return "No";
+      return "no";
     default:
       return choice;
   }

@@ -1,11 +1,19 @@
 import { type Address } from "viem";
-import { type ProposalStages, type Votes } from "./domain";
+import { type ProposalStatus, type ProposalStages, type Votes } from "./domain";
+import { type ProposalSortBy, type ProposalSortDir } from "../../repository/proposal";
 
 export interface IFetchProposalParams {
   proposalId: string;
 }
 
-export interface IFetchProposalListParams {}
+export interface IFetchProposalListParams {
+  page?: number;
+  limit?: number;
+  sortBy?: ProposalSortBy;
+  sortDir?: ProposalSortDir;
+  search?: string;
+  status?: ProposalStatus;
+}
 
 export interface IVoteParams {
   address: Address;

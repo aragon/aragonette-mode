@@ -1,4 +1,5 @@
 import { ProposalDetails } from "@/components/nav/routes";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   DataList,
   IconType,
@@ -7,24 +8,38 @@ import {
   type DataListState,
 } from "@aragon/ods";
 import { keepPreviousData, useInfiniteQuery, useQueries } from "@tanstack/react-query";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
+import { generateDataListState, generateSortOptions, sortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 6;
+const SEARCH_DEBOUNCE_MILLS = 500;
 
 export const ProposalDataList: React.FC = () => {
   const { address } = useAccount();
+
+  const [activeSort, setActiveSort] = useState<string>();
+  const [searchValue, setSearchValue] = useState<string>();
+  const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(searchValue?.trim(), {
+    delay: SEARCH_DEBOUNCE_MILLS,
+  });
 
   const {
     data: proposalsQueryData,
     isError,
     isFetchingNextPage,
     isLoading,
+    isFetching,
+    isRefetching,
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    ...proposalList({ limit: DEFAULT_PAGE_SIZE }),
+    ...proposalList({
+      limit: DEFAULT_PAGE_SIZE,
+      ...(activeSort ? generateSortOptions(activeSort) : {}),
+      ...(debouncedQuery ? { search: debouncedQuery } : {}),
+    }),
     placeholderData: keepPreviousData,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -40,14 +55,29 @@ export const ProposalDataList: React.FC = () => {
         : [],
   });
 
-  let dataListState: DataListState = "idle";
-  if (isLoading) {
-    dataListState = "initialLoading";
-  } else if (isError) {
-    dataListState = "error";
-  } else if (isFetchingNextPage) {
-    dataListState = "fetchingNextPage";
-  }
+  const isFiltered = searchValue != null && searchValue.trim().length > 0;
+  const loading = isLoading || (isError && isRefetching);
+  const [dataListState, setDataListState] = useState<DataListState>(() =>
+    generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+  );
+
+  useEffect(() => {
+    setDataListState(
+      generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+    );
+  }, [isError, isFetching, isFetchingNextPage, isFiltered, loading, isRefetching]);
+
+  useEffect(() => {
+    if (!!debouncedQuery || !!activeSort) {
+      setDataListState("loading");
+    }
+  }, [debouncedQuery, activeSort]);
+
+  const resetFilters = () => {
+    setSearchValue("");
+    setDebouncedQuery("");
+    setActiveSort("");
+  };
 
   const totalProposals = proposalsQueryData?.pagination?.total;
   const entityLabel = totalProposals === 1 ? "Proposal" : "Proposals";
@@ -58,6 +88,7 @@ export const ProposalDataList: React.FC = () => {
     secondaryButton: {
       label: "Reset all filters",
       iconLeft: IconType.RELOAD,
+      onclick: () => resetFilters(),
     },
   };
 
@@ -73,7 +104,7 @@ export const ProposalDataList: React.FC = () => {
 
   const errorState = {
     heading: "Error loading proposals",
-    description: "There was an error loading the proposals. Try again!",
+    description: "There was an error loading the proposals. Please try again!",
     secondaryButton: {
       label: "Reload proposals",
       iconLeft: IconType.RELOAD,
@@ -89,6 +120,14 @@ export const ProposalDataList: React.FC = () => {
       state={dataListState}
       onLoadMore={fetchNextPage}
     >
+      <DataList.Filter
+        onSearchValueChange={setSearchValue}
+        searchValue={searchValue}
+        placeholder="Search by title, proposal ID or publisher"
+        onSortChange={setActiveSort}
+        activeSort={activeSort}
+        sortItems={sortItems}
+      />
       <DataList.Container
         SkeletonElement={ProposalDataListItemSkeleton}
         errorState={errorState}
@@ -104,7 +143,7 @@ export const ProposalDataList: React.FC = () => {
           />
         ))}
       </DataList.Container>
-      <DataList.Pagination />
+      {(totalProposals ?? 0) > DEFAULT_PAGE_SIZE && <DataList.Pagination />}
     </DataList.Root>
   );
 };
