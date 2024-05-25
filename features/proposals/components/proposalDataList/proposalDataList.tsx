@@ -24,7 +24,7 @@ export const ProposalDataList: React.FC = () => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    ...proposalList(),
+    ...proposalList({ limit: DEFAULT_PAGE_SIZE }),
     placeholderData: keepPreviousData,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -96,10 +96,12 @@ export const ProposalDataList: React.FC = () => {
         emptyFilteredState={emptyFilteredState}
       >
         {proposalsQueryData?.proposals?.map((proposal, index) => (
-          // TODO: update with router agnostic ODS DataListItem
-          <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
-            <ProposalDataListItem.Structure {...proposal} voted={votedData[index]?.data} />
-          </Link>
+          <ProposalDataListItem.Structure
+            {...proposal}
+            voted={votedData[index]?.data}
+            href={ProposalDetails.getPath(proposal.id)}
+            key={proposal.id}
+          />
         ))}
       </DataList.Container>
       <DataList.Pagination />

@@ -75,14 +75,13 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
         emptyFilteredState={emptyFilteredState}
       >
         {data?.votes?.map(({ id, choice, ...otherProps }) => (
-          // TODO: update with router agnostic ODS DataListItem
-          <Link legacyBehavior={true} key={id} href={MemberProfile.getPath(otherProps.address)} passHref={true}>
-            <VotesDataListItemStructure
-              {...otherProps}
-              variant={choice}
-              connectedAccount={address && isAddressEqual(address, otherProps.address)}
-            />
-          </Link>
+          <VotesDataListItemStructure
+            {...otherProps}
+            variant={choice}
+            connectedAccount={address && isAddressEqual(address, otherProps.address)}
+            key={id}
+            href={MemberProfile.getPath(otherProps.address)}
+          />
         ))}
       </DataList.Container>
       {showPagination && <DataList.Pagination />}
