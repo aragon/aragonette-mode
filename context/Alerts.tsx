@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
-import { IAlert } from "@/utils/types";
+import React, { createContext, useState, useContext, useMemo, useCallback } from "react";
+import { type IAlert } from "@/utils/types";
 import { usePublicClient } from "wagmi";
 
 const DEFAULT_ALERT_TIMEOUT = 7 * 1000;
@@ -23,46 +23,51 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const client = usePublicClient();
 
   // Add a new alert to the list
-  const addAlert = (message: string, alertOptions?: AlertOptions) => {
-    // Clean duplicates
-    const idx = alerts.findIndex((a) => {
-      if (a.message !== message) return false;
-      else if (a.description !== alertOptions?.description) return false;
-      else if (a.type !== alertOptions?.type) return false;
-      return true;
-    });
-    if (idx >= 0) {
-      // Update the existing one
-      setAlerts((curAlerts) => {
-        const [prevAlert] = curAlerts.splice(idx, 1);
-        clearTimeout(prevAlert.dismissTimeout);
-        const timeout = alertOptions?.timeout ?? DEFAULT_ALERT_TIMEOUT;
-        prevAlert.dismissTimeout = setTimeout(() => removeAlert(prevAlert.id), timeout);
-        return curAlerts.concat(prevAlert);
+  const addAlert = useCallback(
+    (message: string, alertOptions?: AlertOptions) => {
+      // Clean duplicates
+      const idx = alerts.findIndex((a) => {
+        if (a.message !== message) return false;
+        else if (a.description !== alertOptions?.description) return false;
+        else if (a.type !== alertOptions?.type) return false;
+        return true;
       });
-      return;
-    }
+      if (idx >= 0) {
+        // Update the existing one
+        setAlerts((curAlerts) => {
+          const [prevAlert] = curAlerts.splice(idx, 1);
+          clearTimeout(prevAlert.dismissTimeout);
+          const timeout = alertOptions?.timeout ?? DEFAULT_ALERT_TIMEOUT;
+          prevAlert.dismissTimeout = setTimeout(() => removeAlert(prevAlert.id), timeout);
+          return curAlerts.concat(prevAlert);
+        });
+        return;
+      }
 
-    const newAlert: IAlert = {
-      id: Date.now(),
-      message,
-      description: alertOptions?.description,
-      type: alertOptions?.type ?? "info",
-    };
-    if (alertOptions?.txHash && client) {
-      newAlert.explorerLink = client.chain.blockExplorers?.default.url + "/tx/" + alertOptions.txHash;
-    }
-    const timeout = alertOptions?.timeout ?? DEFAULT_ALERT_TIMEOUT;
-    newAlert.dismissTimeout = setTimeout(() => removeAlert(newAlert.id), timeout);
-    setAlerts((curAlerts) => curAlerts.concat(newAlert));
-  };
+      const newAlert: IAlert = {
+        id: Date.now(),
+        message,
+        description: alertOptions?.description,
+        type: alertOptions?.type ?? "info",
+      };
+      if (alertOptions?.txHash && client) {
+        newAlert.explorerLink = `${client.chain.blockExplorers?.default.url}/tx/${alertOptions.txHash}`;
+      }
+      const timeout = alertOptions?.timeout ?? DEFAULT_ALERT_TIMEOUT;
+      newAlert.dismissTimeout = setTimeout(() => removeAlert(newAlert.id), timeout);
+      setAlerts((curAlerts) => curAlerts.concat(newAlert));
+    },
+    [alerts, client]
+  );
 
   // Function to remove an alert
   const removeAlert = (id: number) => {
     setAlerts((prevAlerts) => prevAlerts.filter((alert) => alert.id !== id));
   };
 
-  return <AlertContext.Provider value={{ alerts, addAlert }}>{children}</AlertContext.Provider>;
+  const alertContextValues = useMemo(() => ({ alerts, addAlert }), [addAlert, alerts]);
+
+  return <AlertContext.Provider value={alertContextValues}>{children}</AlertContext.Provider>;
 };
 
 export const useAlerts = () => {

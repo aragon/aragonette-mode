@@ -4,6 +4,7 @@ import { type ChainName, getChain } from "./utils/chains";
 // Contract Addresses
 export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
 export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ?? "") as Address;
+export const PUB_TOKEN_SYMBOL = process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? "gPOL";
 export const PUB_MULTISIG_ADDRESS = (process.env.NEXT_PUBLIC_MULTISIG_ADDRESS ?? "") as Address;
 
 // Target chain
@@ -35,7 +36,8 @@ export const GITHUB_TRANSPARENCY_REPORTS_PATH = process.env.GITHUB_TRANSPARENCY_
 
 // Snapshot
 export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/graphql";
-export const SNAPSHOT_SPACE = process.env.SNAPSHOT_SPACE ?? "";
+export const SNAPSHOT_SPACE = process.env.SNAPSHOT_SPACE ?? "test-ens.eth";
+export const SNAPSHOT_URL = "https://testnet.snapshot.org/";
 
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";

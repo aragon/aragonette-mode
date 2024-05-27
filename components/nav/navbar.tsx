@@ -31,6 +31,7 @@ export const Navbar: React.FC = () => {
                   height="32"
                   className="hidden shrink-0 sm:-ml-1 sm:block"
                   alt="Polygon"
+                  priority={true}
                 />
                 <Image
                   src="/logo-polygon-icon.svg"
@@ -38,6 +39,7 @@ export const Navbar: React.FC = () => {
                   height="40"
                   className="shrink-0 sm:hidden"
                   alt="Polygon"
+                  priority={true}
                 />
               </Link>
               <div className="flex items-center gap-x-2 px-4">

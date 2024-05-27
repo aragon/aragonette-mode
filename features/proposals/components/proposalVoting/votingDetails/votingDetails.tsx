@@ -1,5 +1,5 @@
-import { DefinitionList, DefinitionListItem } from "@/components/definitionList/definitionList";
-import { Heading, IconType, Link } from "@aragon/ods";
+// import { DefinitionList, DefinitionList.Item } from "@/components/definitionList/definitionList";
+import { DefinitionList, Heading, IconType, Link } from "@aragon/ods";
 
 export interface IVotingDetailsProps {
   startDate: string;
@@ -13,27 +13,35 @@ export interface IVotingDetailsProps {
 export const VotingDetails: React.FC<IVotingDetailsProps> = (props) => {
   const { startDate, endDate, snapshotBlockURL, snapshotBlock, options, strategy } = props;
   return (
-    <div className="flex flex-col gap-y-4">
-      <div className="flex flex-col gap-y-4 border-b border-b-neutral-100">
+    <div className="flex flex-col gap-y-3">
+      <div>
         <Heading size="h4">Voting</Heading>
-        <DefinitionList>
-          <DefinitionListItem term="Starts">{startDate}</DefinitionListItem>
-          <DefinitionListItem term="Expires">{endDate}</DefinitionListItem>
-          <DefinitionListItem term="Census Snapshot">
-            <Link iconRight={IconType.LINK_EXTERNAL} href={snapshotBlockURL} target="_blank">
-              {snapshotBlock}
-            </Link>
-          </DefinitionListItem>
-        </DefinitionList>
+        <DefinitionList.Container className="">
+          <DefinitionList.Item term="Starts" className="!gap-y-1 *:text-neutral-500">
+            <div className="w-full text-neutral-800 md:text-right">{startDate}</div>
+          </DefinitionList.Item>
+          <DefinitionList.Item term="Expires" className="!gap-y-1 *:text-neutral-500">
+            <div className="w-full text-neutral-800 md:text-right">{endDate}</div>
+          </DefinitionList.Item>
+          <DefinitionList.Item term="Census Snapshot" className="!gap-y-1 *:text-neutral-500">
+            <div className="w-full text-neutral-800 md:text-right">
+              <Link iconRight={IconType.LINK_EXTERNAL} href={snapshotBlockURL} target="_blank">
+                {snapshotBlock}
+              </Link>
+            </div>
+          </DefinitionList.Item>
+        </DefinitionList.Container>
       </div>
-      <div className="flex flex-col gap-y-4">
+      <div>
         <Heading size="h4">Governance Settings</Heading>
-        <DefinitionList>
-          <DefinitionListItem term="Strategy">{strategy}</DefinitionListItem>
-          <DefinitionListItem term="Voting options">
-            <span>{options}</span>
-          </DefinitionListItem>
-        </DefinitionList>
+        <DefinitionList.Container>
+          <DefinitionList.Item term="Strategy" className="!gap-y-1 *:text-neutral-500">
+            <div className="w-full text-neutral-800 md:text-right">{strategy}</div>
+          </DefinitionList.Item>
+          <DefinitionList.Item term="Voting options" className="!gap-y-1 *:text-neutral-500">
+            <div className="w-full text-neutral-800 md:text-right">{options}</div>
+          </DefinitionList.Item>
+        </DefinitionList.Container>
       </div>
     </div>
   );
