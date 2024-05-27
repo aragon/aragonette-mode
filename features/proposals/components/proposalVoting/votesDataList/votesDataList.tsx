@@ -2,12 +2,11 @@ import { MemberProfile } from "@/components/nav/routes";
 import { type ProposalStages } from "@/features/proposals";
 import { proposalVotes } from "@/features/proposals/services/proposal";
 import { DataList, IconType, type DataListState } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { VotesDataListItemSkeleton } from "./votesDataListItemSkeleton";
-import { VotesDataListItemStructure } from "./votesDataListItemStructure";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { isAddressEqual } from "viem";
 import { useAccount } from "wagmi";
+import { VotesDataListItemSkeleton } from "./votesDataListItemSkeleton";
+import { VotesDataListItemStructure } from "./votesDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 6;
 
@@ -20,8 +19,9 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
   const { proposalId, stageTitle: stage } = props;
   const { address } = useAccount();
 
-  const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
+  const { data, isError, isLoading, isFetchingNextPage, refetch, fetchNextPage } = useInfiniteQuery({
     ...proposalVotes({ proposalId, stage: stage as ProposalStages }),
+    placeholderData: keepPreviousData,
   });
 
   let dataListState: DataListState = "idle";
@@ -47,7 +47,7 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
   };
 
   const emptyState = {
-    heading: "No votes found",
+    heading: "No votes cast",
   };
 
   const errorState = {

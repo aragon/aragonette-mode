@@ -7,7 +7,7 @@ export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "S
 export enum ProposalStages {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
-  COMMUNITY_VOTING = "vePOL Community Voting",
+  COMMUNITY_VOTING = "gPOL Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
 }
 

@@ -2,13 +2,16 @@ import { type Address } from "viem";
 import { type ProposalStatus, type ProposalStages, type Votes } from "./domain";
 import { type ProposalSortBy, type ProposalSortDir } from "../../repository/proposal";
 
+export interface IFetchPaginatedParams {
+  page?: number;
+  limit?: number;
+}
+
 export interface IFetchProposalParams {
   proposalId: string;
 }
 
-export interface IFetchProposalListParams {
-  page?: number;
-  limit?: number;
+export interface IFetchProposalListParams extends IFetchPaginatedParams {
   sortBy?: ProposalSortBy;
   sortDir?: ProposalSortDir;
   search?: string;
@@ -23,7 +26,7 @@ export interface IVoteParams {
   weight: number;
 }
 
-export interface IFetchVotesParams {
+export interface IFetchVotesParams extends IFetchPaginatedParams {
   proposalId: string;
   stage: ProposalStages;
 }

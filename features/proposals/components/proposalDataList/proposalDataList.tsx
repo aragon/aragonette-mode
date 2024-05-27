@@ -7,7 +7,7 @@ import {
   ProposalDataListItemSkeleton,
   type DataListState,
 } from "@aragon/ods";
-import { keepPreviousData, useInfiniteQuery, useQueries } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
@@ -21,17 +21,22 @@ export const ProposalDataList: React.FC = () => {
 
   const [activeSort, setActiveSort] = useState<string>();
   const [searchValue, setSearchValue] = useState<string>();
-  const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(searchValue?.trim(), {
-    delay: SEARCH_DEBOUNCE_MILLS,
-  });
+  const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
+    searchValue?.trim()?.toLowerCase(),
+    {
+      delay: SEARCH_DEBOUNCE_MILLS,
+    }
+  );
 
   const {
     data: proposalsQueryData,
     isError,
-    isFetchingNextPage,
     isLoading,
     isFetching,
     isRefetching,
+    isRefetchError,
+    isFetchingNextPage,
+    isFetchNextPageError,
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
@@ -40,9 +45,6 @@ export const ProposalDataList: React.FC = () => {
       ...(activeSort ? generateSortOptions(activeSort) : {}),
       ...(debouncedQuery ? { search: debouncedQuery } : {}),
     }),
-    placeholderData: keepPreviousData,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   });
 
   const votedData = useQueries({
@@ -50,15 +52,19 @@ export const ProposalDataList: React.FC = () => {
       proposalsQueryData && !!address
         ? proposalsQueryData.proposals.map(({ result, id: proposalId }) => {
             const stage = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
-            return { ...voted({ proposalId, stage, address }), enabled: stage !== ProposalStages.DRAFT };
+            return {
+              ...voted({ proposalId, stage, address }),
+              enabled: stage !== ProposalStages.DRAFT && !!result,
+            };
           })
         : [],
   });
 
   const isFiltered = searchValue != null && searchValue.trim().length > 0;
   const loading = isLoading || (isError && isRefetching);
+  const error = isError && !isRefetchError && !isFetchNextPageError;
   const [dataListState, setDataListState] = useState<DataListState>(() =>
-    generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
   );
 
   useEffect(() => {

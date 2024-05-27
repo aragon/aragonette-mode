@@ -20,6 +20,7 @@ import {
 } from "../components";
 import { ProposalStages, proposalKeys } from "../services";
 import { proposal as proposalQueryOptions, voted as votedQueryOptions } from "../services/proposal/query-options";
+import dayjs from "dayjs";
 
 export default function ProposalDetails() {
   const router = useRouter();
@@ -34,9 +35,9 @@ export default function ProposalDetails() {
   const proposalId = router.query.id as string;
   const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
 
-  const { data: userHasVoted } = useQuery(
-    votedQueryOptions({ address: address!, proposalId, stage: proposal?.currentStage as ProposalStages })
-  );
+  const { data: userHasVoted } = useQuery({
+    ...votedQueryOptions({ address: address!, proposalId, stage: proposal?.currentStage as ProposalStages }),
+  });
 
   // proposal id for current stage
   const proposalVoteId = proposal?.stages?.find((stage) => stage.type === proposal?.currentStage)?.providerId;
@@ -49,7 +50,7 @@ export default function ProposalDetails() {
   // invalidates all the queries related to the proposal details
   function invalidateDetailQueries() {
     queryClient.invalidateQueries({
-      queryKey: proposalKeys.proposal({ proposalId }),
+      queryKey: proposalKeys?.proposal({ proposalId }),
       refetchType: "all",
     });
   }
@@ -86,37 +87,59 @@ export default function ProposalDetails() {
     }
   }
 
+  function handleConfirmSnapshotId(value: string) {
+    setCommunityProposalId(value);
+    setShowAdvanceModal(false);
+    approveProposal();
+  }
+
   function augmentStages(canAdvanceWithNextApproval: boolean) {
-    return proposal?.stages.map((stage) => {
-      if (proposal.currentStage === ProposalStages.COUNCIL_APPROVAL) {
-        return {
-          ...stage,
-          cta: {
-            isLoading: isApproving,
-            disabled: !!userHasVoted || isApproving || !userCanApprove || !isConnected,
-            onClick: () => handleApproveProposal(canAdvanceWithNextApproval),
-            label: getApprovalLabel(canAdvanceWithNextApproval),
-          },
-        };
-      } else if (proposal.currentStage === ProposalStages.COMMUNITY_VOTING) {
-        return {
-          ...stage,
-          cta: {
-            disabled: !!userHasVoted || !userCanApprove,
-            onClick: approveProposal,
-            label: userHasVoted ? "Voted" : "Vote",
-          },
-        };
-      } else {
-        return {
-          ...stage,
-          cta: {
-            isLoading: isConfirming,
-            disabled: !!userHasVoted || isConfirming || !userCanConfirm || !isConnected,
-            onClick: confirmProposal,
-            label: getConfirmationLabel(),
-          },
-        };
+    const now = dayjs();
+
+    return proposal?.stages.flatMap((stage) => {
+      const stageNotEnded = stage.details?.endDate && dayjs(stage.details.endDate).isAfter(now);
+
+      switch (stage.type) {
+        case ProposalStages.COUNCIL_APPROVAL:
+          return {
+            ...stage,
+            cta:
+              proposal.currentStage === ProposalStages.COUNCIL_APPROVAL && stageNotEnded
+                ? {
+                    isLoading: isApproving,
+                    disabled: !!userHasVoted || isApproving || !userCanApprove || !isConnected,
+                    onClick: () => handleApproveProposal(canAdvanceWithNextApproval),
+                    label: getApprovalLabel(canAdvanceWithNextApproval),
+                  }
+                : undefined,
+          };
+        case ProposalStages.COMMUNITY_VOTING:
+          return {
+            ...stage,
+            cta:
+              proposal.currentStage === ProposalStages.COMMUNITY_VOTING && stageNotEnded
+                ? {
+                    disabled: !!userHasVoted || !userCanApprove,
+                    onClick: approveProposal,
+                    label: userHasVoted ? "Voted" : "Vote",
+                  }
+                : undefined,
+          };
+        case ProposalStages.COUNCIL_CONFIRMATION:
+          return {
+            ...stage,
+            cta:
+              proposal.currentStage === ProposalStages.COUNCIL_CONFIRMATION && stageNotEnded
+                ? {
+                    isLoading: isConfirming,
+                    disabled: !!userHasVoted || isConfirming || !userCanConfirm || !isConnected,
+                    onClick: confirmProposal,
+                    label: getConfirmationLabel(),
+                  }
+                : undefined,
+          };
+        default:
+          return [];
       }
     });
   }
@@ -171,7 +194,7 @@ export default function ProposalDetails() {
           <StageAdvancementDialog
             open={showAdvanceModal}
             onClose={() => setShowAdvanceModal(false)}
-            onConfirm={setCommunityProposalId}
+            onConfirm={handleConfirmSnapshotId}
           />
         )}
       </>
