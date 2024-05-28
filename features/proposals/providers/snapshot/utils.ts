@@ -32,10 +32,31 @@ export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[]
   return data.map((proposal) => parseSnapshotProposalData(proposal));
 }
 
+function parseChoice(choice: string): string {
+  switch (choice.toLowerCase()) {
+    case "accept":
+    case "yes":
+    case "approve":
+    case "for":
+    case "yay":
+      return "approve";
+    case "reject":
+    case "no":
+    case "deny":
+    case "against":
+    case "nay":
+    case "veto":
+      return "reject";
+    default:
+      return choice;
+  }
+}
+
 export function parseSnapshotProposalData(proposal: SnapshotProposalData): ProposalStage {
+  const choices = proposal.choices.map((choice) => parseChoice(choice));
   const scores: VotingScores[] = proposal.scores.map((score, index) => {
     return {
-      choice: proposal.choices[index],
+      choice: choices[index],
       votes: score,
       percentage: (score / proposal.scores_total) * 100,
     };
@@ -45,7 +66,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     providerId: proposal.id,
     startDate: new Date(proposal.start * 1000),
     endDate: new Date(proposal.end * 1000),
-    choices: proposal.choices,
+    choices,
     snapshotBlock: proposal.snapshot,
     quorum: proposal.quorum,
     scores,
@@ -86,9 +107,10 @@ function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
 
   // Loop through the array to count votes for 'Yes' and 'No'
   for (const vote of votingData) {
-    if (vote.choice.toLowerCase() === "accept") {
+    const choice = parseChoice(vote.choice);
+    if (choice === "approve") {
       yesVotes += vote.votes;
-    } else if (vote.choice.toLowerCase() === "reject") {
+    } else if (choice === "reject") {
       noVotes += vote.votes;
     }
   }
