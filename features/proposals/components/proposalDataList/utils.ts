@@ -41,7 +41,7 @@ export const sortItems = [
   {
     value: `${ProposalSortBy.Status}-${ProposalSortDir.Asc}`,
     label: "Sort by status (ASC)",
-    type: "DESC" as const,
+    type: "ASC" as const,
   },
   {
     value: `${ProposalSortBy.Status}-${ProposalSortDir.Desc}`,
