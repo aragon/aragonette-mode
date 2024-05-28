@@ -38,6 +38,16 @@ export const sortItems = [
     label: "Sort by created at (DESC)",
     type: "DESC" as const,
   },
+  {
+    value: `${ProposalSortBy.Status}-${ProposalSortDir.Asc}`,
+    label: "Sort by status (ASC)",
+    type: "DESC" as const,
+  },
+  {
+    value: `${ProposalSortBy.Status}-${ProposalSortDir.Desc}`,
+    label: "Sort by status (DESC)",
+    type: "DESC" as const,
+  },
   { value: `${ProposalSortBy.Title}-${ProposalSortDir.Asc}`, label: "Sort by title (ASC)", type: "ASC" as const },
   {
     value: `${ProposalSortBy.Title}-${ProposalSortDir.Desc}`,
