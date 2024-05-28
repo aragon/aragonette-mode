@@ -43,8 +43,8 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
 
   const voting: VotingData = {
     providerId: proposal.id,
-    startDate: proposal.start.toString(),
-    endDate: proposal.end.toString(),
+    startDate: new Date(proposal.start * 1000),
+    endDate: new Date(proposal.end * 1000),
     choices: proposal.choices,
     snapshotBlock: proposal.snapshot,
     quorum: proposal.quorum,
@@ -65,6 +65,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     description: proposal.title,
     body: proposal.body,
     status: computeStatus(proposal.state, scores),
+    createdAt: new Date(proposal.created * 1000),
     creator,
     voting,
     resources: [

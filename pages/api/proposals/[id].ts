@@ -1,6 +1,6 @@
 import { type IProposal } from "@/features/proposals";
 import proposalRepository from "@/features/proposals/repository/proposal";
-import { getVotingData } from "@/features/proposals/providers";
+import { buildVotingResponse } from "@/features/proposals/providers";
 import { checkParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     for (const stage of proposal.stages) {
       //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
       if (stage.voting) {
-        const voting = await getVotingData(stage.type, stage.voting.providerId);
+        const voting = await buildVotingResponse(stage);
         stage.voting = voting;
       }
     }

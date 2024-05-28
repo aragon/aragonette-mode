@@ -13,6 +13,7 @@ import {
   type IProposal,
   type IProposalResource,
   type IProposalStage,
+  type IVotingData,
   type ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
@@ -143,7 +144,7 @@ function calculateRelativeProposalStatus(currentStage: IProposalStage, nextStage
  */
 function computeOverlappingStageStatus(currentStageStatus: ProposalStatus, nextStageStartDate?: string) {
   const now = Date.now();
-  const parsedStartDate = Number(nextStageStartDate) / 1000;
+  const parsedStartDate = Number(nextStageStartDate);
 
   if (
     (currentStageStatus === "accepted" || (currentStageStatus === "rejected" && nextStageStartDate)) &&
@@ -184,13 +185,12 @@ function computeProposalStatus(proposalStages: IProposalStage[], currentStageInd
  * @param proposalStages - Array of proposal stage objects.
  * @returns The createdAt date of the proposal.
  */
-function computeProposalCreatedAt(proposalStages: ProposalStage[]): string {
+function computeProposalCreatedAt(proposalStages: ProposalStage[]): Date | undefined {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.createdAt ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt ??
-    ""
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt
   );
 }
 
@@ -271,21 +271,21 @@ function computeProposalId(proposalStages: ProposalStage[]): string {
 }
 
 export async function getProposalStages() {
-  const proposalsGithubStage = await getGitHubProposalStagesData({
-    user: GITHUB_USER,
-    repo: GITHUB_REPO,
-    pips_path: GITHUB_PIPS_PATH,
-    transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
-  });
+  const promises = [
+    getGitHubProposalStagesData({
+      user: GITHUB_USER,
+      repo: GITHUB_REPO,
+      pips_path: GITHUB_PIPS_PATH,
+      transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
+    }),
+    getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE }),
+    getMultisigProposalsData({
+      chain: PUB_CHAIN.id,
+      contractAddress: PUB_MULTISIG_ADDRESS,
+    }),
+  ];
 
-  const proposalsSnapshotStage = await getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE });
-
-  const proposalsMultisigStage = await getMultisigProposalsData({
-    chain: PUB_CHAIN.id,
-    contractAddress: PUB_MULTISIG_ADDRESS,
-  });
-
-  return [...proposalsGithubStage, ...proposalsSnapshotStage, ...proposalsMultisigStage];
+  return (await Promise.all(promises)).flat();
 }
 
 const getProposalBindingId = (stage: ProposalStage) => {
@@ -377,6 +377,19 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
   return proposals;
 }
 
+function buildVotingData(voting: VotingData): IVotingData {
+  return {
+    providerId: voting.providerId,
+    startDate: voting.startDate?.toISOString(),
+    endDate: voting.endDate?.toISOString(),
+    choices: voting.choices,
+    snapshotBlock: voting.snapshotBlock,
+    quorum: voting.quorum,
+    scores: voting.scores,
+    total_votes: voting.total_votes,
+  };
+}
+
 /**
  * Builds an array of transformed proposal stage objects from the given proposal stages. Each stage is transformed
  * to include only selected properties. This function also sorts the proposal stages before transforming them.
@@ -391,9 +404,9 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
       type: proposalStage.stageType,
       status: proposalStage.status,
       creator: proposalStage.creator,
-      createdAt: proposalStage.createdAt,
+      createdAt: proposalStage.createdAt?.toISOString(),
       resources: proposalStage.resources,
-      voting: proposalStage.voting,
+      voting: proposalStage.voting && buildVotingData(proposalStage.voting),
     };
   });
 }
@@ -428,7 +441,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const resources = computeProposalResources(stages);
     const currentStageIndex = stages.findIndex((stage) => stage.type === currentStage);
     const status = computeProposalStatus(stages, currentStageIndex);
-    const createdAt = computeProposalCreatedAt(matchedProposalStages);
+    const createdAt = computeProposalCreatedAt(matchedProposalStages)?.toISOString();
 
     const id = computeProposalId(matchedProposalStages);
 
@@ -485,4 +498,13 @@ export async function getVotingData(stage: ProposalStages, providerId: string): 
     default:
       return undefined;
   }
+}
+
+export async function buildVotingResponse(stage: IProposalStage): Promise<IVotingData | undefined> {
+  if (!stage.voting) return undefined;
+  const voting = await getVotingData(stage.type, stage.voting.providerId);
+
+  if (!voting) return undefined;
+
+  return buildVotingData(voting);
 }

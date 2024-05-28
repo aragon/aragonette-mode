@@ -5,6 +5,7 @@ export const snapshotProposalsQuery = (space: string) => `
       title
       body
       choices
+      created
       start
       end
       quorum
@@ -30,6 +31,7 @@ export const snapshotProposalQuery = (id: string) => `
       title
       body
       choices
+      created
       start
       end
       quorum
