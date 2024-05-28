@@ -43,7 +43,7 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
     }
   }, [cta?.disabled, option]);
 
-  const label = showOptions ? "Submit vote" : cta?.label;
+  const label = showOptions && !cta?.isLoading ? "Submit vote" : cta?.label;
   const disabled = (!!showOptions && !option) || cta?.disabled;
 
   return (

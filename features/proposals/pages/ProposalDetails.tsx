@@ -3,8 +3,10 @@ import { useProposalApproval } from "@/plugins/multisig/hooks/useProposalApprova
 import { useProposalConfirmation } from "@/plugins/multisig/hooks/useProposalConfirmation";
 import { useUserCanApprove } from "@/plugins/multisig/hooks/useUserCanApprove";
 import { useUserCanConfirm } from "@/plugins/multisig/hooks/useUserCanConfirm";
+import { useCastSnapshotVote } from "@/plugins/snapshot/hooks/useCastSnapshotVote";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useAccount } from "wagmi";
@@ -20,7 +22,6 @@ import {
 } from "../components";
 import { ProposalStages, proposalKeys } from "../services";
 import { proposal as proposalQueryOptions, voted as votedQueryOptions } from "../services/proposal/query-options";
-import dayjs from "dayjs";
 
 export default function ProposalDetails() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function ProposalDetails() {
   const userCanConfirm = useUserCanConfirm(proposalVoteId);
 
   const { approveProposal, isConfirming: isApproving } = useProposalApproval(proposalVoteId, invalidateDetailQueries);
+  const { castVote, isConfirming: isVoting } = useCastSnapshotVote(proposalVoteId, invalidateDetailQueries);
   const { confirmProposal, isConfirming } = useProposalConfirmation(proposalVoteId, invalidateDetailQueries);
 
   // invalidates all the queries related to the proposal details
@@ -79,6 +81,18 @@ export default function ProposalDetails() {
     }
   }
 
+  function getVoteLabel() {
+    if (isVoting) {
+      return "Submitting vote...";
+    } else if (userHasVoted) {
+      return "Voted";
+    } else if (!isConnected) {
+      return "Login to vote";
+    } else {
+      return "Vote";
+    }
+  }
+
   function handleApproveProposal(canAdvanceWithNextApproval: boolean) {
     if (canAdvanceWithNextApproval) {
       setShowAdvanceModal(true);
@@ -107,7 +121,7 @@ export default function ProposalDetails() {
               proposal.currentStage === ProposalStages.COUNCIL_APPROVAL && stageNotEnded
                 ? {
                     isLoading: isApproving,
-                    disabled: !!userHasVoted || isApproving || !userCanApprove || !isConnected,
+                    disabled: !!userHasVoted || !userCanApprove || !isConnected,
                     onClick: () => handleApproveProposal(canAdvanceWithNextApproval),
                     label: getApprovalLabel(canAdvanceWithNextApproval),
                   }
@@ -119,9 +133,11 @@ export default function ProposalDetails() {
             cta:
               proposal.currentStage === ProposalStages.COMMUNITY_VOTING && stageNotEnded
                 ? {
-                    disabled: !!userHasVoted || !userCanApprove,
-                    onClick: approveProposal,
-                    label: userHasVoted ? "Voted" : "Vote",
+                    isLoading: isVoting,
+                    // TODO: add canvote for snapshot
+                    disabled: !isConnected || !!userHasVoted,
+                    onClick: castVote,
+                    label: getVoteLabel(),
                   }
                 : undefined,
           };
@@ -132,7 +148,7 @@ export default function ProposalDetails() {
               proposal.currentStage === ProposalStages.COUNCIL_CONFIRMATION && stageNotEnded
                 ? {
                     isLoading: isConfirming,
-                    disabled: !!userHasVoted || isConfirming || !userCanConfirm || !isConnected,
+                    disabled: !!userHasVoted || !userCanConfirm || !isConnected,
                     onClick: confirmProposal,
                     label: getConfirmationLabel(),
                   }
