@@ -9,6 +9,9 @@ import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { type ReactNode } from "react";
 import { WagmiProvider, deserialize, serialize, type State } from "wagmi";
 import { AlertProvider } from "./Alerts";
+import { OdsCoreProvider } from "@aragon/ods";
+import { Link } from "@/components/link/link";
+import { Image } from "@/components/image/image";
 
 const persister = createAsyncStoragePersister({
   serialize,
@@ -23,11 +26,15 @@ createWeb3Modal({
   enableAnalytics: false, // Optional - defaults to your Cloud configuration
 });
 
+const OdsCoreProviderValues = { Link: Link, Img: Image };
+
 export function RootContextProvider({ children, initialState }: { children: ReactNode; initialState?: State }) {
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-        <AlertProvider>{children}</AlertProvider>
+        <OdsCoreProvider values={OdsCoreProviderValues}>
+          <AlertProvider>{children}</AlertProvider>
+        </OdsCoreProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </PersistQueryClientProvider>
     </WagmiProvider>

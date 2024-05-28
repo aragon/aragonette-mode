@@ -23,9 +23,10 @@ export const proposalKeys = {
 export function proposalList(params: IFetchProposalListParams = {}) {
   return infiniteQueryOptions({
     queryKey: proposalKeys.list(params),
-    queryFn: async () => proposalService.fetchProposals(params),
+    queryFn: async (ctx) => proposalService.fetchProposals({ ...params, page: ctx.pageParam }),
     initialPageParam: 1,
-    getNextPageParam: () => undefined,
+    getNextPageParam: (lastPage, _pages, lastPageParam) =>
+      (lastPage?.pagination?.pages ?? 1) > lastPageParam ? lastPageParam + 1 : undefined,
     select: (data) => ({
       proposals: data.pages.flatMap((p) => toProposalDataListItems(p.data)),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
@@ -48,10 +49,11 @@ export function proposal(params: IFetchProposalParams) {
 export function proposalVotes(params: IFetchVotesParams) {
   const enabled = areAllPropertiesDefined(params);
   return infiniteQueryOptions({
-    initialPageParam: 1,
-    getNextPageParam: () => undefined,
     queryKey: proposalKeys.votes(params),
-    queryFn: () => proposalService.fetchVotes(params),
+    queryFn: (ctx) => proposalService.fetchVotes({ ...params, page: ctx.pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _pages, lastPageParam) =>
+      (lastPage?.pagination?.pages ?? 1) > lastPageParam ? lastPageParam + 1 : undefined,
     select: (data) => ({
       votes: data.pages.flatMap((p) => toProposalVotes(p.data, params.stage)),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },

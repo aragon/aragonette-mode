@@ -12,7 +12,7 @@ import type {
 
 class ProposalService {
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
-    const url = `${PUB_API_BASE_URL}/proposals`;
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/proposals`, params);
     const response = await fetch(url);
     const parsed: IPaginatedResponse<IProposal> = await response.json();
     return parsed;
