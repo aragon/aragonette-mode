@@ -1,4 +1,3 @@
-// import { DefinitionList, DefinitionList.Item } from "@/components/definitionList/definitionList";
 import { DefinitionList, Heading, IconType, Link } from "@aragon/ods";
 
 export interface IVotingDetailsProps {
