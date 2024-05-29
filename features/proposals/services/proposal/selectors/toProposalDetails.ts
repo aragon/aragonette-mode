@@ -169,8 +169,8 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
             };
 
       const details = {
-        startDate: startDate ? dayjs.unix(Number(startDate)).utc().format("YYYY/MM/DD h:mm A [UTC]") : "",
-        endDate: endDate ? dayjs.unix(Number(endDate)).utc().format("YYYY/MM/DD h:mm A [UTC]") : "",
+        startDate: parseDate(startDate)?.utc().format("YYYY/MM/DD h:mm A [UTC]") ?? "",
+        endDate: parseDate(endDate)?.utc().format("YYYY/MM/DD h:mm A [UTC]") ?? "",
         strategy: variant === "approvalThreshold" ? "1 Address → 1 Vote" : "1 Token → 1 Vote",
         censusBlock: Number(snapshotBlock),
         options: formatChoices(choices),
