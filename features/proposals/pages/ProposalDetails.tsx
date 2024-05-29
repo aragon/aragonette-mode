@@ -111,7 +111,7 @@ export default function ProposalDetails() {
     const now = dayjs();
 
     return proposal?.stages.flatMap((stage) => {
-      const stageNotEnded = stage.details?.endDate && dayjs(stage.details.endDate).isAfter(now);
+      const stageNotEnded = !!stage.details?.endDate && dayjs(stage.details.endDate).isAfter(now);
 
       switch (stage.type) {
         case ProposalStages.COUNCIL_APPROVAL:

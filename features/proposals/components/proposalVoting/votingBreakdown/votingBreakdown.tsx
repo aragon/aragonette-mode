@@ -16,7 +16,7 @@ export const VotingBreakdown: React.FC<IVotingBreakdownProps> = (props) => {
   return (
     <>
       {variant === "approvalThreshold" && !!result && (
-        <BreakdownApprovalThresholdResult {...(result as IBreakdownApprovalThresholdResult)} />
+        <BreakdownApprovalThresholdResult {...(result as IBreakdownApprovalThresholdResult)} cta={cta} />
       )}
       {variant === "majorityVoting" && !!result && (
         <BreakdownMajorityVotingResult {...(result as IBreakdownMajorityVotingResult)} cta={cta} />

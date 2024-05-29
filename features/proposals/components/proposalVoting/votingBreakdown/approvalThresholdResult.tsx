@@ -10,7 +10,7 @@ import {
 import { type VotingCta } from "./types";
 
 export interface IBreakdownApprovalThresholdResult extends IApprovalThresholdResult {
-  cta: VotingCta;
+  cta?: VotingCta;
 }
 
 export const BreakdownApprovalThresholdResult: React.FC<IBreakdownApprovalThresholdResult> = (props) => {
