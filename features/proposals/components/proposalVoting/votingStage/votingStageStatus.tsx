@@ -1,8 +1,9 @@
 import { AvatarIcon, IconType, Spinner, StatePingAnimation } from "@aragon/ods";
+import { ProposalStatus } from "@/features/proposals/services/proposal/domain";
 
 interface IVotingStageStatus {
   endDate: string;
-  status: "pending" | "active" | "accepted" | "rejected" | "unreached";
+  status: ProposalStatus | "unreached";
 }
 
 export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
@@ -10,7 +11,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
 
   return (
     <div className="flex items-center gap-x-2 text-lg leading-tight">
-      {status === "pending" && (
+      {status === ProposalStatus.PENDING && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-neutral-800">Stage</span>
@@ -19,7 +20,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <Spinner size="md" variant="neutral" className="shrink-0" />
         </>
       )}
-      {status === "active" && endDate && (
+      {status === ProposalStatus.ACTIVE && endDate && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-primary-500">{endDate}</span>
@@ -28,7 +29,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <StatePingAnimation variant="primary" className="shrink-0" />
         </>
       )}
-      {status === "accepted" && (
+      {status === ProposalStatus.APPROVED && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-neutral-500">Proposal has been</span>
@@ -37,7 +38,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <AvatarIcon size="sm" variant="success" icon={IconType.CHECKMARK} className="shrink-0" />
         </>
       )}
-      {status === "rejected" && (
+      {status === ProposalStatus.REJECTED && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-neutral-500">Proposal has been</span>

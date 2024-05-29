@@ -41,6 +41,7 @@ export type ProposalStage = {
   body: string;
   transparency_report?: string;
   status: ProposalStatus;
+  statusMessage?: string;
   isEmergency?: boolean;
   createdAt?: Date;
   creator: ICreator[];

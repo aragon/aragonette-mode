@@ -2,13 +2,24 @@ import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@arag
 import { type Address } from "viem";
 import { type VotingScores } from "../../models/proposals";
 
-export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
+export type ProposalStatusMessage = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
 
 export enum ProposalStages {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
   COMMUNITY_VOTING = "vePOL Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
+}
+
+export enum ProposalStatus {
+  ACTIVE = "ACTIVE",
+  QUEUED = "QUEUED",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  CANCELLED = "CANCELLED",
+  EXECUTED = "EXECUTED",
+  EXPIRED = "EXPIRED",
+  PENDING = "PENDING",
 }
 
 export const StageOrder = {
@@ -30,6 +41,7 @@ export type IProposalResource = {
 
 export interface IVotingData {
   providerId: string;
+  isActive: boolean;
   startDate: string;
   endDate: string;
   choices: string[];
@@ -43,6 +55,7 @@ export interface IProposalStage {
   id: string;
   type: ProposalStages;
   status: ProposalStatus;
+  statusMessage?: string;
   createdAt?: string;
   startTimestamp?: string;
   endTimestamp?: string;

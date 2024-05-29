@@ -2,7 +2,7 @@ import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
 import { type VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
-import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
+import { ProposalStages, ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
 import { fetchJsonFromIpfs } from "@/utils/ipfs";
@@ -475,23 +475,26 @@ function computeApprovalStatus({
   const approvalsReached = approvals >= minApprovals;
 
   if (executed) {
-    return "executed";
+    return ProposalStatus.EXECUTED;
   }
 
   if (startDate > now) {
-    return "pending";
+    return ProposalStatus.PENDING;
   }
 
   // proposal is within time boundaries
   if (now <= endDate) {
     if (approvalsReached) {
-      // queued for next stage
-      return "queued";
+      return ProposalStatus.APPROVED;
     }
-    return "active";
+    return ProposalStatus.ACTIVE;
+  }
+
+  if (approvalsReached) {
+    return ProposalStatus.APPROVED;
   } else {
     // proposal end date has passed
-    return "rejected";
+    return ProposalStatus.REJECTED;
   }
 }
 
@@ -513,30 +516,29 @@ function computeEmergencyStatus({
 }: IComputeEmergencyStatus): ProposalStatus {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const superMajorityReached = approvals >= emergencyMinApprovals;
-
   if (executed) {
-    return "executed";
+    return ProposalStatus.EXECUTED;
   }
 
   if (startDate > now) {
-    return "pending";
+    return ProposalStatus.PENDING;
   }
 
   // proposal is within time boundaries
   if (now <= endDate) {
     if (superMajorityReached) {
-      return "accepted";
+      return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.QUEUED;
     }
 
-    return "active";
+    return ProposalStatus.ACTIVE;
   }
 
   // end date is passed
   // approvals reached
   if (superMajorityReached) {
-    return isSignaling ? "accepted" : "expired";
+    return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.EXPIRED;
   } else {
-    return "rejected";
+    return ProposalStatus.REJECTED;
   }
 }
 
@@ -560,25 +562,25 @@ function computeConfirmationStatus({
   const confirmationsReached = confirmations >= minApprovals;
 
   if (executed) {
-    return "executed";
+    return ProposalStatus.EXECUTED;
   }
 
   if (startDate > now) {
-    return "pending";
+    return ProposalStatus.PENDING;
   }
 
   if (now <= endDate) {
     if (confirmationsReached) {
-      return isSignaling ? "accepted" : "queued";
+      return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.QUEUED;
     }
 
-    return "active";
+    return ProposalStatus.ACTIVE;
   }
 
   // proposal end date has passed
   if (!confirmationsReached) {
-    return "rejected";
+    return ProposalStatus.REJECTED;
   }
 
-  return isSignaling ? "accepted" : "expired";
+  return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.EXPIRED;
 }

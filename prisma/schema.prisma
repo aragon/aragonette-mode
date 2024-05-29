@@ -12,10 +12,29 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
+enum StageType {
+  DRAFT
+  COUNCIL_APPROVAL
+  COMMUNITY_VOTING
+  COUNCIL_CONFIRMATION
+}
+
+enum ProposalStatus {
+  ACTIVE
+  QUEUED
+  APPROVED
+  REJECTED
+  CANCELLED
+  EXECUTED
+  EXPIRED
+  PENDING
+}
+
 model Stage {
   id             String    @id
-  type           String @default("Stage")
-  status         String
+  type           StageType
+  status         ProposalStatus
+  statusMessage  String?
   createdAt      String?
   startTimestamp String?
   endTimestamp   String?
@@ -32,7 +51,7 @@ model Proposal {
   description        String
   body               String?
   transparencyReport String?
-  status             String
+  status             ProposalStatus
   createdAt          String?
   isEmergency        Boolean
   currentStage       String

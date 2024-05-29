@@ -1,20 +1,20 @@
 import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
-import { ProposalStages, type ProposalStatus } from "../../services";
+import { ProposalStages, ProposalStatus } from "../../services";
 import { type ProposalStage, type VotingData, type VotingScores } from "../../models/proposals";
 import { type SnapshotProposalData } from "./types";
 
 const computeStatus = (proposalState: string, scores: VotingScores[]): ProposalStatus => {
   switch (proposalState) {
     case "active":
-      return "active";
+      return ProposalStatus.ACTIVE;
     case "closed":
       return evaluateVotingResult(scores);
     case "pending":
-      return "pending";
+      return ProposalStatus.PENDING;
     case "cancelled":
-      return "rejected";
+      return ProposalStatus.CANCELLED;
     default:
-      return "active";
+      return ProposalStatus.PENDING;
   }
 };
 
@@ -117,5 +117,5 @@ function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
 
   // Determine the result based on the counts
   // update with proper calculation
-  return yesVotes > noVotes ? "accepted" : "rejected";
+  return yesVotes > noVotes ? ProposalStatus.APPROVED : ProposalStatus.REJECTED;
 }

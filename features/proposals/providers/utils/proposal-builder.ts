@@ -14,7 +14,7 @@ import {
   type IProposalResource,
   type IProposalStage,
   type IVotingData,
-  type ProposalStatus,
+  ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
 import { getGitHubProposalStagesData } from "../github/proposalStages";
@@ -112,51 +112,6 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
 }
 
 /**
- * Calculates the relative status of a proposal based on the current stage and the next stage.
- * The function uses the current stage status and the start date of the next stage to determine the relative status.
- *
- * @param currentStage - The current proposal stage.
- * @param nextStage - The next proposal stage.
- * @returns The relative status of the proposal.
- */
-function calculateRelativeProposalStatus(currentStage: IProposalStage, nextStage?: IProposalStage): ProposalStatus {
-  switch (currentStage.type) {
-    case ProposalStages.DRAFT:
-      return currentStage.status;
-    case ProposalStages.COUNCIL_APPROVAL:
-      return currentStage.status;
-    case ProposalStages.COMMUNITY_VOTING:
-      return computeOverlappingStageStatus(currentStage.status, nextStage?.voting?.startDate);
-    case ProposalStages.COUNCIL_CONFIRMATION:
-      return currentStage.status;
-    default:
-      return "draft";
-  }
-}
-
-/**
- * Computes the overlapping status of a proposal stage based on the current stage status and the start date of the next stage.
- * The function determines whether the current stage is still active or queued based on the start date of the next stage.
- *
- * @param currentStageStatus - The status of the current proposal stage.
- * @param nextStageStartDate - The start date of the next proposal stage.
- * @returns The overlapping status of the proposal stage.
- */
-function computeOverlappingStageStatus(currentStageStatus: ProposalStatus, nextStageStartDate?: string) {
-  const now = Date.now();
-  const parsedStartDate = Number(nextStageStartDate);
-
-  if (
-    (currentStageStatus === "accepted" || (currentStageStatus === "rejected" && nextStageStartDate)) &&
-    parsedStartDate < now
-  ) {
-    return "active";
-  } else {
-    return "queued";
-  }
-}
-
-/**
  * Computes the current status of a proposal based on its stages and the current stage index.
  * It checks for a status in the COUNCIL_APPROVAL stage; if not found, it defaults to the DRAFT stage's status.
  * If neither are present, it returns 'draft'. This function also considers the status based on the relative position
@@ -167,14 +122,20 @@ function computeOverlappingStageStatus(currentStageStatus: ProposalStatus, nextS
  * @returns The computed status of the proposal.
  */
 function computeProposalStatus(proposalStages: IProposalStage[], currentStageIndex: number): ProposalStatus {
-  const draftStageStatus = proposalStages.find((stage) => stage.type === ProposalStages.DRAFT)?.status;
-  const approvalStageStatus = proposalStages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.status;
-  const calculatedStatus = calculateRelativeProposalStatus(
-    proposalStages[currentStageIndex], // current stage
-    proposalStages[currentStageIndex + 1] // next stage
-  );
+  const currentStage = proposalStages[currentStageIndex];
 
-  return approvalStageStatus ? calculatedStatus : draftStageStatus ?? "draft";
+  switch (currentStage.type) {
+    case ProposalStages.DRAFT:
+      return currentStage.status;
+    case ProposalStages.COUNCIL_APPROVAL:
+      return currentStage.status === ProposalStatus.APPROVED ? ProposalStatus.QUEUED : currentStage.status;
+    case ProposalStages.COMMUNITY_VOTING:
+      return currentStage.status === ProposalStatus.APPROVED ? ProposalStatus.QUEUED : currentStage.status;
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return currentStage.status;
+    default:
+      return currentStage.status;
+  }
 }
 
 /**
@@ -380,6 +341,7 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
 function buildVotingData(voting: VotingData): IVotingData {
   return {
     providerId: voting.providerId,
+    isActive: voting.endDate > new Date() && voting.startDate < new Date(),
     startDate: voting.startDate?.toISOString(),
     endDate: voting.endDate?.toISOString(),
     choices: voting.choices,
@@ -403,6 +365,7 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
       id: proposalStage.stageType,
       type: proposalStage.stageType,
       status: proposalStage.status,
+      statusMessage: proposalStage.statusMessage,
       creator: proposalStage.creator,
       createdAt: proposalStage.createdAt?.toISOString(),
       resources: proposalStage.resources,

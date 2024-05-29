@@ -2,12 +2,7 @@ import { ProposalDetails } from "@/components/nav/routes";
 import { GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
 import Cache from "@/services/cache/VercelCache";
 import { type ProposalStage } from "../../models/proposals";
-import {
-  ProposalStages,
-  type ICreator,
-  type IProposalResource,
-  type ProposalStatus,
-} from "../../services/proposal/domain";
+import { ProposalStages, type ICreator, type IProposalResource, ProposalStatus } from "../../services/proposal/domain";
 
 type GithubData = {
   link: string;
@@ -89,12 +84,18 @@ export function extractBody(proposalBody: string) {
 }
 
 function parseStatus(status: string): ProposalStatus {
-  if (status === "Final") {
-    return "executed";
-  } else if (status === "Draft") {
-    return "draft";
-  } else {
-    return status as ProposalStatus;
+  switch (status) {
+    case "Continuous":
+    case "Final":
+      return ProposalStatus.EXECUTED;
+    case "Draft":
+    case "Stagnant":
+      return ProposalStatus.PENDING;
+    case "Last Call":
+    case "Peer Review":
+      return ProposalStatus.ACTIVE;
+    default:
+      return ProposalStatus.PENDING;
   }
 }
 
@@ -150,6 +151,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     body: body,
     creator: parsedCreators,
     status: parseStatus(values[5]),
+    statusMessage: values[5],
     type: values[6] ?? "Informational",
     createdAt,
     resources,

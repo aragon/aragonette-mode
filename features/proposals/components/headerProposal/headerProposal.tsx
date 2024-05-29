@@ -1,6 +1,6 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { AvatarIcon, Breadcrumbs, Heading, IconType, Tag, type IBreadcrumbsLink, type TagVariant } from "@aragon/ods";
-import { type ProposalStatus } from "../../services/proposal/domain";
+import { ProposalStatus } from "../../services/proposal/domain";
 import { type ProposalDetail } from "../../services/proposal/selectors";
 import { Publisher } from "./publisher";
 
@@ -16,7 +16,8 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   } = props;
 
   const showExpirationDate =
-    !!endDate && (status === "active" || status === "pending" || status === "queued" || status === "vetoed");
+    !!endDate &&
+    (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING || status === ProposalStatus.QUEUED);
 
   const tagVariant = getTagVariantFromStatus(status);
 
@@ -74,32 +75,20 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
 };
 
 const getTagVariantFromStatus = (status: ProposalStatus): TagVariant => {
+  //TODO: Use statusMessage?
   switch (status) {
-    case "accepted":
+    case ProposalStatus.APPROVED:
+    case ProposalStatus.QUEUED:
       return "success";
-    case "active":
+    case ProposalStatus.ACTIVE:
       return "info";
-    case "challenged":
-      return "warning";
-    case "draft":
-      return "neutral";
-    case "executed":
+    case ProposalStatus.EXECUTED:
       return "success";
-    case "expired":
+    case ProposalStatus.REJECTED:
+    case ProposalStatus.EXPIRED:
+    case ProposalStatus.CANCELLED:
       return "critical";
-    case "failed":
-      return "critical";
-    case "partiallyExecuted":
-      return "warning";
-    case "pending":
-      return "neutral";
-    case "queued":
-      return "success";
-    case "rejected":
-      return "critical";
-    case "vetoed":
-      return "warning";
-    default:
+    case ProposalStatus.PENDING:
       return "neutral";
   }
 };
