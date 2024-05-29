@@ -6,7 +6,7 @@ import VercelCache from "@/services/cache/VercelCache";
 import { type Address } from "viem";
 import { ProposalStages } from "../../services";
 import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
-import { getCanVote } from "../multisig/utils";
+import { getCanApprove } from "../multisig/utils";
 import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes";
 
@@ -59,7 +59,9 @@ export async function getVotingPower(providerId: string, stage: ProposalStages, 
       return 0;
     }
     case ProposalStages.COUNCIL_APPROVAL: {
-      return getCanVote(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) => (canVote ? 1 : 0));
+      return getCanApprove(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) =>
+        canVote ? 1 : 0
+      );
     }
     case ProposalStages.COMMUNITY_VOTING: {
       return getSnapshotVotingPower({
@@ -69,8 +71,10 @@ export async function getVotingPower(providerId: string, stage: ProposalStages, 
       });
     }
     case ProposalStages.COUNCIL_CONFIRMATION: {
-      //TODO: Use confirmation voting power
-      return getCanVote(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) => (canVote ? 1 : 0));
+      //TODO: Use getCanConfirm
+      return getCanApprove(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) =>
+        canVote ? 1 : 0
+      );
     }
   }
 }
