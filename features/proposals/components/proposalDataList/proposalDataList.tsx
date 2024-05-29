@@ -1,5 +1,6 @@
 import { ProposalDetails } from "@/components/nav/routes";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { generateDataListState } from "@/utils/query";
 import {
   DataList,
   IconType,
@@ -11,7 +12,7 @@ import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
-import { generateDataListState, generateSortOptions, sortItems } from "./utils";
+import { generateSortOptions, sortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;

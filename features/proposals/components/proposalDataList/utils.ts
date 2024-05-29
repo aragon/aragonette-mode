@@ -7,26 +7,6 @@ export const generateSortOptions = (sort: string) => {
   return { sortBy: sortBy, sortDir };
 };
 
-export const generateDataListState = (
-  isLoading: boolean,
-  isError: boolean,
-  isFetchingNextPage: boolean,
-  isFiltering: boolean,
-  isFiltered: boolean
-) => {
-  if (isLoading) {
-    return "initialLoading";
-  } else if (isError) {
-    return "error";
-  } else if (isFetchingNextPage) {
-    return "fetchingNextPage";
-  } else if (isFiltering) {
-    return "loading";
-  } else {
-    return isFiltered ? "filtered" : "idle";
-  }
-};
-
 export const sortItems = [
   {
     value: `${ProposalSortBy.CreatedAt}-${ProposalSortDir.Asc}`,
