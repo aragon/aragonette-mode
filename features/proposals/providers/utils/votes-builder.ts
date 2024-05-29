@@ -1,14 +1,14 @@
-import { PUB_CHAIN, PUB_MULTISIG_ADDRESS } from "@/constants";
+import { PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { type IProposalVote } from "@/features/proposals";
 import { type Vote } from "@/features/proposals/models/proposals";
 import VercelCache from "@/services/cache/VercelCache";
-import { printStageParam } from "@/utils/api-utils";
 import { type Address } from "viem";
 import { ProposalStages } from "../../services";
 import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
+import { getCanVote } from "../multisig/utils";
 import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
-import { getSnapshotVotesData } from "../snapshot/votes";
+import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {
@@ -53,6 +53,28 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
   }
 }
 
+export async function getVotingPower(providerId: string, stage: ProposalStages, address: string): Promise<number> {
+  switch (stage) {
+    case ProposalStages.DRAFT: {
+      return 0;
+    }
+    case ProposalStages.COUNCIL_APPROVAL: {
+      return getCanVote(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) => (canVote ? 1 : 0));
+    }
+    case ProposalStages.COMMUNITY_VOTING: {
+      return getSnapshotVotingPower({
+        space: SNAPSHOT_SPACE,
+        providerId,
+        voter: address,
+      });
+    }
+    case ProposalStages.COUNCIL_CONFIRMATION: {
+      //TODO: Use confirmation voting power
+      return getCanVote(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) => (canVote ? 1 : 0));
+    }
+  }
+}
+
 const parseVotesData = (data: Vote[]): IProposalVote[] => {
   return data.map((vote) => {
     return {
@@ -69,6 +91,14 @@ export async function buildVotesResponse(providerId: string, proposalStage: Prop
   const proposalVotes = await getVotes(providerId, proposalStage);
 
   return parseVotesData(proposalVotes);
+}
+
+export async function buildVotingPowerResponse(
+  proposalId: string,
+  stage: ProposalStages,
+  address: string
+): Promise<number> {
+  return getVotingPower(proposalId, stage, address);
 }
 
 export async function getCachedVotes(proposalId: string, stageEnum: ProposalStages): Promise<IProposalVote[]> {

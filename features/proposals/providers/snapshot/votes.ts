@@ -1,6 +1,6 @@
-import { type Vote, type IProposalVotesProvider } from "../../models/proposals";
-import { snapshotVotesQuery } from "./gql";
-import { type SnapshotVoteData } from "./types";
+import { type Vote, type IProposalVotesProvider, type IProposalVotingPowerProvider } from "../../models/proposals";
+import { snapshotVotesQuery, snapshotVotingPowerQuery } from "./gql";
+import { type SnapshotVoteData, type SnapshotVotingPowerData } from "./types";
 import { requestProposalData } from "./utils";
 
 function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
@@ -19,4 +19,14 @@ export const getSnapshotVotesData: IProposalVotesProvider = async function (para
   return requestProposalData(snapshotVotesQuery(params.providerId))
     .then((res) => res.data.votes as SnapshotVoteData[])
     .then(parseSnapshotVoteData);
+};
+
+export const getSnapshotVotingPower: IProposalVotingPowerProvider = async function (params: {
+  space: string;
+  providerId: string;
+  voter: string;
+}) {
+  return requestProposalData(snapshotVotingPowerQuery(params.space, params.providerId, params.voter))
+    .then((res) => res.data.vp as SnapshotVotingPowerData)
+    .then((vp) => vp.vp);
 };

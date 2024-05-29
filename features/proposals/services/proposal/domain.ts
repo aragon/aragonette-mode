@@ -83,6 +83,12 @@ export interface IVoted {
   hasVoted: boolean;
 }
 
+export interface ICanVote {
+  address: Address;
+  canVote: boolean;
+  vp: number;
+}
+
 export enum Votes {
   YES = "Yes",
   NO = "No",
