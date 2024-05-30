@@ -191,15 +191,15 @@ export const requestVotingData = async function (
     return {
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
-      endDate: proposalData.firstDelayStartBlock?.toString() ?? proposalData.parameters.endDate.toString(),
+      endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
       approvals: proposalData.approvals,
       quorum: proposalData.parameters.minApprovals,
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
     };
   } else if (stage === "confirmation") {
-    if (!proposalData.firstDelayStartBlock) return;
+    if (!proposalData.firstDelayStartTimestamp) return;
 
-    const confirmationStartDate = proposalData.firstDelayStartBlock + proposalData.parameters.delayDuration;
+    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
     const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
 
     if (!lockedPeriodPassed) return;
@@ -212,8 +212,6 @@ export const requestVotingData = async function (
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
     };
   }
-
-  return;
 };
 
 export const requestProposalsData = async function (
@@ -241,7 +239,6 @@ export const requestProposalsData = async function (
     const primaryMetadataCid = fromHex(proposalData.primaryMetadata as Hex, "string");
     const secondaryMetadataCid = fromHex(proposalData.secondaryMetadata as Hex, "string");
 
-    //TODO: Use IPFS hash from proposalData instead of logs
     const primaryMetadata: PrimaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
     const secondaryMetadata = secondaryMetadataCid
       ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
@@ -298,7 +295,7 @@ export const requestProposalsData = async function (
       voting: {
         providerId: i.toString(),
         startDate: proposalData.parameters.startDate.toString(),
-        endDate: proposalData.firstDelayStartBlock?.toString() ?? proposalData.parameters.endDate.toString(),
+        endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
         approvals: proposalData.approvals,
         quorum: proposalData.parameters.minApprovals,
         snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
@@ -306,8 +303,8 @@ export const requestProposalsData = async function (
     });
 
     // if confirmation stage has yet to start continue to next proposal
-    if (!proposalData.firstDelayStartBlock) continue;
-    const confirmationStartDate = proposalData.firstDelayStartBlock + proposalData.parameters.delayDuration;
+    if (!proposalData.firstDelayStartTimestamp) continue;
+    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
     const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
 
     // generate confirmation stage if the proposal has been approved by the council
@@ -352,13 +349,12 @@ type ProposalData = {
   // new multisig data
   primaryMetadata: string;
   secondaryMetadata: string | undefined;
-  firstDelayStartBlock: bigint | null;
+  firstDelayStartTimestamp: bigint | null;
   confirmations: number;
 };
 
 function decodeProposalResultData(data?: Array<any>): ProposalData | null {
   if (!data?.length && data?.length != 9) return null;
-
   return {
     executed: data[0] as boolean,
     approvals: data[1] as number,
@@ -370,7 +366,7 @@ function decodeProposalResultData(data?: Array<any>): ProposalData | null {
     confirmations: data[5] as number,
     primaryMetadata: data[6] as string,
     secondaryMetadata: data[7] as string,
-    firstDelayStartBlock: data[9] as bigint,
+    firstDelayStartTimestamp: data[8] as bigint,
   };
 }
 
@@ -565,12 +561,11 @@ export const requestConfirmationData = async function (
 ): Promise<VotesData[]> {
   const proposalData = await getProposalData(chain, contractAddress, providerId);
 
-  if (!proposalData?.firstDelayStartBlock || proposalData.firstDelayStartBlock === BigInt(0)) return [];
-
+  if (!proposalData?.firstDelayStartTimestamp || proposalData.firstDelayStartTimestamp === BigInt(0)) return [];
   const confirmationLogs = await getConfirmationLogs(
     contractAddress,
     providerId,
-    proposalData.firstDelayStartBlock,
+    proposalData.parameters.snapshotBlock,
     proposalData.parameters.endDate
   );
 
