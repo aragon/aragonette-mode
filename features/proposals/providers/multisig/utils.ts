@@ -79,8 +79,6 @@ const getProposalCreationData = async function (
   if (!blockData) throw new Error("No block data");
 
   return {
-    primaryMetadata: logData.metadata,
-    secondaryMetadata: logData.secondaryMetadata ?? "",
     creator: logData.creator,
     tx,
     block,
@@ -90,8 +88,7 @@ const getProposalCreationData = async function (
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
   const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
-  const snapshotLink =
-    secondaryMetadata ?? metadata.resources.find((resource) => resource.name.toLowerCase() === "snapshot");
+  const snapshotLink = secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "snapshot");
 
   const githubFileName = githubLink?.url.split("/").pop()?.split(".")?.shift();
   const snapshotId = snapshotLink?.url.split("/").pop();
@@ -237,22 +234,30 @@ export const requestProposalsData = async function (
 
     // skip to next proposal if no creation data can be found for the current proposal
     if (!creationData) continue;
-    const primaryMetadataCid = fromHex(creationData.primaryMetadata as Hex, "string");
-    const secondaryMetadataCid = fromHex(creationData.secondaryMetadata as Hex, "string");
+    const primaryMetadataCid = fromHex(proposalData.primaryMetadata as Hex, "string");
+    const secondaryMetadataCid = fromHex(proposalData.secondaryMetadata as Hex, "string");
 
     //TODO: Use IPFS hash from proposalData instead of logs
     const primaryMetadata: PrimaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
-    const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
+    const secondaryMetadata = secondaryMetadataCid
+      ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
+      : undefined;
+
+    console.log("primary metadata", primaryMetadata, secondaryMetadata);
+
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
+
+    console.log("snapshotID", snapshotId);
 
     const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 
     // get resources
-    const resources = primaryMetadata.resources.map((resource) => ({
+    const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).map((resource) => ({
       name: resource.name,
       link: resource.url,
     }));
 
+    console.log("resources", resources);
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
       pip,
@@ -346,12 +351,16 @@ type ProposalData = {
   executed: boolean;
 
   // new multisig data
+  primaryMetadata: string;
+  secondaryMetadata: string | undefined;
   firstDelayStartBlock: bigint | null;
   confirmations: number;
 };
 
 function decodeProposalResultData(data?: Array<any>): ProposalData | null {
   if (!data?.length && data?.length != 9) return null;
+
+  console.log("Proposal DATA", data);
 
   return {
     executed: data[0] as boolean,
@@ -362,6 +371,8 @@ function decodeProposalResultData(data?: Array<any>): ProposalData | null {
 
     // new multisig data
     confirmations: data[5] as number,
+    primaryMetadata: data[6] as string,
+    secondaryMetadata: data[7] as string,
     firstDelayStartBlock: data[9] as bigint,
   };
 }

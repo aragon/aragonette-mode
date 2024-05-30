@@ -28,8 +28,10 @@ export type PrimaryMetadata = {
 };
 
 export type SecondaryMetadata = {
-  name: string;
-  url: string;
+  resources: Array<{
+    name: string;
+    url: string;
+  }>;
 };
 
 export type ProposalBindings = {
