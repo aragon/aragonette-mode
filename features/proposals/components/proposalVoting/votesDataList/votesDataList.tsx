@@ -1,13 +1,14 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { type ProposalStages } from "@/features/proposals";
 import { proposalVotes } from "@/features/proposals/services/proposal";
+import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, type DataListState } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { VotesDataListItemSkeleton } from "./votesDataListItemSkeleton";
-import { VotesDataListItemStructure } from "./votesDataListItemStructure";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { isAddressEqual } from "viem";
 import { useAccount } from "wagmi";
+import { VotesDataListItemSkeleton } from "./votesDataListItemSkeleton";
+import { VotesDataListItemStructure } from "./votesDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 6;
 
@@ -20,18 +21,30 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
   const { proposalId, stageTitle: stage } = props;
   const { address } = useAccount();
 
-  const { data, isError, isFetchingNextPage, isLoading, refetch, fetchNextPage } = useInfiniteQuery({
+  const {
+    data,
+    isError,
+    isLoading,
+    isRefetching,
+    isRefetchError,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    refetch,
+    fetchNextPage,
+  } = useInfiniteQuery({
     ...proposalVotes({ proposalId, stage: stage as ProposalStages }),
+    placeholderData: keepPreviousData,
   });
 
-  let dataListState: DataListState = "idle";
-  if (isLoading) {
-    dataListState = "initialLoading";
-  } else if (isError) {
-    dataListState = "error";
-  } else if (isFetchingNextPage) {
-    dataListState = "fetchingNextPage";
-  }
+  const loading = isLoading || (isError && isRefetching);
+  const error = isError && !isRefetchError && !isFetchNextPageError;
+  const [dataListState, setDataListState] = useState<DataListState>(() =>
+    generateDataListState(loading, error, isFetchingNextPage)
+  );
+
+  useEffect(() => {
+    setDataListState(generateDataListState(loading, isError, isFetchingNextPage));
+  }, [isError, isFetchingNextPage, loading]);
 
   const totalVotes = data?.pagination?.total;
   const showPagination = (totalVotes ?? 0) > DEFAULT_PAGE_SIZE;
@@ -47,7 +60,7 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
   };
 
   const emptyState = {
-    heading: "No votes found",
+    heading: "No votes cast",
   };
 
   const errorState = {
@@ -75,14 +88,13 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
         emptyFilteredState={emptyFilteredState}
       >
         {data?.votes?.map(({ id, choice, ...otherProps }) => (
-          // TODO: update with router agnostic ODS DataListItem
-          <Link legacyBehavior={true} key={id} href={MemberProfile.getPath(otherProps.address)} passHref={true}>
-            <VotesDataListItemStructure
-              {...otherProps}
-              variant={choice}
-              connectedAccount={address && isAddressEqual(address, otherProps.address)}
-            />
-          </Link>
+          <VotesDataListItemStructure
+            {...otherProps}
+            variant={choice}
+            connectedAccount={address && isAddressEqual(address, otherProps.address)}
+            key={id}
+            href={MemberProfile.getPath(otherProps.address)}
+          />
         ))}
       </DataList.Container>
       {showPagination && <DataList.Pagination />}

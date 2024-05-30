@@ -7,7 +7,7 @@ export type ProposalStatusMessage = ODSProposalStatus | "Last Call" | "Continuou
 export enum ProposalStages {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
-  COMMUNITY_VOTING = "vePOL Community Voting",
+  COMMUNITY_VOTING = "gPOL Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
 }
 
@@ -105,6 +105,17 @@ export interface IProposalVote {
 export interface IVoted {
   address: Address;
   hasVoted: boolean;
+}
+
+export interface ICanVote {
+  address: Address;
+  canVote: boolean;
+  vp: number;
+}
+
+export interface IVotingPower {
+  address: Address;
+  vp: number;
 }
 
 export enum Votes {

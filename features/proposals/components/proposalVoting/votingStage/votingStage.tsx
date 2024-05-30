@@ -6,15 +6,11 @@ import dayjs from "dayjs";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { type ProposalStages } from "../../../services";
 import { VotesDataList } from "../votesDataList";
-import {
-  VotingBreakdown,
-  type IBreakdownMajorityVotingResult,
-  type ProposalType,
-  type VotingCta,
-} from "../votingBreakdown";
+import { VotingBreakdown, type IBreakdownMajorityVotingResult, type ProposalType } from "../votingBreakdown";
 import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
 import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
+import { type VotingCta } from "../votingBreakdown/types";
 
 export interface IVotingStageDetails {
   censusBlock: number;

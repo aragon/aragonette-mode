@@ -426,6 +426,66 @@ const getApproveLogs = async function (
   return logs;
 };
 
+export const getMultisigVotingPower = async function (
+  chain: number,
+  contractAddress: Address,
+  address: string,
+  proposalId?: string,
+  confirm?: boolean
+): Promise<number> {
+  if (!proposalId) {
+    return getMultisigIsMember(chain, contractAddress, address).then((canVote) => (canVote ? 1 : 0));
+  } else {
+    if (confirm) {
+      //TODO: Use getCanConfirm
+      return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
+    }
+    return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
+  }
+};
+
+export const getMultisigCanApprove = async function (
+  chain: number,
+  contractAddress: Address,
+  proposalId: string,
+  address: string
+) {
+  return readContract(config, {
+    chainId: chain,
+    address: contractAddress,
+    abi: MultisigAbi,
+    functionName: "canApprove",
+    args: [proposalId as any, address as Address],
+  });
+};
+
+export const getMultisigIsMember = async function (chain: number, contractAddress: Address, address: string) {
+  return readContract(config, {
+    chainId: chain,
+    address: contractAddress,
+    abi: MultisigAbi,
+    functionName: "isMember",
+    args: [address as Address],
+  });
+};
+
+/*
+export const getMultisigCanConfirm = async function (
+  chain: number,
+  contractAddress: Address,
+  proposalId: string,
+  address: string
+) {
+  return readContract(config, {
+    chainId: chain,
+    address: contractAddress,
+    abi: MultisigAbi,
+    functionName: "canConfirm",
+    args: [proposalId as any, address as Address],
+  });
+};
+*/
+
 const getBlockTimestamp = async function (blockNumber: bigint) {
   return await getBlock(config, {
     chainId: PUB_CHAIN.id,

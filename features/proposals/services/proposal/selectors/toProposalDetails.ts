@@ -1,4 +1,4 @@
-import { PUB_CHAIN } from "@/constants";
+import { PUB_CHAIN, PUB_TOKEN_SYMBOL } from "@/constants";
 import { config } from "@/context/Web3Modal";
 import {
   type IBreakdownApprovalThresholdResult,
@@ -155,22 +155,22 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
               votingScores:
                 scores.length > 0
                   ? scores.map((score) => ({
-                      option: mapChoice(score.choice),
+                      option: mapBreakdownChoice(score.choice.toLowerCase()),
                       voteAmount: score.votes.toString(),
                       votePercentage: score.percentage,
-                      tokenSymbol: "vePOL",
+                      tokenSymbol: PUB_TOKEN_SYMBOL,
                     }))
                   : choices.map((choice) => ({
-                      option: mapChoice(choice),
+                      option: mapBreakdownChoice(choice),
                       voteAmount: "0",
                       votePercentage: 0,
-                      tokenSymbol: "vePOL",
+                      tokenSymbol: PUB_TOKEN_SYMBOL,
                     })),
             };
 
       const details = {
-        startDate: startDate ? dayjs.unix(Number(startDate)).utc().format("YYYY/MM/DD h:mm A [UTC]") : "",
-        endDate: endDate ? dayjs.unix(Number(endDate)).utc().format("YYYY/MM/DD h:mm A [UTC]") : "",
+        startDate: parseDate(startDate)?.utc().format("YYYY/MM/DD h:mm A [UTC]") ?? "",
+        endDate: parseDate(endDate)?.utc().format("YYYY/MM/DD h:mm A [UTC]") ?? "",
         strategy: variant === "approvalThreshold" ? "1 Address → 1 Vote" : "1 Token → 1 Vote",
         censusBlock: Number(snapshotBlock),
         options: formatChoices(choices),
@@ -225,7 +225,7 @@ function generateStages(stages: IProposalStage[]) {
  * @returns the formatted string of choices.
  */
 function formatChoices(choices: string[]) {
-  const parsedChoices = choices.map((choice) => capitalizeFirstLetter(choice));
+  const parsedChoices = choices.map((choice) => capitalizeFirstLetter(mapBreakdownChoice(choice)));
   return parsedChoices.length > 1
     ? `${parsedChoices.slice(0, -1).join(", ")} or ${parsedChoices[parsedChoices.length - 1]}`
     : parsedChoices[0] || "";
@@ -255,14 +255,14 @@ const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: s
   }
 };
 
-function mapChoice(choice: string) {
+function mapBreakdownChoice(choice: string) {
   switch (choice.toLowerCase()) {
     case "accept":
     case "approve":
-      return "Yes";
+      return "yes";
     case "reject":
     case "veto":
-      return "No";
+      return "no";
     default:
       return choice;
   }

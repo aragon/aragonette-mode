@@ -18,10 +18,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     for (const stage of proposal.stages) {
       //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
-      if (stage.voting) {
-        const voting = await buildVotingResponse(stage);
-        stage.voting = voting;
-      }
+      const voting = await buildVotingResponse(stage);
+      stage.voting = voting;
     }
 
     res.status(200).json(proposal);

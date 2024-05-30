@@ -1,4 +1,6 @@
 import { ProposalDetails } from "@/components/nav/routes";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { generateDataListState } from "@/utils/query";
 import {
   DataList,
   IconType,
@@ -6,28 +8,44 @@ import {
   ProposalDataListItemSkeleton,
   type DataListState,
 } from "@aragon/ods";
-import { keepPreviousData, useInfiniteQuery, useQueries } from "@tanstack/react-query";
-import Link from "next/link";
+import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
+import { generateSortOptions, sortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 6;
+const SEARCH_DEBOUNCE_MILLS = 500;
 
 export const ProposalDataList: React.FC = () => {
   const { address } = useAccount();
 
+  const [activeSort, setActiveSort] = useState<string>();
+  const [searchValue, setSearchValue] = useState<string>();
+  const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
+    searchValue?.trim()?.toLowerCase(),
+    {
+      delay: SEARCH_DEBOUNCE_MILLS,
+    }
+  );
+
   const {
     data: proposalsQueryData,
     isError,
-    isFetchingNextPage,
     isLoading,
+    isFetching,
+    isRefetching,
+    isRefetchError,
+    isFetchingNextPage,
+    isFetchNextPageError,
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    ...proposalList(),
-    placeholderData: keepPreviousData,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    ...proposalList({
+      limit: DEFAULT_PAGE_SIZE,
+      ...(activeSort ? generateSortOptions(activeSort) : {}),
+      ...(debouncedQuery ? { search: debouncedQuery } : {}),
+    }),
   });
 
   const votedData = useQueries({
@@ -35,19 +53,38 @@ export const ProposalDataList: React.FC = () => {
       proposalsQueryData && !!address
         ? proposalsQueryData.proposals.map(({ result, id: proposalId }) => {
             const stage = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
-            return { ...voted({ proposalId, stage, address }), enabled: stage !== ProposalStages.DRAFT };
+            return {
+              ...voted({ proposalId, stage, address }),
+              enabled: stage !== ProposalStages.DRAFT && !!result,
+            };
           })
         : [],
   });
 
-  let dataListState: DataListState = "idle";
-  if (isLoading) {
-    dataListState = "initialLoading";
-  } else if (isError) {
-    dataListState = "error";
-  } else if (isFetchingNextPage) {
-    dataListState = "fetchingNextPage";
-  }
+  const isFiltered = searchValue != null && searchValue.trim().length > 0;
+  const loading = isLoading || (isError && isRefetching);
+  const error = isError && !isRefetchError && !isFetchNextPageError;
+  const [dataListState, setDataListState] = useState<DataListState>(() =>
+    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+  );
+
+  useEffect(() => {
+    setDataListState(
+      generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+    );
+  }, [isError, isFetching, isFetchingNextPage, isFiltered, loading, isRefetching]);
+
+  useEffect(() => {
+    if (!!debouncedQuery || !!activeSort) {
+      setDataListState("loading");
+    }
+  }, [debouncedQuery, activeSort]);
+
+  const resetFilters = () => {
+    setSearchValue("");
+    setDebouncedQuery("");
+    setActiveSort("");
+  };
 
   const totalProposals = proposalsQueryData?.pagination?.total;
   const entityLabel = totalProposals === 1 ? "Proposal" : "Proposals";
@@ -58,6 +95,7 @@ export const ProposalDataList: React.FC = () => {
     secondaryButton: {
       label: "Reset all filters",
       iconLeft: IconType.RELOAD,
+      onclick: () => resetFilters(),
     },
   };
 
@@ -73,7 +111,7 @@ export const ProposalDataList: React.FC = () => {
 
   const errorState = {
     heading: "Error loading proposals",
-    description: "There was an error loading the proposals. Try again!",
+    description: "There was an error loading the proposals. Please try again!",
     secondaryButton: {
       label: "Reload proposals",
       iconLeft: IconType.RELOAD,
@@ -89,6 +127,14 @@ export const ProposalDataList: React.FC = () => {
       state={dataListState}
       onLoadMore={fetchNextPage}
     >
+      <DataList.Filter
+        onSearchValueChange={setSearchValue}
+        searchValue={searchValue}
+        placeholder="Search by title, proposal ID or publisher"
+        onSortChange={setActiveSort}
+        activeSort={activeSort}
+        sortItems={sortItems}
+      />
       <DataList.Container
         SkeletonElement={ProposalDataListItemSkeleton}
         errorState={errorState}
@@ -96,13 +142,15 @@ export const ProposalDataList: React.FC = () => {
         emptyFilteredState={emptyFilteredState}
       >
         {proposalsQueryData?.proposals?.map((proposal, index) => (
-          // TODO: update with router agnostic ODS DataListItem
-          <Link legacyBehavior={true} key={proposal.id} href={ProposalDetails.getPath(proposal.id)} passHref={true}>
-            <ProposalDataListItem.Structure {...proposal} voted={votedData[index]?.data} />
-          </Link>
+          <ProposalDataListItem.Structure
+            {...proposal}
+            voted={votedData[index]?.data}
+            href={ProposalDetails.getPath(proposal.id)}
+            key={proposal.id}
+          />
         ))}
       </DataList.Container>
-      <DataList.Pagination />
+      {(totalProposals ?? 0) > DEFAULT_PAGE_SIZE && <DataList.Pagination />}
     </DataList.Root>
   );
 };

@@ -1,14 +1,14 @@
-import { PUB_CHAIN, PUB_MULTISIG_ADDRESS } from "@/constants";
+import { PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { type IProposalVote } from "@/features/proposals";
 import { type Vote } from "@/features/proposals/models/proposals";
 import VercelCache from "@/services/cache/VercelCache";
-import { printStageParam } from "@/utils/api-utils";
 import { type Address } from "viem";
 import { ProposalStages } from "../../services";
 import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
+import { getMultisigVotingPower } from "../multisig/utils";
 import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
-import { getSnapshotVotesData } from "../snapshot/votes";
+import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {
@@ -53,6 +53,27 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
   }
 }
 
+export async function getVotingPower(stage: ProposalStages, address: string, providerId?: string): Promise<number> {
+  switch (stage) {
+    case ProposalStages.DRAFT: {
+      return 0;
+    }
+    case ProposalStages.COUNCIL_APPROVAL: {
+      return getMultisigVotingPower(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, address, providerId, false);
+    }
+    case ProposalStages.COMMUNITY_VOTING: {
+      return getSnapshotVotingPower({
+        space: SNAPSHOT_SPACE,
+        voter: address,
+        providerId,
+      });
+    }
+    case ProposalStages.COUNCIL_CONFIRMATION: {
+      return getMultisigVotingPower(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, address, providerId, true);
+    }
+  }
+}
+
 const parseVotesData = (data: Vote[]): IProposalVote[] => {
   return data.map((vote) => {
     return {
@@ -71,28 +92,10 @@ export async function buildVotesResponse(providerId: string, proposalStage: Prop
   return parseVotesData(proposalVotes);
 }
 
-export async function getCachedVotes(proposalId: string, stageEnum: ProposalStages): Promise<IProposalVote[]> {
-  const cache = new VercelCache();
-
-  const proposal = await proposalRepository.getProposalById(proposalId);
-
-  if (!proposal) {
-    throw new Error("Proposal not found");
-  }
-
-  const stage = proposal.stages.find((s) => s.id === `${proposal.id}-${stageEnum}`);
-
-  if (!stage) {
-    throw new Error("Stage not found");
-  }
-
-  let votes: IProposalVote[] = [];
-
-  if (stage.voting) {
-    votes = await buildVotesResponse(stage.voting.providerId, stage.type);
-
-    // TODO: Save to database
-  }
-
-  return votes;
+export async function buildVotingPowerResponse(
+  stage: ProposalStages,
+  address: string,
+  proposalId?: string
+): Promise<number> {
+  return getVotingPower(stage, address, proposalId);
 }

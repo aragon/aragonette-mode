@@ -2,17 +2,11 @@ import { PUB_API_BASE_URL } from "@/constants";
 import { printStageParam } from "@/utils/api-utils";
 import { type IPaginatedResponse } from "@/utils/types";
 import { type IProposal, type IProposalVote, type IVoted } from "./domain";
-import type {
-  IFetchProposalListParams,
-  IFetchProposalParams,
-  IFetchVotedParams,
-  IFetchVotesParams,
-  IVoteParams,
-} from "./params";
+import type { IFetchProposalListParams, IFetchProposalParams, IFetchVotedParams, IFetchVotesParams } from "./params";
 
 class ProposalService {
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
-    const url = `${PUB_API_BASE_URL}/proposals`;
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/proposals`, params);
     const response = await fetch(url);
     const parsed: IPaginatedResponse<IProposal> = await response.json();
     return parsed;
@@ -43,18 +37,6 @@ class ProposalService {
 
     const response = await fetch(url);
     const parsed: IPaginatedResponse<IProposalVote> = await response.json();
-    return parsed;
-  }
-
-  async castVote(params: IVoteParams) {
-    const url = `${PUB_API_BASE_URL}/vote`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(params),
-    });
-
-    const parsed = await response.json();
     return parsed;
   }
 }

@@ -1,4 +1,4 @@
-import { SNAPSHOT_SPACE } from "@/constants";
+import { SNAPSHOT_SPACE, SNAPSHOT_URL } from "@/constants";
 import {
   Button,
   DialogContent,
@@ -22,7 +22,7 @@ export const StageAdvancementDialog: React.FC<IStageAdvancementDialog> = (props)
   const [value, setValue] = useState("");
   const [isValid, setIsValid] = useState(false);
 
-  const snapshotSpaceUrl = `https://snapshot.org/#/${SNAPSHOT_SPACE}`;
+  const snapshotSpaceUrl = `${SNAPSHOT_URL}#/${SNAPSHOT_SPACE}`;
 
   const validateInput = (value: string) => {
     return value.startsWith(`${snapshotSpaceUrl}/proposal/`);
@@ -41,7 +41,7 @@ export const StageAdvancementDialog: React.FC<IStageAdvancementDialog> = (props)
       <DialogHeader title="Advance to next stage" onCloseClick={onClose} onBackClick={onClose} showBackButton={true} />
       <DialogContent className="flex flex-col gap-y-6">
         <p className="text-lg leading-normal text-neutral-500">
-          To advance the next stage called Community vePOL voting you have to create an proposal in the Polygon Snapshot
+          To advance the next stage called Community gPOL voting you have to create an proposal in the Polygon Snapshot
           Space. After creation, add the corresponding snapshot proposal link to advance the next stage.
         </p>
         <InputText
