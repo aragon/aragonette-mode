@@ -36,8 +36,9 @@ export const GITHUB_TRANSPARENCY_REPORTS_PATH = process.env.GITHUB_TRANSPARENCY_
 
 // Snapshot
 export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/graphql";
-export const SNAPSHOT_SPACE = process.env.SNAPSHOT_SPACE ?? "test-ens.eth";
+export const SNAPSHOT_SPACE = process.env.NEXT_PUBLIC_SNAPSHOT_SPACE ?? "test-ens.eth";
 export const SNAPSHOT_URL = "https://testnet.snapshot.org/";
+export const SNAPSHOT_TEST_HUB = "https://testnet.hub.snapshot.org";
 
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";
