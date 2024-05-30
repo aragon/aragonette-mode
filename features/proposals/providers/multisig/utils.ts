@@ -1,22 +1,26 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
-import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
-import { type VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
+import { config } from "@/context/Web3Modal";
+import { type ProposalStage, type Vote, type VotingData } from "@/features/proposals/models/proposals";
+import {
+  type ApprovedLogResponse,
+  type ConfirmedLogResponse,
+  type VotesData,
+} from "@/features/proposals/providers/multisig/types";
 import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
-import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
 import { fetchJsonFromIpfs } from "@/utils/ipfs";
 import { type Action } from "@/utils/types";
 import { getBlock, getPublicClient, readContract } from "@wagmi/core";
+import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 import {
+  type MultiSigProposalVotingData,
+  type MultisigProposal,
   type PrimaryMetadata,
   type ProposalCreatedLogResponse,
   type ProposalParameters,
-  type MultisigProposal,
-  type MultiSigProposalVotingData,
   type SecondaryMetadata,
 } from "./types";
-import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 
 const getNumProposals = async function (chain: number, contractAddress: Address) {
   return await readContract(config, {
@@ -243,11 +247,7 @@ export const requestProposalsData = async function (
       ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
       : undefined;
 
-    console.log("primary metadata", primaryMetadata, secondaryMetadata);
-
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
-
-    console.log("snapshotID", snapshotId);
 
     const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 
@@ -257,7 +257,6 @@ export const requestProposalsData = async function (
       link: resource.url,
     }));
 
-    console.log("resources", resources);
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
       pip,
@@ -360,8 +359,6 @@ type ProposalData = {
 function decodeProposalResultData(data?: Array<any>): ProposalData | null {
   if (!data?.length && data?.length != 9) return null;
 
-  console.log("Proposal DATA", data);
-
   return {
     executed: data[0] as boolean,
     approvals: data[1] as number,
@@ -429,6 +426,46 @@ const getApproveLogs = async function (
   return logs;
 };
 
+const getConfirmationLogs = async function (
+  contractAddress: Address,
+  proposalId: bigint,
+  snapshotBlock: bigint,
+  endDate: bigint
+) {
+  const publicClient = getPublicClient(config);
+
+  const ConfirmationEvent = getAbiItem({
+    abi: MultisigAbi,
+    name: "Confirmed",
+  });
+
+  const logs = await publicClient
+    ?.getLogs({
+      address: contractAddress,
+      event: ConfirmationEvent,
+      args: {
+        proposalId: proposalId.toString(),
+      } as any,
+      fromBlock: snapshotBlock,
+      toBlock: endDate,
+    })
+    .then((logs) => {
+      if (!logs?.length) return [];
+      return logs.map((log) => {
+        const tx = log.transactionHash;
+        const block = log.blockNumber;
+
+        const logData: ConfirmedLogResponse = log.args as ConfirmedLogResponse;
+        return { logData, tx, block };
+      });
+    })
+    .catch((err) => {
+      logger.error("Could not fetch the proposal details", err);
+    });
+
+  return logs;
+};
+
 export const getMultisigVotingPower = async function (
   chain: number,
   contractAddress: Address,
@@ -440,8 +477,7 @@ export const getMultisigVotingPower = async function (
     return getMultisigIsMember(chain, contractAddress, address).then((canVote) => (canVote ? 1 : 0));
   } else {
     if (confirm) {
-      //TODO: Use getCanConfirm
-      return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
+      return getMultisigCanConfirm(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
     }
     return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
   }
@@ -472,7 +508,6 @@ export const getMultisigIsMember = async function (chain: number, contractAddres
   });
 };
 
-/*
 export const getMultisigCanConfirm = async function (
   chain: number,
   contractAddress: Address,
@@ -487,7 +522,6 @@ export const getMultisigCanConfirm = async function (
     args: [proposalId as any, address as Address],
   });
 };
-*/
 
 const getBlockTimestamp = async function (blockNumber: bigint) {
   return await getBlock(config, {
@@ -496,29 +530,62 @@ const getBlockTimestamp = async function (blockNumber: bigint) {
   }).then((block) => block.timestamp.toString());
 };
 
-export const requestVotesData = async function (chain: number, contractAddress: Address, providerId: bigint) {
+export const requestApprovalData = async function (
+  chain: number,
+  contractAddress: Address,
+  providerId: bigint
+): Promise<VotesData[]> {
   const proposalData = await getProposalData(chain, contractAddress, providerId);
 
-  if (!proposalData) return [] as VotesData[];
+  if (!proposalData) return [];
 
-  const logs = await getApproveLogs(
+  const approvalLogs = await getApproveLogs(
     contractAddress,
     providerId,
     proposalData.parameters.snapshotBlock,
     proposalData.parameters.endDate
   );
 
-  if (!logs) return [] as VotesData[];
+  if (!approvalLogs) return [];
 
   const logsWithTimestamp = await Promise.all(
-    logs.map(async (log) => {
+    approvalLogs.map(async (log) => {
       const blockTimestamp = await getBlockTimestamp(log.block);
-      return { ...log, blockTimestamp };
+      return { ...log, blockTimestamp } as VotesData;
     })
   );
 
   return logsWithTimestamp;
 };
+
+export const requestConfirmationData = async function (
+  chain: number,
+  contractAddress: Address,
+  providerId: bigint
+): Promise<VotesData[]> {
+  const proposalData = await getProposalData(chain, contractAddress, providerId);
+
+  if (!proposalData?.firstDelayStartBlock || proposalData.firstDelayStartBlock === BigInt(0)) return [];
+
+  const confirmationLogs = await getConfirmationLogs(
+    contractAddress,
+    providerId,
+    proposalData.firstDelayStartBlock,
+    proposalData.parameters.endDate
+  );
+
+  if (!confirmationLogs) return [];
+
+  const logsWithTimestamp = await Promise.all(
+    confirmationLogs.map(async (log) => {
+      const blockTimestamp = await getBlockTimestamp(log.block);
+      return { ...log, blockTimestamp } as VotesData;
+    })
+  );
+
+  return logsWithTimestamp;
+};
+
 interface IComputeApprovalStatus {
   startDate: bigint;
   endDate: bigint;

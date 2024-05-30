@@ -105,6 +105,11 @@ export type ApprovedLogResponse = {
   approver: Address;
 };
 
+export type ConfirmedLogResponse = {
+  proposalId: bigint;
+  approver: Address;
+};
+
 export type VotesData = {
   logData: ApprovedLogResponse;
   tx: string;
