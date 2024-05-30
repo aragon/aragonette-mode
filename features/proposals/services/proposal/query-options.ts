@@ -1,5 +1,6 @@
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import {
+  type IFetchCanVoteParams,
   type IFetchProposalListParams,
   type IFetchProposalParams,
   type IFetchVotedParams,
@@ -16,6 +17,8 @@ export const proposalKeys = {
   detail: (params: IFetchProposalParams) => [...proposalKeys.all, "details", params] as const,
   voted: (params: IFetchVotedParams) =>
     [...proposalKeys.detail({ proposalId: params.proposalId }), "voted", params] as const,
+  canVote: (params: IFetchCanVoteParams) =>
+    [...proposalKeys.detail({ proposalId: params.proposalId }), "canVote", params] as const,
   votes: (params: IFetchVotesParams) =>
     [...proposalKeys.detail({ proposalId: params.proposalId }), "votes", params] as const,
 };
@@ -66,8 +69,18 @@ export function voted(params: IFetchVotedParams) {
   const enabled = areAllPropertiesDefined(params);
   return queryOptions({
     queryKey: proposalKeys.voted(params),
-    queryFn: () => proposalService.voted(params),
+    queryFn: () => proposalService.fetchVoted(params),
     select: (data) => !!data.hasVoted,
+    enabled,
+  });
+}
+
+export function canVote(params: IFetchCanVoteParams) {
+  const enabled = areAllPropertiesDefined(params);
+  return queryOptions({
+    queryKey: proposalKeys.canVote(params),
+    queryFn: () => proposalService.fetchCanVote(params),
+    select: (data) => data.canVote,
     enabled,
   });
 }

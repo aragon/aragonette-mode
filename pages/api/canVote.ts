@@ -1,10 +1,10 @@
 import { type ICanVote } from "@/features/proposals";
+import { buildVotingPowerResponse } from "@/features/proposals/providers/utils/votes-builder";
+import proposalRepository from "@/features/proposals/repository/proposal";
 import { checkParam, parseStageParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
-import { buildVotingPowerResponse } from "@/features/proposals/providers/utils/votes-builder";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
-import proposalRepository from "@/features/proposals/repository/proposal";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ICanVote | IError>) {
   const { proposalId, stage, address } = req.query;
@@ -37,7 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     const vp = await buildVotingPowerResponse(stageEnum, parsedAddress, proposalStage.voting.providerId);
-
     const canVote = vp > 0;
 
     return res.status(200).json({ address: parsedAddress, canVote, vp });
