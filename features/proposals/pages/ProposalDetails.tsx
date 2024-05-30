@@ -37,9 +37,6 @@ export default function ProposalDetails() {
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
   const [communityProposalId, setCommunityProposalId] = useState<string>("");
 
-  // console.log(toHex("ipfs://bafkreifbmpgxajf34ebzd4jpct3mwts5l3e3wvycbw2yqtinl6wc5xtzi4"));
-  // console.log(dayjs.unix(1717241760));
-
   // data queries
   const proposalId = router.query.id as string;
   const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
@@ -99,7 +96,9 @@ export default function ProposalDetails() {
   }
 
   function getConfirmationLabel() {
-    if (userHasVoted) {
+    if (isConfirming) {
+      return "Confirming...";
+    } else if (userHasVoted) {
       return "Confirmed";
     } else if (!isConnected) {
       return "Login to confirm";

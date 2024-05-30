@@ -137,8 +137,6 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
 
     const status = getVotingStatus(stage.status, stage.voting?.startDate, stage.voting?.endDate);
 
-    // prepare active & past voting stage data
-    // TODO: rely on stage dates instead
     if (stage.voting) {
       const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
 
