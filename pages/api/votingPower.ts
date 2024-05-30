@@ -1,4 +1,4 @@
-import { type ICanVote } from "@/features/proposals";
+import { type IVotingPower } from "@/features/proposals";
 import { checkParam, parseStageParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
 import { buildVotingPowerResponse } from "@/features/proposals/providers/utils/votes-builder";
@@ -6,7 +6,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
 import proposalRepository from "@/features/proposals/repository/proposal";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<ICanVote | IError>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<IVotingPower | IError>) {
   const { proposalId, stage, address } = req.query;
 
   try {
@@ -36,11 +36,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       return res.status(404).json({ error: { message: "Voting not found" } });
     }
 
-    const vp = await buildVotingPowerResponse(stageEnum, parsedAddress, proposalStage.voting.providerId);
+    const vp = await buildVotingPowerResponse(stageEnum, parsedAddress);
 
-    const canVote = vp > 0;
-
-    return res.status(200).json({ address: parsedAddress, canVote, vp });
+    return res.status(200).json({ address: parsedAddress, vp });
   } catch (error: any) {
     res.status(400).json({ error: { message: error.message } });
   }

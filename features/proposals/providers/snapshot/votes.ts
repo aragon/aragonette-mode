@@ -23,10 +23,10 @@ export const getSnapshotVotesData: IProposalVotesProvider = async function (para
 
 export const getSnapshotVotingPower: IProposalVotingPowerProvider = async function (params: {
   space: string;
-  providerId: string;
+  providerId?: string;
   voter: string;
 }) {
-  return requestProposalData(snapshotVotingPowerQuery(params.space, params.providerId, params.voter)).then(
+  return requestProposalData(snapshotVotingPowerQuery(params.space, params.voter, params.providerId)).then(
     (res) => (res.data.vp as SnapshotVotingPowerData).vp
   );
 };
