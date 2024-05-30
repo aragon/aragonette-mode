@@ -6,7 +6,7 @@ import VercelCache from "@/services/cache/VercelCache";
 import { type Address } from "viem";
 import { ProposalStages } from "../../services";
 import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
-import { getCanApprove } from "../multisig/utils";
+import { getMultisigVotingPower } from "../multisig/utils";
 import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes";
 
@@ -53,28 +53,23 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
   }
 }
 
-export async function getVotingPower(providerId: string, stage: ProposalStages, address: string): Promise<number> {
+export async function getVotingPower(stage: ProposalStages, address: string, providerId?: string): Promise<number> {
   switch (stage) {
     case ProposalStages.DRAFT: {
       return 0;
     }
     case ProposalStages.COUNCIL_APPROVAL: {
-      return getCanApprove(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) =>
-        canVote ? 1 : 0
-      );
+      return getMultisigVotingPower(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, address, providerId, false);
     }
     case ProposalStages.COMMUNITY_VOTING: {
       return getSnapshotVotingPower({
         space: SNAPSHOT_SPACE,
-        providerId,
         voter: address,
+        providerId,
       });
     }
     case ProposalStages.COUNCIL_CONFIRMATION: {
-      //TODO: Use getCanConfirm
-      return getCanApprove(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, providerId, address).then((canVote) =>
-        canVote ? 1 : 0
-      );
+      return getMultisigVotingPower(PUB_CHAIN.id, PUB_MULTISIG_ADDRESS, address, providerId, true);
     }
   }
 }
@@ -98,9 +93,9 @@ export async function buildVotesResponse(providerId: string, proposalStage: Prop
 }
 
 export async function buildVotingPowerResponse(
-  proposalId: string,
   stage: ProposalStages,
-  address: string
+  address: string,
+  proposalId?: string
 ): Promise<number> {
-  return getVotingPower(proposalId, stage, address);
+  return getVotingPower(stage, address, proposalId);
 }

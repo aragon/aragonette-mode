@@ -62,10 +62,16 @@ export const snapshotVotesQuery = (proposal: string) => `
   }
 `;
 
-export const snapshotVotingPowerQuery = (space: string, proposal: string, voter: string) => `
-  query VotingPower {
-    vp(space: "${space}", proposal: "${proposal}", voter: "${voter}") {
-      vp
-    }
-  }
-`;
+export const snapshotVotingPowerQuery = (space: string, voter: string, proposal?: string) =>
+  proposal
+    ? `
+    query VotingPower {
+      vp(space: "${space}", proposal: "${proposal}", voter: "${voter}") {
+        vp
+      }
+    }`
+    : `query VotingPower {
+      vp(space: "${space}", voter: "${voter}") {
+        vp
+      }
+    }`;

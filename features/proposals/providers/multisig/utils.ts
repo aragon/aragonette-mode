@@ -420,7 +420,25 @@ const getApproveLogs = async function (
   return logs;
 };
 
-export const getCanApprove = async function (
+export const getMultisigVotingPower = async function (
+  chain: number,
+  contractAddress: Address,
+  address: string,
+  proposalId?: string,
+  confirm?: boolean
+): Promise<number> {
+  if (!proposalId) {
+    return getMultisigIsMember(chain, contractAddress, address).then((canVote) => (canVote ? 1 : 0));
+  } else {
+    if (confirm) {
+      //TODO: Use getCanConfirm
+      return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
+    }
+    return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
+  }
+};
+
+export const getMultisigCanApprove = async function (
   chain: number,
   contractAddress: Address,
   proposalId: string,
@@ -435,8 +453,18 @@ export const getCanApprove = async function (
   });
 };
 
+export const getMultisigIsMember = async function (chain: number, contractAddress: Address, address: string) {
+  return readContract(config, {
+    chainId: chain,
+    address: contractAddress,
+    abi: MultisigAbi,
+    functionName: "isMember",
+    args: [address as Address],
+  });
+};
+
 /*
-export const getCanConfirm = async function (
+export const getMultisigCanConfirm = async function (
   chain: number,
   contractAddress: Address,
   proposalId: string,

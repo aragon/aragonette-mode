@@ -89,6 +89,11 @@ export interface ICanVote {
   vp: number;
 }
 
+export interface IVotingPower {
+  address: Address;
+  vp: number;
+}
+
 export enum Votes {
   YES = "Yes",
   NO = "No",
