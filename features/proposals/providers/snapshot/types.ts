@@ -3,6 +3,7 @@ export type SnapshotProposalData = {
   title: string;
   body: string;
   choices: string[];
+  created: number;
   start: number;
   end: number;
   quorum: number;

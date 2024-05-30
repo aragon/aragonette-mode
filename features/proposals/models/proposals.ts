@@ -22,8 +22,8 @@ export type VotingScores = {
 
 export type VotingData = {
   providerId: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   choices: string[];
   snapshotBlock: string;
   quorum: number;
@@ -42,7 +42,7 @@ export type ProposalStage = {
   transparency_report?: string;
   status: ProposalStatus;
   isEmergency?: boolean;
-  createdAt?: string;
+  createdAt?: Date;
   creator: ICreator[];
   resources: IProposalResource[];
   type?: string;

@@ -16,9 +16,9 @@ model Stage {
   id             String    @id
   type           String @default("Stage")
   status         String
-  createdAt      String? // TODO: DateTime?
-  startTimestamp String? // TODO: DateTime?
-  endTimestamp   String? // TODO: DateTime?
+  createdAt      String?
+  startTimestamp String?
+  endTimestamp   String?
   creator        String[]
   resources      String[]
   proposal       Proposal  @relation(fields: [proposalId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -33,7 +33,7 @@ model Proposal {
   body               String?
   transparencyReport String?
   status             String
-  createdAt          String // TODO: DateTime?
+  createdAt          String?
   isEmergency        Boolean
   currentStage       String
   creators           String[]

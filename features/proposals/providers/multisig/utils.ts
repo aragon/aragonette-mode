@@ -105,10 +105,14 @@ const getProposalBindings = async function (metadata: PrimaryMetadata, secondary
 export function parseVotingData(voting?: MultiSigProposalVotingData): VotingData | undefined {
   if (!voting) return;
 
+  // Parse dates
+  const startDate = new Date(parseInt(voting.startDate) * 1000);
+  const endDate = new Date(parseInt(voting.endDate) * 1000);
+
   return {
     providerId: voting.providerId,
-    startDate: voting.startDate,
-    endDate: voting.endDate,
+    startDate,
+    endDate,
     quorum: voting.quorum,
     snapshotBlock: voting.snapshotBlock,
     choices: ["approve"],
@@ -152,13 +156,15 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       },
     ];
 
+    const createdAt = new Date(parseInt(proposal.createdAt) * 1000);
+
     return {
       stageType: proposal.stageType,
       title: proposal.title,
       description: proposal.summary,
       body: proposal.description,
       status: proposal.status,
-      createdAt: proposal.createdAt,
+      createdAt,
       isEmergency: proposal.isEmergency,
       resources: proposal.resources ?? [],
       creator,

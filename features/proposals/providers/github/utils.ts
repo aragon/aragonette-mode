@@ -139,6 +139,9 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const isMainProposal = includedPIPs.length > 0;
   const pip = link.split("/").pop()?.split(".").shift() ?? "";
 
+  const isDate = !isNaN(Date.parse(values[7]));
+  const createdAt = isDate ? new Date(values[7]) : undefined;
+
   return {
     stageType: ProposalStages.DRAFT,
     pip,
@@ -148,7 +151,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     creator: parsedCreators,
     status: parseStatus(values[5]),
     type: values[6] ?? "Informational",
-    createdAt: values[7],
+    createdAt,
     resources,
     bindings: [],
     actions: [],
