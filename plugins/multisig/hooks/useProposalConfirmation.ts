@@ -56,8 +56,8 @@ export function useProposalConfirmation(proposalId = "", onSuccess?: () => void)
       voteWrite({
         abi: MultisigAbi,
         address: PUB_MULTISIG_ADDRESS,
-        functionName: "approve", // TODO: switch with confirm
-        args: [BigInt(proposalId), false],
+        functionName: "confirm",
+        args: [BigInt(proposalId)],
       });
     }
   };
