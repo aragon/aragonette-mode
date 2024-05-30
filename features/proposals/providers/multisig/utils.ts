@@ -420,6 +420,38 @@ const getApproveLogs = async function (
   return logs;
 };
 
+export const getCanApprove = async function (
+  chain: number,
+  contractAddress: Address,
+  proposalId: string,
+  address: string
+) {
+  return readContract(config, {
+    chainId: chain,
+    address: contractAddress,
+    abi: MultisigAbi,
+    functionName: "canApprove",
+    args: [proposalId as any, address as Address],
+  });
+};
+
+/*
+export const getCanConfirm = async function (
+  chain: number,
+  contractAddress: Address,
+  proposalId: string,
+  address: string
+) {
+  return readContract(config, {
+    chainId: chain,
+    address: contractAddress,
+    abi: MultisigAbi,
+    functionName: "canConfirm",
+    args: [proposalId as any, address as Address],
+  });
+};
+*/
+
 const getBlockTimestamp = async function (blockNumber: bigint) {
   return await getBlock(config, {
     chainId: PUB_CHAIN.id,

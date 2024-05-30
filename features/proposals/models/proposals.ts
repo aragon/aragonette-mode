@@ -66,6 +66,10 @@ export interface IProposalVotesProvider {
   (params?: any): Promise<Vote[]>;
 }
 
+export interface IProposalVotingPowerProvider {
+  (params?: any): Promise<number>;
+}
+
 export interface IProposalVotingDataProvider {
   (params?: any): Promise<VotingData | undefined>;
 }

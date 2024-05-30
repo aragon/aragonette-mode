@@ -28,3 +28,7 @@ export type SnapshotVoteData = {
   vp_state: string;
   reason: string;
 };
+
+export type SnapshotVotingPowerData = {
+  vp: number;
+};

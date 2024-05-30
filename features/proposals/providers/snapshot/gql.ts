@@ -61,3 +61,11 @@ export const snapshotVotesQuery = (proposal: string) => `
     }
   }
 `;
+
+export const snapshotVotingPowerQuery = (space: string, proposal: string, voter: string) => `
+  query VotingPower {
+    vp(space: "${space}", proposal: "${proposal}", voter: "${voter}") {
+      vp
+    }
+  }
+`;
