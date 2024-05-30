@@ -173,7 +173,7 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
         endDate: parseDate(endDate)?.utc().format("YYYY/MM/DD h:mm A [UTC]") ?? "",
         strategy: variant === "approvalThreshold" ? "1 Address → 1 Vote" : "1 Token → 1 Vote",
         censusBlock: Number(snapshotBlock),
-        options: formatChoices(choices),
+        options: variant === "approvalThreshold" ? "Approve" : formatChoices(choices),
       };
 
       return {

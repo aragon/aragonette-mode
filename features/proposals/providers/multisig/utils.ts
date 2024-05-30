@@ -339,7 +339,6 @@ export const requestProposalsData = async function (
 
 // Helpers
 type ProposalData = {
-  active: boolean;
   approvals: number;
   parameters: ProposalParameters;
   actions: Array<Action>;
@@ -352,25 +351,18 @@ type ProposalData = {
 };
 
 function decodeProposalResultData(data?: Array<any>): ProposalData | null {
-  if (!data?.length || data.length != 5) return null;
+  if (!data?.length && data?.length != 9) return null;
 
   return {
-    active: data[0] as boolean,
+    executed: data[0] as boolean,
     approvals: data[1] as number,
-    parameters: {
-      // new multisig data
-      delayDuration: BigInt(1),
-      emergency: false,
-      emergencyMinApprovals: BigInt(1),
-      ...data[2],
-    } as ProposalParameters,
+    parameters: data[2] as ProposalParameters,
     actions: data[3] as Array<Action>,
     allowFailureMap: data[4] as bigint,
 
     // new multisig data
-    firstDelayStartBlock: null,
-    executed: false,
-    confirmations: 0,
+    confirmations: data[5] as number,
+    firstDelayStartBlock: data[9] as bigint,
   };
 }
 

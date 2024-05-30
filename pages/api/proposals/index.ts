@@ -1,7 +1,4 @@
 import { type IProposal } from "@/features/proposals";
-import { type IError, type IPaginatedResponse } from "@/utils/types";
-import { checkNullableParam } from "@/utils/api-utils";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { buildVotingResponse } from "@/features/proposals/providers";
 import proposalRepository, {
   parseProposalSortBy,
@@ -9,6 +6,9 @@ import proposalRepository, {
   parsedProposalStatus,
 } from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
+import { checkNullableParam } from "@/utils/api-utils";
+import { type IError, type IPaginatedResponse } from "@/utils/types";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
