@@ -26,7 +26,7 @@ export const getSnapshotVotingPower: IProposalVotingPowerProvider = async functi
   providerId: string;
   voter: string;
 }) {
-  return requestProposalData(snapshotVotingPowerQuery(params.space, params.providerId, params.voter))
-    .then((res) => res.data.vp as SnapshotVotingPowerData)
-    .then((vp) => vp.vp);
+  return requestProposalData(snapshotVotingPowerQuery(params.space, params.providerId, params.voter)).then(
+    (res) => (res.data.vp as SnapshotVotingPowerData).vp
+  );
 };

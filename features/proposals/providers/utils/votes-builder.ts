@@ -104,29 +104,3 @@ export async function buildVotingPowerResponse(
 ): Promise<number> {
   return getVotingPower(proposalId, stage, address);
 }
-
-export async function getCachedVotes(proposalId: string, stageEnum: ProposalStages): Promise<IProposalVote[]> {
-  const cache = new VercelCache();
-
-  const proposal = await proposalRepository.getProposalById(proposalId);
-
-  if (!proposal) {
-    throw new Error("Proposal not found");
-  }
-
-  const stage = proposal.stages.find((s) => s.id === `${proposal.id}-${stageEnum}`);
-
-  if (!stage) {
-    throw new Error("Stage not found");
-  }
-
-  let votes: IProposalVote[] = [];
-
-  if (stage.voting) {
-    votes = await buildVotesResponse(stage.voting.providerId, stage.type);
-
-    // TODO: Save to database
-  }
-
-  return votes;
-}
