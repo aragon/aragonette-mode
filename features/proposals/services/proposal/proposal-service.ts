@@ -1,8 +1,14 @@
 import { PUB_API_BASE_URL } from "@/constants";
 import { printStageParam } from "@/utils/api-utils";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type IProposal, type IProposalVote, type IVoted } from "./domain";
-import type { IFetchProposalListParams, IFetchProposalParams, IFetchVotedParams, IFetchVotesParams } from "./params";
+import { type ICanVote, type IProposal, type IProposalVote, type IVoted } from "./domain";
+import type {
+  IFetchCanVoteParams,
+  IFetchProposalListParams,
+  IFetchProposalParams,
+  IFetchVotedParams,
+  IFetchVotesParams,
+} from "./params";
 
 class ProposalService {
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
@@ -19,13 +25,20 @@ class ProposalService {
     return parsed;
   }
 
-  async voted(params: IFetchVotedParams): Promise<IVoted> {
+  async fetchVoted(params: IFetchVotedParams): Promise<IVoted> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/voted`, {
       ...params,
       stage: printStageParam(params.stage),
     });
     const response = await fetch(url);
     const parsed: IVoted = await response.json();
+    return parsed;
+  }
+
+  async fetchCanVote(params: IFetchCanVoteParams): Promise<ICanVote> {
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/canVote`, { ...params, stage: printStageParam(params.stage) });
+    const response = await fetch(url);
+    const parsed: ICanVote = await response.json();
     return parsed;
   }
 

@@ -20,7 +20,7 @@ export const useCastSnapshotVote = (proposal = "", onSuccess?: () => void) => {
       if (error?.message?.startsWith("User rejected the request")) {
         addAlert("Transaction rejected by the user", { type: "error", timeout: 4 * 1000 });
       } else {
-        addAlert("Could not approve the proposal", { type: "error" });
+        addAlert("Could not vote on the proposal", { type: "error" });
       }
       return;
     }
@@ -61,7 +61,7 @@ export const useCastSnapshotVote = (proposal = "", onSuccess?: () => void) => {
       onSuccess?.();
     } catch (error) {
       setIsConfirmed(false);
-      logger.error("Could not confirm the proposal", error);
+      logger.error("Could not vote on the proposal", error);
       setError(error as Error);
     } finally {
       setIsConfirming(false);

@@ -1,19 +1,25 @@
 import { type IProposalVotesProvider } from "@/features/proposals/models/proposals";
-import { requestVotesData, parseMultisigVotesData } from "./utils";
 import { type Address } from "viem";
+import { parseMultisigVotesData, requestApprovalData, requestConfirmationData } from "./utils";
 
-interface IGetMultisigVotesDataParams {
+interface IGetMultisigApprovalDataParams {
   chain: number;
   contractAddress: Address;
   providerId: bigint;
 }
 
-export const getMultisigVotesData: IProposalVotesProvider = async function (params: IGetMultisigVotesDataParams) {
-  return await requestVotesData(params.chain, params.contractAddress, params.providerId).then(parseMultisigVotesData);
+interface IGetMultisigConfirmationDataParams extends IGetMultisigApprovalDataParams {}
+
+export const getMultisigApprovalData: IProposalVotesProvider = async function (params: IGetMultisigApprovalDataParams) {
+  return await requestApprovalData(params.chain, params.contractAddress, params.providerId).then(
+    parseMultisigVotesData
+  );
 };
 
 export const getMultisigConfirmationData: IProposalVotesProvider = async function (
-  params: IGetMultisigVotesDataParams
+  params: IGetMultisigConfirmationDataParams
 ) {
-  return await requestVotesData(params.chain, params.contractAddress, params.providerId).then(parseMultisigVotesData);
+  return await requestConfirmationData(params.chain, params.contractAddress, params.providerId).then(
+    parseMultisigVotesData
+  );
 };

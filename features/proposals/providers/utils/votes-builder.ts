@@ -1,12 +1,10 @@
 import { PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
-import proposalRepository from "@/features/proposals/repository/proposal";
 import { type IProposalVote } from "@/features/proposals";
 import { type Vote } from "@/features/proposals/models/proposals";
-import VercelCache from "@/services/cache/VercelCache";
 import { type Address } from "viem";
 import { ProposalStages } from "../../services";
-import { getMultisigConfirmationData, getMultisigVotesData } from "../multisig/votes";
 import { getMultisigVotingPower } from "../multisig/utils";
+import { getMultisigApprovalData, getMultisigConfirmationData } from "../multisig/votes";
 import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes";
 
@@ -16,7 +14,7 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
       return [];
     }
     case ProposalStages.COUNCIL_APPROVAL: {
-      const multisigVotes = await getMultisigVotesData({
+      const multisigVotes = await getMultisigApprovalData({
         chain: PUB_CHAIN.id,
         contractAddress: PUB_MULTISIG_ADDRESS,
         providerId: BigInt(providerId),

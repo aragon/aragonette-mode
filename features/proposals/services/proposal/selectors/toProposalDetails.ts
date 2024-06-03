@@ -130,8 +130,6 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
 
     const status = getVotingStatus(stage.status, stage.voting?.startDate);
 
-    // prepare active & past voting stage data
-    // TODO: rely on stage dates instead
     if (stage.voting) {
       const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
 
@@ -166,7 +164,7 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
         endDate: parseDate(endDate)?.utc().format("YYYY/MM/DD h:mm A [UTC]") ?? "",
         strategy: variant === "approvalThreshold" ? "1 Address → 1 Vote" : "1 Token → 1 Vote",
         censusBlock: Number(snapshotBlock),
-        options: formatChoices(choices),
+        options: variant === "approvalThreshold" ? "Approve" : formatChoices(choices),
       };
 
       return {
