@@ -32,6 +32,7 @@ CREATE TABLE "Proposal" (
     "body" TEXT,
     "transparencyReport" TEXT,
     "status" "ProposalStatus" NOT NULL,
+    "statusMessage" TEXT,
     "createdAt" TEXT,
     "isEmergency" BOOLEAN NOT NULL,
     "currentStage" TEXT NOT NULL,

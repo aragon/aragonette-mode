@@ -89,6 +89,7 @@ export interface IProposal {
   includedPips: IProposalResource[];
   parentPip?: IProposalResource;
   status: ProposalStatus;
+  statusMessage?: string;
   createdAt?: string;
   type: string;
   isEmergency?: boolean;

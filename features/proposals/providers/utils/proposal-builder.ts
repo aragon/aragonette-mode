@@ -403,6 +403,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const stages = buildProposalStageResponse(matchedProposalStages);
     const resources = computeProposalResources(stages);
     const status = computeProposalStatus(matchedProposalStages);
+    const statusMessage = matchedProposalStages.find((stage) => stage.stageType === currentStage)?.statusMessage;
     const createdAt = computeProposalCreatedAt(matchedProposalStages)?.toISOString();
 
     const id = computeProposalId(matchedProposalStages);
@@ -428,6 +429,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       transparencyReport,
       resources,
       status,
+      statusMessage,
       isEmergency,
       createdAt,
       type,

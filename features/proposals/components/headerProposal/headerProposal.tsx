@@ -26,11 +26,13 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
         <Breadcrumbs
           links={breadcrumbs}
           tag={
-            status && {
-              label: status,
-              className: "capitalize",
-              variant: tagVariant,
-            }
+            status
+              ? {
+                  label: status,
+                  className: "capitalize",
+                  variant: tagVariant,
+                }
+              : undefined
           }
         />
         {/* Title & description */}
@@ -72,7 +74,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   );
 };
 
-const getTagVariantFromStatus = (status: ProposalStatus): TagVariant => {
+const getTagVariantFromStatus = (status: ProposalStatus | string): TagVariant => {
   //TODO: Use statusMessage?
   switch (status) {
     case ProposalStatus.ACTIVE:
@@ -83,6 +85,8 @@ const getTagVariantFromStatus = (status: ProposalStatus): TagVariant => {
     case ProposalStatus.EXPIRED:
       return "critical";
     case ProposalStatus.PENDING:
+      return "neutral";
+    default:
       return "neutral";
   }
 };

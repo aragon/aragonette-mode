@@ -15,11 +15,20 @@ import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
-import { ProposalStages, StageOrder, type IAction, type IProposal, type IProposalStage, StageStatus } from "../domain";
+import {
+  ProposalStages,
+  StageOrder,
+  type IAction,
+  type IProposal,
+  type IProposalStage,
+  StageStatus,
+  ProposalStatus,
+} from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
-export type ProposalDetail = Omit<IProposal, "actions" | "createdAt" | "stages"> & {
+export type ProposalDetail = Omit<IProposal, "status" | "actions" | "createdAt" | "stages"> & {
+  status: ProposalStatus | string;
   actions: DetailedAction[];
   stages: ITransformedStage[];
   createdAt?: string;
@@ -58,8 +67,11 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   const parsedEndDate = parseDate(endDate);
   const formattedEndDate = parsedEndDate ? getSimpleRelativeTimeFromDate(parsedEndDate) : undefined;
 
+  const status = proposal.statusMessage ?? proposal.status;
+
   return {
     ...proposal,
+    status,
     actions: transformedActions,
     stages: transformStages(proposal.stages, proposal.id),
     createdAt,
