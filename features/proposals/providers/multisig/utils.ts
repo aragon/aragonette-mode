@@ -2,7 +2,7 @@ import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
 import { type VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
-import { ProposalStages, ProposalStatus } from "@/features/proposals/services/proposal/domain";
+import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
 import { fetchJsonFromIpfs } from "@/utils/ipfs";
@@ -164,6 +164,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       description: proposal.summary,
       body: proposal.description,
       status: proposal.status,
+      overallStatus: proposal.overallStatus,
       createdAt,
       isEmergency: proposal.isEmergency,
       resources: proposal.resources ?? [],
@@ -270,7 +271,7 @@ export const requestProposalsData = async function (
     };
 
     // generate the relevant approval status based on whether proposal is an emergency
-    const status = proposalData.parameters.emergency
+    const [stageStatus, overallStatus] = proposalData.parameters.emergency
       ? computeEmergencyStatus({
           startDate: proposalData.parameters.startDate,
           endDate: proposalData.parameters.endDate,
@@ -290,7 +291,8 @@ export const requestProposalsData = async function (
     proposals.push({
       ...baseProposalData,
       stageType: ProposalStages.COUNCIL_APPROVAL,
-      status,
+      status: stageStatus,
+      overallStatus,
       voting: {
         providerId: i.toString(),
         startDate: proposalData.parameters.startDate.toString(),
@@ -309,7 +311,7 @@ export const requestProposalsData = async function (
     // generate confirmation stage if the proposal has been approved by the council
     // after the time lock period has passed
     if (lockedPeriodPassed) {
-      const confirmationStatus = computeConfirmationStatus({
+      const [confirmationStatus, overallCStatus] = computeConfirmationStatus({
         startDate: confirmationStartDate,
         endDate: proposalData.parameters.endDate,
         executed: proposalData.executed,
@@ -322,6 +324,7 @@ export const requestProposalsData = async function (
         ...baseProposalData,
         stageType: ProposalStages.COUNCIL_CONFIRMATION,
         status: confirmationStatus,
+        overallStatus: overallCStatus,
         voting: {
           providerId: i.toString(),
           startDate: confirmationStartDate.toString(),
@@ -516,6 +519,7 @@ export const requestVotesData = async function (chain: number, contractAddress: 
 
   return logsWithTimestamp;
 };
+
 interface IComputeApprovalStatus {
   startDate: bigint;
   endDate: bigint;
@@ -530,32 +534,32 @@ function computeApprovalStatus({
   executed,
   approvals,
   minApprovals,
-}: IComputeApprovalStatus): ProposalStatus {
+}: IComputeApprovalStatus): [StageStatus, ProposalStatus] {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const approvalsReached = approvals >= minApprovals;
 
   if (executed) {
-    return ProposalStatus.EXECUTED;
+    return [StageStatus.APPROVED, ProposalStatus.EXECUTED];
   }
 
-  if (startDate > now) {
-    return ProposalStatus.PENDING;
+  if (now < startDate) {
+    return [StageStatus.PENDING, ProposalStatus.PENDING];
   }
 
   // proposal is within time boundaries
   if (now <= endDate) {
     if (approvalsReached) {
-      return ProposalStatus.APPROVED;
+      return [StageStatus.APPROVED, ProposalStatus.ACTIVE];
     }
-    return ProposalStatus.ACTIVE;
+    return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
   }
 
-  if (approvalsReached) {
-    return ProposalStatus.APPROVED;
-  } else {
-    // proposal end date has passed
-    return ProposalStatus.REJECTED;
+  // Proposal end date has passed
+  if (!approvalsReached) {
+    return [StageStatus.REJECTED, ProposalStatus.REJECTED];
   }
+
+  return [StageStatus.APPROVED, ProposalStatus.EXPIRED];
 }
 
 interface IComputeEmergencyStatus {
@@ -573,33 +577,33 @@ function computeEmergencyStatus({
   executed,
   startDate,
   endDate,
-}: IComputeEmergencyStatus): ProposalStatus {
+}: IComputeEmergencyStatus): [StageStatus, ProposalStatus] {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const superMajorityReached = approvals >= emergencyMinApprovals;
   if (executed) {
-    return ProposalStatus.EXECUTED;
+    return [StageStatus.APPROVED, ProposalStatus.EXECUTED];
   }
 
-  if (startDate > now) {
-    return ProposalStatus.PENDING;
+  if (now < startDate) {
+    return [StageStatus.PENDING, ProposalStatus.PENDING];
   }
 
   // proposal is within time boundaries
   if (now <= endDate) {
-    if (superMajorityReached) {
-      return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.QUEUED;
-    }
+    if (superMajorityReached)
+      return isSignaling
+        ? [StageStatus.APPROVED, ProposalStatus.EXECUTED]
+        : [StageStatus.APPROVED, ProposalStatus.ACTIVE];
 
-    return ProposalStatus.ACTIVE;
+    return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
   }
 
-  // end date is passed
-  // approvals reached
-  if (superMajorityReached) {
-    return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.EXPIRED;
-  } else {
-    return ProposalStatus.REJECTED;
+  // Proposal end date has passed
+  if (!superMajorityReached) {
+    return [StageStatus.REJECTED, ProposalStatus.REJECTED];
   }
+
+  return isSignaling ? [StageStatus.APPROVED, ProposalStatus.EXECUTED] : [StageStatus.APPROVED, ProposalStatus.EXPIRED];
 }
 
 interface IComputeConfirmationStatus {
@@ -617,30 +621,31 @@ function computeConfirmationStatus({
   confirmations,
   minApprovals,
   isSignaling,
-}: IComputeConfirmationStatus): ProposalStatus {
+}: IComputeConfirmationStatus): [StageStatus, ProposalStatus] {
   const now = BigInt(Math.floor(Date.now() / 1000));
   const confirmationsReached = confirmations >= minApprovals;
 
   if (executed) {
-    return ProposalStatus.EXECUTED;
+    return [StageStatus.APPROVED, ProposalStatus.EXECUTED];
   }
 
-  if (startDate > now) {
-    return ProposalStatus.PENDING;
+  if (now < startDate) {
+    return [StageStatus.PENDING, ProposalStatus.ACTIVE];
   }
 
   if (now <= endDate) {
-    if (confirmationsReached) {
-      return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.QUEUED;
-    }
+    if (confirmationsReached)
+      return isSignaling
+        ? [StageStatus.APPROVED, ProposalStatus.EXECUTED]
+        : [StageStatus.APPROVED, ProposalStatus.ACTIVE];
 
-    return ProposalStatus.ACTIVE;
+    return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
   }
 
-  // proposal end date has passed
+  // Proposal end date has passed
   if (!confirmationsReached) {
-    return ProposalStatus.REJECTED;
+    return [StageStatus.REJECTED, ProposalStatus.REJECTED];
   }
 
-  return isSignaling ? ProposalStatus.APPROVED : ProposalStatus.EXPIRED;
+  return isSignaling ? [StageStatus.APPROVED, ProposalStatus.EXECUTED] : [StageStatus.APPROVED, ProposalStatus.EXPIRED];
 }

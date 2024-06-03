@@ -13,13 +13,17 @@ export enum ProposalStages {
 
 export enum ProposalStatus {
   ACTIVE = "ACTIVE",
-  QUEUED = "QUEUED",
+  PENDING = "PENDING",
+  EXECUTED = "EXECUTED",
+  REJECTED = "REJECTED",
+  EXPIRED = "EXPIRED",
+}
+
+export enum StageStatus {
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
-  CANCELLED = "CANCELLED",
-  EXECUTED = "EXECUTED",
-  EXPIRED = "EXPIRED",
-  PENDING = "PENDING",
 }
 
 export const StageOrder = {
@@ -54,7 +58,7 @@ export interface IVotingData {
 export interface IProposalStage {
   id: string;
   type: ProposalStages;
-  status: ProposalStatus;
+  status: StageStatus;
   statusMessage?: string;
   createdAt?: string;
   startTimestamp?: string;

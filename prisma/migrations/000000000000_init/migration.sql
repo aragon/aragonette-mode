@@ -2,13 +2,16 @@
 CREATE TYPE "StageType" AS ENUM ('DRAFT', 'COUNCIL_APPROVAL', 'COMMUNITY_VOTING', 'COUNCIL_CONFIRMATION');
 
 -- CreateEnum
-CREATE TYPE "ProposalStatus" AS ENUM ('ACTIVE', 'QUEUED', 'APPROVED', 'REJECTED', 'CANCELLED', 'EXECUTED', 'EXPIRED', 'PENDING');
+CREATE TYPE "ProposalStatus" AS ENUM ('ACTIVE', 'PENDING', 'EXECUTED', 'REJECTED', 'EXPIRED');
+
+-- CreateEnum
+CREATE TYPE "StageStatus" AS ENUM ('ACTIVE', 'PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateTable
 CREATE TABLE "Stage" (
     "id" TEXT NOT NULL,
     "type" "StageType" NOT NULL,
-    "status" "ProposalStatus" NOT NULL,
+    "status" "StageStatus" NOT NULL,
     "statusMessage" TEXT,
     "createdAt" TEXT,
     "startTimestamp" TEXT,

@@ -7,7 +7,7 @@ import type {
 } from "@aragon/ods";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ProposalStages, ProposalTracks, StageOrder, type IProposal } from "../domain";
+import { ProposalStages, ProposalTracks, StageOrder, type IProposal, ProposalStatus } from "../domain";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
@@ -29,6 +29,11 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     const stageIndex = stages.findIndex((stage) => stage.type === currentStage) ?? 0;
     const activeStage = stages[stageIndex];
 
+    const statusLabel =
+      activeStage.type === ProposalStages.DRAFT
+        ? activeStage.statusMessage ?? status.toLowerCase()
+        : status.toLowerCase();
+
     // compute date based off of stage
     const date = computeRelativeDate(status, activeStage.voting?.startDate, activeStage.voting?.endDate);
     const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
@@ -39,7 +44,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
 
     // stage result
     let result: IMajorityVotingResult | IApprovalThresholdResult | undefined;
-    if (status !== "draft" && (activeStage.voting?.total_votes ?? 0) > 0) {
+    if (activeStage.type != ProposalStages.DRAFT && (activeStage.voting?.total_votes ?? 0) > 0) {
       const winningOption = activeStage.voting?.scores.sort((a, b) => b.votes - a.votes)[0];
       const id = StageOrder[activeStage.type];
 
@@ -64,7 +69,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       type,
       tag,
       publisher,
-      status,
+      status: statusLabel,
       summary,
       title,
       result,
@@ -72,19 +77,15 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
   }) as Array<ProposalListItem>;
 }
 
-function computeRelativeDate(status: string, startDate?: string, endDate?: string): string | undefined {
+function computeRelativeDate(status: ProposalStatus, startDate?: string, endDate?: string): string | undefined {
   dayjs.extend(relativeTime);
 
   switch (status) {
-    case "pending":
+    case ProposalStatus.PENDING:
       return startDate ? dayjs.unix(Number(startDate)).toNow() : undefined;
-    case "rejected":
-    case "queued":
-    case "accepted":
-    case "partiallyExecuted":
-    case "executed":
-    case "expired":
-    case "failed":
+    case ProposalStatus.REJECTED:
+    case ProposalStatus.EXECUTED:
+    case ProposalStatus.EXPIRED:
       return endDate ? dayjs.unix(Number(endDate)).fromNow() : undefined;
     default:
       return;

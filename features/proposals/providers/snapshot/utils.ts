@@ -1,20 +1,18 @@
 import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
-import { ProposalStages, ProposalStatus } from "../../services";
+import { ProposalStages, ProposalStatus, StageStatus } from "../../services";
 import { type ProposalStage, type VotingData, type VotingScores } from "../../models/proposals";
 import { type SnapshotProposalData } from "./types";
 
-const computeStatus = (proposalState: string, scores: VotingScores[]): ProposalStatus => {
+const computeStatus = (proposalState: string, scores: VotingScores[]): [StageStatus, ProposalStatus] => {
   switch (proposalState) {
     case "active":
-      return ProposalStatus.ACTIVE;
+      return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
     case "closed":
       return evaluateVotingResult(scores);
     case "pending":
-      return ProposalStatus.PENDING;
-    case "cancelled":
-      return ProposalStatus.CANCELLED;
+      return [StageStatus.PENDING, ProposalStatus.ACTIVE];
     default:
-      return ProposalStatus.PENDING;
+      return [StageStatus.PENDING, ProposalStatus.ACTIVE];
   }
 };
 
@@ -80,12 +78,15 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     },
   ];
 
+  const [status, overallStatus] = computeStatus(proposal.state, scores);
+
   return {
     stageType: ProposalStages.COMMUNITY_VOTING,
     title: proposal.title,
     description: proposal.title,
     body: proposal.body,
-    status: computeStatus(proposal.state, scores),
+    status,
+    overallStatus,
     createdAt: new Date(proposal.created * 1000),
     creator,
     voting,
@@ -101,13 +102,14 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
 }
 
 // Function to evaluate the result based on votes
-function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
+// TODO: update with proper veto calculation
+function evaluateVotingResult(votingData: VotingScores[]): [StageStatus, ProposalStatus] {
   let yesVotes = 0;
   let noVotes = 0;
 
   // Loop through the array to count votes for 'Yes' and 'No'
   for (const vote of votingData) {
-    const choice = parseChoice(vote.choice);
+    const choice = vote.choice;
     if (choice === "approve") {
       yesVotes += vote.votes;
     } else if (choice === "reject") {
@@ -117,5 +119,7 @@ function evaluateVotingResult(votingData: VotingScores[]): ProposalStatus {
 
   // Determine the result based on the counts
   // update with proper calculation
-  return yesVotes > noVotes ? ProposalStatus.APPROVED : ProposalStatus.REJECTED;
+  return yesVotes > noVotes
+    ? [StageStatus.APPROVED, ProposalStatus.ACTIVE]
+    : [StageStatus.REJECTED, ProposalStatus.REJECTED];
 }

@@ -121,21 +121,21 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
  * @param currentStageIndex - The index of the current stage in the proposal stages array.
  * @returns The computed status of the proposal.
  */
-function computeProposalStatus(proposalStages: IProposalStage[], currentStageIndex: number): ProposalStatus {
-  const currentStage = proposalStages[currentStageIndex];
+function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus {
+  const draftStage = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.overallStatus;
+  const councilApprovalStage = proposalStages.find(
+    (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
+  )?.overallStatus;
+  const communityVotingStage = proposalStages.find(
+    (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING
+  )?.overallStatus;
+  const councilConfirmationStage = proposalStages.find(
+    (stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION
+  )?.overallStatus;
 
-  switch (currentStage.type) {
-    case ProposalStages.DRAFT:
-      return currentStage.status;
-    case ProposalStages.COUNCIL_APPROVAL:
-      return currentStage.status === ProposalStatus.APPROVED ? ProposalStatus.QUEUED : currentStage.status;
-    case ProposalStages.COMMUNITY_VOTING:
-      return currentStage.status === ProposalStatus.APPROVED ? ProposalStatus.QUEUED : currentStage.status;
-    case ProposalStages.COUNCIL_CONFIRMATION:
-      return currentStage.status;
-    default:
-      return currentStage.status;
-  }
+  return (
+    councilConfirmationStage ?? communityVotingStage ?? councilApprovalStage ?? draftStage ?? ProposalStatus.PENDING
+  );
 }
 
 /**
@@ -402,8 +402,7 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     // sorted stages
     const stages = buildProposalStageResponse(matchedProposalStages);
     const resources = computeProposalResources(stages);
-    const currentStageIndex = stages.findIndex((stage) => stage.type === currentStage);
-    const status = computeProposalStatus(stages, currentStageIndex);
+    const status = computeProposalStatus(matchedProposalStages);
     const createdAt = computeProposalCreatedAt(matchedProposalStages)?.toISOString();
 
     const id = computeProposalId(matchedProposalStages);

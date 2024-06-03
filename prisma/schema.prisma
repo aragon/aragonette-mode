@@ -21,19 +21,23 @@ enum StageType {
 
 enum ProposalStatus {
   ACTIVE
-  QUEUED
+  PENDING
+  EXECUTED
+  REJECTED
+  EXPIRED
+}
+
+enum StageStatus {
+  ACTIVE
+  PENDING
   APPROVED
   REJECTED
-  CANCELLED
-  EXECUTED
-  EXPIRED
-  PENDING
 }
 
 model Stage {
   id             String    @id
   type           StageType
-  status         ProposalStatus
+  status         StageStatus
   statusMessage  String?
   createdAt      String?
   startTimestamp String?

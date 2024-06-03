@@ -1,9 +1,9 @@
 import { AvatarIcon, IconType, Spinner, StatePingAnimation } from "@aragon/ods";
-import { ProposalStatus } from "@/features/proposals/services/proposal/domain";
+import { StageStatus } from "@/features/proposals/services/proposal/domain";
 
 interface IVotingStageStatus {
   endDate: string;
-  status: ProposalStatus | "unreached";
+  status: StageStatus | "unreached";
 }
 
 export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
@@ -11,7 +11,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
 
   return (
     <div className="flex items-center gap-x-2 text-lg leading-tight">
-      {status === ProposalStatus.PENDING && (
+      {status === StageStatus.PENDING && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-neutral-800">Stage</span>
@@ -20,7 +20,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <Spinner size="md" variant="neutral" className="shrink-0" />
         </>
       )}
-      {status === ProposalStatus.ACTIVE && endDate && (
+      {status === StageStatus.ACTIVE && endDate && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-primary-500">{endDate}</span>
@@ -29,7 +29,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <StatePingAnimation variant="primary" className="shrink-0" />
         </>
       )}
-      {status === ProposalStatus.APPROVED && (
+      {status === StageStatus.APPROVED && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-neutral-500">Proposal has been</span>
@@ -38,7 +38,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <AvatarIcon size="sm" variant="success" icon={IconType.CHECKMARK} className="shrink-0" />
         </>
       )}
-      {status === ProposalStatus.REJECTED && (
+      {status === StageStatus.REJECTED && (
         <>
           <div className="flex flex-grow items-center gap-x-0.5">
             <span className="shrink-0 text-neutral-500">Proposal has been</span>

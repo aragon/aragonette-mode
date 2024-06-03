@@ -2,7 +2,13 @@ import { ProposalDetails } from "@/components/nav/routes";
 import { GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
 import Cache from "@/services/cache/VercelCache";
 import { type ProposalStage } from "../../models/proposals";
-import { ProposalStages, type ICreator, type IProposalResource, ProposalStatus } from "../../services/proposal/domain";
+import {
+  ProposalStages,
+  type ICreator,
+  type IProposalResource,
+  ProposalStatus,
+  StageStatus,
+} from "../../services/proposal/domain";
 
 type GithubData = {
   link: string;
@@ -83,19 +89,18 @@ export function extractBody(proposalBody: string) {
   return proposalBody.slice(bodyStart);
 }
 
-function parseStatus(status: string): ProposalStatus {
+function parseStatus(status: string): [StageStatus, ProposalStatus] {
   switch (status) {
     case "Continuous":
     case "Final":
-      return ProposalStatus.EXECUTED;
+      return [StageStatus.APPROVED, ProposalStatus.EXECUTED];
     case "Draft":
     case "Stagnant":
-      return ProposalStatus.PENDING;
     case "Last Call":
     case "Peer Review":
-      return ProposalStatus.ACTIVE;
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
     default:
-      return ProposalStatus.PENDING;
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
   }
 }
 
@@ -143,6 +148,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const isDate = !isNaN(Date.parse(values[7]));
   const createdAt = isDate ? new Date(values[7]) : undefined;
 
+  const [status, overallStatus] = parseStatus(values[5]);
+
   return {
     stageType: ProposalStages.DRAFT,
     pip,
@@ -150,7 +157,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     description: values[2],
     body: body,
     creator: parsedCreators,
-    status: parseStatus(values[5]),
+    status,
+    overallStatus,
     statusMessage: values[5],
     type: values[6] ?? "Informational",
     createdAt,

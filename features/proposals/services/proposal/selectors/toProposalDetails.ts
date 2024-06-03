@@ -15,14 +15,7 @@ import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
-import {
-  ProposalStages,
-  StageOrder,
-  type IAction,
-  type IProposal,
-  type IProposalStage,
-  type ProposalStatus,
-} from "../domain";
+import { ProposalStages, StageOrder, type IAction, type IProposal, type IProposalStage, StageStatus } from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
@@ -54,8 +47,8 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   }
 
   // parse dates
-  const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
 
+  const createdAt = parseDate(proposal.createdAt)?.format("YYYY-MM-DD");
   // end date is specified on the Council Confirmation stage or
   // when proposal is an emergency -> the Council Approval stage
   const endDate =
@@ -135,7 +128,7 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
       return [];
     }
 
-    const status = getVotingStatus(stage.status, stage.voting?.startDate, stage.voting?.endDate);
+    const status = getVotingStatus(stage.status, stage.voting?.startDate);
 
     // prepare active & past voting stage data
     // TODO: rely on stage dates instead
@@ -155,13 +148,13 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
               votingScores:
                 scores.length > 0
                   ? scores.map((score) => ({
-                      option: mapBreakdownChoice(score.choice.toLowerCase()),
+                      option: score.choice,
                       voteAmount: score.votes.toString(),
                       votePercentage: score.percentage,
                       tokenSymbol: PUB_TOKEN_SYMBOL,
                     }))
                   : choices.map((choice) => ({
-                      option: mapBreakdownChoice(choice),
+                      option: choice,
                       voteAmount: "0",
                       votePercentage: 0,
                       tokenSymbol: PUB_TOKEN_SYMBOL,
@@ -225,7 +218,7 @@ function generateStages(stages: IProposalStage[]) {
  * @returns the formatted string of choices.
  */
 function formatChoices(choices: string[]) {
-  const parsedChoices = choices.map((choice) => capitalizeFirstLetter(mapBreakdownChoice(choice)));
+  const parsedChoices = choices.map((choice) => capitalizeFirstLetter(choice));
   return parsedChoices.length > 1
     ? `${parsedChoices.slice(0, -1).join(", ")} or ${parsedChoices[parsedChoices.length - 1]}`
     : parsedChoices[0] || "";
@@ -238,32 +231,9 @@ function formatChoices(choices: string[]) {
  * @param endDate - The end date of the voting stage.
  * @returns he determined voting status.
  */
-const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: string) => {
+const getVotingStatus = (status: StageStatus, startDate?: string) => {
   const startDateIsInFuture = startDate && dayjs(startDate).isAfter(dayjs());
-  const startDateIsInThePast = startDate && dayjs(startDate).isBefore(dayjs());
-  const endDateIsInTheFuture = endDate && dayjs(endDate).isAfter(dayjs());
-  const endDateIsInThePast = endDate && dayjs(endDate).isBefore(dayjs());
 
-  if (endDateIsInThePast) {
-    return status;
-  } else if (startDateIsInThePast && endDateIsInTheFuture) {
-    return "active";
-  } else if (startDateIsInFuture) {
-    return "pending";
-  } else {
-    return "unreached";
-  }
+  if (startDateIsInFuture) return "unreached";
+  return status;
 };
-
-function mapBreakdownChoice(choice: string) {
-  switch (choice.toLowerCase()) {
-    case "accept":
-    case "approve":
-      return "yes";
-    case "reject":
-    case "veto":
-      return "no";
-    default:
-      return choice;
-  }
-}

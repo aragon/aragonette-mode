@@ -15,9 +15,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
     proposal: { status, title, isEmergency, description, publisher, type, createdAt: startDate, endDate },
   } = props;
 
-  const showExpirationDate =
-    !!endDate &&
-    (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING || status === ProposalStatus.QUEUED);
+  const showExpirationDate = !!endDate && (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING);
 
   const tagVariant = getTagVariantFromStatus(status);
 
@@ -77,16 +75,12 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
 const getTagVariantFromStatus = (status: ProposalStatus): TagVariant => {
   //TODO: Use statusMessage?
   switch (status) {
-    case ProposalStatus.APPROVED:
-    case ProposalStatus.QUEUED:
-      return "success";
     case ProposalStatus.ACTIVE:
       return "info";
     case ProposalStatus.EXECUTED:
       return "success";
     case ProposalStatus.REJECTED:
     case ProposalStatus.EXPIRED:
-    case ProposalStatus.CANCELLED:
       return "critical";
     case ProposalStatus.PENDING:
       return "neutral";

@@ -11,6 +11,7 @@ import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/appro
 import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
 import { type VotingCta } from "../votingBreakdown/types";
+import { StageStatus } from "@/features/proposals/services/proposal/domain";
 
 export interface IVotingStageDetails {
   censusBlock: number;
@@ -24,7 +25,7 @@ export interface IVotingStageProps<TType extends ProposalType = ProposalType> {
   title: string;
   number: number;
   disabled: boolean;
-  status: "accepted" | "rejected" | "active";
+  status: StageStatus.APPROVED | StageStatus.REJECTED | StageStatus.ACTIVE;
 
   variant: TType;
   proposalId?: string;
@@ -72,7 +73,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
 
   useLayoutEffect(resize, [resize]);
 
-  const defaultTab = status === "active" ? "breakdown" : "details";
+  const defaultTab = status === StageStatus.ACTIVE ? "breakdown" : "details";
   const stageKey = `Stage ${number}`;
   const formattedSnapshotBlock = formatterUtils.formatNumber(details?.censusBlock) ?? "";
   const snapshotBlockURL = `${PUB_CHAIN.blockExplorers?.default.url}/block/${details?.censusBlock}`;

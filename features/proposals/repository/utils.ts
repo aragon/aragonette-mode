@@ -1,7 +1,13 @@
-import { Proposal, Stage, StageType, ProposalStatus as ProposalStatusDb } from "@prisma/client";
+import {
+  Proposal,
+  Stage,
+  StageType,
+  ProposalStatus as ProposalStatusDb,
+  StageStatus as StageStatusDb,
+} from "@prisma/client";
 
 import { IProposal } from "..";
-import { ProposalStatus, ProposalStages, IProposalStage } from "../services/proposal/domain";
+import { ProposalStatus, ProposalStages, IProposalStage, StageStatus } from "../services/proposal/domain";
 
 const sererializeType = (type: ProposalStages): StageType => {
   switch (type) {
@@ -29,14 +35,36 @@ const parseType = (type: StageType): ProposalStages => {
   }
 };
 
-const serializeStatus = (status: ProposalStatus): ProposalStatusDb => {
+const serializeStageStatus = (status: StageStatus): StageStatusDb => {
+  switch (status) {
+    case StageStatus.ACTIVE:
+      return StageStatusDb.ACTIVE;
+    case StageStatus.APPROVED:
+      return StageStatusDb.APPROVED;
+    case StageStatus.PENDING:
+      return StageStatusDb.PENDING;
+    case StageStatus.REJECTED:
+      return StageStatusDb.REJECTED;
+  }
+};
+
+const parseStageStatus = (status: StageStatusDb): StageStatus => {
+  switch (status) {
+    case StageStatusDb.ACTIVE:
+      return StageStatus.ACTIVE;
+    case StageStatusDb.APPROVED:
+      return StageStatus.APPROVED;
+    case StageStatusDb.PENDING:
+      return StageStatus.PENDING;
+    case StageStatusDb.REJECTED:
+      return StageStatus.REJECTED;
+  }
+};
+
+const serializeProposalStatus = (status: ProposalStatus): ProposalStatusDb => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return ProposalStatusDb.ACTIVE;
-    case ProposalStatus.CANCELLED:
-      return ProposalStatusDb.CANCELLED;
-    case ProposalStatus.APPROVED:
-      return ProposalStatusDb.APPROVED;
     case ProposalStatus.EXECUTED:
       return ProposalStatusDb.EXECUTED;
     case ProposalStatus.PENDING:
@@ -45,19 +73,13 @@ const serializeStatus = (status: ProposalStatus): ProposalStatusDb => {
       return ProposalStatusDb.REJECTED;
     case ProposalStatus.EXPIRED:
       return ProposalStatusDb.EXPIRED;
-    case ProposalStatus.QUEUED:
-      return ProposalStatusDb.QUEUED;
   }
 };
 
-const parseStatus = (status: ProposalStatusDb): ProposalStatus => {
+const parseProposalStatus = (status: ProposalStatusDb): ProposalStatus => {
   switch (status) {
     case ProposalStatusDb.ACTIVE:
       return ProposalStatus.ACTIVE;
-    case ProposalStatusDb.CANCELLED:
-      return ProposalStatus.CANCELLED;
-    case ProposalStatusDb.APPROVED:
-      return ProposalStatus.APPROVED;
     case ProposalStatusDb.EXECUTED:
       return ProposalStatus.EXECUTED;
     case ProposalStatusDb.PENDING:
@@ -66,8 +88,6 @@ const parseStatus = (status: ProposalStatusDb): ProposalStatus => {
       return ProposalStatus.REJECTED;
     case ProposalStatusDb.EXPIRED:
       return ProposalStatus.EXPIRED;
-    case ProposalStatusDb.QUEUED:
-      return ProposalStatus.QUEUED;
   }
 };
 
@@ -79,7 +99,7 @@ export const parseProposal = (proposal: Proposal): IProposal => {
     body: proposal.body ?? undefined,
     transparencyReport: proposal.transparencyReport ?? undefined,
     resources: proposal.resources?.map((resource) => JSON.parse(resource)),
-    status: parseStatus(proposal.status),
+    status: parseProposalStatus(proposal.status),
     type: proposal.type,
     isEmergency: proposal.isEmergency,
     createdAt: proposal.createdAt ?? undefined,
@@ -99,7 +119,7 @@ export const serializeProposals = (proposal: IProposal): Proposal => {
     description: proposal.description,
     body: proposal.body ?? null,
     transparencyReport: proposal.transparencyReport ?? null,
-    status: serializeStatus(proposal.status),
+    status: serializeProposalStatus(proposal.status),
     isEmergency: proposal.isEmergency ?? false,
     currentStage: proposal.currentStage,
     createdAt: proposal.createdAt ?? null,
@@ -120,7 +140,8 @@ export const parseStage = (stage: Stage): IProposalStage => {
   return {
     id: stage.id,
     type: parseType(stage.type),
-    status: parseStatus(stage.status),
+    status: parseStageStatus(stage.status),
+    statusMessage: stage.statusMessage ?? undefined,
     createdAt: stage.createdAt ?? undefined,
     startTimestamp: stage.startTimestamp ?? undefined,
     endTimestamp: stage.endTimestamp ?? undefined,
@@ -135,7 +156,7 @@ export const serializeStage = (proposalId: string, stage: IProposalStage): Omit<
     // TODO: Fix this
     id: `${proposalId}-${stage.id}`,
     type: sererializeType(stage.type),
-    status: serializeStatus(stage.status),
+    status: serializeStageStatus(stage.status),
     statusMessage: stage.statusMessage ?? null,
     createdAt: stage.createdAt ?? null,
     startTimestamp: stage.startTimestamp ?? null,
