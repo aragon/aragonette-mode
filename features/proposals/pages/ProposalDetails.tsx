@@ -48,7 +48,7 @@ export default function ProposalDetails() {
   // proposal id for current stage
   const proposalVoteId = proposal?.stages?.find((stage) => stage.type === proposal?.currentStage)?.providerId;
 
-  // check if use can vote on the proposal
+  // check if user can vote on the proposal
   const userCanApprove = useUserCanApprove(proposalVoteId);
   const userCanConfirm = useUserCanConfirm(proposalVoteId);
 
