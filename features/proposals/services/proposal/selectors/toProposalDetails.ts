@@ -27,8 +27,7 @@ import {
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
-export type ProposalDetail = Omit<IProposal, "status" | "actions" | "createdAt" | "stages"> & {
-  status: ProposalStatus | string;
+export type ProposalDetail = Omit<IProposal, "actions" | "createdAt" | "stages"> & {
   actions: DetailedAction[];
   stages: ITransformedStage[];
   createdAt?: string;
@@ -67,11 +66,8 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   const parsedEndDate = parseDate(endDate);
   const formattedEndDate = parsedEndDate ? getSimpleRelativeTimeFromDate(parsedEndDate) : undefined;
 
-  const status = proposal.statusMessage ?? proposal.status;
-
   return {
     ...proposal,
-    status,
     actions: transformedActions,
     stages: transformStages(proposal.stages, proposal.id),
     createdAt,

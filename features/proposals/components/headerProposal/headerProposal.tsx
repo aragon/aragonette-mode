@@ -12,12 +12,23 @@ interface IHeaderProposalProps {
 export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const {
     breadcrumbs,
-    proposal: { status, title, isEmergency, description, publisher, type, createdAt: startDate, endDate },
+    proposal: {
+      status,
+      statusMessage,
+      title,
+      isEmergency,
+      description,
+      publisher,
+      type,
+      createdAt: startDate,
+      endDate,
+    },
   } = props;
 
   const showExpirationDate = !!endDate && (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING);
 
   const tagVariant = getTagVariantFromStatus(status);
+  const statusLabel = (statusMessage ?? status).toLowerCase();
 
   return (
     <div className="flex w-full justify-center bg-neutral-0">
@@ -28,7 +39,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
           tag={
             status
               ? {
-                  label: status,
+                  label: statusLabel,
                   className: "capitalize",
                   variant: tagVariant,
                 }
