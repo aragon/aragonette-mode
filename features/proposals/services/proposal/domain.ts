@@ -2,8 +2,6 @@ import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@arag
 import { type Address } from "viem";
 import { type VotingScores } from "../../models/proposals";
 
-export type ProposalStatusMessage = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
-
 export enum ProposalStages {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
