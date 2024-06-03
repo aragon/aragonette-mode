@@ -57,7 +57,7 @@ export function useProposalApproval(proposalId = "", onSuccess?: () => void) {
         abi: MultisigAbi,
         address: PUB_MULTISIG_ADDRESS,
         functionName: "approve",
-        args: [BigInt(proposalId), false],
+        args: [BigInt(proposalId)],
       });
     }
   };

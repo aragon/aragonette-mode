@@ -1,22 +1,26 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
-import { config } from "@/context/Web3Modal";
 import { PUB_CHAIN } from "@/constants";
-import { type VotingData, type ProposalStage, type Vote } from "@/features/proposals/models/proposals";
+import { config } from "@/context/Web3Modal";
+import { type ProposalStage, type Vote, type VotingData } from "@/features/proposals/models/proposals";
+import {
+  type ApprovedLogResponse,
+  type ConfirmedLogResponse,
+  type VotesData,
+} from "@/features/proposals/providers/multisig/types";
 import { ProposalStages, type ProposalStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
-import { type ApprovedLogResponse, type VotesData } from "@/features/proposals/providers/multisig/types";
 import { fetchJsonFromIpfs } from "@/utils/ipfs";
 import { type Action } from "@/utils/types";
 import { getBlock, getPublicClient, readContract } from "@wagmi/core";
+import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 import {
+  type MultiSigProposalVotingData,
+  type MultisigProposal,
   type PrimaryMetadata,
   type ProposalCreatedLogResponse,
   type ProposalParameters,
-  type MultisigProposal,
-  type MultiSigProposalVotingData,
   type SecondaryMetadata,
 } from "./types";
-import { fromHex, getAbiItem, type Address, type Hex } from "viem";
 
 const getNumProposals = async function (chain: number, contractAddress: Address) {
   return await readContract(config, {
@@ -79,8 +83,6 @@ const getProposalCreationData = async function (
   if (!blockData) throw new Error("No block data");
 
   return {
-    primaryMetadata: logData.metadata,
-    secondaryMetadata: logData.secondaryMetadata ?? "",
     creator: logData.creator,
     tx,
     block,
@@ -90,8 +92,7 @@ const getProposalCreationData = async function (
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
   const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
-  const snapshotLink =
-    secondaryMetadata ?? metadata.resources.find((resource) => resource.name.toLowerCase() === "snapshot");
+  const snapshotLink = secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "snapshot");
 
   const githubFileName = githubLink?.url.split("/").pop()?.split(".")?.shift();
   const snapshotId = snapshotLink?.url.split("/").pop();
@@ -190,15 +191,15 @@ export const requestVotingData = async function (
     return {
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
-      endDate: proposalData.firstDelayStartBlock?.toString() ?? proposalData.parameters.endDate.toString(),
+      endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
       approvals: proposalData.approvals,
       quorum: proposalData.parameters.minApprovals,
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
     };
   } else if (stage === "confirmation") {
-    if (!proposalData.firstDelayStartBlock) return;
+    if (!proposalData.firstDelayStartTimestamp) return;
 
-    const confirmationStartDate = proposalData.firstDelayStartBlock + proposalData.parameters.delayDuration;
+    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
     const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
 
     if (!lockedPeriodPassed) return;
@@ -211,8 +212,6 @@ export const requestVotingData = async function (
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
     };
   }
-
-  return;
 };
 
 export const requestProposalsData = async function (
@@ -237,18 +236,20 @@ export const requestProposalsData = async function (
 
     // skip to next proposal if no creation data can be found for the current proposal
     if (!creationData) continue;
-    const primaryMetadataCid = fromHex(creationData.primaryMetadata as Hex, "string");
-    const secondaryMetadataCid = fromHex(creationData.secondaryMetadata as Hex, "string");
+    const primaryMetadataCid = fromHex(proposalData.primaryMetadata as Hex, "string");
+    const secondaryMetadataCid = fromHex(proposalData.secondaryMetadata as Hex, "string");
 
-    //TODO: Use IPFS hash from proposalData instead of logs
     const primaryMetadata: PrimaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
-    const secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
+    const secondaryMetadata = secondaryMetadataCid
+      ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
+      : undefined;
+
     const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
 
     const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 
     // get resources
-    const resources = primaryMetadata.resources.map((resource) => ({
+    const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).map((resource) => ({
       name: resource.name,
       link: resource.url,
     }));
@@ -294,7 +295,7 @@ export const requestProposalsData = async function (
       voting: {
         providerId: i.toString(),
         startDate: proposalData.parameters.startDate.toString(),
-        endDate: proposalData.firstDelayStartBlock?.toString() ?? proposalData.parameters.endDate.toString(),
+        endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
         approvals: proposalData.approvals,
         quorum: proposalData.parameters.minApprovals,
         snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
@@ -302,8 +303,8 @@ export const requestProposalsData = async function (
     });
 
     // if confirmation stage has yet to start continue to next proposal
-    if (!proposalData.firstDelayStartBlock) continue;
-    const confirmationStartDate = proposalData.firstDelayStartBlock + proposalData.parameters.delayDuration;
+    if (!proposalData.firstDelayStartTimestamp) continue;
+    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
     const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
 
     // generate confirmation stage if the proposal has been approved by the council
@@ -339,7 +340,6 @@ export const requestProposalsData = async function (
 
 // Helpers
 type ProposalData = {
-  active: boolean;
   approvals: number;
   parameters: ProposalParameters;
   actions: Array<Action>;
@@ -347,30 +347,26 @@ type ProposalData = {
   executed: boolean;
 
   // new multisig data
-  firstDelayStartBlock: bigint | null;
+  primaryMetadata: string;
+  secondaryMetadata: string | undefined;
+  firstDelayStartTimestamp: bigint | null;
   confirmations: number;
 };
 
 function decodeProposalResultData(data?: Array<any>): ProposalData | null {
-  if (!data?.length || data.length != 5) return null;
-
+  if (!data?.length && data?.length != 9) return null;
   return {
-    active: data[0] as boolean,
+    executed: data[0] as boolean,
     approvals: data[1] as number,
-    parameters: {
-      // new multisig data
-      delayDuration: BigInt(1),
-      emergency: false,
-      emergencyMinApprovals: BigInt(1),
-      ...data[2],
-    } as ProposalParameters,
+    parameters: data[2] as ProposalParameters,
     actions: data[3] as Array<Action>,
     allowFailureMap: data[4] as bigint,
 
     // new multisig data
-    firstDelayStartBlock: null,
-    executed: false,
-    confirmations: 0,
+    confirmations: data[5] as number,
+    primaryMetadata: data[6] as string,
+    secondaryMetadata: data[7] as string,
+    firstDelayStartTimestamp: data[8] as bigint,
   };
 }
 
@@ -426,6 +422,46 @@ const getApproveLogs = async function (
   return logs;
 };
 
+const getConfirmationLogs = async function (
+  contractAddress: Address,
+  proposalId: bigint,
+  snapshotBlock: bigint,
+  endDate: bigint
+) {
+  const publicClient = getPublicClient(config);
+
+  const ConfirmationEvent = getAbiItem({
+    abi: MultisigAbi,
+    name: "Confirmed",
+  });
+
+  const logs = await publicClient
+    ?.getLogs({
+      address: contractAddress,
+      event: ConfirmationEvent,
+      args: {
+        proposalId: proposalId.toString(),
+      } as any,
+      fromBlock: snapshotBlock,
+      toBlock: endDate,
+    })
+    .then((logs) => {
+      if (!logs?.length) return [];
+      return logs.map((log) => {
+        const tx = log.transactionHash;
+        const block = log.blockNumber;
+
+        const logData: ConfirmedLogResponse = log.args as ConfirmedLogResponse;
+        return { logData, tx, block };
+      });
+    })
+    .catch((err) => {
+      logger.error("Could not fetch the proposal details", err);
+    });
+
+  return logs;
+};
+
 export const getMultisigVotingPower = async function (
   chain: number,
   contractAddress: Address,
@@ -437,8 +473,7 @@ export const getMultisigVotingPower = async function (
     return getMultisigIsMember(chain, contractAddress, address).then((canVote) => (canVote ? 1 : 0));
   } else {
     if (confirm) {
-      //TODO: Use getCanConfirm
-      return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
+      return getMultisigCanConfirm(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
     }
     return getMultisigCanApprove(chain, contractAddress, proposalId, address).then((canVote) => (canVote ? 1 : 0));
   }
@@ -469,7 +504,6 @@ export const getMultisigIsMember = async function (chain: number, contractAddres
   });
 };
 
-/*
 export const getMultisigCanConfirm = async function (
   chain: number,
   contractAddress: Address,
@@ -484,7 +518,6 @@ export const getMultisigCanConfirm = async function (
     args: [proposalId as any, address as Address],
   });
 };
-*/
 
 const getBlockTimestamp = async function (blockNumber: bigint) {
   return await getBlock(config, {
@@ -493,29 +526,61 @@ const getBlockTimestamp = async function (blockNumber: bigint) {
   }).then((block) => block.timestamp.toString());
 };
 
-export const requestVotesData = async function (chain: number, contractAddress: Address, providerId: bigint) {
+export const requestApprovalData = async function (
+  chain: number,
+  contractAddress: Address,
+  providerId: bigint
+): Promise<VotesData[]> {
   const proposalData = await getProposalData(chain, contractAddress, providerId);
 
-  if (!proposalData) return [] as VotesData[];
+  if (!proposalData) return [];
 
-  const logs = await getApproveLogs(
+  const approvalLogs = await getApproveLogs(
     contractAddress,
     providerId,
     proposalData.parameters.snapshotBlock,
     proposalData.parameters.endDate
   );
 
-  if (!logs) return [] as VotesData[];
+  if (!approvalLogs) return [];
 
   const logsWithTimestamp = await Promise.all(
-    logs.map(async (log) => {
+    approvalLogs.map(async (log) => {
       const blockTimestamp = await getBlockTimestamp(log.block);
-      return { ...log, blockTimestamp };
+      return { ...log, blockTimestamp } as VotesData;
     })
   );
 
   return logsWithTimestamp;
 };
+
+export const requestConfirmationData = async function (
+  chain: number,
+  contractAddress: Address,
+  providerId: bigint
+): Promise<VotesData[]> {
+  const proposalData = await getProposalData(chain, contractAddress, providerId);
+
+  if (!proposalData?.firstDelayStartTimestamp || proposalData.firstDelayStartTimestamp === BigInt(0)) return [];
+  const confirmationLogs = await getConfirmationLogs(
+    contractAddress,
+    providerId,
+    proposalData.parameters.snapshotBlock,
+    proposalData.parameters.endDate
+  );
+
+  if (!confirmationLogs) return [];
+
+  const logsWithTimestamp = await Promise.all(
+    confirmationLogs.map(async (log) => {
+      const blockTimestamp = await getBlockTimestamp(log.block);
+      return { ...log, blockTimestamp } as VotesData;
+    })
+  );
+
+  return logsWithTimestamp;
+};
+
 interface IComputeApprovalStatus {
   startDate: bigint;
   endDate: bigint;

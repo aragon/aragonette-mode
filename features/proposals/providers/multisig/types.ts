@@ -28,8 +28,10 @@ export type PrimaryMetadata = {
 };
 
 export type SecondaryMetadata = {
-  name: string;
-  url: string;
+  resources: Array<{
+    name: string;
+    url: string;
+  }>;
 };
 
 export type ProposalBindings = {
@@ -99,6 +101,11 @@ export type MultisigProposal = {
 };
 
 export type ApprovedLogResponse = {
+  proposalId: bigint;
+  approver: Address;
+};
+
+export type ConfirmedLogResponse = {
   proposalId: bigint;
   approver: Address;
 };
