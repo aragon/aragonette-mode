@@ -13,6 +13,8 @@ const sererializeType = (type: ProposalStages): StageType => {
   switch (type) {
     case ProposalStages.DRAFT:
       return StageType.DRAFT;
+    case ProposalStages.TRANSPARENCY_REPORT:
+      return StageType.TRANSPARENCY_REPORT;
     case ProposalStages.COUNCIL_APPROVAL:
       return StageType.COUNCIL_APPROVAL;
     case ProposalStages.COMMUNITY_VOTING:
@@ -26,6 +28,8 @@ const parseType = (type: StageType): ProposalStages => {
   switch (type) {
     case StageType.DRAFT:
       return ProposalStages.DRAFT;
+    case StageType.TRANSPARENCY_REPORT:
+      return ProposalStages.TRANSPARENCY_REPORT;
     case StageType.COUNCIL_APPROVAL:
       return ProposalStages.COUNCIL_APPROVAL;
     case StageType.COMMUNITY_VOTING:

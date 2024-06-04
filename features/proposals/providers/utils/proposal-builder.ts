@@ -17,7 +17,7 @@ import {
   ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
-import { getGitHubProposalStagesData } from "../github/proposalStages";
+import { getGitHubProposalStagesData, getGithubTransparencyReports } from "../github/proposalStages";
 import { getMultisigProposalsData, getMultisigVotingData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData, getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals";
@@ -237,6 +237,10 @@ export async function getProposalStages() {
       user: GITHUB_USER,
       repo: GITHUB_REPO,
       pips_path: GITHUB_PIPS_PATH,
+    }),
+    getGithubTransparencyReports({
+      user: GITHUB_USER,
+      repo: GITHUB_REPO,
       transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
     }),
     getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE }),
@@ -252,7 +256,7 @@ export async function getProposalStages() {
 const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
-  if (stage.stageType === ProposalStages.DRAFT) {
+  if (stage.stageType === ProposalStages.DRAFT || stage.stageType === ProposalStages.TRANSPARENCY_REPORT) {
     if (stage.pip) return stage.pip;
     else return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
   }
@@ -277,6 +281,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
  */
 export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
   const draftProposals = proposalStages.filter((stage) => stage.stageType === ProposalStages.DRAFT);
+  const transparencyReports = proposalStages.filter((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT);
   const councilApprovalProposals = proposalStages.filter(
     (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
   );
@@ -297,6 +302,18 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
       if (draftProposal) {
         proposal.push(draftProposal);
         draftProposals.splice(draftProposals.indexOf(draftProposal), 1);
+      }
+    }
+
+    const transparencyReportsBindingLink = proposal[0].bindings?.find(
+      (binding) => binding.id === ProposalStages.TRANSPARENCY_REPORT
+    )?.link;
+    if (transparencyReportsBindingLink) {
+      const transparencyReport = transparencyReports.find(
+        (stage) => getProposalBindingId(stage) === transparencyReportsBindingLink
+      );
+      if (transparencyReport) {
+        proposal.push(transparencyReport);
       }
     }
 
