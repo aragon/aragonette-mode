@@ -1,7 +1,7 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
 import { type IProposal } from "..";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type ProposalStatus } from "../services/proposal/domain";
+import { ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 import { logger } from "@/services/logger";
 
@@ -58,14 +58,16 @@ export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
   }
 
   switch (value) {
-    case "draft":
-      return ["draft", "Last Call", "Continuous", "Stagnant", "Peer Review"];
     case "active":
-      return ["active", "challenged", "queued", "pending"];
-    case "accepted":
-      return ["accepted", "partiallyExecuted", "executed"];
+      return [ProposalStatus.ACTIVE];
     case "rejected":
-      return ["rejected", "vetoed", "failed", "expired"];
+      return [ProposalStatus.REJECTED];
+    case "executed":
+      return [ProposalStatus.EXECUTED];
+    case "pending":
+      return [ProposalStatus.PENDING];
+    case "expired":
+      return [ProposalStatus.EXPIRED];
     default:
       throw new Error(`Invalid status value: ${value}`);
   }

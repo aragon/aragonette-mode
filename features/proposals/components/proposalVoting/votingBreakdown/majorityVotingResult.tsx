@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { useEffect, useState } from "react";
 import { type VotingCta } from "./types";
 
-type Choices = "yes" | "no" | "abstain";
+type Choices = "approve" | "reject" | "abstain";
 
 export interface IBreakdownMajorityVotingResult {
   votingScores: { option: string; voteAmount: string; votePercentage: number; tokenSymbol: string }[];
@@ -12,15 +12,15 @@ export interface IBreakdownMajorityVotingResult {
 }
 
 const choiceClassNames: Record<Choices, string> = {
-  yes: "*:bg-success-500",
+  approve: "*:bg-success-500",
   abstain: "*:bg-neutral-400",
-  no: "*:bg-critical-500",
+  reject: "*:bg-critical-500",
 };
 
 const choiceTextClassNames: Record<Choices, string> = {
-  yes: "text-success-800",
+  approve: "text-success-800",
   abstain: "text-neutral-800",
-  no: "text-critical-800",
+  reject: "text-critical-800",
 };
 
 export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingResult> = (props) => {

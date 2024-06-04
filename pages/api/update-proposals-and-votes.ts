@@ -1,3 +1,4 @@
+import { StageStatus } from "@/features/proposals";
 import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
@@ -26,7 +27,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         if (!stage.voting) {
           continue;
         }
-        if (stage.status === "active") {
+        if (stage.status === StageStatus.ACTIVE) {
           continue;
         }
         // TODO: Save to database

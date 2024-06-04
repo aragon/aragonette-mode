@@ -15,14 +15,7 @@ import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
-import {
-  ProposalStages,
-  StageOrder,
-  type IAction,
-  type IProposal,
-  type IProposalStage,
-  type ProposalStatus,
-} from "../domain";
+import { ProposalStages, StageOrder, StageStatus, type IAction, type IProposal, type IProposalStage } from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
@@ -54,8 +47,8 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   }
 
   // parse dates
-  const createdAt = parseDate(proposal.stages.find((stage) => stage.createdAt)?.createdAt)?.format("YYYY-MM-DD");
 
+  const createdAt = parseDate(proposal.createdAt)?.format("YYYY-MM-DD");
   // end date is specified on the Council Confirmation stage or
   // when proposal is an emergency -> the Council Approval stage
   const endDate =
@@ -68,7 +61,7 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   return {
     ...proposal,
     actions: transformedActions,
-    stages: transformStages(proposal.stages, proposal.id),
+    stages: transformStages(proposal.stages, proposal.id, !!proposal.isEmergency, endDate),
     createdAt,
     endDate: formattedEndDate,
   };
@@ -128,14 +121,27 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
  * @param stages - The array of proposal stages to transform.
  * @returns the array of transformed stages.
  */
-function transformStages(stages: IProposalStage[], proposalId: string): ITransformedStage[] {
+function transformStages(
+  stages: IProposalStage[],
+  proposalId: string,
+  isEmergency: boolean,
+  expirationDate: string | undefined
+): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
     if (stage.type === ProposalStages.DRAFT) {
       return [];
     }
 
-    const status = getVotingStatus(stage.status, stage.voting?.startDate, stage.voting?.endDate);
+    // filer out community voting and council confirmation stages for emergency proposals
+    if (
+      isEmergency &&
+      (stage.type === ProposalStages.COMMUNITY_VOTING || stage.type === ProposalStages.COUNCIL_CONFIRMATION)
+    ) {
+      return [];
+    }
+
+    const status = getVotingStatus(stage.status, stage.voting?.startDate, expirationDate);
 
     if (stage.voting) {
       const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
@@ -153,13 +159,13 @@ function transformStages(stages: IProposalStage[], proposalId: string): ITransfo
               votingScores:
                 scores.length > 0
                   ? scores.map((score) => ({
-                      option: mapBreakdownChoice(score.choice.toLowerCase()),
+                      option: score.choice,
                       voteAmount: score.votes.toString(),
                       votePercentage: score.percentage,
                       tokenSymbol: PUB_TOKEN_SYMBOL,
                     }))
                   : choices.map((choice) => ({
-                      option: mapBreakdownChoice(choice),
+                      option: choice,
                       voteAmount: "0",
                       votePercentage: 0,
                       tokenSymbol: PUB_TOKEN_SYMBOL,
@@ -210,7 +216,7 @@ function generateStages(stages: IProposalStage[]) {
 
   for (const stageId of Object.values(ProposalStages)) {
     if (!stageSet.has(stageId)) {
-      stageSet.set(stageId, { id: stageId } as IProposalStage);
+      stageSet.set(stageId, { type: stageId } as IProposalStage);
     }
   }
 
@@ -223,7 +229,7 @@ function generateStages(stages: IProposalStage[]) {
  * @returns the formatted string of choices.
  */
 function formatChoices(choices: string[]) {
-  const parsedChoices = choices.map((choice) => capitalizeFirstLetter(mapBreakdownChoice(choice)));
+  const parsedChoices = choices.map((choice) => capitalizeFirstLetter(choice));
   return parsedChoices.length > 1
     ? `${parsedChoices.slice(0, -1).join(", ")} or ${parsedChoices[parsedChoices.length - 1]}`
     : parsedChoices[0] || "";
@@ -233,35 +239,16 @@ function formatChoices(choices: string[]) {
  * Determines the voting status based on the current status, start date, and end date.
  * @param status - The current status of the proposal.
  * @param startDate - The start date of the voting stage.
- * @param endDate - The end date of the voting stage.
- * @returns he determined voting status.
+ * @param expirationDate - The end date of the proposal.
+ * @returns the determined voting status.
  */
-const getVotingStatus = (status: ProposalStatus, startDate?: string, endDate?: string) => {
+const getVotingStatus = (status: StageStatus, startDate?: string, expirationDate?: string) => {
   const startDateIsInFuture = startDate && dayjs(startDate).isAfter(dayjs());
-  const startDateIsInThePast = startDate && dayjs(startDate).isBefore(dayjs());
-  const endDateIsInTheFuture = endDate && dayjs(endDate).isAfter(dayjs());
-  const endDateIsInThePast = endDate && dayjs(endDate).isBefore(dayjs());
+  const expirationDateIsInFuture = expirationDate && dayjs(expirationDate).isAfter(dayjs());
 
-  if (endDateIsInThePast) {
-    return status;
-  } else if (startDateIsInThePast && endDateIsInTheFuture) {
-    return "active";
-  } else if (startDateIsInFuture) {
-    return "pending";
-  } else {
-    return "unreached";
+  if (startDateIsInFuture) {
+    return expirationDateIsInFuture ? StageStatus.PENDING : "unreached";
   }
+
+  return status;
 };
-
-function mapBreakdownChoice(choice: string) {
-  switch (choice.toLowerCase()) {
-    case "accept":
-    case "approve":
-      return "yes";
-    case "reject":
-    case "veto":
-      return "no";
-    default:
-      return choice;
-  }
-}

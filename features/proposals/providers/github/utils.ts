@@ -6,7 +6,8 @@ import {
   ProposalStages,
   type ICreator,
   type IProposalResource,
-  type ProposalStatus,
+  ProposalStatus,
+  StageStatus,
 } from "../../services/proposal/domain";
 
 type GithubData = {
@@ -88,13 +89,18 @@ export function extractBody(proposalBody: string) {
   return proposalBody.slice(bodyStart);
 }
 
-function parseStatus(status: string): ProposalStatus {
-  if (status === "Final") {
-    return "executed";
-  } else if (status === "Draft") {
-    return "draft";
-  } else {
-    return status as ProposalStatus;
+function parseStatus(status: string): [StageStatus, ProposalStatus] {
+  switch (status) {
+    case "Continuous":
+    case "Final":
+      return [StageStatus.APPROVED, ProposalStatus.EXECUTED];
+    case "Draft":
+    case "Stagnant":
+    case "Last Call":
+    case "Peer Review":
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
+    default:
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
   }
 }
 
@@ -142,6 +148,8 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const isDate = !isNaN(Date.parse(values[7]));
   const createdAt = isDate ? new Date(values[7]) : undefined;
 
+  const [status, overallStatus] = parseStatus(values[5]);
+
   return {
     stageType: ProposalStages.DRAFT,
     pip,
@@ -149,7 +157,9 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     description: values[2],
     body: body,
     creator: parsedCreators,
-    status: parseStatus(values[5]),
+    status,
+    overallStatus,
+    statusMessage: values[5],
     type: values[6] ?? "Informational",
     createdAt,
     resources,

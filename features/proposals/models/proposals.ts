@@ -3,6 +3,7 @@ import {
   type ICreator,
   type ProposalStages,
   type IProposalResource,
+  type StageStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
 
@@ -40,7 +41,9 @@ export type ProposalStage = {
   description: string;
   body: string;
   transparency_report?: string;
-  status: ProposalStatus;
+  status: StageStatus;
+  overallStatus: ProposalStatus;
+  statusMessage?: string;
   isEmergency?: boolean;
   createdAt?: Date;
   creator: ICreator[];

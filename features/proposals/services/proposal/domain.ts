@@ -1,14 +1,28 @@
-import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
+import { type IPublisher } from "@aragon/ods";
 import { type Address } from "viem";
 import { type VotingScores } from "../../models/proposals";
-
-export type ProposalStatus = ODSProposalStatus | "Last Call" | "Continuous" | "Stagnant" | "Peer Review";
 
 export enum ProposalStages {
   DRAFT = "Draft",
   COUNCIL_APPROVAL = "Protocol Council Approval",
   COMMUNITY_VOTING = "gPOL Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
+}
+
+export enum ProposalStatus {
+  ACTIVE = "ACTIVE",
+  ACCEPTED = "ACCEPTED",
+  PENDING = "PENDING",
+  EXECUTED = "EXECUTED",
+  REJECTED = "REJECTED",
+  EXPIRED = "EXPIRED",
+}
+
+export enum StageStatus {
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
 }
 
 export const StageOrder = {
@@ -30,6 +44,7 @@ export type IProposalResource = {
 
 export interface IVotingData {
   providerId: string;
+  isActive: boolean;
   startDate: string;
   endDate: string;
   choices: string[];
@@ -42,7 +57,8 @@ export interface IVotingData {
 export interface IProposalStage {
   id: string;
   type: ProposalStages;
-  status: ProposalStatus;
+  status: StageStatus;
+  statusMessage?: string;
   createdAt?: string;
   startTimestamp?: string;
   endTimestamp?: string;
@@ -72,6 +88,7 @@ export interface IProposal {
   includedPips: IProposalResource[];
   parentPip?: IProposalResource;
   status: ProposalStatus;
+  statusMessage?: string;
   createdAt?: string;
   type: string;
   isEmergency?: boolean;

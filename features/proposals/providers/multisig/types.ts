@@ -1,6 +1,7 @@
 import {
-  type ProposalStatus,
   type ProposalStages,
+  type ProposalStatus,
+  type StageStatus,
   type IProposalResource,
 } from "@/features/proposals/services/proposal/domain";
 import { type Action } from "@/utils/types";
@@ -92,7 +93,8 @@ export type MultisigProposal = {
   createdAt: string;
   resources: IProposalResource[];
   link: string;
-  status: ProposalStatus;
+  status: StageStatus;
+  overallStatus: ProposalStatus;
   voting?: MultiSigProposalVotingData;
   actions: Action[];
   isEmergency: boolean;

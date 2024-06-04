@@ -1,6 +1,6 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { AvatarIcon, Breadcrumbs, Heading, IconType, Tag, type IBreadcrumbsLink, type TagVariant } from "@aragon/ods";
-import { type ProposalStatus } from "../../services/proposal/domain";
+import { ProposalStatus } from "../../services/proposal/domain";
 import { type ProposalDetail } from "../../services/proposal/selectors";
 import { Publisher } from "./publisher";
 
@@ -12,13 +12,23 @@ interface IHeaderProposalProps {
 export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const {
     breadcrumbs,
-    proposal: { status, title, isEmergency, description, publisher, type, createdAt: startDate, endDate },
+    proposal: {
+      status,
+      statusMessage,
+      title,
+      isEmergency,
+      description,
+      publisher,
+      type,
+      createdAt: startDate,
+      endDate,
+    },
   } = props;
 
-  const showExpirationDate =
-    !!endDate && (status === "active" || status === "pending" || status === "queued" || status === "vetoed");
+  const showExpirationDate = !!endDate && (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING);
 
   const tagVariant = getTagVariantFromStatus(status);
+  const statusLabel = (statusMessage ?? status).toLowerCase();
 
   return (
     <div className="flex w-full justify-center bg-neutral-0">
@@ -27,18 +37,20 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
         <Breadcrumbs
           links={breadcrumbs}
           tag={
-            status && {
-              label: status,
-              className: "capitalize",
-              variant: tagVariant,
-            }
+            status
+              ? {
+                  label: statusLabel,
+                  className: "capitalize",
+                  variant: tagVariant,
+                }
+              : undefined
           }
         />
         {/* Title & description */}
         <div className="flex w-full flex-col gap-y-2">
           <div className="flex w-full items-center gap-x-4">
             <Heading size="h1">{title}</Heading>
-            {type && <Tag label={type} variant="primary" />}
+            {type && type !== "unknown" && <Tag label={type} variant="primary" />}
             {isEmergency && <Tag label="Emergency" variant="critical" />}
           </div>
           <p className="text-lg leading-normal text-neutral-500">{description}</p>
@@ -73,32 +85,18 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   );
 };
 
-const getTagVariantFromStatus = (status: ProposalStatus): TagVariant => {
+const getTagVariantFromStatus = (status: ProposalStatus | string): TagVariant => {
+  //TODO: Use statusMessage?
   switch (status) {
-    case "accepted":
-      return "success";
-    case "active":
+    case ProposalStatus.ACTIVE:
       return "info";
-    case "challenged":
-      return "warning";
-    case "draft":
-      return "neutral";
-    case "executed":
+    case ProposalStatus.EXECUTED:
       return "success";
-    case "expired":
+    case ProposalStatus.REJECTED:
+    case ProposalStatus.EXPIRED:
       return "critical";
-    case "failed":
-      return "critical";
-    case "partiallyExecuted":
-      return "warning";
-    case "pending":
+    case ProposalStatus.PENDING:
       return "neutral";
-    case "queued":
-      return "success";
-    case "rejected":
-      return "critical";
-    case "vetoed":
-      return "warning";
     default:
       return "neutral";
   }
