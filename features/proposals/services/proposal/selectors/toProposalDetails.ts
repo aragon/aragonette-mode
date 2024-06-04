@@ -21,8 +21,7 @@ import {
   type IAction,
   type IProposal,
   type IProposalStage,
-  StageStatus,
-  ProposalStatus,
+  type StageStatus,
 } from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
@@ -69,7 +68,7 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   return {
     ...proposal,
     actions: transformedActions,
-    stages: transformStages(proposal.stages, proposal.id),
+    stages: transformStages(proposal.stages, proposal.id, !!proposal.isEmergency),
     createdAt,
     endDate: formattedEndDate,
   };
@@ -129,10 +128,18 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
  * @param stages - The array of proposal stages to transform.
  * @returns the array of transformed stages.
  */
-function transformStages(stages: IProposalStage[], proposalId: string): ITransformedStage[] {
+function transformStages(stages: IProposalStage[], proposalId: string, isEmergency: boolean): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
     if (stage.type === ProposalStages.DRAFT) {
+      return [];
+    }
+
+    // filer out community voting and council confirmation stages for emergency proposals
+    if (
+      isEmergency &&
+      (stage.type === ProposalStages.COMMUNITY_VOTING || stage.type === ProposalStages.COUNCIL_CONFIRMATION)
+    ) {
       return [];
     }
 
@@ -211,7 +218,7 @@ function generateStages(stages: IProposalStage[]) {
 
   for (const stageId of Object.values(ProposalStages)) {
     if (!stageSet.has(stageId)) {
-      stageSet.set(stageId, { id: stageId } as IProposalStage);
+      stageSet.set(stageId, { type: stageId } as IProposalStage);
     }
   }
 
