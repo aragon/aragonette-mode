@@ -50,7 +50,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
         <div className="flex w-full flex-col gap-y-2">
           <div className="flex w-full items-center gap-x-4">
             <Heading size="h1">{title}</Heading>
-            {type && <Tag label={type} variant="primary" />}
+            {type && type !== "unknown" && <Tag label={type} variant="primary" />}
             {isEmergency && <Tag label="Emergency" variant="critical" />}
           </div>
           <p className="text-lg leading-normal text-neutral-500">{description}</p>
