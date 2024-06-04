@@ -65,6 +65,8 @@ const serializeProposalStatus = (status: ProposalStatus): ProposalStatusDb => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return ProposalStatusDb.ACTIVE;
+    case ProposalStatus.ACCEPTED:
+      return ProposalStatusDb.ACCEPTED;
     case ProposalStatus.EXECUTED:
       return ProposalStatusDb.EXECUTED;
     case ProposalStatus.PENDING:
@@ -80,6 +82,8 @@ const parseProposalStatus = (status: ProposalStatusDb): ProposalStatus => {
   switch (status) {
     case ProposalStatusDb.ACTIVE:
       return ProposalStatus.ACTIVE;
+    case ProposalStatusDb.ACCEPTED:
+      return ProposalStatus.ACCEPTED;
     case ProposalStatusDb.EXECUTED:
       return ProposalStatus.EXECUTED;
     case ProposalStatusDb.PENDING:
