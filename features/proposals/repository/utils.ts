@@ -9,7 +9,7 @@ import {
 import { type IProposal } from "..";
 import { type IProposalStage, ProposalStages, ProposalStatus, StageStatus } from "../services/proposal/domain";
 
-const sererializeType = (type: ProposalStages): StageType => {
+const serializeType = (type: ProposalStages): StageType => {
   switch (type) {
     case ProposalStages.DRAFT:
       return StageType.DRAFT;
@@ -161,7 +161,7 @@ export const serializeStage = (proposalId: string, stage: IProposalStage): Omit<
   return {
     // TODO: Fix this
     id: `${proposalId}-${stage.id}`,
-    type: sererializeType(stage.type),
+    type: serializeType(stage.type),
     status: serializeStageStatus(stage.status),
     statusMessage: stage.statusMessage ?? null,
     createdAt: stage.createdAt ?? null,
