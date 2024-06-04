@@ -329,7 +329,9 @@ export const requestProposalsData = async function (
       voting: {
         providerId: i.toString(),
         startDate: proposalData.parameters.startDate.toString(),
-        endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
+        endDate: proposalData.firstDelayStartTimestamp
+          ? proposalData.firstDelayStartTimestamp.toString()
+          : proposalData.parameters.endDate.toString(),
         approvals: proposalData.approvals,
         quorum: proposalData.parameters.minApprovals,
         snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
