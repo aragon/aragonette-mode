@@ -15,14 +15,7 @@ import { type ProposalType } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
-import {
-  ProposalStages,
-  StageOrder,
-  type IAction,
-  type IProposal,
-  type IProposalStage,
-  type StageStatus,
-} from "../domain";
+import { ProposalStages, StageOrder, StageStatus, type IAction, type IProposal, type IProposalStage } from "../domain";
 
 export type DetailedAction = { decoded?: DecodedAction; raw: Action };
 
@@ -68,7 +61,7 @@ export async function toProposalDetails(proposal: IProposal | undefined): Promis
   return {
     ...proposal,
     actions: transformedActions,
-    stages: transformStages(proposal.stages, proposal.id, !!proposal.isEmergency),
+    stages: transformStages(proposal.stages, proposal.id, !!proposal.isEmergency, endDate),
     createdAt,
     endDate: formattedEndDate,
   };
@@ -128,7 +121,12 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
  * @param stages - The array of proposal stages to transform.
  * @returns the array of transformed stages.
  */
-function transformStages(stages: IProposalStage[], proposalId: string, isEmergency: boolean): ITransformedStage[] {
+function transformStages(
+  stages: IProposalStage[],
+  proposalId: string,
+  isEmergency: boolean,
+  expirationDate: string | undefined
+): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
     if (stage.type === ProposalStages.DRAFT) {
@@ -143,7 +141,7 @@ function transformStages(stages: IProposalStage[], proposalId: string, isEmergen
       return [];
     }
 
-    const status = getVotingStatus(stage.status, stage.voting?.startDate);
+    const status = getVotingStatus(stage.status, stage.voting?.startDate, expirationDate);
 
     if (stage.voting) {
       const { choices, startDate, endDate, snapshotBlock, total_votes, quorum, providerId, scores } = stage.voting;
@@ -241,12 +239,16 @@ function formatChoices(choices: string[]) {
  * Determines the voting status based on the current status, start date, and end date.
  * @param status - The current status of the proposal.
  * @param startDate - The start date of the voting stage.
- * @param endDate - The end date of the voting stage.
- * @returns he determined voting status.
+ * @param expirationDate - The end date of the proposal.
+ * @returns the determined voting status.
  */
-const getVotingStatus = (status: StageStatus, startDate?: string) => {
+const getVotingStatus = (status: StageStatus, startDate?: string, expirationDate?: string) => {
   const startDateIsInFuture = startDate && dayjs(startDate).isAfter(dayjs());
+  const expirationDateIsInFuture = expirationDate && dayjs(expirationDate).isAfter(dayjs());
 
-  if (startDateIsInFuture) return "unreached";
+  if (startDateIsInFuture) {
+    return expirationDateIsInFuture ? StageStatus.PENDING : "unreached";
+  }
+
   return status;
 };
