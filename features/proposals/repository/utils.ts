@@ -1,13 +1,13 @@
 import {
-  Proposal,
-  Stage,
-  StageType,
+  type Proposal,
   ProposalStatus as ProposalStatusDb,
+  type Stage,
   StageStatus as StageStatusDb,
+  StageType,
 } from "@prisma/client";
 
-import { IProposal } from "..";
-import { ProposalStatus, ProposalStages, IProposalStage, StageStatus } from "../services/proposal/domain";
+import { type IProposal } from "..";
+import { type IProposalStage, ProposalStages, ProposalStatus, StageStatus } from "../services/proposal/domain";
 
 const sererializeType = (type: ProposalStages): StageType => {
   switch (type) {

@@ -1,4 +1,4 @@
-import { type IPublisher, type ProposalStatus as ODSProposalStatus } from "@aragon/ods";
+import { type IPublisher } from "@aragon/ods";
 import { type Address } from "viem";
 import { type VotingScores } from "../../models/proposals";
 
@@ -11,6 +11,7 @@ export enum ProposalStages {
 
 export enum ProposalStatus {
   ACTIVE = "ACTIVE",
+  ACCEPTED = "ACCEPTED",
   PENDING = "PENDING",
   EXECUTED = "EXECUTED",
   REJECTED = "REJECTED",
