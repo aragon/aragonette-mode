@@ -168,7 +168,7 @@ function isProposalVetoed(noVotes: number, totalSupply: number, yesVotes: number
 }
 
 function calculateDynamicVetoRate(noVotes: number, turnout: number): number {
-  // formula: noVotes / sqrt(totalSupply)
+  // formula: noVotes / turnout
   return noVotes / turnout;
 }
 

@@ -6,12 +6,13 @@ export type ProposalType = "majorityVoting" | "approvalThreshold";
 
 export interface IVotingBreakdownProps<TType extends ProposalType = ProposalType> {
   variant: TType;
+  proposalId: string;
   result?: TType extends "approvalThreshold" ? IBreakdownApprovalThresholdResult : IBreakdownMajorityVotingResult;
   cta?: VotingCta;
 }
 
 export const VotingBreakdown: React.FC<IVotingBreakdownProps> = (props) => {
-  const { result, cta, variant } = props;
+  const { result, cta, proposalId, variant } = props;
 
   return (
     <>
@@ -19,7 +20,11 @@ export const VotingBreakdown: React.FC<IVotingBreakdownProps> = (props) => {
         <BreakdownApprovalThresholdResult {...(result as IBreakdownApprovalThresholdResult)} cta={cta} />
       )}
       {variant === "majorityVoting" && !!result && (
-        <BreakdownMajorityVotingResult {...(result as IBreakdownMajorityVotingResult)} cta={cta} />
+        <BreakdownMajorityVotingResult
+          {...(result as IBreakdownMajorityVotingResult)}
+          cta={cta}
+          proposalId={proposalId}
+        />
       )}
     </>
   );
