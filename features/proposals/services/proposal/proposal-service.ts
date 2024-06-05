@@ -9,6 +9,7 @@ import type {
   IFetchVotedParams,
   IFetchVotesParams,
 } from "./params";
+import { encodeSearchParams } from "@/utils/query";
 
 class ProposalService {
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
@@ -52,18 +53,6 @@ class ProposalService {
     const parsed: IPaginatedResponse<IProposalVote> = await response.json();
     return parsed;
   }
-}
-
-function encodeSearchParams(baseUrl: string, params: Record<string, any>): string {
-  const searchParams = new URLSearchParams();
-
-  // Iterate over object properties
-  Object.entries(params).forEach(([key, value]) => {
-    searchParams.append(key, String(value));
-  });
-
-  // Construct the URL with encoded query parameters
-  return `${baseUrl}?${searchParams.toString()}`;
 }
 
 export const proposalService = new ProposalService();
