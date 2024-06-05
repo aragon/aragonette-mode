@@ -52,17 +52,11 @@ export const getGithubTransparencyReports: IProposalStagesProvider = async funct
 
   const transparency_report_files = await downloadPIPs(transparency_reports_url);
 
-  const transparencyReports = transparency_report_files
-    .map((file) => {
-      const file_link = file.link.split("/").pop();
-      const proposalNumber = file_link ? extractProposalNumber(file_link) : null;
-      return { proposalNumber, data: file.data, link: file.link };
-    })
-    .map(({ proposalNumber, data, link }) => {
-      const header = extractYamlHeader(data);
-      if (!header) return null;
-      return parseTransparencyReport(header, data, link);
-    });
+  const transparencyReports = transparency_report_files.map((file) => {
+    const header = extractYamlHeader(file.data);
+    if (!header) return null;
+    return parseTransparencyReport(header, file.data, file.link);
+  });
 
   return transparencyReports.filter((report) => report !== null) as any;
 };

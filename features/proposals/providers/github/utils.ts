@@ -1,5 +1,5 @@
 import { ProposalDetails } from "@/components/nav/routes";
-import { GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
+import { EMERGENCY_PREFIX, GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
 import Cache from "@/services/cache/VercelCache";
 import { type ProposalStage } from "../../models/proposals";
 import {
@@ -200,8 +200,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   };
 }
 
-type TransparencyReportHeader = {
-  SOS: number;
+type TransparencyReportHeader = { [key: string]: string } & {
   title: string;
   description: string;
   author: string;
@@ -234,7 +233,7 @@ export function parseTransparencyReport(header: string, body: string, link: stri
 
   return {
     stageType: ProposalStages.TRANSPARENCY_REPORT,
-    pip: "SOS-" + parts.SOS,
+    pip: EMERGENCY_PREFIX + "-" + parts[EMERGENCY_PREFIX],
     title: parts.title,
     description: parts.description,
     body,
