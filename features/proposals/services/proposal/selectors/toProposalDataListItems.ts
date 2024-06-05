@@ -35,7 +35,11 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
         : status.toLowerCase();
 
     // compute date based off of stage
-    const date = computeRelativeDate(status, activeStage.voting?.startDate, activeStage.voting?.endDate);
+    const endDate =
+      proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_CONFIRMATION)?.voting?.endDate ??
+      proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
+
+    const date = computeRelativeDate(status, activeStage.voting?.startDate, endDate);
     const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
 
     // only community voting is mjv; draft has no voting data
@@ -86,11 +90,11 @@ function computeRelativeDate(status: ProposalStatus, startDate?: string, endDate
 
   switch (status) {
     case ProposalStatus.PENDING:
-      return startDate ? dayjs.unix(Number(startDate)).toNow() : undefined;
+      return startDate ? dayjs(startDate).toNow() : undefined;
     case ProposalStatus.REJECTED:
     case ProposalStatus.EXECUTED:
     case ProposalStatus.EXPIRED:
-      return endDate ? dayjs.unix(Number(endDate)).fromNow() : undefined;
+      return endDate ? dayjs(endDate).fromNow() : undefined;
     default:
       return;
   }

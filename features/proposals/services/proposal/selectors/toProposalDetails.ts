@@ -191,7 +191,7 @@ function transformStages(
         proposalId,
         providerId,
         status,
-      };
+      } as ITransformedStage;
     }
 
     // return pending or unreached stages
@@ -202,7 +202,7 @@ function transformStages(
       variant: "approvalThreshold",
       status,
       disabled: true,
-    };
+    } as ITransformedStage;
   });
 }
 
