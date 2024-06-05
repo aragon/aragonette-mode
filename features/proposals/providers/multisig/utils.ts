@@ -141,6 +141,13 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
       });
     }
 
+    if (proposal.transparencyReportId) {
+      bindings.push({
+        id: ProposalStages.TRANSPARENCY_REPORT,
+        link: proposal.transparencyReportId,
+      });
+    }
+
     if (proposal.snapshotId) {
       bindings.push({
         id: ProposalStages.COMMUNITY_VOTING,

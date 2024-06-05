@@ -132,7 +132,7 @@ export interface ITransformedStage<TType extends ProposalType = ProposalType> {
 function transformStages(stages: IProposalStage[], proposalId: string): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
-    if (stage.type === ProposalStages.DRAFT) {
+    if (stage.type === ProposalStages.DRAFT || stage.type === ProposalStages.TRANSPARENCY_REPORT) {
       return [];
     }
 

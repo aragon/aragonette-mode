@@ -188,6 +188,7 @@ function computeProposalType(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.type ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.type ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.type ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.type ??
     "unknown"
   );
@@ -224,6 +225,7 @@ function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
 function computeProposalId(proposalStages: ProposalStage[]): string {
   const id =
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.pip ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.pip ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.pip ??
     "unknown";
@@ -410,8 +412,8 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
     const transparencyReport = matchedProposalStages.find(
-      (stage) => stage.stageType === ProposalStages.DRAFT
-    )?.transparency_report;
+      (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
+    )?.body;
     const includedPips =
       matchedProposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedPips ?? [];
     const parentPip = matchedProposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentPip;

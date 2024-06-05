@@ -44,7 +44,11 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
 
     // stage result
     let result: IMajorityVotingResult | IApprovalThresholdResult | undefined;
-    if (activeStage.type != ProposalStages.DRAFT && (activeStage.voting?.total_votes ?? 0) > 0) {
+    if (
+      activeStage.type != ProposalStages.DRAFT &&
+      activeStage.type != ProposalStages.TRANSPARENCY_REPORT &&
+      (activeStage.voting?.total_votes ?? 0) > 0
+    ) {
       const winningOption = activeStage.voting?.scores.sort((a, b) => b.votes - a.votes)[0];
       const id = StageOrder[activeStage.type];
 
