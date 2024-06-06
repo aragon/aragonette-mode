@@ -1,5 +1,5 @@
 import { StageStatus } from "@/features/proposals";
-import { buildProposalResponse } from "@/features/proposals/providers/utils/proposal-builder";
+import { buildProposalsResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -17,7 +17,7 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
   */
 
   try {
-    const proposals = await buildProposalResponse();
+    const proposals = await buildProposalsResponse();
 
     for (const proposal of proposals) {
       await proposalRepository.upsertProposal({

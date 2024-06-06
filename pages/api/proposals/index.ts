@@ -49,7 +49,7 @@ export default async function handler(
     );
 
     for (const proposal of paginatedProposals.data) {
-      proposal.stages = proposal.stages.sort((a, b) => {
+      proposal.stages.sort((a, b) => {
         return StageOrder[a.type] - StageOrder[b.type];
       });
       for (const stage of proposal.stages) {
@@ -57,6 +57,7 @@ export default async function handler(
         const res = await buildVotingResponse(stage);
         if (res) {
           const [voting, status, overallStatus] = res;
+          // TODO: Update stage and proposal statuses in the database
           stage.voting = voting;
           stage.status = status;
           proposal.status = overallStatus;

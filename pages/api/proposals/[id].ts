@@ -1,5 +1,5 @@
-import { type IProposal, StageOrder } from "@/features/proposals";
-import { buildVotingResponse } from "@/features/proposals/providers";
+import { type IProposal, StageOrder, StageStatus, ProposalStages } from "@/features/proposals";
+import { buildProposalResponse, buildVotingResponse } from "@/features/proposals/providers";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { checkParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
@@ -10,23 +10,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const parsedId = checkParam(id, "proposalId");
 
   try {
-    const proposal = await proposalRepository.getProposalById(parsedId);
+    let proposal = await proposalRepository.getProposalById(parsedId);
 
     if (!proposal) {
       return res.status(404).json({ error: { message: "Proposal not found" } });
     }
 
-    for (const stage of proposal.stages) {
-      proposal.stages = proposal.stages.sort((a, b) => {
-        return StageOrder[a.type] - StageOrder[b.type];
-      });
+    proposal.stages.sort((a, b) => {
+      return StageOrder[a.type] - StageOrder[b.type];
+    });
+    for (const [index, stage] of proposal.stages.entries()) {
       //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
       const res = await buildVotingResponse(stage);
       if (res) {
         const [voting, status, overallStatus] = res;
+        // TODO: Update stage and proposal statuses in the database
         stage.voting = voting;
         stage.status = status;
         proposal.status = overallStatus;
+        if (
+          status === StageStatus.APPROVED &&
+          stage.type != ProposalStages.COUNCIL_CONFIRMATION &&
+          !proposal.isEmergency &&
+          index === proposal.stages.length - 1
+        ) {
+          const freshProposal = await buildProposalResponse(proposal);
+          proposal = freshProposal;
+        }
       }
     }
 

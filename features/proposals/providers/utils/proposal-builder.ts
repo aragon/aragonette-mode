@@ -18,8 +18,13 @@ import {
   ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
-import { getGitHubProposalStagesData, getGithubTransparencyReports } from "../github/proposalStages";
-import { getMultisigProposalsData, getMultisigVotingData } from "../multisig/proposalStages";
+import {
+  getGitHubProposalStagesData,
+  getGithubTransparencyReports,
+  getGitHubProposalStageData,
+  getGithubTransparencyReport,
+} from "../github/proposalStages";
+import { getMultisigProposalsData, getMultisigProposalData, getMultisigVotingData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData, getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals";
 
@@ -246,7 +251,7 @@ function computeProposalId(proposalStages: ProposalStage[]): string {
   return id;
 }
 
-export async function getProposalStages() {
+export async function getAllProposalsStages() {
   const promises = [
     getGitHubProposalStagesData({
       user: GITHUB_USER,
@@ -266,6 +271,59 @@ export async function getProposalStages() {
   ];
 
   return (await Promise.all(promises)).flat();
+}
+
+export async function getProposalsStages(proposal: IProposal) {
+  const proposalStages: ProposalStage[] = [];
+
+  const multisig = proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL);
+  if (multisig?.voting?.providerId) {
+    const multisigData = await getMultisigProposalData({
+      chain: PUB_CHAIN.id,
+      contractAddress: PUB_MULTISIG_ADDRESS,
+      proposalId: BigInt(multisig.voting.providerId),
+    });
+
+    if (multisigData) {
+      proposalStages.concat(multisigData);
+
+      const githubId = multisigData[0].bindings?.find((binding) => binding.id === ProposalStages.DRAFT)?.link;
+      if (githubId) {
+        const githubData = await getGitHubProposalStageData({
+          user: GITHUB_USER,
+          repo: GITHUB_REPO,
+          pips_path: GITHUB_PIPS_PATH,
+          pip: githubId,
+        });
+
+        if (githubData) proposalStages.push(githubData);
+      }
+
+      const transparencyReportId = multisigData[0].bindings?.find(
+        (binding) => binding.id === ProposalStages.TRANSPARENCY_REPORT
+      )?.link;
+      if (transparencyReportId) {
+        const transparencyReportData = await getGithubTransparencyReport({
+          user: GITHUB_USER,
+          repo: GITHUB_REPO,
+          pips_path: GITHUB_PIPS_PATH,
+          pip: transparencyReportId,
+        });
+
+        if (transparencyReportData) proposalStages.push(transparencyReportData);
+      }
+
+      const snapshotProviderId = multisigData[0].bindings?.find(
+        (binding) => binding.id === ProposalStages.COMMUNITY_VOTING
+      )?.link;
+      if (snapshotProviderId) {
+        const snapshotData = await getSnapshotProposalStageData({ providerId: snapshotProviderId });
+        if (snapshotData) proposalStages.push(snapshotData);
+      }
+    }
+  }
+
+  return proposalStages;
 }
 
 const getProposalBindingId = (stage: ProposalStage) => {
@@ -417,8 +475,8 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
  *
  * @returns an array of fully constructed proposal objects.
  */
-export async function buildProposalResponse(): Promise<IProposal[]> {
-  const proposalStages = await getProposalStages();
+export async function buildProposalsResponse(): Promise<IProposal[]> {
+  const proposalStages = await getAllProposalsStages();
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
 
   return allMatchedProposalStages.map((matchedProposalStages) => {
@@ -476,6 +534,63 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
       actions,
     };
   });
+}
+
+export async function buildProposalResponse(proposal: IProposal): Promise<IProposal> {
+  const proposalStages = await getProposalsStages(proposal);
+
+  const title = computeTitle(proposalStages);
+  const type = computeProposalType(proposalStages);
+  const isEmergency = proposalStages.some((stage) => stage.isEmergency);
+  const publisher = computePublisher(proposalStages, isEmergency);
+  const description = computeDescription(proposalStages);
+  const body = computeBody(proposalStages);
+  const currentStage = computeCurrentStage(proposalStages);
+  const transparencyReport = proposalStages.find(
+    (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
+  )?.body;
+  const includedPips = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedPips ?? [];
+  const parentPip = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentPip;
+
+  // sorted stages
+  const stages = buildProposalStageResponse(proposalStages);
+  const resources = computeProposalResources(stages);
+  const status = computeProposalStatus(proposalStages);
+  const statusMessage = proposalStages.find((stage) => stage.stageType === currentStage)?.statusMessage;
+  const createdAt = computeProposalCreatedAt(proposalStages)?.toISOString();
+
+  const id = computeProposalId(proposalStages);
+
+  const actions =
+    proposalStages
+      .find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)
+      ?.actions?.map((action) => {
+        return {
+          to: action.to,
+          value: action.value.toString(),
+          data: action.data,
+        };
+      }) ?? [];
+
+  return {
+    id,
+    title,
+    description,
+    includedPips,
+    parentPip,
+    body,
+    transparencyReport,
+    resources,
+    status,
+    statusMessage,
+    isEmergency,
+    createdAt,
+    type,
+    currentStage,
+    publisher,
+    stages,
+    actions,
+  };
 }
 
 export async function getVotingData(stage: ProposalStages, providerId: string): Promise<VotingData | undefined> {
