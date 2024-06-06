@@ -1,4 +1,5 @@
 import { PUB_IPFS_ENDPOINT, PUB_IPFS_API_KEY } from "@/constants";
+import { logger } from "@/services/logger";
 import { CID, IPFSHTTPClient } from "ipfs-http-client";
 import { Hex, fromHex } from "viem";
 
@@ -30,12 +31,15 @@ async function fetchFromIPFS(ipfsUri: string): Promise<Response> {
   });
   clearTimeout(id);
   if (!response.ok) {
-    throw new Error("Could not connect to the IPFS endpoint");
+    throw new Error(`IPFS error: ${response.statusText}`);
   }
   return response; // .json(), .text(), .blob(), etc.
 }
 
 function resolvePath(uri: string) {
-  const path = uri.includes("ipfs://") ? uri.substring(7) : uri;
-  return path;
+  const cid = uri.includes("ipfs://") ? uri.substring(7) : uri;
+  if (!cid.length) throw new Error("Invalid IPFS URI");
+  const isNotAscii = cid.split("").some((char) => char.charCodeAt(0) > 127);
+  if (!isNotAscii) throw new Error("Invalid IPFS URI");
+  return cid;
 }

@@ -3,6 +3,7 @@ import { type IProposalStagesProvider } from "../../models/proposals";
 import {
   extractHeader,
   extractYamlHeader,
+  extractTRBody,
   extractBody,
   parseHeader,
   downloadPIPs,
@@ -55,13 +56,10 @@ export const getGithubTransparencyReports: IProposalStagesProvider = async funct
   const transparencyReports = transparency_report_files.map((file) => {
     const header = extractYamlHeader(file.data);
     if (!header) return null;
-    return parseTransparencyReport(header, file.data, file.link);
+    const body = extractTRBody(file.data);
+    if (!body) return null;
+    return parseTransparencyReport(header, body, file.link);
   });
 
   return transparencyReports.filter((report) => report !== null) as any;
 };
-
-function extractProposalNumber(link: string) {
-  const match = link.match(/-(\d+)/);
-  return match ? match[1] : null;
-}

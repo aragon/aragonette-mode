@@ -92,13 +92,18 @@ const getProposalCreationData = async function (
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
   const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
+  const transparencyReportLink =
+    secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "transparency_report") ??
+    metadata.resources.find((resource) => resource.name.toLowerCase() === "transparency_report");
   const snapshotLink = secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "snapshot");
 
-  const githubFileName = githubLink?.url.split("/").pop()?.split(".")?.shift();
+  const githubId = githubLink?.url.split("/").pop()?.split(".")?.shift();
+  const transparencyReportId = transparencyReportLink?.url.split("/").pop()?.split(".").shift();
   const snapshotId = snapshotLink?.url.split("/").pop();
 
   return {
-    githubId: githubFileName,
+    githubId,
+    transparencyReportId,
     snapshotId,
   };
 };
@@ -214,13 +219,17 @@ export const requestVotingData = async function (
           approvals: proposalData.approvals,
           minApprovals: proposalData.parameters.minApprovals,
         });
+    const endDate =
+      proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
+        ? proposalData.firstDelayStartTimestamp.toString()
+        : proposalData.parameters.endDate.toString();
 
     return {
       status: stageStatus,
       overallStatus,
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
-      endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
+      endDate,
       approvals: proposalData.approvals,
       quorum: proposalData.parameters.minApprovals,
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
@@ -279,12 +288,22 @@ export const requestProposalsData = async function (
     const primaryMetadataCid = fromHex(proposalData.primaryMetadata as Hex, "string");
     const secondaryMetadataCid = fromHex(proposalData.secondaryMetadata as Hex, "string");
 
-    const primaryMetadata: PrimaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
-    const secondaryMetadata = secondaryMetadataCid
-      ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
-      : undefined;
+    let primaryMetadata: PrimaryMetadata;
+    let secondaryMetadata: SecondaryMetadata | undefined;
+    try {
+      primaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
+      secondaryMetadata = secondaryMetadataCid
+        ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
+        : undefined;
+    } catch (err) {
+      logger.error("Could not fetch the proposal metadata", err);
+      continue;
+    }
 
-    const { githubId, snapshotId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
+    const { githubId, snapshotId, transparencyReportId } = await getProposalBindings(
+      primaryMetadata,
+      secondaryMetadata
+    );
 
     const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 
@@ -307,6 +326,7 @@ export const requestProposalsData = async function (
       isEmergency: proposalData.parameters.emergency,
       resources,
       githubId,
+      transparencyReportId,
       snapshotId,
     };
 
