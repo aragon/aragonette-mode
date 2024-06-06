@@ -21,6 +21,7 @@ import {
   TransparencyReport,
   type IBreakdownApprovalThresholdResult,
 } from "../components";
+import { type SecondaryMetadata } from "../providers/multisig/types";
 import { ProposalStages, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,
@@ -35,11 +36,17 @@ export default function ProposalDetails() {
 
   // state variables
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
-  const [communityProposalId, setCommunityProposalId] = useState<string>("");
+  const [secondaryMetadata, setSecondaryMetadata] = useState<SecondaryMetadata>();
 
   // data queries
   const proposalId = router.query.id as string;
-  const { data: proposal, error } = useQuery(proposalQueryOptions({ proposalId }));
+  const { data: proposal, error } = useQuery({
+    ...proposalQueryOptions({ proposalId }),
+    // refetchInterval: (query) => {
+    //   const status = query.state.data?.status;
+    //   if (status === ProposalStatus.ACTIVE) return 1000 * 60; // minute
+    // },
+  });
 
   const { data: userHasVoted } = useQuery({
     ...votedQueryOptions({ address: address!, proposalId, stage: proposal?.currentStage as ProposalStages }),
@@ -60,7 +67,7 @@ export default function ProposalDetails() {
   // vote and approve proposal
   const { advanceToNextStage, isConfirming: isAdvancingToNextStage } = useAdvanceToNextStage(
     proposalVoteId,
-    communityProposalId,
+    secondaryMetadata,
     invalidateDetailQueries
   );
 
@@ -68,7 +75,7 @@ export default function ProposalDetails() {
   const { confirmProposal, isConfirming } = useProposalConfirmation(proposalVoteId, invalidateDetailQueries);
   const { approveProposal, isConfirming: isApproving } = useProposalApproval(
     proposalVoteId,
-    communityProposalId ? advanceToNextStage : invalidateDetailQueries
+    secondaryMetadata ? advanceToNextStage : invalidateDetailQueries
   );
 
   // invalidates all the queries related to the proposal details
@@ -111,7 +118,7 @@ export default function ProposalDetails() {
     if (isVoting) {
       return "Submitting vote...";
     } else if (userHasVoted) {
-      return "Voted";
+      return "Change vote";
     } else if (!isConnected) {
       return "Login to vote";
     } else {
@@ -127,8 +134,8 @@ export default function ProposalDetails() {
     }
   }
 
-  function handleConfirmSnapshotId(value: string) {
-    setCommunityProposalId(value);
+  function handleConfirmSnapshotId(snapshotProposalUrl: string) {
+    setSecondaryMetadata({ resources: [{ name: "Snapshot", url: snapshotProposalUrl }] });
     setShowAdvanceModal(false);
     approveProposal();
   }
@@ -160,7 +167,7 @@ export default function ProposalDetails() {
               proposal.currentStage === ProposalStages.COMMUNITY_VOTING && stageNotEnded
                 ? {
                     isLoading: isVoting,
-                    disabled: !isConnected || !!userHasVoted || !userCanVote,
+                    disabled: !isConnected || !userCanVote,
                     onClick: castVote,
                     label: getVoteLabel(),
                   }
@@ -200,7 +207,7 @@ export default function ProposalDetails() {
 
     if (result && isApprovalStage && !proposal.isEmergency) {
       const { approvalAmount, approvalThreshold } = result as IBreakdownApprovalThresholdResult;
-      if (approvalAmount + 1 === approvalThreshold) {
+      if (approvalAmount + 1 >= approvalThreshold) {
         canAdvanceWithNextApproval = true;
       }
     }
