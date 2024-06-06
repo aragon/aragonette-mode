@@ -28,6 +28,9 @@ export function uploadToPinata(data: any): Promise<string> {
     .then((res) => res.json())
     .then((json) => {
       return `ipfs://${json.IpfsHash}`;
+    })
+    .catch((err) => {
+      throw new Error("Error pinning metadata", err);
     });
 }
 
