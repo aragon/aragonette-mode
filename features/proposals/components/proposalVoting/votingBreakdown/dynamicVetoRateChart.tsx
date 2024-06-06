@@ -21,7 +21,7 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
     return null;
   }
 
-  const totalVotes = dummyVotes[dummyVotes.length - 1].no + dummyVotes[dummyVotes.length - 1].yes; // votesData?.pagination.total;
+  const totalVotes = votesData?.pagination.total;
   const totalSupply = 15000; // TODO: fetch total supply
 
   let yesTotal = 0;
@@ -29,16 +29,14 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
 
   // TODO generate from backend
   const dataPoints = generateDataPoints(
-    votesData?.votes
-      .map((vote) => {
-        if (vote.choice === "yes") {
-          yesTotal += Number(vote.votingPower?.split(" ")[0]);
-        } else if (vote.choice === "no") {
-          noTotal += Number(vote.votingPower?.split(" ")[0]);
-        }
-        return { yes: yesTotal, no: noTotal };
-      })
-      .concat(dummyVotes) ?? [],
+    votesData?.votes.map((vote) => {
+      if (vote.choice === "yes") {
+        yesTotal += Number(vote.votingPower?.split(" ")[0]);
+      } else if (vote.choice === "no") {
+        noTotal += Number(vote.votingPower?.split(" ")[0]);
+      }
+      return { yes: yesTotal, no: noTotal };
+    }) ?? [],
     totalSupply
   );
 
@@ -123,15 +121,6 @@ type VotingDataPoint = {
   neededNoVotes: number;
   requiredNoVotesLeft: number;
 };
-
-const dummyVotes = [
-  { yes: 90, no: 587 },
-  { yes: 980, no: 1020 },
-  { yes: 990, no: 2002 },
-  { yes: 6000, no: 3005 },
-  { yes: 6000, no: 3540 },
-  { yes: 6020, no: 8000 },
-];
 
 const renderContent: ContentType<string[], string> = ({ active, payload }) => {
   if (!active || !payload?.length) return undefined;
