@@ -17,7 +17,7 @@ import {
   ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
-import { getGitHubProposalStagesData } from "../github/proposalStages";
+import { getGitHubProposalStagesData, getGithubTransparencyReports } from "../github/proposalStages";
 import { getMultisigProposalsData, getMultisigVotingData } from "../multisig/proposalStages";
 import { getSnapshotProposalStagesData, getSnapshotProposalStageData } from "../snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals";
@@ -38,6 +38,7 @@ function computeTitle(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.title ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.title ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.title ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.title ??
     ""
   );
@@ -59,6 +60,7 @@ function computeDescription(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.description ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.description ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.description ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.description ??
     ""
   );
@@ -80,6 +82,7 @@ function computeBody(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.body ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.body ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.body ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.body ??
     ""
   );
@@ -123,6 +126,9 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
  */
 function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus {
   const draftStage = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.overallStatus;
+  const transparencyReportStage = proposalStages.find(
+    (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
+  )?.overallStatus;
   const councilApprovalStage = proposalStages.find(
     (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
   )?.overallStatus;
@@ -134,7 +140,12 @@ function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus 
   )?.overallStatus;
 
   return (
-    councilConfirmationStage ?? communityVotingStage ?? councilApprovalStage ?? draftStage ?? ProposalStatus.PENDING
+    councilConfirmationStage ??
+    communityVotingStage ??
+    councilApprovalStage ??
+    draftStage ??
+    transparencyReportStage ??
+    ProposalStatus.PENDING
   );
 }
 
@@ -149,6 +160,7 @@ function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus 
 function computeProposalCreatedAt(proposalStages: ProposalStage[]): Date | undefined {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.createdAt ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt
@@ -188,6 +200,7 @@ function computeProposalType(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.type ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.type ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.type ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.type ??
     "unknown"
   );
@@ -224,6 +237,7 @@ function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
 function computeProposalId(proposalStages: ProposalStage[]): string {
   const id =
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.pip ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.pip ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.pip ??
     "unknown";
@@ -237,6 +251,10 @@ export async function getProposalStages() {
       user: GITHUB_USER,
       repo: GITHUB_REPO,
       pips_path: GITHUB_PIPS_PATH,
+    }),
+    getGithubTransparencyReports({
+      user: GITHUB_USER,
+      repo: GITHUB_REPO,
       transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
     }),
     getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE }),
@@ -252,7 +270,7 @@ export async function getProposalStages() {
 const getProposalBindingId = (stage: ProposalStage) => {
   // For development purposes, we are using the PIP number as the binding ID
   // TODO: Handle with RD-303
-  if (stage.stageType === ProposalStages.DRAFT) {
+  if (stage.stageType === ProposalStages.DRAFT || stage.stageType === ProposalStages.TRANSPARENCY_REPORT) {
     if (stage.pip) return stage.pip;
     else return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
   }
@@ -277,6 +295,7 @@ const getProposalBindingId = (stage: ProposalStage) => {
  */
 export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
   const draftProposals = proposalStages.filter((stage) => stage.stageType === ProposalStages.DRAFT);
+  const transparencyReports = proposalStages.filter((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT);
   const councilApprovalProposals = proposalStages.filter(
     (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
   );
@@ -296,6 +315,18 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
       const draftProposal = draftProposals.find((stage) => getProposalBindingId(stage) === draftBindingLink);
       if (draftProposal) {
         proposal.push(draftProposal);
+      }
+    }
+
+    const transparencyReportsBindingLink = proposal[0].bindings?.find(
+      (binding) => binding.id === ProposalStages.TRANSPARENCY_REPORT
+    )?.link;
+    if (transparencyReportsBindingLink) {
+      const transparencyReport = transparencyReports.find(
+        (stage) => getProposalBindingId(stage) === transparencyReportsBindingLink
+      );
+      if (transparencyReport) {
+        proposal.push(transparencyReport);
       }
     }
 
@@ -398,8 +429,8 @@ export async function buildProposalResponse(): Promise<IProposal[]> {
     const body = computeBody(matchedProposalStages);
     const currentStage = computeCurrentStage(matchedProposalStages);
     const transparencyReport = matchedProposalStages.find(
-      (stage) => stage.stageType === ProposalStages.DRAFT
-    )?.transparency_report;
+      (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
+    )?.body;
     const includedPips =
       matchedProposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedPips ?? [];
     const parentPip = matchedProposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentPip;

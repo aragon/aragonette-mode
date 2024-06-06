@@ -129,7 +129,7 @@ function transformStages(
 ): ITransformedStage[] {
   return generateStages(stages).flatMap((stage) => {
     // filter out draft stage
-    if (stage.type === ProposalStages.DRAFT) {
+    if (stage.type === ProposalStages.DRAFT || stage.type === ProposalStages.TRANSPARENCY_REPORT) {
       return [];
     }
 

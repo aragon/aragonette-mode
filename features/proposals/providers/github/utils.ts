@@ -1,5 +1,5 @@
 import { ProposalDetails } from "@/components/nav/routes";
-import { GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
+import { EMERGENCY_PREFIX, GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
 import Cache from "@/services/cache/VercelCache";
 import { type ProposalStage } from "../../models/proposals";
 import {
@@ -9,6 +9,7 @@ import {
   ProposalStatus,
   StageStatus,
 } from "../../services/proposal/domain";
+import yaml from "js-yaml";
 
 type GithubData = {
   link: string;
@@ -84,12 +85,35 @@ export function extractHeader(proposalBody: string) {
   return header.join("\n");
 }
 
+export function extractYamlHeader(proposalBody: string) {
+  /* Matches the YAML header of the proposal
+    ---  <--- Start of the YAML header
+    EMP: 1
+    title: Polygon Ecosystem Token (POL)
+    description: Deploy the Polygon Ecosystem Token (POL)
+    author: Mudit Gupta
+    discussion: https://www.youtube.com/watch?v=MwlxxnVh4no&t=185s
+    status: Executed
+    type: Contracts
+    date: 2023-02-22 <--- End of the YAML header
+    ---
+    ..
+  */
+  const yamlHeader = proposalBody.match(/((?:^---$)\n(?:.*\n)+)(^---$)/m);
+  return yamlHeader?.[1];
+}
+
+export function extractTRBody(proposalBody: string) {
+  const bodyIndex = proposalBody.split("---\n", 2).join("---\n").length + "---\n".length;
+  return proposalBody.slice(bodyIndex).trim();
+}
+
 export function extractBody(proposalBody: string) {
   const bodyStart = proposalBody.indexOf("### Abstract");
   return proposalBody.slice(bodyStart);
 }
 
-function parseStatus(status: string): [StageStatus, ProposalStatus] {
+function parseDraftStatus(status: string): [StageStatus, ProposalStatus] {
   switch (status) {
     case "Continuous":
     case "Final":
@@ -98,6 +122,17 @@ function parseStatus(status: string): [StageStatus, ProposalStatus] {
     case "Stagnant":
     case "Last Call":
     case "Peer Review":
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
+    default:
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
+  }
+}
+
+function parseTransparencyReportStatus(status: string): [StageStatus, ProposalStatus] {
+  switch (status) {
+    case "Executed":
+      return [StageStatus.APPROVED, ProposalStatus.EXECUTED];
+    case "Draft":
       return [StageStatus.PENDING, ProposalStatus.PENDING];
     default:
       return [StageStatus.PENDING, ProposalStatus.PENDING];
@@ -143,12 +178,12 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
   const includedPIPs = parseIncludedPIPs(extractIncludedPIPS(body));
   const isMainProposal = includedPIPs.length > 0;
-  const pip = link.split("/").pop()?.split(".").shift() ?? "";
+  const pip = link.split("/").pop()?.split(".").shift() ?? "undefined";
 
   const isDate = !isNaN(Date.parse(values[7]));
   const createdAt = isDate ? new Date(values[7]) : undefined;
 
-  const [status, overallStatus] = parseStatus(values[5]);
+  const [status, overallStatus] = parseDraftStatus(values[5]);
 
   return {
     stageType: ProposalStages.DRAFT,
@@ -167,6 +202,57 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     actions: [],
     includedPips: isMainProposal ? includedPIPs : undefined,
     parentPip: isMainProposal ? undefined : { name: "tbd", link: "tbd" },
+  };
+}
+
+type TransparencyReportHeader = { [key: string]: string } & {
+  title: string;
+  description: string;
+  author: string;
+  discussion: string;
+  status: string;
+  type: string;
+  date: Date;
+};
+
+export function parseYamlHeader(header: string) {
+  return yaml.load(header) as TransparencyReportHeader;
+}
+
+export function parseCreators(value: string): ICreator[] {
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .map((c) => {
+      return {
+        name: c,
+      };
+    });
+}
+
+export function parseTransparencyReport(header: string, body: string, link: string): ProposalStage {
+  const parts = parseYamlHeader(header);
+
+  const parsedCreators = parseCreators(parts.author);
+  const [status, overallStatus] = parseTransparencyReportStatus(parts.status);
+
+  return {
+    stageType: ProposalStages.TRANSPARENCY_REPORT,
+    pip: EMERGENCY_PREFIX + "-" + parts[EMERGENCY_PREFIX],
+    title: parts.title,
+    description: parts.description,
+    body,
+    creator: parsedCreators,
+    status,
+    overallStatus,
+    statusMessage: undefined,
+    type: parts.type,
+    createdAt: parts.date,
+    resources: [{ name: "Github", link }],
+    bindings: [],
+    actions: [],
+    includedPips: undefined,
+    parentPip: undefined,
   };
 }
 

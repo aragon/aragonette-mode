@@ -10,7 +10,8 @@ import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes"
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {
-    case ProposalStages.DRAFT: {
+    case ProposalStages.DRAFT:
+    case ProposalStages.TRANSPARENCY_REPORT: {
       return [];
     }
     case ProposalStages.COUNCIL_APPROVAL: {
@@ -53,7 +54,8 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
 
 export async function getVotingPower(stage: ProposalStages, address: string, providerId?: string): Promise<number> {
   switch (stage) {
-    case ProposalStages.DRAFT: {
+    case ProposalStages.DRAFT:
+    case ProposalStages.TRANSPARENCY_REPORT: {
       return 0;
     }
     case ProposalStages.COUNCIL_APPROVAL: {

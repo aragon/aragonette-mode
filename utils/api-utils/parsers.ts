@@ -4,6 +4,8 @@ export const parseStageParam = (stage: string): ProposalStages => {
   switch (stage) {
     case "draft":
       return ProposalStages.DRAFT;
+    case "transparency-report":
+      return ProposalStages.TRANSPARENCY_REPORT;
     case "council-approval":
       return ProposalStages.COUNCIL_APPROVAL;
     case "community-voting":
@@ -19,6 +21,8 @@ export const printStageParam = (stage: ProposalStages): string => {
   switch (stage) {
     case ProposalStages.DRAFT:
       return "draft";
+    case ProposalStages.TRANSPARENCY_REPORT:
+      return "transparency-report";
     case ProposalStages.COUNCIL_APPROVAL:
       return "council-approval";
     case ProposalStages.COMMUNITY_VOTING:

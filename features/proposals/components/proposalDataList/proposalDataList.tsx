@@ -55,7 +55,7 @@ export const ProposalDataList: React.FC = () => {
             const stage = Object.keys(StageOrder)[Number(result?.stage?.id ?? 0)] as ProposalStages;
             return {
               ...voted({ proposalId, stage, address }),
-              enabled: stage !== ProposalStages.DRAFT && !!result,
+              enabled: stage !== ProposalStages.DRAFT && stage != ProposalStages.TRANSPARENCY_REPORT && !!result,
             };
           })
         : [],

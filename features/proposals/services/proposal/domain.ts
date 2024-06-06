@@ -4,6 +4,7 @@ import { type VotingScores } from "../../models/proposals";
 
 export enum ProposalStages {
   DRAFT = "Draft",
+  TRANSPARENCY_REPORT = "Transparency Report",
   COUNCIL_APPROVAL = "Protocol Council Approval",
   COMMUNITY_VOTING = "gPOL Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
@@ -30,6 +31,7 @@ export const StageOrder = {
   [ProposalStages.COUNCIL_APPROVAL]: 1,
   [ProposalStages.COMMUNITY_VOTING]: 2,
   [ProposalStages.COUNCIL_CONFIRMATION]: 3,
+  [ProposalStages.TRANSPARENCY_REPORT]: 4,
 } as const;
 
 export interface ICreator {

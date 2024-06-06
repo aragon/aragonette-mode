@@ -39,6 +39,7 @@
     "dayjs": "^1.11.11",
     "dompurify": "^3.0.11",
     "ipfs-http-client": "^60.0.1",
+    "js-yaml": "^4.1.0",
     "next": "14.1.4",
     "prisma": "^5.14.0",
     "react": "^18.2.0",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@aragon/osx-commons-configs": "^0.2.0",
     "@types/dompurify": "^3.0.5",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.71",
     "@types/react-blockies": "^1.4.4",

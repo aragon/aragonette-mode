@@ -99,6 +99,7 @@ export type MultisigProposal = {
   actions: Action[];
   isEmergency: boolean;
   githubId?: string;
+  transparencyReportId?: string;
   snapshotId?: string;
 };
 
