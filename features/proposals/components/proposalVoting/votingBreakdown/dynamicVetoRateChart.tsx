@@ -163,8 +163,8 @@ const renderContent: ContentType<string[], string> = ({ active, payload }) => {
 };
 
 function isProposalVetoed(noVotes: number, totalSupply: number, yesVotes: number): boolean {
-  // formula: noVotes / sqrt(totalSupply) < yesVotes / sqrt(yesVotes + noVotes)
-  return noVotes / Math.sqrt(totalSupply) < yesVotes / Math.sqrt(yesVotes + noVotes);
+  // formula: noVotes / sqrt(totalSupply) > yesVotes / sqrt(yesVotes + noVotes)
+  return noVotes / Math.sqrt(totalSupply) > yesVotes / Math.sqrt(yesVotes + noVotes);
 }
 
 function calculateDynamicVetoRate(noVotes: number, turnout: number): number {
@@ -172,17 +172,15 @@ function calculateDynamicVetoRate(noVotes: number, turnout: number): number {
   return noVotes / turnout;
 }
 
-function calculateNoVotesForVeto(yesVotes: number, totalSupply: number, turnout: number): number {
-  // formula: (yesVotes / sqrt(turnout)) * sqrt(totalSupply) - round to nearest integer
-  const threshold = (yesVotes / Math.sqrt(turnout)) * Math.sqrt(totalSupply);
-  return Math.ceil(threshold);
+function calculateNoVotesForVeto(yesVotes: number, totalSupply: number): number {
+  return Math.sqrt(totalSupply) - yesVotes;
 }
 
 function generateDataPoints(votes: { yes: number; no: number }[], totalSupply: number): VotingDataPoint[] {
   const data = votes.map(({ yes, no }) => {
     const turnout = yes + no;
     const vetoed = isProposalVetoed(no, totalSupply, yes);
-    const noVotesForVeto = calculateNoVotesForVeto(yes, totalSupply, turnout);
+    const noVotesForVeto = calculateNoVotesForVeto(yes, totalSupply);
 
     return {
       tokenAmount: turnout,
