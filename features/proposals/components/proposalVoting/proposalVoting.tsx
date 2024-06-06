@@ -38,7 +38,7 @@ export const ProposalVoting: React.FC<IProposalVotingProps> = ({ isEmergency, st
       {/* Stages */}
       <AccordionContainer isMulti={true} className="border-t border-t-neutral-100" defaultValue={defaultStage}>
         {stages.map((stage, index) => (
-          <VotingStage key={stage.id} {...({ ...stage, number: index + 1 } as IVotingStageProps)} />
+          <VotingStage key={stage.type} {...({ ...stage, number: index + 1 } as IVotingStageProps)} />
         ))}
       </AccordionContainer>
     </Card>
