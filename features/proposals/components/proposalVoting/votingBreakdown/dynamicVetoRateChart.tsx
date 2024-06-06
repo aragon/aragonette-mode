@@ -17,12 +17,12 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
     ...proposalVotes({ proposalId, stage: ProposalStages.COMMUNITY_VOTING }),
   });
 
-  if (votesData == null || votesData.votes.length === 0) {
+  if (votesData == null || votesData.votes.length <= 1) {
     return null;
   }
 
   const totalVotes = votesData?.pagination.total;
-  const totalSupply = 15000; // TODO: fetch total supply
+  const totalSupply = 100; // TODO: fetch total supply
 
   let yesTotal = 0;
   let noTotal = 0;
