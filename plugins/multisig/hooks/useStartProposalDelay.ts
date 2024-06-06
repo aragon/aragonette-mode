@@ -2,6 +2,7 @@ import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { PUB_MULTISIG_ADDRESS } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
 import { logger } from "@/services/logger";
+import { uploadToPinata } from "@/utils/ipfs";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toHex } from "viem";
@@ -15,7 +16,7 @@ export function useAdvanceToNextStage(
   const { reload } = useRouter();
   const { addAlert } = useAlerts();
   const {
-    writeContract: advance,
+    writeContract: startDelay,
     data: advanceTxHash,
     error: advanceError,
     status: advanceStatus,
@@ -59,17 +60,20 @@ export function useAdvanceToNextStage(
   const advanceToNextStage = async () => {
     if (!proposalId || !secondaryMetadata) return;
 
-    // TODO: pin secondary metadata to IPFS
-    const ipfsCid = "bafkreigs2fc7r4zmuqex3j4voqi5llk6ke2sl3ggsngr3agmf5pe7yo24a";
-    const ipfsUrl = `ipfs://${ipfsCid}`;
+    try {
+      const ipfsUrl = await uploadToPinata(secondaryMetadata);
 
-    // advance
-    advance({
-      abi: MultisigAbi,
-      address: PUB_MULTISIG_ADDRESS,
-      functionName: "startProposalDelay",
-      args: [BigInt(proposalId), toHex(ipfsUrl)],
-    });
+      if (ipfsUrl) {
+        startDelay({
+          abi: MultisigAbi,
+          address: PUB_MULTISIG_ADDRESS,
+          functionName: "startProposalDelay",
+          args: [BigInt(proposalId), toHex(ipfsUrl)],
+        });
+      }
+    } catch (error) {
+      logger.error("Could not upload secondary metadata to IPFS", error);
+    }
   };
 
   return {
