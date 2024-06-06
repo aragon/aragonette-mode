@@ -296,7 +296,7 @@ export const requestProposalsData = async function (
         ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
         : undefined;
     } catch (err) {
-      logger.error("Could not fetch the proposal metadata", err);
+      logger.error(`Could not fetch the proposal metadata [${primaryMetadataCid}, ${secondaryMetadataCid}]`, err);
       continue;
     }
 
