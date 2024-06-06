@@ -38,6 +38,7 @@ function computeTitle(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.title ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.title ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.title ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.title ??
     ""
   );
@@ -59,6 +60,7 @@ function computeDescription(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.description ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.description ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.description ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.description ??
     ""
   );
@@ -80,6 +82,7 @@ function computeBody(proposalStages: ProposalStage[]): string {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.body ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.body ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.body ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.body ??
     ""
   );
@@ -123,6 +126,9 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
  */
 function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus {
   const draftStage = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.overallStatus;
+  const transparencyReportStage = proposalStages.find(
+    (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
+  )?.overallStatus;
   const councilApprovalStage = proposalStages.find(
     (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
   )?.overallStatus;
@@ -134,7 +140,12 @@ function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus 
   )?.overallStatus;
 
   return (
-    councilConfirmationStage ?? communityVotingStage ?? councilApprovalStage ?? draftStage ?? ProposalStatus.PENDING
+    councilConfirmationStage ??
+    communityVotingStage ??
+    councilApprovalStage ??
+    draftStage ??
+    transparencyReportStage ??
+    ProposalStatus.PENDING
   );
 }
 
@@ -149,6 +160,7 @@ function computeProposalStatus(proposalStages: ProposalStage[]): ProposalStatus 
 function computeProposalCreatedAt(proposalStages: ProposalStage[]): Date | undefined {
   return (
     proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.createdAt ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.createdAt ??
     proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION)?.createdAt

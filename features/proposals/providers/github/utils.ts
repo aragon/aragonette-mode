@@ -103,6 +103,11 @@ export function extractYamlHeader(proposalBody: string) {
   return yamlHeader?.[1];
 }
 
+export function extractTRBody(proposalBody: string) {
+  const bodyIndex = proposalBody.split("---\n", 2).join("---\n").length + "---\n".length;
+  return proposalBody.slice(bodyIndex).trim();
+}
+
 export function extractBody(proposalBody: string) {
   const bodyStart = proposalBody.indexOf("### Abstract");
   return proposalBody.slice(bodyStart);
