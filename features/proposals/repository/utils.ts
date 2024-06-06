@@ -1,15 +1,15 @@
 import {
-  Proposal,
-  Stage,
-  StageType,
+  type Proposal,
   ProposalStatus as ProposalStatusDb,
+  type Stage,
   StageStatus as StageStatusDb,
+  StageType,
 } from "@prisma/client";
 
-import { IProposal } from "..";
-import { ProposalStatus, ProposalStages, IProposalStage, StageStatus } from "../services/proposal/domain";
+import { type IProposal } from "..";
+import { type IProposalStage, ProposalStages, ProposalStatus, StageStatus } from "../services/proposal/domain";
 
-const sererializeType = (type: ProposalStages): StageType => {
+const serializeType = (type: ProposalStages): StageType => {
   switch (type) {
     case ProposalStages.DRAFT:
       return StageType.DRAFT;
@@ -69,6 +69,8 @@ const serializeProposalStatus = (status: ProposalStatus): ProposalStatusDb => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return ProposalStatusDb.ACTIVE;
+    case ProposalStatus.ACCEPTED:
+      return ProposalStatusDb.ACCEPTED;
     case ProposalStatus.EXECUTED:
       return ProposalStatusDb.EXECUTED;
     case ProposalStatus.PENDING:
@@ -84,6 +86,8 @@ const parseProposalStatus = (status: ProposalStatusDb): ProposalStatus => {
   switch (status) {
     case ProposalStatusDb.ACTIVE:
       return ProposalStatus.ACTIVE;
+    case ProposalStatusDb.ACCEPTED:
+      return ProposalStatus.ACCEPTED;
     case ProposalStatusDb.EXECUTED:
       return ProposalStatus.EXECUTED;
     case ProposalStatusDb.PENDING:
@@ -161,7 +165,7 @@ export const serializeStage = (proposalId: string, stage: IProposalStage): Omit<
   return {
     // TODO: Fix this
     id: `${proposalId}-${stage.id}`,
-    type: sererializeType(stage.type),
+    type: serializeType(stage.type),
     status: serializeStageStatus(stage.status),
     statusMessage: stage.statusMessage ?? null,
     createdAt: stage.createdAt ?? null,

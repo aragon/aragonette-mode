@@ -198,7 +198,7 @@ export default function ProposalDetails() {
     const isApprovalStage = proposal.currentStage === ProposalStages.COUNCIL_APPROVAL;
     const result = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.result;
 
-    if (result && isApprovalStage) {
+    if (result && isApprovalStage && !proposal.isEmergency) {
       const { approvalAmount, approvalThreshold } = result as IBreakdownApprovalThresholdResult;
       if (approvalAmount + 1 === approvalThreshold) {
         canAdvanceWithNextApproval = true;

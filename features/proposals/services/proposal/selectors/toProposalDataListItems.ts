@@ -30,7 +30,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     const activeStage = stages[stageIndex];
 
     const statusLabel =
-      activeStage.type === ProposalStages.DRAFT
+      activeStage.type === ProposalStages.DRAFT && status !== ProposalStatus.EXECUTED
         ? activeStage.statusMessage ?? status.toLowerCase()
         : status.toLowerCase();
 

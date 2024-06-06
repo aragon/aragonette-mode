@@ -308,10 +308,14 @@ export const requestProposalsData = async function (
     const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 
     // get resources
-    const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).map((resource) => ({
-      name: resource.name,
-      link: resource.url,
-    }));
+    const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).flatMap((resource) => {
+      if (!resource.name && !resource.url) return [];
+
+      return {
+        name: resource.name,
+        link: resource.url,
+      };
+    });
 
     // prepare the base data for both approval and confirmation stages
     const baseProposalData = {
@@ -719,7 +723,7 @@ function computeEmergencyStatus({
   if (now <= endDate) {
     if (superMajorityReached)
       return isSignaling
-        ? [StageStatus.APPROVED, ProposalStatus.EXECUTED]
+        ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED]
         : [StageStatus.APPROVED, ProposalStatus.ACTIVE];
 
     return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
@@ -730,7 +734,7 @@ function computeEmergencyStatus({
     return [StageStatus.REJECTED, ProposalStatus.REJECTED];
   }
 
-  return isSignaling ? [StageStatus.APPROVED, ProposalStatus.EXECUTED] : [StageStatus.APPROVED, ProposalStatus.EXPIRED];
+  return isSignaling ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED] : [StageStatus.APPROVED, ProposalStatus.EXPIRED];
 }
 
 interface IComputeConfirmationStatus {
@@ -763,7 +767,7 @@ function computeConfirmationStatus({
   if (now <= endDate) {
     if (confirmationsReached)
       return isSignaling
-        ? [StageStatus.APPROVED, ProposalStatus.EXECUTED]
+        ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED]
         : [StageStatus.APPROVED, ProposalStatus.ACTIVE];
 
     return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
@@ -774,5 +778,5 @@ function computeConfirmationStatus({
     return [StageStatus.REJECTED, ProposalStatus.REJECTED];
   }
 
-  return isSignaling ? [StageStatus.APPROVED, ProposalStatus.EXECUTED] : [StageStatus.APPROVED, ProposalStatus.EXPIRED];
+  return isSignaling ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED] : [StageStatus.APPROVED, ProposalStatus.EXPIRED];
 }

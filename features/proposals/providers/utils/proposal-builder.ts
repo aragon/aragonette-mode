@@ -316,7 +316,6 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
       const draftProposal = draftProposals.find((stage) => getProposalBindingId(stage) === draftBindingLink);
       if (draftProposal) {
         proposal.push(draftProposal);
-        draftProposals.splice(draftProposals.indexOf(draftProposal), 1);
       }
     }
 
@@ -341,7 +340,6 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
       );
       if (communityVotingProposal) {
         proposal.push(communityVotingProposal);
-        communityVotingProposals.splice(communityVotingProposals.indexOf(communityVotingProposal), 1);
       }
     }
 
@@ -352,9 +350,16 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
       );
       if (councilConfirmationProposal) {
         proposal.push(councilConfirmationProposal);
-        councilConfirmationProposals.splice(councilConfirmationProposals.indexOf(councilConfirmationProposal), 1);
       }
     }
+  });
+
+  // Remove matched proposals from the draft proposals array
+  proposals.forEach((proposal) => {
+    const draftProposal = proposal.find((stage) => stage.stageType === ProposalStages.DRAFT);
+    if (!draftProposal) return;
+    const proposalIndex = draftProposals.indexOf(draftProposal);
+    draftProposals.splice(proposalIndex, 1);
   });
 
   proposals.push(...draftProposals.map((proposal) => [proposal]));

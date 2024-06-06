@@ -23,6 +23,7 @@ enum StageType {
 enum ProposalStatus {
   ACTIVE
   PENDING
+  ACCEPTED
   EXECUTED
   REJECTED
   EXPIRED
