@@ -123,5 +123,5 @@ function evaluateVotingResult(votingData: VotingScores[]): [StageStatus, Proposa
   // update with proper calculation
   return yesVotes > noVotes
     ? [StageStatus.APPROVED, ProposalStatus.ACTIVE]
-    : [StageStatus.REJECTED, ProposalStatus.REJECTED];
+    : [StageStatus.REJECTED, ProposalStatus.ACTIVE];
 }

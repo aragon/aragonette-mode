@@ -86,11 +86,11 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
 };
 
 const getTagVariantFromStatus = (status: ProposalStatus | string): TagVariant => {
-  //TODO: Use statusMessage?
   switch (status) {
     case ProposalStatus.ACTIVE:
       return "info";
     case ProposalStatus.EXECUTED:
+    case ProposalStatus.ACCEPTED:
       return "success";
     case ProposalStatus.REJECTED:
     case ProposalStatus.EXPIRED:

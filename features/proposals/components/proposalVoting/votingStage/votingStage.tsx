@@ -105,7 +105,9 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
             <Tabs.Trigger value="details" label="Details" />
           </Tabs.List>
           <Tabs.Content value="breakdown" asChild={true}>
-            <div className="py-4 pb-8">{result && <VotingBreakdown cta={cta} variant={variant} result={result} />}</div>
+            <div className="py-4 pb-8">
+              {result && <VotingBreakdown cta={cta} variant={variant} result={result} proposalId={proposalId} />}
+            </div>
           </Tabs.Content>
           <Tabs.Content value="votes">
             <div className="py-4 pb-8">

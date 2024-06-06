@@ -381,9 +381,12 @@ const processProposalData = async function (proposalData: ProposalData, contract
         status: stageStatus,
         overallStatus,
         providerId: proposalId.toString(),
-        startDate: confirmationStartDate.toString(),
-        endDate: proposalData.parameters.endDate.toString(),
-        approvals: proposalData.confirmations,
+        startDate: proposalData.parameters.startDate.toString(),
+        endDate:
+          proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
+            ? proposalData.firstDelayStartTimestamp.toString()
+            : proposalData.parameters.endDate.toString(),
+        approvals: proposalData.approvals,
         quorum: proposalData.parameters.minApprovals,
         snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
       },
