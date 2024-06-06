@@ -38,8 +38,8 @@ async function fetchFromIPFS(ipfsUri: string): Promise<Response> {
 
 function resolvePath(uri: string) {
   const cid = uri.includes("ipfs://") ? uri.substring(7) : uri;
-  if (!cid.length) throw new Error("Invalid IPFS URI");
+  if (!cid.length) throw new Error(`Invalid IPFS URI: ${cid}`);
   const isNotAscii = cid.split("").some((char) => char.charCodeAt(0) > 127);
-  if (!isNotAscii) throw new Error("Invalid IPFS URI");
+  if (isNotAscii) throw new Error(`Invalid IPFS URI: ${cid}`);
   return cid;
 }
