@@ -125,6 +125,8 @@ export function parseVotingData(voting?: MultiSigProposalVotingData): VotingData
       },
     ],
     total_votes: voting.approvals,
+    status: voting.status,
+    overallStatus: voting.overallStatus,
   };
 }
 
@@ -196,7 +198,26 @@ export const requestVotingData = async function (
   if (!proposalData) return;
 
   if (stage === "approval") {
+    const [stageStatus, overallStatus] = proposalData.parameters.emergency
+      ? computeEmergencyStatus({
+          startDate: proposalData.parameters.startDate,
+          endDate: proposalData.parameters.endDate,
+          executed: proposalData.executed,
+          approvals: proposalData.approvals,
+          emergencyMinApprovals: proposalData.parameters.minApprovals,
+          isSignaling: proposalData.actions.length === 0,
+        })
+      : computeApprovalStatus({
+          startDate: proposalData.parameters.startDate,
+          endDate: proposalData.parameters.endDate,
+          executed: proposalData.executed,
+          approvals: proposalData.approvals,
+          minApprovals: proposalData.parameters.minApprovals,
+        });
+
     return {
+      status: stageStatus,
+      overallStatus,
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
       endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
@@ -210,8 +231,19 @@ export const requestVotingData = async function (
     const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
     const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
 
+    const [confirmationStatus, overallCStatus] = computeConfirmationStatus({
+      startDate: confirmationStartDate,
+      endDate: proposalData.parameters.endDate,
+      executed: proposalData.executed,
+      confirmations: proposalData.confirmations,
+      minApprovals: proposalData.parameters.minApprovals,
+      isSignaling: proposalData.actions.length === 0,
+    });
+
     if (!lockedPeriodPassed) return;
     return {
+      status: confirmationStatus,
+      overallStatus: overallCStatus,
       providerId: proposalId.toString(),
       startDate: confirmationStartDate.toString(),
       endDate: proposalData.parameters.endDate.toString(),
@@ -302,6 +334,8 @@ export const requestProposalsData = async function (
       status: stageStatus,
       overallStatus,
       voting: {
+        status: stageStatus,
+        overallStatus,
         providerId: i.toString(),
         startDate: proposalData.parameters.startDate.toString(),
         endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
@@ -334,6 +368,8 @@ export const requestProposalsData = async function (
         status: confirmationStatus,
         overallStatus: overallCStatus,
         voting: {
+          status: stageStatus,
+          overallStatus,
           providerId: i.toString(),
           startDate: confirmationStartDate.toString(),
           endDate: proposalData.parameters.endDate.toString(),

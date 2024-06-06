@@ -14,6 +14,7 @@ import {
   type IProposalResource,
   type IProposalStage,
   type IVotingData,
+  StageStatus,
   ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
@@ -483,11 +484,13 @@ export async function getVotingData(stage: ProposalStages, providerId: string): 
   }
 }
 
-export async function buildVotingResponse(stage: IProposalStage): Promise<IVotingData | undefined> {
+export async function buildVotingResponse(
+  stage: IProposalStage
+): Promise<[IVotingData, StageStatus, ProposalStatus] | undefined> {
   if (!stage.voting) return undefined;
   const voting = await getVotingData(stage.type, stage.voting.providerId);
 
   if (!voting) return undefined;
 
-  return buildVotingData(voting);
+  return [buildVotingData(voting), voting.status, voting.overallStatus];
 }
