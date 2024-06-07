@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         ) {
           try {
             const freshProposal = await buildProposalResponse(proposal);
+            await proposalRepository.upsertProposal(freshProposal);
             proposal = freshProposal;
           } catch (error) {
             console.error("Failed to update proposal", error);
