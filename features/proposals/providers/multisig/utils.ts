@@ -208,6 +208,11 @@ export const requestVotingData = async function (
   if (!proposalData) return;
 
   if (stage === "approval") {
+    const endDate =
+      proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
+        ? proposalData.firstDelayStartTimestamp
+        : proposalData.parameters.endDate;
+
     const [stageStatus, overallStatus] = proposalData.parameters.emergency
       ? computeEmergencyStatus({
           startDate: proposalData.parameters.startDate,
@@ -219,31 +224,26 @@ export const requestVotingData = async function (
         })
       : computeApprovalStatus({
           startDate: proposalData.parameters.startDate,
-          endDate: proposalData.parameters.endDate,
+          endDate,
           executed: proposalData.executed,
           approvals: proposalData.approvals,
           minApprovals: proposalData.parameters.minApprovals,
         });
-    const endDate =
-      proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
-        ? proposalData.firstDelayStartTimestamp.toString()
-        : proposalData.parameters.endDate.toString();
 
     return {
       status: stageStatus,
       overallStatus,
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
-      endDate,
+      endDate: endDate.toString(),
       approvals: proposalData.approvals,
       quorum: proposalData.parameters.minApprovals,
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
     };
   } else if (stage === "confirmation") {
-    if (!proposalData.firstDelayStartTimestamp) return;
+    if (!proposalData.firstDelayStartTimestamp || proposalData.firstDelayStartTimestamp < 1) return;
 
     const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
-    const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
 
     const [confirmationStatus, overallCStatus] = computeConfirmationStatus({
       startDate: confirmationStartDate,
@@ -254,7 +254,6 @@ export const requestVotingData = async function (
       isSignaling: proposalData.actions.length === 0,
     });
 
-    if (!lockedPeriodPassed) return;
     return {
       status: confirmationStatus,
       overallStatus: overallCStatus,
@@ -325,11 +324,16 @@ const processProposalData = async function (proposalData: ProposalData, contract
     snapshotId,
   };
 
+  const endDate =
+    proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
+      ? proposalData.firstDelayStartTimestamp
+      : proposalData.parameters.endDate;
+
   // generate the relevant approval status based on whether proposal is an emergency
   const [stageStatus, overallStatus] = proposalData.parameters.emergency
     ? computeEmergencyStatus({
         startDate: proposalData.parameters.startDate,
-        endDate: proposalData.parameters.endDate,
+        endDate,
         executed: proposalData.executed,
         approvals: proposalData.approvals,
         emergencyMinApprovals: proposalData.parameters.minApprovals,
@@ -337,7 +341,7 @@ const processProposalData = async function (proposalData: ProposalData, contract
       })
     : computeApprovalStatus({
         startDate: proposalData.parameters.startDate,
-        endDate: proposalData.parameters.endDate,
+        endDate,
         executed: proposalData.executed,
         approvals: proposalData.approvals,
         minApprovals: proposalData.parameters.minApprovals,
@@ -353,7 +357,7 @@ const processProposalData = async function (proposalData: ProposalData, contract
       overallStatus,
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
-      endDate: proposalData.firstDelayStartTimestamp?.toString() ?? proposalData.parameters.endDate.toString(),
+      endDate: endDate.toString(),
       approvals: proposalData.approvals,
       quorum: proposalData.parameters.minApprovals,
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
@@ -361,7 +365,7 @@ const processProposalData = async function (proposalData: ProposalData, contract
   });
 
   // if confirmation stage has yet to start continue to next proposal
-  if (!proposalData.firstDelayStartTimestamp) return proposals;
+  if (!proposalData.firstDelayStartTimestamp || proposalData.firstDelayStartTimestamp < 1) return proposals;
   logger.info(`Adding confirmation stage for proposal: ${proposalData.firstDelayStartTimestamp}`);
   const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
 
@@ -383,7 +387,7 @@ const processProposalData = async function (proposalData: ProposalData, contract
     overallStatus: overallCStatus,
     voting: {
       status: stageStatus,
-      overallStatus,
+      overallStatus: overallCStatus,
       providerId: proposalId.toString(),
       startDate: confirmationStartDate.toString(),
       endDate: proposalData.parameters.endDate.toString(),
