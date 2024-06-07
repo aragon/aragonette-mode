@@ -22,14 +22,15 @@ import {
   type IBreakdownApprovalThresholdResult,
 } from "../components";
 import { type SecondaryMetadata } from "../providers/multisig/types";
-import { ProposalStages, ProposalStatus, proposalKeys } from "../services";
+import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,
   proposal as proposalQueryOptions,
   voted as votedQueryOptions,
 } from "../services/proposal/query-options";
 
-export const PENDING_PROPOSAL_STATUS_INTERVAL = 1000 * 15; // 10 seconds
+export const PENDING_PROPOSAL_STATUS_INTERVAL = 1000; // 1 sec
+export const PROPOSAL_STATUS_INTERVAL = 1000 * 60 * 5; // 3 mins
 
 export default function ProposalDetails() {
   const router = useRouter();
@@ -44,14 +45,12 @@ export default function ProposalDetails() {
   const proposalId = router.query.id as string;
   const {
     data: proposal,
+    refetch,
     isRefetching,
     error,
   } = useQuery({
     ...proposalQueryOptions({ proposalId }),
-    refetchInterval: (query) => {
-      const status = query.state.data?.status;
-      if (status === ProposalStatus.ACTIVE) return PENDING_PROPOSAL_STATUS_INTERVAL;
-    },
+    refetchInterval: (query) => (query.state.data?.status === ProposalStatus.ACTIVE ? PROPOSAL_STATUS_INTERVAL : false),
   });
 
   const { data: userHasVoted } = useQuery({
@@ -88,59 +87,74 @@ export default function ProposalDetails() {
   function invalidateDetailQueries() {
     queryClient.invalidateQueries({
       queryKey: proposalKeys?.proposal({ proposalId }),
-      refetchType: "all",
+      refetchType: "active",
     });
   }
 
-  // TODO: add proper invalidation for voting queries
-  useEffect(() => {
-    function invalidateVotingQueries() {
-      queryClient.invalidateQueries({
-        queryKey: ["readContract"],
-      });
+  // // TODO: add proper invalidation for voting queries
+  // useEffect(() => {
+  //   function invalidateVotingQueries() {
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["readContract"],
+  //     });
 
-      queryClient.invalidateQueries({
-        queryKey: [{ functionName: "canApprove" }],
-      });
+  //     queryClient.invalidateQueries({
+  //       queryKey: [{ functionName: "canApprove" }],
+  //     });
 
-      queryClient.invalidateQueries({
-        queryKey: canVoteQueryOptions({ address: address!, proposalId, stage: ProposalStages.COMMUNITY_VOTING })
-          .queryKey,
-      });
-    }
+  //     queryClient.invalidateQueries({
+  //       queryKey: canVoteQueryOptions({ address: address!, proposalId, stage: ProposalStages.COMMUNITY_VOTING })
+  //         .queryKey,
+  //     });
+  //   }
 
-    if (isRefetching) {
-      setTimeout(() => {
-        invalidateVotingQueries();
-      }, 1000 * 10);
-    }
-  }, [address, isRefetching, proposalId, queryClient]);
+  //   if (isRefetching) {
+  //     setTimeout(() => {
+  //       invalidateVotingQueries();
+  //     }, 1000 * 10);
+  //   }
+  // }, [address, isRefetching, proposalId, queryClient]);
 
   /**
    * Current stage has ended for an active proposal, refetch
    *
    */
-  // useEffect(() => {
-  //   if (proposal?.status === ProposalStatus.ACTIVE) {
-  //     const interval = setInterval(() => {
-  //       const currentStageEndDate = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.details
-  //         ?.endDate;
-  //       const currentStageStartDate = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.details
-  //         ?.startDate;
+  useEffect(() => {
+    if (!proposal) return;
 
-  //       // refetch proposal if the current stage is "active on frontend" and endDate has passed
-  //       if (currentStageEndDate && dayjs(currentStageEndDate).isBefore(dayjs())) {
-  //         refetch();
-  //       }
+    const interval = setInterval(() => {
+      const currentStage = proposal.stages.find((stage) => stage.type === proposal.currentStage);
+      const currentStageEndDate = currentStage?.details?.endDate;
+      const currentStageStartDate = currentStage?.details?.startDate;
 
-  //       // refetch proposal if the current stage is "pending on frontend" and start date has passed
-  //        if (currentStageStartDate && dayjs(currentStageStartDate).isBefore(dayjs())) {
-  //          refetch();
-  //        }
-  //     }, PENDING_PROPOSAL_STATUS_INTERVAL);
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [proposal?.currentStage, proposal?.stages, proposal?.status, refetch]);
+      // proposal no longer pending or active, clear the interval
+      if (proposal.status !== ProposalStatus.PENDING && proposal?.status !== ProposalStatus.ACTIVE) {
+        clearInterval(interval);
+      }
+
+      // when current stage is pending and should start, refetch
+      if (
+        currentStage?.status === StageStatus.PENDING &&
+        currentStageStartDate &&
+        dayjs(currentStageStartDate).isBefore(dayjs()) &&
+        !isRefetching
+      ) {
+        refetch();
+      }
+
+      // when current stage is active but should end, refetch
+      if (
+        currentStage?.status === StageStatus.ACTIVE &&
+        currentStageEndDate &&
+        dayjs(currentStageEndDate).isBefore(dayjs()) &&
+        !isRefetching
+      ) {
+        refetch();
+      }
+    }, PENDING_PROPOSAL_STATUS_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [isRefetching, proposal, proposal?.currentStage, proposal?.stages, proposal?.status, refetch]);
 
   function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
     if (userHasVoted) {
