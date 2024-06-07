@@ -45,7 +45,6 @@ export default function ProposalDetails() {
   const {
     data: proposal,
     isRefetching,
-    refetch,
     error,
   } = useQuery({
     ...proposalQueryOptions({ proposalId }),
@@ -93,7 +92,29 @@ export default function ProposalDetails() {
     });
   }
 
-  // console.log(proposal?.currentStage);
+  // TODO: add proper invalidation for voting queries
+  useEffect(() => {
+    function invalidateVotingQueries() {
+      queryClient.invalidateQueries({
+        queryKey: ["readContract"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [{ functionName: "canApprove" }],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: canVoteQueryOptions({ address: address!, proposalId, stage: ProposalStages.COMMUNITY_VOTING })
+          .queryKey,
+      });
+    }
+
+    if (isRefetching) {
+      setTimeout(() => {
+        invalidateVotingQueries();
+      }, 1000 * 10);
+    }
+  }, [address, isRefetching, proposalId, queryClient]);
 
   /**
    * Current stage has ended for an active proposal, refetch
