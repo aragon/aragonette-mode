@@ -210,8 +210,8 @@ export const requestVotingData = async function (
   if (stage === "approval") {
     const endDate =
       proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
-        ? proposalData.firstDelayStartTimestamp.toString()
-        : proposalData.parameters.endDate.toString();
+        ? proposalData.firstDelayStartTimestamp
+        : proposalData.parameters.endDate;
 
     const [stageStatus, overallStatus] = proposalData.parameters.emergency
       ? computeEmergencyStatus({
@@ -224,7 +224,7 @@ export const requestVotingData = async function (
         })
       : computeApprovalStatus({
           startDate: proposalData.parameters.startDate,
-          endDate: proposalData.parameters.endDate,
+          endDate,
           executed: proposalData.executed,
           approvals: proposalData.approvals,
           minApprovals: proposalData.parameters.minApprovals,
@@ -235,7 +235,7 @@ export const requestVotingData = async function (
       overallStatus,
       providerId: proposalId.toString(),
       startDate: proposalData.parameters.startDate.toString(),
-      endDate,
+      endDate: endDate.toString(),
       approvals: proposalData.approvals,
       quorum: proposalData.parameters.minApprovals,
       snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
