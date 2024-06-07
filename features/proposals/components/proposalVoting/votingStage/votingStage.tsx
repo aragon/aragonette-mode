@@ -3,7 +3,7 @@ import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
 import { AccordionItem, AccordionItemContent, AccordionItemHeader, Heading, Tabs, formatterUtils } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { type ProposalStages } from "../../../services";
 import { VotesDataList } from "../votesDataList";
 import { VotingBreakdown, type IBreakdownMajorityVotingResult, type ProposalType } from "../votingBreakdown";
@@ -37,6 +37,7 @@ export interface IVotingStageProps<TType extends ProposalType = ProposalType> {
 export const VotingStage: React.FC<IVotingStageProps> = (props) => {
   const { cta, details, disabled, title, number, result, proposalId = "", status, variant } = props;
 
+  const [relativeDate, setRelativeDate] = useState(() => getSimpleRelativeTimeFromDate(dayjs(details?.endDate)));
   const [node, setNode] = useState<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
@@ -73,6 +74,17 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
 
   useLayoutEffect(resize, [resize]);
 
+  useEffect(() => {
+    if (details?.endDate)
+      setInterval(() => {
+        if (dayjs(details.endDate).isBefore(dayjs())) {
+          setRelativeDate("No time");
+        } else {
+          setRelativeDate(getSimpleRelativeTimeFromDate(dayjs(details?.endDate)));
+        }
+      }, 1000);
+  }, [details?.endDate]);
+
   const defaultTab = status === StageStatus.ACTIVE ? "breakdown" : "details";
   const stageKey = `Stage ${number}`;
   const formattedSnapshotBlock = formatterUtils.formatNumber(details?.censusBlock) ?? "";
@@ -91,7 +103,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
             <Heading size="h3" className="line-clamp-1 text-left">
               {title}
             </Heading>
-            <VotingStageStatus status={status} endDate={getSimpleRelativeTimeFromDate(dayjs(details?.endDate))} />
+            <VotingStageStatus status={status} endDate={relativeDate} />
           </div>
           <span className="hidden leading-tight text-neutral-500 sm:block">{stageKey}</span>
         </div>
