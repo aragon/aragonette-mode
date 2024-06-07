@@ -50,7 +50,9 @@ export async function downloadPIPs(url: string) {
     60 * 15
   );
 
-  const githubData = JSON.parse(data);
+  let githubData = JSON.parse(data);
+
+  if (!Array.isArray(githubData)) githubData = [githubData];
 
   let result: GithubData[] = [];
 

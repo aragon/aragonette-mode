@@ -422,13 +422,13 @@ export const requestProposalData = async function (
   contractAddress: Address,
   proposalId: number
 ): Promise<MultisigProposal[]> {
-  const proposals: MultisigProposal[] = [];
+  let proposals: MultisigProposal[] = [];
   const proposalData = await getProposalData(chain, contractAddress, BigInt(proposalId));
 
   // skip proposal if no proposal data can be fetched
   if (proposalData) {
     const multisigProposalStages = await processProposalData(proposalData, contractAddress, proposalId);
-    proposals.concat(multisigProposalStages);
+    proposals = proposals.concat(multisigProposalStages);
   }
 
   return proposals;

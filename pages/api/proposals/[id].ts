@@ -34,8 +34,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           !proposal.isEmergency &&
           index === proposal.stages.length - 1
         ) {
-          const freshProposal = await buildProposalResponse(proposal);
-          proposal = freshProposal;
+          try {
+            const freshProposal = await buildProposalResponse(proposal);
+            proposal = freshProposal;
+          } catch (error) {
+            console.error("Failed to update proposal", error);
+          }
         }
       }
     }

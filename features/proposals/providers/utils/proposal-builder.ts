@@ -274,18 +274,18 @@ export async function getAllProposalsStages() {
 }
 
 export async function getProposalsStages(proposal: IProposal) {
-  const proposalStages: ProposalStage[] = [];
+  let proposalStages: ProposalStage[] = [];
 
   const multisig = proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL);
   if (multisig?.voting?.providerId) {
     const multisigData = await getMultisigProposalData({
       chain: PUB_CHAIN.id,
       contractAddress: PUB_MULTISIG_ADDRESS,
-      proposalId: BigInt(multisig.voting.providerId),
+      proposalId: parseInt(multisig.voting.providerId),
     });
 
     if (multisigData) {
-      proposalStages.concat(multisigData);
+      proposalStages = proposalStages.concat(multisigData);
 
       const githubId = multisigData[0].bindings?.find((binding) => binding.id === ProposalStages.DRAFT)?.link;
       if (githubId) {
