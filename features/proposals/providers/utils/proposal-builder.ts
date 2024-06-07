@@ -14,7 +14,7 @@ import {
   type IProposalResource,
   type IProposalStage,
   type IVotingData,
-  type StageStatus,
+  StageStatus,
   ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
@@ -106,6 +106,16 @@ function computeCurrentStage(proposalStages: ProposalStage[]): ProposalStages {
   const sortedStages = sortProposalStages(proposalStages);
   const draftStage = sortedStages.find((stage) => stage.stageType === ProposalStages.DRAFT);
   const approvalStage = sortedStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL);
+
+  // last stage that is active
+  // Note: can have community and confirmation active together
+  const lastActive = sortedStages.findLast((stage) => stage.status === StageStatus.ACTIVE);
+
+  if (lastActive) {
+    return lastActive.stageType;
+  }
+
+  // no last active stage means proposal is not active.
   const lastKnownStage = sortedStages[sortedStages.length - 1];
 
   // usually the last stage is the current stage, but because some proposals were created without

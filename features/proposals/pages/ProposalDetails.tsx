@@ -91,6 +91,10 @@ export default function ProposalDetails() {
     });
   }
 
+  /**
+   * Current stage has ended for an active proposal, refetch
+   *
+   */
   useEffect(() => {
     // refetch should only happen for an active proposal
     if (proposal?.status !== ProposalStatus.ACTIVE) {
