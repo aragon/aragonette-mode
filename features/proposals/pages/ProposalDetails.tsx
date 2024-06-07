@@ -29,6 +29,8 @@ import {
   voted as votedQueryOptions,
 } from "../services/proposal/query-options";
 
+export const PENDING_PROPOSAL_STATUS_INTERVAL = 1000 * 15; // 10 seconds
+
 export default function ProposalDetails() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -47,10 +49,10 @@ export default function ProposalDetails() {
     error,
   } = useQuery({
     ...proposalQueryOptions({ proposalId }),
-    // refetchInterval: (query) => {
-    //   const status = query.state.data?.status;
-    //   if (status === ProposalStatus.ACTIVE) return 1000 * 60; // minute
-    // },
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (status === ProposalStatus.ACTIVE) return PENDING_PROPOSAL_STATUS_INTERVAL;
+    },
   });
 
   const { data: userHasVoted } = useQuery({
@@ -91,24 +93,33 @@ export default function ProposalDetails() {
     });
   }
 
+  // console.log(proposal?.currentStage);
+
   /**
    * Current stage has ended for an active proposal, refetch
    *
    */
-  useEffect(() => {
-    // refetch should only happen for an active proposal
-    if (proposal?.status !== ProposalStatus.ACTIVE) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (proposal?.status === ProposalStatus.ACTIVE) {
+  //     const interval = setInterval(() => {
+  //       const currentStageEndDate = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.details
+  //         ?.endDate;
+  //       const currentStageStartDate = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.details
+  //         ?.startDate;
 
-    const currentStageEndDate = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.details?.endDate;
-    const now = dayjs();
+  //       // refetch proposal if the current stage is "active on frontend" and endDate has passed
+  //       if (currentStageEndDate && dayjs(currentStageEndDate).isBefore(dayjs())) {
+  //         refetch();
+  //       }
 
-    // refetch proposal if the current stage has ended
-    if (currentStageEndDate && dayjs(currentStageEndDate).isBefore(now)) {
-      refetch();
-    }
-  }, [proposal?.currentStage, proposal?.stages, proposal?.status, refetch]);
+  //       // refetch proposal if the current stage is "pending on frontend" and start date has passed
+  //        if (currentStageStartDate && dayjs(currentStageStartDate).isBefore(dayjs())) {
+  //          refetch();
+  //        }
+  //     }, PENDING_PROPOSAL_STATUS_INTERVAL);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [proposal?.currentStage, proposal?.stages, proposal?.status, refetch]);
 
   function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
     if (userHasVoted) {
