@@ -797,10 +797,7 @@ function computeConfirmationStatus({
   }
 
   if (now <= endDate) {
-    if (confirmationsReached)
-      return isSignaling
-        ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED]
-        : [StageStatus.APPROVED, ProposalStatus.ACTIVE];
+    if (confirmationsReached) return [StageStatus.APPROVED, ProposalStatus.ACCEPTED];
 
     return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
   }
