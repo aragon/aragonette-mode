@@ -21,6 +21,20 @@ export const BreakdownApprovalThresholdResult: React.FC<IBreakdownApprovalThresh
 
   return (
     <div className="flex flex-col gap-y-4">
+      {/* Button */}
+      {cta && (
+        <span>
+          <Button
+            size="md"
+            className="!rounded-full"
+            disabled={cta.disabled}
+            onClick={() => cta.onClick?.()}
+            isLoading={cta.isLoading}
+          >
+            {cta?.label}
+          </Button>
+        </span>
+      )}
       <div className="flex w-full flex-col gap-y-2 rounded-xl border border-neutral-100 bg-neutral-0 px-4 py-3 shadow-neutral-sm md:gap-y-3 md:px-6 md:py-5">
         <div className="flex flex-1 gap-x-3 leading-tight text-neutral-800 md:gap-x-6 md:text-lg">
           <span className="line-clamp-1 flex-1">{stage?.title ?? "Approved By"}</span>
@@ -37,20 +51,6 @@ export const BreakdownApprovalThresholdResult: React.FC<IBreakdownApprovalThresh
           <span>Members</span>
         </div>
       </div>
-      {/* Button */}
-      {cta && (
-        <span>
-          <Button
-            size="md"
-            className="!rounded-full"
-            disabled={cta.disabled}
-            onClick={() => cta.onClick?.()}
-            isLoading={cta.isLoading}
-          >
-            {cta?.label}
-          </Button>
-        </span>
-      )}
     </div>
   );
 };

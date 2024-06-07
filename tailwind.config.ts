@@ -83,6 +83,9 @@ const config: Config = {
           900: "rgb(var(--ods-color-critical-900) / <alpha-value>)",
         },
       },
+      boxShadow: {
+        tooltip: "0px 22.73px 45.45px -10.91px rgb(var(--ods-color-neutral-600) / 0.24)",
+      },
     },
   },
 };

@@ -191,7 +191,7 @@ function transformStages(
         proposalId,
         providerId,
         status,
-      };
+      } as ITransformedStage;
     }
 
     // return pending or unreached stages
@@ -202,7 +202,7 @@ function transformStages(
       variant: "approvalThreshold",
       status,
       disabled: true,
-    };
+    } as ITransformedStage;
   });
 }
 
@@ -246,7 +246,7 @@ const getVotingStatus = (status: StageStatus, startDate?: string, expirationDate
   const startDateIsInFuture = startDate && dayjs(startDate).isAfter(dayjs());
   const expirationDateIsInFuture = expirationDate && dayjs(expirationDate).isAfter(dayjs());
 
-  if (startDateIsInFuture) {
+  if (startDate == null || startDateIsInFuture) {
     return expirationDateIsInFuture ? StageStatus.PENDING : "unreached";
   }
 

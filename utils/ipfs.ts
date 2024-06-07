@@ -1,16 +1,37 @@
-import { PUB_IPFS_ENDPOINT, PUB_IPFS_API_KEY } from "@/constants";
-import { logger } from "@/services/logger";
-import { CID, IPFSHTTPClient } from "ipfs-http-client";
-import { Hex, fromHex } from "viem";
+import { PUB_IPFS_API_KEY, PUB_IPFS_ENDPOINT } from "@/constants";
+import { fromHex, type Hex } from "viem";
 
 export function fetchJsonFromIpfs(ipfsUri: string) {
   return fetchFromIPFS(ipfsUri).then((res) => res.json());
 }
 
-export function uploadToIPFS(client: IPFSHTTPClient, blob: Blob) {
-  return client.add(blob).then(({ cid }: { cid: CID }) => {
-    return "ipfs://" + cid.toString();
-  });
+export function uploadToPinata(data: any): Promise<string> {
+  const pinataData = {
+    pinataOptions: {
+      cidVersion: 1,
+    },
+    pinataContent: {
+      ...data,
+    },
+  };
+
+  return fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${PUB_IPFS_API_KEY}`,
+      "Content-Type": "application/json",
+      "x-pinata-origin": "sdk",
+      "x-version": "2.1.1",
+    },
+    body: JSON.stringify(pinataData),
+  })
+    .then((res) => res.json())
+    .then((json) => {
+      return `ipfs://${json.IpfsHash}`;
+    })
+    .catch((err) => {
+      throw new Error("Error pinning metadata", err);
+    });
 }
 
 async function fetchFromIPFS(ipfsUri: string): Promise<Response> {
@@ -24,22 +45,19 @@ async function fetchFromIPFS(ipfsUri: string): Promise<Response> {
 
   const path = resolvePath(ipfsUri);
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 10000);
+  const id = setTimeout(() => controller.abort(), 800);
   const response = await fetch(`${PUB_IPFS_ENDPOINT}/${path}`, {
     method: "GET",
     signal: controller.signal,
   });
   clearTimeout(id);
   if (!response.ok) {
-    throw new Error(`IPFS error: ${response.statusText}`);
+    throw new Error("Could not connect to the IPFS endpoint");
   }
   return response; // .json(), .text(), .blob(), etc.
 }
 
 function resolvePath(uri: string) {
-  const cid = uri.includes("ipfs://") ? uri.substring(7) : uri;
-  if (!cid.length) throw new Error(`Invalid IPFS URI: ${cid}`);
-  const isNotAscii = cid.split("").some((char) => char.charCodeAt(0) > 127);
-  if (isNotAscii) throw new Error(`Invalid IPFS URI: ${cid}`);
-  return cid;
+  const path = uri.includes("ipfs://") ? uri.substring(7) : uri;
+  return path;
 }

@@ -12,7 +12,13 @@ export const CardResources: React.FC<ICardResourcesProps> = (props) => {
   const { displayLink = true, resources, title } = props;
 
   if (resources == null || resources.length === 0) {
-    return <CardEmptyState objectIllustration={{ object: "ARCHIVE" }} heading="No resources were added" />;
+    return (
+      <CardEmptyState
+        objectIllustration={{ object: "ARCHIVE" }}
+        heading="No resources were added"
+        className="rounded-xl shadow-neutral"
+      />
+    );
   }
 
   return (
@@ -24,8 +30,14 @@ export const CardResources: React.FC<ICardResourcesProps> = (props) => {
             key={resource.link}
             href={resource.link}
             variant="primary"
-            iconRight={displayLink ? IconType.LINK_EXTERNAL : undefined}
-            description={displayLink ? resource.link : undefined}
+            {...(displayLink
+              ? {
+                  rel: "noopener noreferrer",
+                  target: "_blank",
+                  iconRight: IconType.LINK_EXTERNAL,
+                  description: resource.link,
+                }
+              : {})}
           >
             {resource.name}
           </Link>
