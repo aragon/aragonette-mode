@@ -14,7 +14,7 @@ import {
   type IProposalResource,
   type IProposalStage,
   type IVotingData,
-  StageStatus,
+  type StageStatus,
   ProposalStatus,
 } from "@/features/proposals/services/proposal/domain";
 import { type IPublisher } from "@aragon/ods";
@@ -273,7 +273,7 @@ export async function getAllProposalsStages() {
   return (await Promise.all(promises)).flat();
 }
 
-export async function getProposalsStages(proposal: IProposal) {
+export async function getProposalStages(proposal: IProposal) {
   let proposalStages: ProposalStage[] = [];
 
   const multisig = proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL);
@@ -537,7 +537,7 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
 }
 
 export async function buildProposalResponse(proposal: IProposal): Promise<IProposal> {
-  const proposalStages = await getProposalsStages(proposal);
+  const proposalStages = await getProposalStages(proposal);
 
   const title = computeTitle(proposalStages);
   const type = computeProposalType(proposalStages);

@@ -44,13 +44,10 @@ async function fetchFromIPFS(ipfsUri: string): Promise<Response> {
   }
 
   const path = resolvePath(ipfsUri);
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 800);
   const response = await fetch(`${PUB_IPFS_ENDPOINT}/${path}`, {
     method: "GET",
-    signal: controller.signal,
   });
-  clearTimeout(id);
+
   if (!response.ok) {
     throw new Error("Could not connect to the IPFS endpoint");
   }

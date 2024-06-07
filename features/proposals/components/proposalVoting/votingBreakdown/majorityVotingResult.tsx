@@ -1,7 +1,7 @@
 import { capitalizeFirstLetter } from "@/utils/case";
 import { Button, Heading, Progress, RadioCard, RadioGroup } from "@aragon/ods";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DynamicVetoRateChart } from "./dynamicVetoRateChart";
 import { type VotingCta } from "./types";
 
@@ -34,16 +34,11 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
   const handleVoteClick = () => {
     if (showOptions) {
       cta?.onClick?.(parseInt(option ?? "0"));
+      setShowOptions(false);
     } else {
       setShowOptions(true);
     }
   };
-
-  useEffect(() => {
-    if (!!cta?.disabled && !!option) {
-      setShowOptions(false);
-    }
-  }, [cta?.disabled, option]);
 
   const label = showOptions && !cta?.isLoading ? "Submit vote" : cta?.label;
   const disabled = (!!showOptions && !option) || cta?.disabled;

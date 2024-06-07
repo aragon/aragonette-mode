@@ -9,7 +9,7 @@ import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   BodySection,
@@ -22,7 +22,7 @@ import {
   type IBreakdownApprovalThresholdResult,
 } from "../components";
 import { type SecondaryMetadata } from "../providers/multisig/types";
-import { ProposalStages, proposalKeys } from "../services";
+import { ProposalStages, ProposalStatus, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,
   proposal as proposalQueryOptions,
@@ -40,7 +40,12 @@ export default function ProposalDetails() {
 
   // data queries
   const proposalId = router.query.id as string;
-  const { data: proposal, error } = useQuery({
+  const {
+    data: proposal,
+    isRefetching,
+    refetch,
+    error,
+  } = useQuery({
     ...proposalQueryOptions({ proposalId }),
     // refetchInterval: (query) => {
     //   const status = query.state.data?.status;
@@ -61,7 +66,7 @@ export default function ProposalDetails() {
 
   const { data: userCanVote } = useQuery({
     ...canVoteQueryOptions({ address: address!, proposalId, stage: ProposalStages.COMMUNITY_VOTING }),
-    enabled: !!address && proposal?.currentStage === ProposalStages.COMMUNITY_VOTING,
+    enabled: !!address && !isRefetching && !!proposal && proposal?.currentStage === ProposalStages.COMMUNITY_VOTING,
   });
 
   // vote and approve proposal
@@ -85,6 +90,21 @@ export default function ProposalDetails() {
       refetchType: "all",
     });
   }
+
+  useEffect(() => {
+    // refetch should only happen for an active proposal
+    if (proposal?.status !== ProposalStatus.ACTIVE) {
+      return;
+    }
+
+    const currentStageEndDate = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.details?.endDate;
+    const now = dayjs();
+
+    // refetch proposal if the current stage has ended
+    if (currentStageEndDate && dayjs(currentStageEndDate).isBefore(now)) {
+      refetch();
+    }
+  }, [proposal?.currentStage, proposal?.stages, proposal?.status, refetch]);
 
   function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
     if (userHasVoted) {

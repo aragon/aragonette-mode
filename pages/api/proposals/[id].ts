@@ -1,6 +1,7 @@
 import { type IProposal, StageOrder, StageStatus, ProposalStages } from "@/features/proposals";
 import { buildProposalResponse, buildVotingResponse } from "@/features/proposals/providers";
 import proposalRepository from "@/features/proposals/repository/proposal";
+import { logger } from "@/services/logger";
 import { checkParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -35,11 +36,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           index === proposal.stages.length - 1
         ) {
           try {
+            logger.info("Building fresh proposal");
             const freshProposal = await buildProposalResponse(proposal);
             await proposalRepository.upsertProposal(freshProposal);
             proposal = freshProposal;
+            logger.info("Saving fresh proposal");
           } catch (error) {
-            console.error("Failed to update proposal", error);
+            logger.error("Failed to update proposal", error);
           }
         }
       }

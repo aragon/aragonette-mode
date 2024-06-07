@@ -1,4 +1,3 @@
-import { StageStatus } from "@/features/proposals";
 import { buildProposalsResponse } from "@/features/proposals/providers/utils/proposal-builder";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
@@ -18,24 +17,24 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
   try {
     const proposals = await buildProposalsResponse();
-
-    for (const proposal of proposals) {
-      await proposalRepository.upsertProposal({
-        ...proposal,
-      });
-      for (const stage of proposal.stages) {
-        if (!stage.voting) {
-          continue;
-        }
-        if (stage.status === StageStatus.ACTIVE) {
-          continue;
-        }
-        // TODO: Save to database
-        // TODO: Get from DB if it exists or update
-        // const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
-        // const stageParam = printStageParam(stage.type);
-      }
-    }
+    await Promise.all(proposals.map(async (proposal) => await proposalRepository.upsertProposal({ ...proposal })));
+    // for (const proposal of proposals) {
+    //   await proposalRepository.upsertProposal({
+    //     ...proposal,
+    //   });
+    //   for (const stage of proposal.stages) {
+    //     if (!stage.voting) {
+    //       continue;
+    //     }
+    //     if (stage.status === StageStatus.ACTIVE) {
+    //       continue;
+    //     }
+    // TODO: Save to database
+    // TODO: Get from DB if it exists or update
+    // const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
+    // const stageParam = printStageParam(stage.type);
+    //   }
+    // }
 
     res.status(200).json({ success: true });
   } catch (error) {
