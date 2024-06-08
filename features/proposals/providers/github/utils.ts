@@ -240,7 +240,7 @@ export function parseTransparencyReport(header: string, body: string, link: stri
 
   return {
     stageType: ProposalStages.TRANSPARENCY_REPORT,
-    pip: EMERGENCY_PREFIX + "-" + parts[EMERGENCY_PREFIX],
+    pip: `${EMERGENCY_PREFIX}-${parts[EMERGENCY_PREFIX]}`,
     title: parts.title,
     description: parts.description,
     body,
