@@ -32,7 +32,7 @@ const getNumProposals = async function (chain: number, contractAddress: Address)
 };
 
 const getProposalData = async function (chain: number, contractAddress: Address, proposalId: bigint) {
-  logger.info(`Fetching multisig proposal:${proposalId}`);
+  logger.info(`Fetching corresponding multisig proposal (${proposalId})...`);
 
   return await readContract(config, {
     chainId: chain,
