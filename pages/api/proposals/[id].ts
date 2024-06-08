@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const parsedId = checkParam(id, "proposalId");
 
   try {
-    let proposal = await proposalRepository.getProposalById(parsedId);
+    const proposal = await proposalRepository.getProposalById(parsedId);
 
     if (!proposal) {
       return res.status(404).json({ error: { message: "Proposal not found" } });
@@ -19,9 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const freshProposal = await buildLiveProposalResponse(proposal);
     await proposalRepository.upsertProposal(freshProposal);
 
-    proposal = freshProposal;
-
-    res.status(200).json(proposal);
+    res.status(200).json(freshProposal);
   } catch (error) {
     res.status(500).json({ error: { message: "Server error" } });
   }
