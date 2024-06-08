@@ -28,7 +28,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const showExpirationDate = !!endDate && (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING);
 
   const tagVariant = getTagVariantFromStatus(status);
-  const statusLabel = (statusMessage ?? status).toLowerCase();
+  const statusLabel = (parseStatusMessage(statusMessage) ?? status).toLowerCase();
 
   return (
     <div className="flex w-full justify-center bg-neutral-0">
@@ -100,4 +100,12 @@ const getTagVariantFromStatus = (status: ProposalStatus | string): TagVariant =>
     default:
       return "neutral";
   }
+};
+
+const parseStatusMessage = (statusMessage: string | undefined): string | undefined => {
+  if (statusMessage === "Final") {
+    return "Executed";
+  }
+
+  return statusMessage;
 };
