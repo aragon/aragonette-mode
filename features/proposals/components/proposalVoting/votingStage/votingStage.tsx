@@ -78,7 +78,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
     if (details?.endDate)
       setInterval(() => {
         if (dayjs(details.endDate).isBefore(dayjs())) {
-          setRelativeDate("No time");
+          setRelativeDate("0");
         } else {
           setRelativeDate(getSimpleRelativeTimeFromDate(dayjs(details?.endDate)));
         }
