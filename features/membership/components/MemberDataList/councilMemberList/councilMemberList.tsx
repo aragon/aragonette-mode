@@ -1,13 +1,22 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { generateDataListState } from "@/utils/query";
-import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
+import { DataList, IconType, MemberDataListItem, useDebouncedValue, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { councilMemberList } from "../../services/members/query-options";
+import { councilMemberList } from "../../../services/members/query-options";
 
 const DEFAULT_PAGE_SIZE = 12;
+const SEARCH_DEBOUNCE_MILLS = 500;
 
-export const DelegateMemberList: React.FC = () => {
+export const CouncilMemberList: React.FC = () => {
+  const [searchValue, setSearchValue] = useState<string>();
+  const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
+    searchValue?.trim()?.toLowerCase(),
+    {
+      delay: SEARCH_DEBOUNCE_MILLS,
+    }
+  );
+
   const {
     data: councilMemberListData,
     isError,
@@ -22,52 +31,48 @@ export const DelegateMemberList: React.FC = () => {
   } = useInfiniteQuery({
     ...councilMemberList({
       limit: DEFAULT_PAGE_SIZE,
-    }),
-    select: (data) => ({
-      delegates: data.pages.flatMap((p) => p.data),
-      pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
+      ...(debouncedQuery ? { search: debouncedQuery } : {}),
     }),
   });
 
+  const isFiltered = searchValue != null && searchValue.trim().length > 0;
   const loading = isLoading || (isError && isRefetching);
   const error = isError && !isRefetchError && !isFetchNextPageError;
   const [dataListState, setDataListState] = useState<DataListState>(() =>
-    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, false)
+    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
   );
 
   useEffect(() => {
-    setDataListState(generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, false));
-  }, [isError, isFetching, isFetchingNextPage, loading, isRefetching]);
+    setDataListState(
+      generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+    );
+  }, [isError, isFetching, isFetchingNextPage, loading, isRefetching, isFiltered]);
+
+  const resetFilters = () => {
+    setSearchValue("");
+    setDebouncedQuery("");
+    // setActiveSort("");
+  };
 
   const totalMembers = councilMemberListData?.pagination?.total;
-  const entityLabel = totalMembers === 1 ? "Delegate" : "Delegates";
+  const entityLabel = totalMembers === 1 ? "Protocol council member" : "Protocol council members";
   const showPagination = (totalMembers ?? 0) > DEFAULT_PAGE_SIZE;
 
   const emptyFilteredState = {
-    heading: "No delegates found",
+    heading: "No council members found",
     description: "Your applied filters are not matching with any results. Reset and search with other filters!",
     secondaryButton: {
       label: "Reset all filters",
       iconLeft: IconType.RELOAD,
-      //   onclick: () => resetFilters(),
+      onclick: () => resetFilters(),
     },
   };
 
-  const emptyState = {
-    heading: "No delegates found",
-    description: "Create your delegate profile",
-    // primaryButton: {
-    //   label: "Create onchain PIP",
-    //   iconLeft: IconType.PLUS,
-    //   onClick: () => alert("create proposal"),
-    // },
-  };
-
   const errorState = {
-    heading: "Error loading delegates",
-    description: "There was an error loading the delegates. Please try again!",
+    heading: "Error loading the Protocol council members",
+    description: "There was an error loading the Protocol council members. Please try again!",
     secondaryButton: {
-      label: "Reload delegates",
+      label: "Reload members",
       iconLeft: IconType.RELOAD,
       onClick: () => refetch(),
     },
@@ -81,19 +86,19 @@ export const DelegateMemberList: React.FC = () => {
       state={dataListState}
       onLoadMore={fetchNextPage}
     >
+      <DataList.Filter
+        onSearchValueChange={setSearchValue}
+        searchValue={searchValue}
+        placeholder="Search by name or address"
+      />
       <DataList.Container
         SkeletonElement={MemberDataListItem.Skeleton}
         errorState={errorState}
-        emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
-        {councilMemberListData?.delegates?.map((delegate) => (
-          <MemberDataListItem.Structure
-            {...delegate}
-            href={MemberProfile.getPath(delegate.address)}
-            key={delegate.address}
-          />
+        {councilMemberListData?.members?.map((member) => (
+          <MemberDataListItem.Structure key={member.address} href={MemberProfile.getPath(member.address)} {...member} />
         ))}
       </DataList.Container>
       {showPagination && <DataList.Pagination />}
