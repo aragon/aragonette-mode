@@ -1,4 +1,3 @@
-import { formatHexString } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { Heading } from "@aragon/ods";
 import { useRouter } from "next/router";
@@ -7,13 +6,12 @@ import { DelegationStatement } from "../components/delegationStatement/delegatio
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
+import { ProposalsCreatedDataList } from "../components/proposalsCreatedDataList/proposalsCreatedDataList";
 
 export const DelegateProfile = () => {
   const { query, asPath } = useRouter();
   const address = query.address as string;
   const breadcrumbs = generateBreadcrumbs(asPath);
-
-  const formattedAddress = formatHexString(address);
 
   return (
     <div className="flex flex-col items-center">
@@ -25,7 +23,10 @@ export const DelegateProfile = () => {
           <div className="flex w-full flex-col gap-y-6">
             <DelegationStatement />
             {/* Delegations Received */}
-            <DelegationsReceivedDataList address={address} />
+            <div className="flex flex-col gap-y-3">
+              <Heading size="h3">Delegations received</Heading>
+              <DelegationsReceivedDataList address={address} />
+            </div>
           </div>
 
           <div className="flex w-full flex-col gap-y-6">
@@ -36,8 +37,8 @@ export const DelegateProfile = () => {
 
           <div className="flex w-full flex-col gap-y-6">
             {/* Proposal creation */}
-            {/* TODO: update to proper component */}
             <Heading size="h2">Proposal creation</Heading>
+            <ProposalsCreatedDataList />
           </div>
         </div>
         {/* Aside */}
