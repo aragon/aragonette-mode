@@ -1,5 +1,4 @@
 import { PUB_CHAIN } from "@/constants";
-import { IProposalResource } from "@/features/proposals";
 import { formatHexString } from "@/utils/evm";
 import { type IResource } from "@/utils/types";
 import { Heading, IconType, Link } from "@aragon/ods";
