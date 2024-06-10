@@ -14,7 +14,7 @@ import {
 } from "@aragon/ods";
 import React from "react";
 import { type Address } from "viem";
-import { sepolia } from "viem/chains";
+import { mainnet } from "viem/chains";
 import { useEnsName } from "wagmi";
 
 interface IHeaderMemberProps {
@@ -25,7 +25,7 @@ interface IHeaderMemberProps {
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const { breadcrumbs, address } = props;
 
-  const { data: ensName } = useEnsName({ chainId: sepolia.id, address: address as Address });
+  const { data: ensName } = useEnsName({ chainId: mainnet.id, address: address as Address });
 
   const formattedAddress = formatHexString(address);
   const bio = "Product Designer building in Web 3 — Onchain Enthusiast, Cyclist + Music Nerd";

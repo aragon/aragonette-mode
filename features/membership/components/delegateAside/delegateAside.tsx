@@ -4,7 +4,7 @@ import { type IResource } from "@/utils/types";
 import { Heading, IconType, Link } from "@aragon/ods";
 import React from "react";
 import { type Address } from "viem";
-import { sepolia } from "viem/chains";
+import { mainnet } from "viem/chains";
 import { useEnsName } from "wagmi";
 
 interface IDelegateAsideProps {
@@ -14,7 +14,7 @@ interface IDelegateAsideProps {
 export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
   const { address } = props;
 
-  const { data: ensName } = useEnsName({ chainId: sepolia.id, address: address as Address });
+  const { data: ensName } = useEnsName({ chainId: mainnet.id, address: address as Address });
 
   const formattedAddress = formatHexString(address);
   const links: IResource[] = [
