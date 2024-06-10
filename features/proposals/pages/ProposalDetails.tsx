@@ -214,16 +214,16 @@ export default function ProposalDetails() {
     (advancementConfirmed && isRefetchingProposal && proposal?.currentStage === ProposalStages.COUNCIL_APPROVAL);
 
   function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
-    if (userHasVoted) {
-      return "Approved";
+    if (isAdvancingToNextStage) {
+      return "Advancing stage…";
     } else if (!isConnected) {
       return "Login to approve";
     } else if (isApproving) {
       return "Approving…";
-    } else if (isAdvancingToNextStage) {
-      return "Advancing stage…";
     } else if (userCanApprove && canAdvanceWithNextApproval) {
       return "Approve and advance";
+    } else if (userHasVoted) {
+      return "Approved";
     } else {
       return "Approve";
     }

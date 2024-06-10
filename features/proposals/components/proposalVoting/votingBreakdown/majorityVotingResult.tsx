@@ -5,7 +5,7 @@ import { useState } from "react";
 import { DynamicVetoRateChart } from "./dynamicVetoRateChart";
 import { type VotingCta } from "./types";
 
-type Choices = "approve" | "reject" | "abstain";
+type Choices = "yes" | "no" | "abstain";
 
 export interface IBreakdownMajorityVotingResult {
   votingScores: { option: string; voteAmount: string; votePercentage: number; tokenSymbol: string }[];
@@ -14,15 +14,15 @@ export interface IBreakdownMajorityVotingResult {
 }
 
 const choiceClassNames: Record<Choices, string> = {
-  approve: "*:bg-success-500",
+  yes: "*:bg-success-500",
   abstain: "*:bg-neutral-400",
-  reject: "*:bg-critical-500",
+  no: "*:bg-critical-500",
 };
 
 const choiceTextClassNames: Record<Choices, string> = {
-  approve: "text-success-800",
+  yes: "text-success-800",
   abstain: "text-neutral-800",
-  reject: "text-critical-800",
+  no: "text-critical-800",
 };
 
 export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingResult> = (props) => {
