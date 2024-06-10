@@ -25,6 +25,8 @@ interface IHeaderMemberProps {
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const { breadcrumbs, address } = props;
 
+  const { data: ensName } = useEnsName({ chainId: sepolia.id, address: address as Address });
+
   const formattedAddress = formatHexString(address);
   const bio = "Product Designer building in Web 3 — Onchain Enthusiast, Cyclist + Music Nerd";
 
@@ -33,8 +35,6 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const tokenBalance = "400000";
   const delegationsReceived = "5";
   const lastActivity = "3"; // last activity = proposal vote vs creation
-
-  const { data: ensName } = useEnsName({ chainId: sepolia.id, address: address as Address });
 
   return (
     <div className="flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
