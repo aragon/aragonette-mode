@@ -1,9 +1,9 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { Button, Heading, IconType, Link, Toggle, ToggleGroup } from "@aragon/ods";
 import { useState } from "react";
-import { CouncilMemberList } from "../components/MemberDataList/councilMemberList/councilMemberList";
+import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { PUB_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
-import { DelegateMemberList } from "../components/MemberDataList/delegateMemberList/delegateMemberList";
+import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { councilMemberList, delegatesList } from "../services/members/query-options";
 
