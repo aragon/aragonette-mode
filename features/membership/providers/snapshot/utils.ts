@@ -9,6 +9,6 @@ export async function fetchSnapshotData<TData>(query: string) {
     body: JSON.stringify({ query }),
   });
 
-  const parsed: TData = await response.json();
-  return parsed;
+  const parsed: { data: TData } = await response.json();
+  return parsed.data;
 }
