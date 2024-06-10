@@ -1,14 +1,11 @@
-import { PUB_CHAIN } from "@/constants";
 import { formatHexString } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
-import { CardCollapsible, Heading, IconType, Link } from "@aragon/ods";
+import { Heading } from "@aragon/ods";
 import { useRouter } from "next/router";
-import { type Address } from "viem";
-import { mainnet } from "viem/chains";
-import { useEnsName } from "wagmi";
 import { DelegateAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
+import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 
 export const DelegateProfile = () => {
@@ -25,12 +22,10 @@ export const DelegateProfile = () => {
         {/* Main section */}
         <div className="flex w-[720px] flex-col gap-y-20">
           {/* Delegation Statement */}
-          {/* TODO: update to proper component */}
           <div className="flex w-full flex-col gap-y-6">
             <DelegationStatement />
             {/* Delegations Received */}
-            {/* TODO: update to proper component */}
-            <div>Delegations received</div>
+            <DelegationsReceivedDataList address={address} />
           </div>
 
           <div className="flex w-full flex-col gap-y-6">
