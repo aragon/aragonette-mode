@@ -29,6 +29,12 @@ export interface IPaginatedResponse<T> {
   };
 }
 
+// type for links
+export interface IResource {
+  name: string;
+  link: string;
+}
+
 export interface IFetchPaginatedParams {
   page?: number;
   limit?: number;

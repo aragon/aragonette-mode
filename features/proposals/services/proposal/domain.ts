@@ -1,6 +1,7 @@
 import { type IPublisher } from "@aragon/ods";
 import { type Address } from "viem";
 import { type VotingScores } from "../../models/proposals";
+import { type IResource } from "@/utils/types";
 
 export enum ProposalStages {
   DRAFT = "Draft",
@@ -39,10 +40,7 @@ export interface ICreator {
   link?: string;
 }
 
-export type IProposalResource = {
-  name: string;
-  link: string;
-};
+export interface IProposalResource extends IResource {}
 
 export interface IVotingData {
   providerId: string;
