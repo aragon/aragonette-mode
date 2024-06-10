@@ -4,6 +4,7 @@ import { type IPaginatedResponse } from "@/utils/types";
 import { ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 import { logger } from "@/services/logger";
+import { type StageType } from "@prisma/client";
 
 export enum ProposalSortBy {
   Title = "title",
@@ -172,6 +173,24 @@ class ProposalRepository {
       };
     } catch (error) {
       logger.error("Error fetching proposals from database:", error);
+      throw error;
+    }
+  }
+
+  async getProposalByStage(providerId: string, stageType: StageType) {
+    try {
+      const stage = await PrismaDatabase.stage.findFirst({
+        where: { type: stageType, voting: { contains: `"providerId":"${providerId}"` } },
+      });
+
+      if (stage == null) {
+        logger.warn(`No stage found with providerId ${providerId} and stageType ${stageType}`);
+        return null;
+      }
+
+      return await this.getProposalById(stage.proposalId);
+    } catch (error) {
+      logger.error(`Error fetching proposal with providerId ${providerId} and stageType ${stageType}:`, error);
       throw error;
     }
   }
