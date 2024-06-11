@@ -476,7 +476,7 @@ export const parseMultisigVotesData = (votes: VotesData[]): Vote[] => {
   return votes.map((vote) => {
     return {
       id: vote.tx,
-      choice: "Approve",
+      choice: "approve",
       voter: vote.logData.approver,
       amount: "1",
       timestamp: vote.blockTimestamp,
