@@ -1,4 +1,4 @@
-import { type IProposal, StageOrder } from "@/features/proposals";
+import { type IProposal } from "@/features/proposals";
 import { buildVotingResponse } from "@/features/proposals/providers";
 import proposalRepository, {
   parseProposalSortBy,
@@ -49,9 +49,6 @@ export default async function handler(
     );
 
     for (const proposal of paginatedProposals.data) {
-      proposal.stages.sort((a, b) => {
-        return StageOrder[a.type] - StageOrder[b.type];
-      });
       for (const stage of proposal.stages) {
         //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
         const res = await buildVotingResponse(stage);
