@@ -1,5 +1,11 @@
 import { type IProposalStagesProvider, type IProposalVotingDataProvider } from "@/features/proposals/models/proposals";
-import { requestProposalsData, requestVotingData, parseMultisigData, parseVotingData } from "./utils";
+import {
+  requestProposalsData,
+  requestProposalData,
+  requestVotingData,
+  parseMultisigData,
+  parseVotingData,
+} from "./utils";
 import { type Address } from "viem";
 
 interface IGetMultisigProposalStagesDataParams {
@@ -11,6 +17,18 @@ export const getMultisigProposalsData: IProposalStagesProvider = async function 
   params: IGetMultisigProposalStagesDataParams
 ) {
   return requestProposalsData(params.chain, params.contractAddress).then(parseMultisigData);
+};
+
+interface IGetMultisigProposalStageDataParams {
+  chain: number;
+  contractAddress: Address;
+  proposalId: number;
+}
+
+export const getMultisigProposalData: IProposalStagesProvider = async function (
+  params: IGetMultisigProposalStageDataParams
+) {
+  return requestProposalData(params.chain, params.contractAddress, params.proposalId).then(parseMultisigData);
 };
 
 interface IGetMultisigVotingDataParams {

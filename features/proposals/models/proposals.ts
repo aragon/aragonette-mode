@@ -30,6 +30,8 @@ export type VotingData = {
   quorum: number;
   scores: VotingScores[];
   total_votes: number;
+  status: StageStatus;
+  overallStatus: ProposalStatus;
 };
 
 export type ProposalStage = {

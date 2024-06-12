@@ -1,5 +1,5 @@
 import { type IProposal } from "@/features/proposals";
-import { buildVotingResponse } from "@/features/proposals/providers";
+import { buildLiveProposalResponse } from "@/features/proposals/providers";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { checkParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
@@ -16,13 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       return res.status(404).json({ error: { message: "Proposal not found" } });
     }
 
-    for (const stage of proposal.stages) {
-      //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
-      const voting = await buildVotingResponse(stage);
-      stage.voting = voting;
-    }
+    const freshProposal = await buildLiveProposalResponse(proposal);
+    await proposalRepository.upsertProposal(freshProposal);
 
-    res.status(200).json(proposal);
+    res.status(200).json(freshProposal);
   } catch (error) {
     res.status(500).json({ error: { message: "Server error" } });
   }

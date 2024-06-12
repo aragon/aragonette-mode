@@ -6,7 +6,11 @@ import { useAccount, useReadContract } from "wagmi";
 export const useUserCanApprove = (proposalId = "") => {
   const { address } = useAccount();
 
-  const { data: canVote, isFetched } = useReadContract({
+  const {
+    data: canVote,
+    isFetched,
+    queryKey,
+  } = useReadContract({
     address: PUB_MULTISIG_ADDRESS,
     abi: MultisigAbi,
     functionName: "canApprove",
@@ -14,5 +18,5 @@ export const useUserCanApprove = (proposalId = "") => {
     query: { enabled: !!address && !!proposalId },
   });
 
-  return !!(canVote && isFetched);
+  return { userCanApprove: !!(canVote && isFetched), queryKey };
 };

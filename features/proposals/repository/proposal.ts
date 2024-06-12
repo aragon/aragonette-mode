@@ -1,5 +1,5 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
-import { type IProposal } from "..";
+import { type IProposal, StageOrder } from "@/features/proposals";
 import { type IPaginatedResponse } from "@/utils/types";
 import { ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
@@ -154,10 +154,12 @@ class ProposalRepository {
         },
       });
 
-      const proposalsWithStages = proposals.map((proposal) => {
+      const proposalsWithStages: IProposal[] = proposals.map((proposal) => {
         return {
           ...parseProposal(proposal),
-          stages: proposal.Stages.map(parseStage),
+          stages: proposal.Stages.map(parseStage).sort((a, b) => {
+            return StageOrder[a.type] - StageOrder[b.type];
+          }),
         };
       });
 

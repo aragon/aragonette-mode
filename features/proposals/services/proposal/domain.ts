@@ -28,10 +28,10 @@ export enum StageStatus {
 
 export const StageOrder = {
   [ProposalStages.DRAFT]: 0,
-  [ProposalStages.COUNCIL_APPROVAL]: 1,
-  [ProposalStages.COMMUNITY_VOTING]: 2,
-  [ProposalStages.COUNCIL_CONFIRMATION]: 3,
-  [ProposalStages.TRANSPARENCY_REPORT]: 4,
+  [ProposalStages.TRANSPARENCY_REPORT]: 1,
+  [ProposalStages.COUNCIL_APPROVAL]: 2,
+  [ProposalStages.COMMUNITY_VOTING]: 3,
+  [ProposalStages.COUNCIL_CONFIRMATION]: 4,
 } as const;
 
 export interface ICreator {

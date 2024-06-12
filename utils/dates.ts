@@ -8,13 +8,16 @@ export function getSimpleRelativeTimeFromDate(value: Dayjs) {
   const now = dayjs();
   const targetDate = dayjs(value);
 
+  const diffSeconds = targetDate.diff(now, "second");
   const diffMins = targetDate.diff(now, "minute");
   const diffHours = targetDate.diff(now, "hour");
   const diffDays = targetDate.diff(now, "day");
   const diffWeeks = targetDate.diff(now, "week");
 
   // Decide whether to show days or weeks
-  if (Math.abs(diffMins) < 60) {
+  if (Math.abs(diffSeconds) < 60) {
+    return `${Math.abs(diffSeconds)} ${Math.abs(diffSeconds) === 1 ? "second" : "seconds"}`;
+  } else if (Math.abs(diffMins) < 60) {
     return `${Math.abs(diffMins)} ${Math.abs(diffMins) === 1 ? "minute" : "minutes"}`;
   } else if (Math.abs(diffHours) < 24) {
     return `${Math.abs(diffHours)} ${Math.abs(diffHours) === 1 ? "hour" : "hours"}`;

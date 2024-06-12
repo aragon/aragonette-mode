@@ -51,8 +51,14 @@ export default async function handler(
     for (const proposal of paginatedProposals.data) {
       for (const stage of proposal.stages) {
         //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
-        const voting = await buildVotingResponse(stage);
-        stage.voting = voting;
+        const res = await buildVotingResponse(stage);
+        if (res) {
+          const [voting, status, overallStatus] = res;
+          // TODO: Update stage and proposal statuses in the database
+          stage.voting = voting;
+          stage.status = status;
+          proposal.status = overallStatus;
+        }
       }
     }
 

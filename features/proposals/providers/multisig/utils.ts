@@ -32,6 +32,8 @@ const getNumProposals = async function (chain: number, contractAddress: Address)
 };
 
 const getProposalData = async function (chain: number, contractAddress: Address, proposalId: bigint) {
+  logger.info(`Fetching corresponding multisig proposal (${proposalId})...`);
+
   return await readContract(config, {
     chainId: chain,
     address: contractAddress,
@@ -47,6 +49,7 @@ const getProposalCreationData = async function (
   snapshotBlock: bigint,
   startDate: bigint
 ) {
+  logger.info(`Fetching creation data for multisig proposal:${proposalId}`);
   const publicClient = getPublicClient(config);
 
   const ProposalCreatedEvent = getAbiItem({
@@ -81,6 +84,8 @@ const getProposalCreationData = async function (
   });
 
   if (!blockData) throw new Error("No block data");
+
+  logger.info(`Returning creation data for multisig proposal:${proposalId}`);
 
   return {
     creator: logData.creator,
@@ -130,6 +135,8 @@ export function parseVotingData(voting?: MultiSigProposalVotingData): VotingData
       },
     ],
     total_votes: voting.approvals,
+    status: voting.status,
+    overallStatus: voting.overallStatus,
   };
 }
 
@@ -203,107 +210,9 @@ export const requestVotingData = async function (
   if (stage === "approval") {
     const endDate =
       proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
-        ? proposalData.firstDelayStartTimestamp.toString()
-        : proposalData.parameters.endDate.toString();
+        ? proposalData.firstDelayStartTimestamp
+        : proposalData.parameters.endDate;
 
-    return {
-      providerId: proposalId.toString(),
-      startDate: proposalData.parameters.startDate.toString(),
-      endDate,
-      approvals: proposalData.approvals,
-      quorum: proposalData.parameters.minApprovals,
-      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
-    };
-  } else if (stage === "confirmation") {
-    if (!proposalData.firstDelayStartTimestamp) return;
-
-    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
-    const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
-
-    if (!lockedPeriodPassed) return;
-    return {
-      providerId: proposalId.toString(),
-      startDate: confirmationStartDate.toString(),
-      endDate: proposalData.parameters.endDate.toString(),
-      approvals: proposalData.confirmations,
-      quorum: proposalData.parameters.minApprovals,
-      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
-    };
-  }
-};
-
-export const requestProposalsData = async function (
-  chain: number,
-  contractAddress: Address
-): Promise<MultisigProposal[]> {
-  const numProposals = await getNumProposals(chain, contractAddress);
-
-  const proposals: MultisigProposal[] = [];
-
-  for (let i = 0; i < numProposals; i++) {
-    const proposalData = await getProposalData(chain, contractAddress, BigInt(i));
-
-    // skip proposal if no proposal data can be fetched
-    if (!proposalData) continue;
-    const creationData = await getProposalCreationData(
-      contractAddress,
-      BigInt(i),
-      proposalData.parameters.snapshotBlock,
-      proposalData.parameters.startDate
-    );
-
-    // skip to next proposal if no creation data can be found for the current proposal
-    if (!creationData) continue;
-    const primaryMetadataCid = fromHex(proposalData.primaryMetadata as Hex, "string");
-    const secondaryMetadataCid = fromHex(proposalData.secondaryMetadata as Hex, "string");
-
-    let primaryMetadata: PrimaryMetadata;
-    let secondaryMetadata: SecondaryMetadata | undefined;
-    try {
-      primaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
-      secondaryMetadata = secondaryMetadataCid
-        ? ((await fetchJsonFromIpfs(secondaryMetadataCid)) as SecondaryMetadata)
-        : undefined;
-    } catch (err) {
-      logger.error("Could not fetch the proposal metadata", err);
-      continue;
-    }
-
-    const { githubId, snapshotId, transparencyReportId } = await getProposalBindings(
-      primaryMetadata,
-      secondaryMetadata
-    );
-
-    const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
-
-    // get resources
-    const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).flatMap((resource) => {
-      if (!resource.name && !resource.url) return [];
-
-      return {
-        name: resource.name,
-        link: resource.url,
-      };
-    });
-
-    // prepare the base data for both approval and confirmation stages
-    const baseProposalData = {
-      pip,
-      title: primaryMetadata.title,
-      summary: primaryMetadata.summary,
-      description: primaryMetadata.description,
-      createdAt: creationData.createdAt.toString(),
-      creator: creationData.creator,
-      link: `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`,
-      actions: proposalData.actions,
-      isEmergency: proposalData.parameters.emergency,
-      resources,
-      githubId,
-      transparencyReportId,
-      snapshotId,
-    };
-
-    // generate the relevant approval status based on whether proposal is an emergency
     const [stageStatus, overallStatus] = proposalData.parameters.emergency
       ? computeEmergencyStatus({
           startDate: proposalData.parameters.startDate,
@@ -315,61 +224,215 @@ export const requestProposalsData = async function (
         })
       : computeApprovalStatus({
           startDate: proposalData.parameters.startDate,
-          endDate: proposalData.parameters.endDate,
+          endDate,
           executed: proposalData.executed,
           approvals: proposalData.approvals,
           minApprovals: proposalData.parameters.minApprovals,
         });
 
-    proposals.push({
-      ...baseProposalData,
-      stageType: ProposalStages.COUNCIL_APPROVAL,
+    return {
       status: stageStatus,
       overallStatus,
-      voting: {
-        providerId: i.toString(),
-        startDate: proposalData.parameters.startDate.toString(),
-        endDate: proposalData.firstDelayStartTimestamp
-          ? proposalData.firstDelayStartTimestamp.toString()
-          : proposalData.parameters.endDate.toString(),
-        approvals: proposalData.approvals,
-        quorum: proposalData.parameters.minApprovals,
-        snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
-      },
+      providerId: proposalId.toString(),
+      startDate: proposalData.parameters.startDate.toString(),
+      endDate: endDate.toString(),
+      approvals: proposalData.approvals,
+      quorum: proposalData.parameters.minApprovals,
+      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
+    };
+  } else if (stage === "confirmation") {
+    if (!proposalData.firstDelayStartTimestamp || proposalData.firstDelayStartTimestamp < 1) return;
+
+    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
+
+    const [confirmationStatus, overallCStatus] = computeConfirmationStatus({
+      startDate: confirmationStartDate,
+      endDate: proposalData.parameters.endDate,
+      executed: proposalData.executed,
+      confirmations: proposalData.confirmations,
+      minApprovals: proposalData.parameters.minApprovals,
+      isSignaling: proposalData.actions.length === 0,
     });
 
-    // if confirmation stage has yet to start continue to next proposal
-    if (!proposalData.firstDelayStartTimestamp) continue;
-    const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
-    const lockedPeriodPassed = confirmationStartDate < BigInt(Math.floor(Date.now() / 1000));
+    return {
+      status: confirmationStatus,
+      overallStatus: overallCStatus,
+      providerId: proposalId.toString(),
+      startDate: confirmationStartDate.toString(),
+      endDate: proposalData.parameters.endDate.toString(),
+      approvals: proposalData.confirmations,
+      quorum: proposalData.parameters.minApprovals,
+      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
+    };
+  }
+};
 
-    // generate confirmation stage if the proposal has been approved by the council
-    // after the time lock period has passed
-    if (lockedPeriodPassed) {
-      const [confirmationStatus, overallCStatus] = computeConfirmationStatus({
-        startDate: confirmationStartDate,
-        endDate: proposalData.parameters.endDate,
+const processProposalData = async function (proposalData: ProposalData, contractAddress: Address, proposalId: number) {
+  logger.info(`Processing data for multisig proposal:${proposalId}`);
+
+  const proposals: MultisigProposal[] = [];
+  const creationData = await getProposalCreationData(
+    contractAddress,
+    BigInt(proposalId),
+    proposalData.parameters.snapshotBlock,
+    proposalData.parameters.startDate
+  );
+
+  // skip to next proposal if no creation data can be found for the current proposal
+  if (!creationData) return [];
+  const primaryMetadataCid = fromHex(proposalData.primaryMetadata as Hex, "string");
+  const secondaryMetadataCid = fromHex(proposalData.secondaryMetadata as Hex, "string");
+
+  let primaryMetadata: PrimaryMetadata;
+  let secondaryMetadata: SecondaryMetadata | undefined;
+  try {
+    primaryMetadata = await fetchJsonFromIpfs(primaryMetadataCid);
+    secondaryMetadata = secondaryMetadataCid ? await fetchJsonFromIpfs(secondaryMetadataCid) : undefined;
+  } catch (err) {
+    logger.error(`Could not fetch the proposal metadata [${primaryMetadataCid}, ${secondaryMetadataCid}]`, err);
+    return [];
+  }
+
+  const { githubId, snapshotId, transparencyReportId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
+
+  const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+
+  // get resources
+  const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).flatMap((resource) => {
+    if (!resource.name && !resource.url) return [];
+
+    return {
+      name: resource.name,
+      link: resource.url,
+    };
+  });
+
+  // prepare the base data for both approval and confirmation stages
+  const baseProposalData = {
+    pip,
+    title: primaryMetadata.title,
+    summary: primaryMetadata.summary,
+    description: primaryMetadata.description,
+    createdAt: creationData.createdAt.toString(),
+    creator: creationData.creator,
+    link: `${PUB_CHAIN.blockExplorers?.default.url}/tx/${creationData.tx}`,
+    actions: proposalData.actions,
+    isEmergency: proposalData.parameters.emergency,
+    resources,
+    githubId,
+    transparencyReportId,
+    snapshotId,
+  };
+
+  const endDate =
+    proposalData.firstDelayStartTimestamp && proposalData.firstDelayStartTimestamp > 0
+      ? proposalData.firstDelayStartTimestamp
+      : proposalData.parameters.endDate;
+
+  // generate the relevant approval status based on whether proposal is an emergency
+  const [stageStatus, overallStatus] = proposalData.parameters.emergency
+    ? computeEmergencyStatus({
+        startDate: proposalData.parameters.startDate,
+        endDate,
         executed: proposalData.executed,
-        confirmations: proposalData.confirmations,
-        minApprovals: proposalData.parameters.minApprovals,
+        approvals: proposalData.approvals,
+        emergencyMinApprovals: proposalData.parameters.minApprovals,
         isSignaling: proposalData.actions.length === 0,
+      })
+    : computeApprovalStatus({
+        startDate: proposalData.parameters.startDate,
+        endDate,
+        executed: proposalData.executed,
+        approvals: proposalData.approvals,
+        minApprovals: proposalData.parameters.minApprovals,
       });
 
-      proposals.push({
-        ...baseProposalData,
-        stageType: ProposalStages.COUNCIL_CONFIRMATION,
-        status: confirmationStatus,
-        overallStatus: overallCStatus,
-        voting: {
-          providerId: i.toString(),
-          startDate: confirmationStartDate.toString(),
-          endDate: proposalData.parameters.endDate.toString(),
-          approvals: proposalData.confirmations,
-          quorum: proposalData.parameters.minApprovals,
-          snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
-        },
-      });
-    }
+  proposals.push({
+    ...baseProposalData,
+    stageType: ProposalStages.COUNCIL_APPROVAL,
+    status: stageStatus,
+    overallStatus,
+    voting: {
+      status: stageStatus,
+      overallStatus,
+      providerId: proposalId.toString(),
+      startDate: proposalData.parameters.startDate.toString(),
+      endDate: endDate.toString(),
+      approvals: proposalData.approvals,
+      quorum: proposalData.parameters.minApprovals,
+      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
+    },
+  });
+
+  // if confirmation stage has yet to start continue to next proposal
+  if (!proposalData.firstDelayStartTimestamp || proposalData.firstDelayStartTimestamp < 1) return proposals;
+  logger.info(`Adding confirmation stage for proposal: ${proposalData.firstDelayStartTimestamp}`);
+  const confirmationStartDate = proposalData.firstDelayStartTimestamp + proposalData.parameters.delayDuration;
+
+  // generate confirmation stage if the proposal has been approved by the council
+  // after the time lock period has passed
+  const [confirmationStatus, overallCStatus] = computeConfirmationStatus({
+    startDate: confirmationStartDate,
+    endDate: proposalData.parameters.endDate,
+    executed: proposalData.executed,
+    confirmations: proposalData.confirmations,
+    minApprovals: proposalData.parameters.minApprovals,
+    isSignaling: proposalData.actions.length === 0,
+  });
+
+  proposals.push({
+    ...baseProposalData,
+    stageType: ProposalStages.COUNCIL_CONFIRMATION,
+    status: confirmationStatus,
+    overallStatus: overallCStatus,
+    voting: {
+      status: stageStatus,
+      overallStatus: overallCStatus,
+      providerId: proposalId.toString(),
+      startDate: confirmationStartDate.toString(),
+      endDate: proposalData.parameters.endDate.toString(),
+      approvals: proposalData.confirmations,
+      quorum: proposalData.parameters.minApprovals,
+      snapshotBlock: proposalData.parameters.snapshotBlock.toString(),
+    },
+  });
+
+  return proposals;
+};
+
+export const requestProposalsData = async function (
+  chain: number,
+  contractAddress: Address
+): Promise<MultisigProposal[]> {
+  const numProposals = await getNumProposals(chain, contractAddress);
+
+  let proposals: MultisigProposal[] = [];
+
+  for (let i = 0; i < numProposals; i++) {
+    const proposalData = await getProposalData(chain, contractAddress, BigInt(i));
+
+    // skip proposal if no proposal data can be fetched
+    if (!proposalData) continue;
+
+    const multisigProposalStages = await processProposalData(proposalData, contractAddress, i);
+    proposals = proposals.concat(multisigProposalStages);
+  }
+
+  return proposals;
+};
+
+export const requestProposalData = async function (
+  chain: number,
+  contractAddress: Address,
+  proposalId: number
+): Promise<MultisigProposal[]> {
+  let proposals: MultisigProposal[] = [];
+  const proposalData = await getProposalData(chain, contractAddress, BigInt(proposalId));
+
+  // skip proposal if no proposal data can be fetched
+  if (proposalData) {
+    const multisigProposalStages = await processProposalData(proposalData, contractAddress, proposalId);
+    proposals = proposals.concat(multisigProposalStages);
   }
 
   return proposals;
@@ -391,6 +454,8 @@ type ProposalData = {
 };
 
 function decodeProposalResultData(data?: Array<any>): ProposalData | null {
+  logger.info("Decoding data for proposal");
+
   if (!data?.length && data?.length != 9) return null;
   return {
     executed: data[0] as boolean,
@@ -732,10 +797,7 @@ function computeConfirmationStatus({
   }
 
   if (now <= endDate) {
-    if (confirmationsReached)
-      return isSignaling
-        ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED]
-        : [StageStatus.APPROVED, ProposalStatus.ACTIVE];
+    if (confirmationsReached) return [StageStatus.APPROVED, ProposalStatus.ACCEPTED];
 
     return [StageStatus.ACTIVE, ProposalStatus.ACTIVE];
   }

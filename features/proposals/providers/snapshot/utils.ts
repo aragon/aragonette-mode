@@ -60,6 +60,8 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     };
   });
 
+  const [status, overallStatus] = computeStatus(proposal.state, scores);
+
   const voting: VotingData = {
     providerId: proposal.id,
     startDate: new Date(proposal.start * 1000),
@@ -69,6 +71,8 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     quorum: proposal.quorum,
     scores,
     total_votes: proposal.votes,
+    status,
+    overallStatus,
   };
 
   const creator = [
@@ -77,8 +81,6 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
       address: proposal.author,
     },
   ];
-
-  const [status, overallStatus] = computeStatus(proposal.state, scores);
 
   return {
     stageType: ProposalStages.COMMUNITY_VOTING,

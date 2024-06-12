@@ -9,7 +9,7 @@ import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   BodySection,
@@ -22,12 +22,15 @@ import {
   type IBreakdownApprovalThresholdResult,
 } from "../components";
 import { type SecondaryMetadata } from "../providers/multisig/types";
-import { ProposalStages, proposalKeys } from "../services";
+import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,
   proposal as proposalQueryOptions,
   voted as votedQueryOptions,
 } from "../services/proposal/query-options";
+
+export const PENDING_PROPOSAL_POLLING_INTERVAL = 1000; // 1 sec
+export const ACTIVE_PROPOSAL_POLLING_INTERVAL = 1000 * 60 * 5; // 5 mins
 
 export default function ProposalDetails() {
   const router = useRouter();
@@ -38,53 +41,177 @@ export default function ProposalDetails() {
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
   const [secondaryMetadata, setSecondaryMetadata] = useState<SecondaryMetadata>();
 
-  // data queries
+  // fetch proposal details
   const proposalId = router.query.id as string;
-  const { data: proposal, error } = useQuery({
+  const {
+    data: proposal,
+    refetch: refetchProposal,
+    isSuccess: isProposalSuccess,
+    fetchStatus: proposalFetchStatus,
+    isRefetching: isRefetchingProposal,
+    error,
+  } = useQuery({
     ...proposalQueryOptions({ proposalId }),
-    // refetchInterval: (query) => {
-    //   const status = query.state.data?.status;
-    //   if (status === ProposalStatus.ACTIVE) return 1000 * 60; // minute
-    // },
-  });
-
-  const { data: userHasVoted } = useQuery({
-    ...votedQueryOptions({ address: address!, proposalId, stage: proposal?.currentStage as ProposalStages }),
+    refetchInterval: (query) =>
+      query.state.data?.status === ProposalStatus.ACTIVE ? ACTIVE_PROPOSAL_POLLING_INTERVAL : false,
   });
 
   // proposal id for current stage
   const proposalVoteId = proposal?.stages?.find((stage) => stage.type === proposal?.currentStage)?.providerId;
 
-  // check if user can vote on the proposal
-  const userCanApprove = useUserCanApprove(proposalVoteId);
-  const userCanConfirm = useUserCanConfirm(proposalVoteId);
+  /*************************************************
+   *         Proposal Details Read Queries         *
+   *************************************************/
 
+  // check if user can vote on the proposal
+  const { userCanApprove, queryKey: canApproveQueryKey } = useUserCanApprove(proposalVoteId);
+  const { userCanConfirm, queryKey: canConfirmQueryKey } = useUserCanConfirm(proposalVoteId);
   const { data: userCanVote } = useQuery({
     ...canVoteQueryOptions({ address: address!, proposalId, stage: ProposalStages.COMMUNITY_VOTING }),
-    enabled: !!address && proposal?.currentStage === ProposalStages.COMMUNITY_VOTING,
+    enabled:
+      !!address && !isRefetchingProposal && !!proposal && proposal?.currentStage === ProposalStages.COMMUNITY_VOTING,
   });
 
-  // vote and approve proposal
-  const { advanceToNextStage, isConfirming: isAdvancingToNextStage } = useAdvanceToNextStage(
-    proposalVoteId,
-    secondaryMetadata,
-    invalidateDetailQueries
-  );
+  // check if user has voted on the proposal
+  const { data: userHasVoted } = useQuery({
+    ...votedQueryOptions({ address: address!, proposalId, stage: proposal?.currentStage as ProposalStages }),
+  });
 
-  const { castVote, isConfirming: isVoting } = useCastSnapshotVote(proposalVoteId, invalidateDetailQueries);
-  const { confirmProposal, isConfirming } = useProposalConfirmation(proposalVoteId, invalidateDetailQueries);
-  const { approveProposal, isConfirming: isApproving } = useProposalApproval(
-    proposalVoteId,
-    secondaryMetadata ? advanceToNextStage : invalidateDetailQueries
-  );
-
+  /*************************************************
+   *              Query Invalidators               *
+   *************************************************/
   // invalidates all the queries related to the proposal details
-  function invalidateDetailQueries() {
+  const invalidateProposalDetailQueries = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: proposalKeys?.proposal({ proposalId }),
-      refetchType: "all",
+      refetchType: "active",
     });
-  }
+  }, [proposalId, queryClient]);
+
+  // invalidates the queries checking if connected address can cast a vote
+  const inValidateVotingEligibilityQueries = useCallback(() => {
+    switch (proposal?.currentStage) {
+      case ProposalStages.COUNCIL_APPROVAL:
+        queryClient.invalidateQueries({ queryKey: canApproveQueryKey, refetchType: "all" });
+        break;
+      case ProposalStages.COUNCIL_CONFIRMATION:
+        queryClient.invalidateQueries({ queryKey: canConfirmQueryKey, refetchType: "all" });
+        break;
+      case ProposalStages.COMMUNITY_VOTING:
+        queryClient.invalidateQueries({
+          queryKey: canVoteQueryOptions({
+            address: address!,
+            proposalId,
+            stage: ProposalStages.COMMUNITY_VOTING,
+          }).queryKey,
+          refetchType: "all",
+        });
+        break;
+    }
+  }, [address, canApproveQueryKey, canConfirmQueryKey, proposal?.currentStage, proposalId, queryClient]);
+
+  /*************************************************
+   *         Proposal Details Write Queries        *
+   *************************************************/
+  // vote and approve proposal
+  const {
+    advanceToNextStage,
+    isConfirmed: advancementConfirmed,
+    isConfirming: confirmingNextStageAdvancement,
+  } = useAdvanceToNextStage(proposalVoteId, secondaryMetadata, invalidateProposalDetailQueries);
+
+  const { confirmProposal, isConfirming } = useProposalConfirmation(proposalVoteId, invalidateProposalDetailQueries);
+  const { castVote, isConfirming: isVoting } = useCastSnapshotVote(proposalVoteId, invalidateProposalDetailQueries);
+  const { approveProposal, isConfirming: isApproving } = useProposalApproval(
+    proposalVoteId,
+    secondaryMetadata ? advanceToNextStage : invalidateProposalDetailQueries
+  );
+
+  /*************************************************
+   *           Synchronization Effects             *
+   *************************************************/
+  /**
+   * Given the nature of stages needing to advance from "Pending" to "Active" or
+   * "Active" to a resolution state, we need to poll the proposal status to determine
+   * when to refetch the proposal data.
+   *
+   * When a proposal is pending, we poll to check if the current stage has started
+   * by comparing the stage start date with the current datetime.
+   *
+   * When a proposal is active, we poll to check if the current stage has ended
+   * by comparing the stage end date with the current datetime.
+   *
+   * When the proposal is no longer in an active state or pending state,
+   * we clear the polling interval.
+   */
+  useEffect(() => {
+    if (!proposal) return;
+
+    const interval = setInterval(() => {
+      const { details, status: currentStageStatus } =
+        proposal.stages.find((stage) => stage.type === proposal.currentStage) ?? {};
+
+      const currentStageStartDate = details?.startDate;
+      const currentStageEndDate = details?.endDate;
+      const now = dayjs();
+
+      // proposal no longer pending or active, clear the polling interval
+      if (proposal.status !== ProposalStatus.PENDING && proposal?.status !== ProposalStatus.ACTIVE) {
+        clearInterval(interval);
+        return;
+      }
+
+      // when current stage is pending but should start
+      if (
+        currentStageStatus === StageStatus.PENDING &&
+        currentStageStartDate &&
+        dayjs(currentStageStartDate).isBefore(now) &&
+        !isRefetchingProposal
+      ) {
+        // cancelling shouldn't be needed, but adding to avoid infinite looping
+        queryClient.cancelQueries({ queryKey: proposalQueryOptions({ proposalId }).queryKey });
+        refetchProposal();
+      }
+
+      // when current stage is active but should end, refetch
+      if (
+        currentStageStatus === StageStatus.ACTIVE &&
+        currentStageEndDate &&
+        dayjs(currentStageEndDate).isBefore(now) &&
+        !isRefetchingProposal
+      ) {
+        queryClient.cancelQueries({ queryKey: proposalQueryOptions({ proposalId }).queryKey });
+        refetchProposal();
+      }
+    }, PENDING_PROPOSAL_POLLING_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [
+    isRefetchingProposal,
+    proposal,
+    proposal?.currentStage,
+    proposal?.stages,
+    proposal?.status,
+    proposalId,
+    queryClient,
+    refetchProposal,
+  ]);
+
+  // Once a proposal has been fetched, invalidate the voting eligibility queries
+  // so that we get the latest data since the eligibility may have changed
+  useEffect(() => {
+    if (isProposalSuccess && proposalFetchStatus === "idle") {
+      inValidateVotingEligibilityQueries();
+    }
+  }, [inValidateVotingEligibilityQueries, isProposalSuccess, proposalFetchStatus]);
+
+  /**************************************************
+   *            Callbacks and Handlers              *
+   **************************************************/
+  const isAdvancingToNextStage =
+    confirmingNextStageAdvancement ||
+    // transaction to advance is successful and proposal is being re-fetched
+    (advancementConfirmed && isRefetchingProposal && proposal?.currentStage === ProposalStages.COUNCIL_APPROVAL);
 
   function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
     if (userHasVoted) {
@@ -92,9 +219,9 @@ export default function ProposalDetails() {
     } else if (!isConnected) {
       return "Login to approve";
     } else if (isApproving) {
-      return "Approving...";
+      return "Approving…";
     } else if (isAdvancingToNextStage) {
-      return "Advancing stage...";
+      return "Advancing stage…";
     } else if (userCanApprove && canAdvanceWithNextApproval) {
       return "Approve and advance";
     } else {
@@ -104,7 +231,7 @@ export default function ProposalDetails() {
 
   function getConfirmationLabel() {
     if (isConfirming) {
-      return "Confirming...";
+      return "Confirming…";
     } else if (userHasVoted) {
       return "Confirmed";
     } else if (!isConnected) {
@@ -116,7 +243,7 @@ export default function ProposalDetails() {
 
   function getVoteLabel() {
     if (isVoting) {
-      return "Submitting vote...";
+      return "Submitting vote…";
     } else if (userHasVoted) {
       return "Change vote";
     } else if (!isConnected) {
@@ -153,8 +280,8 @@ export default function ProposalDetails() {
             cta:
               proposal.currentStage === ProposalStages.COUNCIL_APPROVAL && stageNotEnded
                 ? {
-                    isLoading: isApproving,
-                    disabled: !isConnected || !!userHasVoted || !userCanApprove || isAdvancingToNextStage,
+                    isLoading: isApproving || isAdvancingToNextStage,
+                    disabled: !isConnected || ((!!userHasVoted || !userCanApprove) && !isAdvancingToNextStage),
                     onClick: () => handleApproveProposal(canAdvanceWithNextApproval),
                     label: getApprovalLabel(canAdvanceWithNextApproval),
                   }
@@ -192,6 +319,9 @@ export default function ProposalDetails() {
     });
   }
 
+  /**************************************************
+   *                     Render                     *
+   **************************************************/
   if (proposal) {
     // intermediate values
     const breadcrumbs = generateBreadcrumbs(router.asPath);

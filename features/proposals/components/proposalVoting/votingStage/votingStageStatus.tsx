@@ -9,6 +9,8 @@ interface IVotingStageStatus {
 export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
   const { endDate, status } = props;
 
+  const stageAboutToEnd = parseInt(endDate) === 0;
+
   return (
     <div className="flex items-center gap-x-2 text-lg leading-tight">
       {status === StageStatus.PENDING && (
@@ -21,7 +23,7 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
           <Spinner size="md" variant="neutral" className="shrink-0" />
         </>
       )}
-      {status === StageStatus.ACTIVE && endDate && (
+      {status === StageStatus.ACTIVE && endDate && !stageAboutToEnd && (
         <>
           <div className="flex flex-grow">
             <span className="shrink-0 text-primary-500">{endDate}</span>
@@ -29,6 +31,14 @@ export const VotingStageStatus: React.FC<IVotingStageStatus> = (props) => {
             <span className="flex-grow truncate text-neutral-500">left to vote</span>
           </div>
           <StatePingAnimation variant="primary" className="shrink-0" />
+        </>
+      )}
+      {status === StageStatus.ACTIVE && endDate && stageAboutToEnd && (
+        <>
+          <div className="flex flex-grow">
+            <span className="shrink-0 text-neutral-500">Advancing to next stage</span>
+          </div>
+          <Spinner size="md" variant="neutral" className="shrink-0" />
         </>
       )}
       {status === StageStatus.APPROVED && (

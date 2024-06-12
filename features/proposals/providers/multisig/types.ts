@@ -82,6 +82,8 @@ export type MultiSigProposalVotingData = {
   approvals: number;
   quorum: number;
   snapshotBlock: string;
+  status: StageStatus;
+  overallStatus: ProposalStatus;
 };
 
 export type MultisigProposal = {

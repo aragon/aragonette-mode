@@ -50,7 +50,9 @@ export async function downloadPIPs(url: string) {
     60 * 15
   );
 
-  const githubData = JSON.parse(data);
+  let githubData = JSON.parse(data);
+
+  if (!Array.isArray(githubData)) githubData = [githubData];
 
   let result: GithubData[] = [];
 
@@ -238,7 +240,7 @@ export function parseTransparencyReport(header: string, body: string, link: stri
 
   return {
     stageType: ProposalStages.TRANSPARENCY_REPORT,
-    pip: EMERGENCY_PREFIX + "-" + parts[EMERGENCY_PREFIX],
+    pip: `${EMERGENCY_PREFIX}-${parts[EMERGENCY_PREFIX]}`,
     title: parts.title,
     description: parts.description,
     body,
