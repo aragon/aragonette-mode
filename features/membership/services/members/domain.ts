@@ -1,11 +1,6 @@
-export interface ICouncilMemberListItem {
-  address: string;
-  name?: string;
-}
-
-export interface IDelegateListItem {
+export interface IMemberDataListItem {
   address: string;
   name?: string; // name or ensName
-  votingPower: number;
-  delegationCount: number;
+  votingPower?: number;
+  delegationCount?: number;
 }

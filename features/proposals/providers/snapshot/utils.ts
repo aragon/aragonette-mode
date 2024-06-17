@@ -112,9 +112,9 @@ function evaluateVotingResult(votingData: VotingScores[]): [StageStatus, Proposa
   // Loop through the array to count votes for 'Yes' and 'No'
   for (const vote of votingData) {
     const choice = vote.choice;
-    if (choice === "approve") {
+    if (choice === "yes") {
       yesVotes += vote.votes;
-    } else if (choice === "reject") {
+    } else if (choice === "no") {
       noVotes += vote.votes;
     }
   }

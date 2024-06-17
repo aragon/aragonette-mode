@@ -1,8 +1,13 @@
 // import { PUB_API_BASE_URL } from "@/constants";
 // import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type IDelegateListItem, type ICouncilMemberListItem } from "./domain";
-import type { IFetchCouncilMembersParams, IFetchDelegatesParams, IFetchVotingActivityParams } from "./params";
+import { type IMemberDataListItem } from "./domain";
+import type {
+  IFetchCouncilMembersParams,
+  IFetchDelegatesParams,
+  IFetchDelegationsParams,
+  IFetchVotingActivityParams,
+} from "./params";
 import { zeroAddress } from "viem";
 import { type IDelegateVotingActivity } from "@/pages/api/delegates/votingActivity";
 import { encodeSearchParams } from "@/utils/query";
@@ -27,7 +32,7 @@ const addresses = [
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
 
-  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IPaginatedResponse<ICouncilMemberListItem>> {
+  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
     // const url = encodeSearchParams(`${PUB_API_BASE_URL}/members`, params);
     // const response = await fetch(url);
     // const parsed: IPaginatedResponse<IMember> = await response.json();
@@ -46,7 +51,7 @@ class MemberService {
     };
   }
 
-  async fetchDelegates(params: IFetchDelegatesParams): Promise<IPaginatedResponse<IDelegateListItem>> {
+  async fetchDelegates(params: IFetchDelegatesParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
     // const url = encodeSearchParams(`${PUB_API_BASE_URL}/delegates`, params);
     // const response = await fetch(url);
     // const parsed: IPaginatedResponse<IMember> = await response.json();
@@ -88,6 +93,24 @@ class MemberService {
         page: params.page ?? 1,
         pages: Math.ceil(parsed.length / (params.limit ?? 3)),
         limit: params.limit ?? parsed.length,
+      },
+    };
+  }
+
+  async fetchDelegationsReceived(params: IFetchDelegationsParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
+    const count = Math.ceil(Math.random() * 10);
+    const data = addresses.slice(0, count).map((m) => ({
+      ...m,
+      votingPower: Math.random() * 10000,
+    }));
+
+    return {
+      data,
+      pagination: {
+        total: data.length,
+        page: params.page ?? 1,
+        pages: Math.ceil(data.length / (params.limit ?? 12)),
+        limit: params.limit ?? data.length,
       },
     };
   }

@@ -164,7 +164,7 @@ export const parseStage = (stage: Stage): IProposalStage => {
 export const serializeStage = (proposalId: string, stage: IProposalStage): Omit<Stage, "proposalId"> => {
   return {
     // TODO: Fix this
-    id: `${proposalId}-${stage.id}`,
+    id: stage.id.includes("-") ? stage.id : `${proposalId}-${stage.id}`,
     type: serializeType(stage.type),
     status: serializeStageStatus(stage.status),
     statusMessage: stage.statusMessage ?? null,

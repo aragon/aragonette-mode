@@ -7,3 +7,7 @@ export interface IFetchDelegatesParams extends IFetchPaginatedParams {}
 export interface IFetchVotingActivityParams extends IFetchPaginatedParams {
   address: string;
 }
+
+export interface IFetchDelegationsParams extends IFetchPaginatedParams {
+  address: string;
+}
