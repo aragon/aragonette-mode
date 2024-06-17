@@ -29,6 +29,11 @@ export interface IPaginatedResponse<T> {
   };
 }
 
+export interface IFetchPaginatedParams {
+  page?: number;
+  limit?: number;
+}
+
 export interface IError {
   error: {
     message: string;

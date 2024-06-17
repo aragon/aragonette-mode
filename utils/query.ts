@@ -4,6 +4,18 @@ export function resolveQueryParam(value: string | string[] | undefined): string 
   return "";
 }
 
+export function encodeSearchParams(baseUrl: string, params: Record<string, any>): string {
+  const searchParams = new URLSearchParams();
+
+  // Iterate over object properties
+  Object.entries(params).forEach(([key, value]) => {
+    searchParams.append(key, String(value));
+  });
+
+  // Construct the URL with encoded query parameters
+  return `${baseUrl}?${searchParams.toString()}`;
+}
+
 export const generateDataListState = (
   isLoading: boolean,
   isError: boolean,
