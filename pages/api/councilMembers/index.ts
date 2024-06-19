@@ -1,9 +1,8 @@
-import { type ICouncilMember } from "@/features/membership/services/members/domain";
 import { GITHUB_COUNCIL_FILENAME, GITHUB_REPO, GITHUB_USER } from "@/constants";
 import { getGitHubCouncilMembersData } from "@/features/membership/providers/github";
+import { type ICouncilMember } from "@/features/membership/services/members/domain";
 import { logger } from "@/services/logger";
-import { type IError, type IPaginatedResponse } from "@/utils/types";
-import { checkNullableParam } from "@/utils/api-utils";
+import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ICouncilMember[] | IError>) {

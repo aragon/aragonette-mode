@@ -16,7 +16,7 @@ export const getGitHubCouncilMembersData: ICouncilMembersProvider = async functi
 
   const council_file = await downloadGitHubFile(council_url);
 
-  const councilMembers = council_file.map((file) => {
+  const councilMembers = council_file.flatMap((file) => {
     return JSON.parse(file.data);
   });
 
