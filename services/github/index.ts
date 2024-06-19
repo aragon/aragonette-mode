@@ -6,7 +6,7 @@ type GithubData = {
   data: string;
 };
 
-const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promise<string> => {
+const cachedFetch = async (url: string, headers?: any, ttl: number = 3600): Promise<string> => {
   const cache = new Cache();
 
   const cachedData = await cache.get(url);
@@ -20,7 +20,9 @@ const cachedFetch = async (url: string, headers?: any, ttl: number = 600): Promi
 
   const response = await fetch(url, headers);
   const data = await response.text();
-  await cache.set(url, data, ttl);
+  if (response.ok) {
+    await cache.set(url, data, ttl);
+  }
   return data;
 };
 
@@ -44,8 +46,8 @@ export async function downloadPIPs(url: string) {
   for (const item of githubData) {
     if (item.type === "file") {
       const fileUrl = item.download_url;
-      const fileResponse = await fetch(fileUrl);
-      const fileData = await fileResponse.text();
+      const fileResponse = await cachedFetch(fileUrl, {}, 60 * 60);
+      const fileData = await fileResponse;
 
       result.push({
         link: item.html_url,
