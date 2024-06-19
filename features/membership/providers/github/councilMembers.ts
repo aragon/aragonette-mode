@@ -1,6 +1,6 @@
 import { GITHUB_API_URL } from "@/constants";
 import { downloadPIPs } from "@/services/github";
-import { ICouncilMembersProvider } from "../models/membership";
+import { ICouncilMembersProvider } from "../../models/membership";
 
 interface IGetGitHubCouncilDataParams {
   user: string;

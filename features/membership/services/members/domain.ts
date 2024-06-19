@@ -4,3 +4,8 @@ export interface IMemberDataListItem {
   votingPower?: number;
   delegationCount?: number;
 }
+
+export type ICouncilMember = {
+  name?: string;
+  address: string;
+};
