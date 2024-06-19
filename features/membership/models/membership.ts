@@ -1,7 +1,4 @@
-export type ICouncilMember = {
-  name: string;
-  address: string;
-};
+import { ICouncilMember } from "../services/members/domain";
 
 export interface ICouncilMembersProvider {
   (params?: any): Promise<ICouncilMember[]>;
