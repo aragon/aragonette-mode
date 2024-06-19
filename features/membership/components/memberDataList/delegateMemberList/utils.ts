@@ -16,37 +16,35 @@ export const generateSortOptions = (sort: string) => {
   return { sortBy: sortBy, sortDir };
 };
 
-export function getSortItems() {
-  return [
-    {
-      value: `${DelegateSortBy.Name}-${DelegateSortDir.Asc}`,
-      label: "Sort by name (ASC)",
-      type: "ASC" as const,
-    },
-    {
-      value: `${DelegateSortBy.Name}-${DelegateSortDir.Desc}`,
-      label: "Sort by name (DESC)",
-      type: "DESC" as const,
-    },
-    {
-      value: `${DelegateSortBy.Delegations}-${DelegateSortDir.Asc}`,
-      label: "Sort by delegations (ASC)",
-      type: "ASC" as const,
-    },
-    {
-      value: `${DelegateSortBy.Delegations}-${DelegateSortDir.Desc}`,
-      label: "Sort by delegations (DESC)",
-      type: "DESC" as const,
-    },
-    {
-      value: `${DelegateSortBy.VotingPower}-${DelegateSortDir.Asc}`,
-      label: "Sort by voting power (ASC)",
-      type: "ASC" as const,
-    },
-    {
-      value: `${DelegateSortBy.VotingPower}-${DelegateSortDir.Desc}`,
-      label: "Sort by voting power (DESC)",
-      type: "DESC" as const,
-    },
-  ];
-}
+export const sortItems = [
+  {
+    value: `${DelegateSortBy.Name}-${DelegateSortDir.Asc}`,
+    label: "Sort by name (ASC)",
+    type: "ASC" as const,
+  },
+  {
+    value: `${DelegateSortBy.Name}-${DelegateSortDir.Desc}`,
+    label: "Sort by name (DESC)",
+    type: "DESC" as const,
+  },
+  {
+    value: `${DelegateSortBy.Delegations}-${DelegateSortDir.Asc}`,
+    label: "Sort by delegations (ASC)",
+    type: "ASC" as const,
+  },
+  {
+    value: `${DelegateSortBy.Delegations}-${DelegateSortDir.Desc}`,
+    label: "Sort by delegations (DESC)",
+    type: "DESC" as const,
+  },
+  {
+    value: `${DelegateSortBy.VotingPower}-${DelegateSortDir.Asc}`,
+    label: "Sort by voting power (ASC)",
+    type: "ASC" as const,
+  },
+  {
+    value: `${DelegateSortBy.VotingPower}-${DelegateSortDir.Desc}`,
+    label: "Sort by voting power (DESC)",
+    type: "DESC" as const,
+  },
+];
