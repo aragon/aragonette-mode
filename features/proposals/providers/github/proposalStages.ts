@@ -6,9 +6,9 @@ import {
   extractTRBody,
   extractBody,
   parseHeader,
-  downloadPIPs,
   parseTransparencyReport,
 } from "./utils";
+import { downloadPIPs } from "@/services/github";
 
 interface IGetGitHubProposalStagesDataParams {
   user: string;

@@ -6,8 +6,7 @@ query Votes {
     first: 1000,
     where: {
       space: "${params.space}",
-      voter: "${params.voter}" 
-      
+      voter: "${params.voter}"
     },
     orderBy: "created",
     orderDirection: desc
