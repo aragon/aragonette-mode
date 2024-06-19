@@ -1,16 +1,18 @@
 import { MainSection } from "@/components/layout/mainSection";
-import { Button, Heading, IconType, Link, Toggle, ToggleGroup } from "@aragon/ods";
-import { useState } from "react";
-import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { PUB_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
-import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
+import { Button, Heading, IconType, Link, Toggle, ToggleGroup } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
+import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
+import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
 import { councilMemberList, delegatesList } from "../services/members/query-options";
 
 const DEFAULT_PAGE_SIZE = 12;
 
 export default function MembersList() {
   const [toggleValue, setToggleValue] = useState<string>("council");
+  const [showProfileCreationDialog, setShowProfileCreationDialog] = useState(false);
 
   const { data: councilMemberListData } = useInfiniteQuery({
     ...councilMemberList({
@@ -84,9 +86,14 @@ export default function MembersList() {
               </dd>
             </div>
           </dl>
-          <Button className="!rounded-full" onClick={handleCreateDelegateProfile}>
+          <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)}>
             Create your delegate profile
           </Button>
+          <DelegateAnnouncementDialog
+            onClose={() => setShowProfileCreationDialog(false)}
+            open={showProfileCreationDialog}
+            onCreateProfile={handleCreateDelegateProfile}
+          />
         </aside>
       </div>
     </MainSection>
