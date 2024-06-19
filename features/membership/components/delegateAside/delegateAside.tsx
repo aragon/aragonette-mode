@@ -9,21 +9,18 @@ import { useEnsName } from "wagmi";
 
 interface IDelegateAsideProps {
   address: string;
+  resources?: IResource[];
 }
 
 export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
-  const { address } = props;
+  const { address, resources } = props;
 
   const { data: ensName } = useEnsName({ chainId: mainnet.id, address: address as Address });
 
   const formattedAddress = formatHexString(address);
-  const links: IResource[] = [
-    { name: "Twitter", link: "https://twitter.com/yourProfile" },
-    { name: "Farcaster", link: "https://warpcast.com/your_profile.eth" },
-    { name: "Github", link: "https://github.com/your_profile" },
-  ];
 
   const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${address}`;
+  const showResources = !!resources && resources.length > 0;
 
   return (
     <aside className="flex max-w-[320px] flex-1 flex-col gap-y-20">
@@ -54,21 +51,23 @@ export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
           )}
         </dl>
       </div>
-      <div className="flex flex-col gap-y-4">
-        <Heading size="h3">Links</Heading>
-        {links.map(({ name, link }) => (
-          <Link
-            key={link}
-            href={link}
-            description={link}
-            iconRight={IconType.LINK_EXTERNAL}
-            target="_blank"
-            rel="noopener"
-          >
-            {name}
-          </Link>
-        ))}
-      </div>
+      {showResources && (
+        <div className="flex flex-col gap-y-4">
+          <Heading size="h3">Links</Heading>
+          {resources.map(({ name, link }) => (
+            <Link
+              key={link}
+              href={link}
+              description={link}
+              iconRight={IconType.LINK_EXTERNAL}
+              target="_blank"
+              rel="noopener"
+            >
+              {name}
+            </Link>
+          ))}
+        </div>
+      )}
     </aside>
   );
 };
