@@ -8,7 +8,7 @@ import {
   parseHeader,
   parseTransparencyReport,
 } from "./utils";
-import { downloadPIPs } from "@/services/github";
+import { downloadGitHubFile } from "@/services/github";
 
 interface IGetGitHubProposalStagesDataParams {
   user: string;
@@ -22,7 +22,7 @@ export const getGitHubProposalStagesData: IProposalStagesProvider = async functi
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
   const pips_url = `${url}/${params.pips_path}`;
 
-  const pip_files = await downloadPIPs(pips_url);
+  const pip_files = await downloadGitHubFile(pips_url);
 
   const proposalStages = pip_files
     .flatMap((file) => {
@@ -52,7 +52,7 @@ export const getGitHubProposalStageData: IProposalStageProvider = async function
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
   const pip_url = `${url}/${params.pips_path}/${params.pip}.md`;
 
-  const pip_file = await downloadPIPs(pip_url);
+  const pip_file = await downloadGitHubFile(pip_url);
 
   const proposalStages = pip_file
     .flatMap((file) => {
@@ -81,7 +81,7 @@ export const getGithubTransparencyReports: IProposalStagesProvider = async funct
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
   const transparency_reports_url = `${url}/${params.transparency_reports_path}`;
 
-  const transparency_report_files = await downloadPIPs(transparency_reports_url);
+  const transparency_report_files = await downloadGitHubFile(transparency_reports_url);
 
   const transparencyReports = transparency_report_files.map((file) => {
     const header = extractYamlHeader(file.data);
@@ -107,7 +107,7 @@ export const getGithubTransparencyReport: IProposalStageProvider = async functio
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
   const transparency_report_url = `${url}/${params.transparency_reports_path}/${params.pip}.md`;
 
-  const transparency_report_file = await downloadPIPs(transparency_report_url);
+  const transparency_report_file = await downloadGitHubFile(transparency_report_url);
 
   const transparencyReport = transparency_report_file.map((file) => {
     const header = extractYamlHeader(file.data);
