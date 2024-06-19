@@ -1,7 +1,5 @@
-// import { PUB_API_BASE_URL } from "@/constants";
-// import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type IMemberDataListItem } from "./domain";
+import { type IMemberDataListItem, type ICouncilMember } from "./domain";
 import type {
   IFetchCouncilMembersParams,
   IFetchDelegatesParams,
@@ -32,23 +30,11 @@ const addresses = [
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
 
-  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
-    // const url = encodeSearchParams(`${PUB_API_BASE_URL}/members`, params);
-    // const response = await fetch(url);
-    // const parsed: IPaginatedResponse<IMember> = await response.json();
-    // return parsed;
-
-    // NOTE: if sorting on frontend, all data should be returned and
-    // values will be sorted and paginated on frontend
-    return {
-      pagination: {
-        total: addresses.length,
-        page: params.page ?? 1,
-        pages: Math.ceil(addresses.length / (params.limit ?? 12)),
-        limit: params.limit ?? 12,
-      },
-      data: addresses,
-    };
+  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IMemberDataListItem[]> {
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/councilMembers`, params);
+    const response = await fetch(url);
+    const parsed: ICouncilMember[] = await response.json();
+    return parsed;
   }
 
   async fetchDelegates(params: IFetchDelegatesParams): Promise<IPaginatedResponse<IMemberDataListItem>> {

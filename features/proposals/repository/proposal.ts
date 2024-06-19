@@ -1,7 +1,6 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
-import { type IProposal, StageOrder } from "@/features/proposals";
 import { type IPaginatedResponse } from "@/utils/types";
-import { ProposalStatus } from "../services/proposal/domain";
+import { type IProposal, StageOrder, ProposalStatus } from "../services/proposal/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 import { logger } from "@/services/logger";
 import { type StageType } from "@prisma/client";

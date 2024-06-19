@@ -16,20 +16,3 @@ export const parseStageParam = (stage: string): ProposalStages => {
       throw new Error("Invalid stage");
   }
 };
-
-export const printStageParam = (stage: ProposalStages): string => {
-  switch (stage) {
-    case ProposalStages.DRAFT:
-      return "draft";
-    case ProposalStages.TRANSPARENCY_REPORT:
-      return "transparency-report";
-    case ProposalStages.COUNCIL_APPROVAL:
-      return "council-approval";
-    case ProposalStages.COMMUNITY_VOTING:
-      return "community-voting";
-    case ProposalStages.COUNCIL_CONFIRMATION:
-      return "council-confirmation";
-    default:
-      throw new Error("Invalid stage");
-  }
-};

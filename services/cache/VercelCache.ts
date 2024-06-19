@@ -17,7 +17,6 @@ export default class VercelCache implements ICache {
   }
 
   async get<T>(key: string): Promise<T | null> {
-    return null;
     return this.client.get<T>(key);
   }
 
