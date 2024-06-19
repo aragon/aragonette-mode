@@ -5,7 +5,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { delegatesList } from "../../../services/members/query-options";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { generateSortOptions, sortItems } from "./utils";
+import { generateSortOptions, getSortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -115,7 +115,7 @@ export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnou
         placeholder="Search by name or address"
         onSortChange={setActiveSort}
         activeSort={activeSort}
-        sortItems={sortItems}
+        sortItems={getSortItems()}
       />
       <DataList.Container
         SkeletonElement={MemberDataListItem.Skeleton}
