@@ -58,7 +58,7 @@ export function useAnnounceDelegation(onSuccess?: () => void) {
             abi: DelegationWallAbi,
             address: PUB_DELEGATION_CONTRACT_ADDRESS,
             functionName: "register",
-            args: [PUB_DAO_ADDRESS, toHex(ipfsUrl)],
+            args: [toHex(ipfsUrl), toHex("disregard")],
           });
         }
       } catch (error) {
