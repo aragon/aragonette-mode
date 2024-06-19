@@ -47,11 +47,10 @@ export async function downloadGitHubFile(url: string) {
     if (item.type === "file") {
       const fileUrl = item.download_url;
       const fileResponse = await cachedFetch(fileUrl, {}, 60 * 60);
-      const fileData = await fileResponse;
 
       result.push({
         link: item.html_url,
-        data: fileData,
+        data: fileResponse,
       });
     } else if (item.type === "dir") {
       const res = await downloadGitHubFile(item.url);
