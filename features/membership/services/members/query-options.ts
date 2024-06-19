@@ -19,7 +19,7 @@ export const memberKeys = {
 export function councilMemberList(params: IFetchCouncilMembersParams = {}) {
   return queryOptions({
     queryKey: memberKeys.council(params),
-    queryFn: async () => membersService.fetchCouncilMembers({}),
+    queryFn: async () => membersService.fetchCouncilMembers(params),
   });
 }
 
