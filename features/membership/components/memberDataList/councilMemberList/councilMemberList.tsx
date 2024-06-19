@@ -1,7 +1,7 @@
 import { PUB_CHAIN } from "@/constants";
 import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { councilMemberList } from "../../../services/members/query-options";
 
@@ -15,30 +15,22 @@ export const CouncilMemberList: React.FC = () => {
     isFetching,
     isRefetching,
     isRefetchError,
-    isFetchingNextPage,
-    isFetchNextPageError,
     refetch,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    ...councilMemberList({
-      limit: DEFAULT_PAGE_SIZE,
-    }),
+  } = useQuery({
+    ...councilMemberList(),
   });
 
-  const isFiltered = false;
   const loading = isLoading || (isError && isRefetching);
-  const error = isError && !isRefetchError && !isFetchNextPageError;
+  const error = isError && !isRefetchError;
   const [dataListState, setDataListState] = useState<DataListState>(() =>
-    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+    generateDataListState(loading, error, false, isFetching && !isRefetching, false)
   );
 
   useEffect(() => {
-    setDataListState(
-      generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
-    );
-  }, [isError, isFetching, isFetchingNextPage, loading, isRefetching, isFiltered]);
+    setDataListState(generateDataListState(loading, isError, false, isFetching && !isRefetching, false));
+  }, [isError, isFetching, loading, isRefetching]);
 
-  const totalMembers = councilMemberListData?.pagination?.total;
+  const totalMembers = councilMemberListData?.length;
   const entityLabel = totalMembers === 1 ? "Protocol council member" : "Protocol council members";
   const showPagination = (totalMembers ?? 0) > DEFAULT_PAGE_SIZE;
 
@@ -58,14 +50,13 @@ export const CouncilMemberList: React.FC = () => {
       itemsCount={totalMembers}
       pageSize={DEFAULT_PAGE_SIZE}
       state={dataListState}
-      onLoadMore={fetchNextPage}
     >
       <DataList.Container
         SkeletonElement={MemberDataListItem.Skeleton}
         errorState={errorState}
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
-        {councilMemberListData?.members?.map((member) => (
+        {councilMemberListData?.map((member) => (
           <MemberDataListItem.Structure
             key={member.address}
             href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}

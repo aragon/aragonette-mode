@@ -1,5 +1,3 @@
-// import { PUB_API_BASE_URL } from "@/constants";
-// import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
 import { type IMemberDataListItem, type ICouncilMember } from "./domain";
 import type {
@@ -32,10 +30,10 @@ const addresses = [
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
 
-  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
+  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IMemberDataListItem[]> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/councilMembers`, params);
     const response = await fetch(url);
-    const parsed: IPaginatedResponse<ICouncilMember> = await response.json();
+    const parsed: ICouncilMember[] = await response.json();
     return parsed;
   }
 

@@ -1,4 +1,4 @@
-import { infiniteQueryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { membersService } from "./member-service";
 import {
   type IFetchDelegatesParams,
@@ -17,16 +17,9 @@ export const memberKeys = {
 };
 
 export function councilMemberList(params: IFetchCouncilMembersParams = {}) {
-  return infiniteQueryOptions({
+  return queryOptions({
     queryKey: memberKeys.council(params),
-    queryFn: async (ctx) => membersService.fetchCouncilMembers({ ...params, page: ctx.pageParam }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, _pages, lastPageParam) =>
-      (lastPage?.pagination?.pages ?? 1) > lastPageParam ? lastPageParam + 1 : undefined,
-    select: (data) => ({
-      members: data.pages.flatMap((p) => p.data),
-      pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
-    }),
+    queryFn: async () => membersService.fetchCouncilMembers({}),
   });
 }
 
