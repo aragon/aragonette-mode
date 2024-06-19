@@ -1,5 +1,7 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { useAnnounceDelegation } from "@/plugins/delegateAnnouncer/hooks/useAnnounceDelegation";
+import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
+import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
 import {
   Button,
@@ -21,8 +23,6 @@ import { useRouter } from "next/router";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { z } from "zod";
-import { delegatesList } from "../../services/members/query-options";
-import { type IDelegationWallMetadata } from "../../utils/types";
 
 const DELEGATE_RESOURCES = "resources";
 
@@ -66,6 +66,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
   const router = useRouter();
   const { address } = useAccount();
   const queryClient = useQueryClient();
+  const { queryKey: announcementKey } = useAnnouncement(address, { enabled: false });
 
   const {
     control,
@@ -99,8 +100,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
   };
 
   const onSuccessfulAnnouncement = () => {
-    queryClient.invalidateQueries({ queryKey: delegatesList().queryKey, type: "active" });
-    onClose();
+    queryClient.invalidateQueries({ queryKey: [announcementKey], type: "all", exact: false });
     router.push(MemberProfile.getPath(address!));
   };
 
