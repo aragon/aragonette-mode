@@ -23,6 +23,7 @@ export function councilMemberList(params: IFetchCouncilMembersParams = {}) {
   });
 }
 
+// list of delegates
 export function delegatesList(params: IFetchDelegatesParams = {}) {
   return infiniteQueryOptions({
     queryKey: memberKeys.delegates(params),
@@ -37,6 +38,7 @@ export function delegatesList(params: IFetchDelegatesParams = {}) {
   });
 }
 
+// the list of holders delegating to a delegate
 export function delegationsList(params: IFetchDelegationsParams) {
   return infiniteQueryOptions({
     queryKey: memberKeys.delegations(params),
