@@ -12,7 +12,7 @@ import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
-import { generateSortOptions, sortItems } from "./utils";
+import { generateSortOptions, getSortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -133,7 +133,7 @@ export const ProposalDataList: React.FC = () => {
         placeholder="Search by title, proposal ID or publisher"
         onSortChange={setActiveSort}
         activeSort={activeSort}
-        sortItems={sortItems}
+        sortItems={getSortItems()}
       />
       <DataList.Container
         SkeletonElement={ProposalDataListItemSkeleton}
