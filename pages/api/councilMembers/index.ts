@@ -1,6 +1,6 @@
 import { type ICouncilMember } from "@/features/membership/models/membership";
 import { GITHUB_COUNCIL_FILENAME, GITHUB_REPO, GITHUB_USER } from "@/constants";
-import { getGitHubCouncilMembersData } from "@/features/membership/github";
+import { getGitHubCouncilMembersData } from "@/features/membership/providers/github";
 import { logger } from "@/services/logger";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
