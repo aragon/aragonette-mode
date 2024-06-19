@@ -1,7 +1,6 @@
 import { PUB_API_BASE_URL } from "@/constants";
-import { printStageParam } from "@/utils/api-utils";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type ICanVote, type IProposal, type IProposalVote, type IVoted } from "./domain";
+import { type ICanVote, type IProposal, type IProposalVote, type IVoted, printStageParam } from "./domain";
 import type {
   IFetchCanVoteParams,
   IFetchProposalListParams,
