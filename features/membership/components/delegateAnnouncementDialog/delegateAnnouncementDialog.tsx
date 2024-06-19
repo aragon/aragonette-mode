@@ -1,6 +1,5 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { useAnnounceDelegation } from "@/plugins/delegateAnnouncer/hooks/useAnnounceDelegation";
-import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
 import {
@@ -18,7 +17,6 @@ import {
   type IDialogRootProps,
 } from "@aragon/ods";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
@@ -57,16 +55,13 @@ const MetadataSchema = z.object({
 
 interface IDelegateAnnouncementDialogProps extends IDialogRootProps {
   onClose: () => void;
-  onCreateProfile: (values: IDelegationWallMetadata) => void;
 }
 
 export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogProps> = (props) => {
-  const { onClose, onCreateProfile, ...otherProps } = props;
+  const { onClose, ...otherProps } = props;
 
   const router = useRouter();
   const { address } = useAccount();
-  const queryClient = useQueryClient();
-  const { queryKey: announcementKey } = useAnnouncement(address, { enabled: false });
 
   const {
     control,
@@ -100,13 +95,18 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
   };
 
   const onSuccessfulAnnouncement = () => {
-    queryClient.invalidateQueries({ queryKey: [announcementKey], type: "all", exact: false });
-    router.push(MemberProfile.getPath(address!));
+    setTimeout(() => {
+      router.push(MemberProfile.getPath(address!));
+    }, 2000);
   };
 
   const { isConfirming, status, announceDelegation } = useAnnounceDelegation(onSuccessfulAnnouncement);
 
-  const ctaLabel = isConfirming ? "Creating profile" : "Create profile";
+  const ctaLabel = isConfirming
+    ? "Creating profile"
+    : status === "pending"
+      ? "Waiting for confirmation"
+      : "Create profile";
 
   return (
     <DialogRoot {...otherProps} containerClassName="!max-w-[520px]">
@@ -117,6 +117,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
           label="Bio"
           {...register("bio")}
           maxLength={400}
+          readOnly={isConfirming}
           alert={errors.bio?.message ? { variant: "critical", message: errors.bio.message } : undefined}
         />
         <Controller
@@ -145,48 +146,52 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             </p>
           </div>
 
-          <div className="flex flex-col gap-y-4 rounded-xl border border-neutral-100 bg-neutral-0 px-3 py-1 md:px-4 md:py-2">
-            {fields.map((field, index) => {
-              const { name: nameError, link: linkError } = errors[DELEGATE_RESOURCES]?.[index] ?? {};
+          {fields.length > 0 && (
+            <div className="flex flex-col gap-y-4 rounded-xl border border-neutral-100 bg-neutral-0 px-3 py-1 md:px-4 md:py-2">
+              {fields.map((field, index) => {
+                const { name: nameError, link: linkError } = errors[DELEGATE_RESOURCES]?.[index] ?? {};
 
-              return (
-                <div key={field.id} className="flex flex-col gap-y-3 py-3 md:py-4">
-                  <div className="flex items-end gap-x-3">
-                    <InputText
-                      label="Name / Description"
-                      placeholder="GitHub, Twitter, etc."
-                      {...register(`${DELEGATE_RESOURCES}.${index}.name` as const)}
-                      {...(nameError?.message ? { alert: { variant: "critical", message: nameError.message } } : {})}
-                    />
-                    {fields.length > 1 && (
-                      <Dropdown.Container
-                        align="end"
-                        customTrigger={<Button size="lg" variant="tertiary" iconLeft={IconType.DOTS_VERTICAL} />}
-                      >
-                        <Dropdown.Item
-                          onClick={() => {
-                            remove(index);
-                          }}
+                return (
+                  <div key={field.id} className="flex flex-col gap-y-3 py-3 md:py-4">
+                    <div className="flex items-end gap-x-3">
+                      <InputText
+                        label="Name / Description"
+                        readOnly={isConfirming}
+                        placeholder="GitHub, Twitter, etc."
+                        {...register(`${DELEGATE_RESOURCES}.${index}.name` as const)}
+                        {...(nameError?.message ? { alert: { variant: "critical", message: nameError.message } } : {})}
+                      />
+                      {fields.length > 1 && (
+                        <Dropdown.Container
+                          align="end"
+                          customTrigger={<Button size="lg" variant="tertiary" iconLeft={IconType.DOTS_VERTICAL} />}
                         >
-                          Remove link
-                        </Dropdown.Item>
-                      </Dropdown.Container>
-                    )}
+                          <Dropdown.Item
+                            onClick={() => {
+                              remove(index);
+                            }}
+                          >
+                            Remove link
+                          </Dropdown.Item>
+                        </Dropdown.Container>
+                      )}
+                    </div>
+                    <InputText
+                      label="Link"
+                      placeholder="https://..."
+                      readOnly={isConfirming}
+                      {...register(`${DELEGATE_RESOURCES}.${index}.link` as const)}
+                      onBlur={(e) => {
+                        register(`${DELEGATE_RESOURCES}.${index}.link` as const).onBlur(e);
+                        addProtocolToLink(index);
+                      }}
+                      {...(linkError?.message ? { alert: { variant: "critical", message: linkError.message } } : {})}
+                    />
                   </div>
-                  <InputText
-                    label="Link"
-                    placeholder="https://..."
-                    {...register(`${DELEGATE_RESOURCES}.${index}.link` as const)}
-                    onBlur={(e) => {
-                      register(`${DELEGATE_RESOURCES}.${index}.link` as const).onBlur(e);
-                      addProtocolToLink(index);
-                    }}
-                    {...(linkError?.message ? { alert: { variant: "critical", message: linkError.message } } : {})}
-                  />
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
           <span className="mt-1">
             <Button
               variant="tertiary"
@@ -206,7 +211,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             variant="primary"
             size="lg"
             className="!rounded-full"
-            isLoading={isConfirming}
+            isLoading={isConfirming || status === "pending"}
             onClick={handleSubmit(handleAnnouncement)}
           >
             {ctaLabel}
