@@ -1,8 +1,8 @@
-export type CouncilMember = {
+export type ICouncilMember = {
   name: string;
   address: string;
 };
 
 export interface ICouncilMembersProvider {
-  (params?: any): Promise<CouncilMember[]>;
+  (params?: any): Promise<ICouncilMember[]>;
 }
