@@ -1,17 +1,17 @@
+import { getFeaturedDelegates } from "@/features/membership/services/members/delegates-builder";
 import {
   parseDelegatesSortBy,
   parseDelegatesSortDir,
-  type ICouncilMember,
+  type IMemberDataListItem,
 } from "@/features/membership/services/members/domain";
 import { logger } from "@/services/logger";
-import { type IError, type IPaginatedResponse } from "@/utils/types";
 import { checkNullableParam } from "@/utils/api-utils";
+import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getFeaturedDelegates } from "@/features/membership/services/members/delegates-builder";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IPaginatedResponse<ICouncilMember> | IError>
+  res: NextApiResponse<IPaginatedResponse<IMemberDataListItem> | IError>
 ) {
   try {
     const { page, limit, sortBy, sortDir } = req.query;

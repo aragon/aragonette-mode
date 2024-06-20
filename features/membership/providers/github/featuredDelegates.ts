@@ -1,7 +1,7 @@
 import { GITHUB_API_URL } from "@/constants";
 import { downloadGitHubFile } from "@/services/github";
-import { IFeatureDelegateProvider } from "../../models/membership";
 import { logger } from "@/services/logger";
+import { type IFeatureDelegateProvider } from "../../models/membership";
 
 interface IGetGitHubFeatureDataParams {
   user: string;

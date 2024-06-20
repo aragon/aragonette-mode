@@ -7,11 +7,11 @@ import {
   PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
+import { type Address } from "viem";
+import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
 import { getDelegatesList, getDelegationCount } from "../../providers/onchain";
-import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
-import { Address } from "viem";
-import { IDelegatesSortBy, IDelegatesSortDir, IMemberDataListItem } from "./domain";
+import { IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
 
 // TODO: Store in the DB or replace with delegates from App
 export const getFeaturedDelegates = async function (
