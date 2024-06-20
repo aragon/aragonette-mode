@@ -1,8 +1,12 @@
 import { type IFetchPaginatedParams } from "@/utils/types";
+import { type IDelegatesSortBy, type IDelegatesSortDir } from "./domain";
 
 export interface IFetchCouncilMembersParams extends IFetchPaginatedParams {}
 
-export interface IFetchDelegatesParams extends IFetchPaginatedParams {}
+export interface IFetchDelegatesParams extends IFetchPaginatedParams {
+  sortBy?: IDelegatesSortBy;
+  sortDir?: IDelegatesSortDir;
+}
 
 export interface IFetchVotingActivityParams extends IFetchPaginatedParams {
   address: string;

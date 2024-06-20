@@ -70,13 +70,7 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
         emptyState={emptyState}
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
-        {data?.members?.map((member) => (
-          <MemberDataListItem.Structure
-            {...member}
-            // href={MemberProfile.getPath(delegate.address)}
-            key={member.address}
-          />
-        ))}
+        {data?.members?.map((member) => <MemberDataListItem.Structure {...member} key={member.address} />)}
       </DataList.Container>
       {showPagination && <DataList.Pagination />}
     </DataList.Root>
