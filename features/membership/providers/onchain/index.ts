@@ -69,30 +69,3 @@ export const getDelegateMessage = async function (chain: number, contractAddress
     functionName: "candidates",
   });
 };
-
-/*
- * TODO: The contract needs to be updated for the following functions to work
- *
-export const getDelegatesList = async function (chain: number, contractAddress: Address) {
-  const publicClient = getPublicClient(config);
-
-  const ProposalCreatedEvent = getAbiItem({
-    abi: DelegationWallAbi,
-    name: "CandidateRegistered",
-  });
-
-  const logs = await publicClient
-    ?.getLogs({
-      address: contractAddress,
-      event: ProposalCreatedEvent,
-      fromBlock: BigInt(0), // TODO: Compute 6 months ago?
-      toBlock: "latest",
-    })
-    .catch((err) => {
-      logger.error("Could not fetch the proposal details", err);
-    });
-  logger.info("logs", logs);
-
-  return logs;
-}
-*/
