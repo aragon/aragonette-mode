@@ -1,4 +1,4 @@
-export const MultisigAbi = [
+export const DelegationWallAbi = [
   {
     inputs: [],
     name: "EmptyMessage",

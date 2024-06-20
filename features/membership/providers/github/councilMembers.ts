@@ -12,11 +12,11 @@ export const getGitHubCouncilMembersData: ICouncilMembersProvider = async functi
   params: IGetGitHubCouncilDataParams
 ) {
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
-  const council_url = `${url}/${params.council_filename}`;
+  const councilMembersUrl = `${url}/${params.council_filename}`;
 
-  const council_file = await downloadPIPs(council_url);
+  const councilMembersFile = await downloadPIPs(councilMembersUrl);
 
-  const councilMembers = council_file.flatMap((file) => {
+  const councilMembers = councilMembersFile.map((file) => {
     return JSON.parse(file.data);
   });
 
