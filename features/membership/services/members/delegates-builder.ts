@@ -11,40 +11,57 @@ import { getGitHubFeaturedDelegatesData } from "../../providers/github";
 import { getDelegatesList, getDelegationCount } from "../../providers/onchain";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { Address } from "viem";
-import { IMemberDataListItem } from "./domain";
+import { IDelegatesSortBy, IDelegatesSortDir, IMemberDataListItem } from "./domain";
 
-export const getFeaturedDelegates = async function (page: number, limit: number) {
+// TODO: Store in the DB or replace with delegates from App
+export const getFeaturedDelegates = async function (
+  page: number,
+  limit: number,
+  sortBy: IDelegatesSortBy = IDelegatesSortBy.FEATURED,
+  sortDir: IDelegatesSortDir = IDelegatesSortDir.DESC
+) {
+  const contractDelegatesRes = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
+
+  const contractDelegates = contractDelegatesRes.map((delegate) => {
+    return {
+      address: delegate,
+    } as IMemberDataListItem;
+  });
+
+  const delegatesWithVp = await Promise.all(
+    contractDelegates.map(async (delegate) => {
+      delegate.votingPower = await getSnapshotVotingPower({
+        space: SNAPSHOT_SPACE,
+        voter: delegate.address,
+      });
+      delegate.delegationCount = await getDelegationCount(delegate.address as Address, PUB_TOKEN_ADDRESS);
+      return delegate;
+    })
+  );
+
   const featuredDelegates = await getGitHubFeaturedDelegatesData({
     user: GITHUB_USER,
     repo: GITHUB_REPO,
     featured_delegates_filename: GITHUB_FEATURED_DELEGATES_FILENAME,
   });
 
-  const contractDelegates = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
+  const featuredDelegatesAddresses = featuredDelegates.map((delegate) => delegate.address);
 
-  // Filter out the featured delegates that are in the contract
-  const filteredFeaturedDelegates = featuredDelegates.filter((delegate) => {
-    return contractDelegates
-      .map((contractDelegate) => contractDelegate.toLowerCase())
-      .includes(delegate.address.toLowerCase());
+  const sortedDelegates = sortDelegates(delegatesWithVp, featuredDelegatesAddresses, sortBy, sortDir);
+
+  const delegates = sortedDelegates.map((delegate) => {
+    const featuredData = featuredDelegates.find((d) => d.address === delegate.address);
+
+    return {
+      ...delegate,
+      name: featuredData?.name,
+    };
   });
 
-  // Filter out the contract delegates that are not in the featured delegates
-  const filteredContractDelegates = contractDelegates
-    .filter((contractDelegate) => {
-      return !filteredFeaturedDelegates
-        .map((delegate) => delegate.address.toLowerCase())
-        .includes(contractDelegate.toLowerCase());
-    })
-    .map((contractDelegate) => {
-      return {
-        address: contractDelegate,
-      } as IMemberDataListItem;
-    });
+  return paginateDelegates(delegates, page, limit);
+};
 
-  // Combine the featured and contract delegates
-  const delegates = [...filteredFeaturedDelegates, ...filteredContractDelegates];
-
+const paginateDelegates = (delegates: IMemberDataListItem[], page: number, limit: number) => {
   const total = delegates.length;
   if (total === 0) {
     return {
@@ -61,26 +78,102 @@ export const getFeaturedDelegates = async function (page: number, limit: number)
   if (total / limit < page) {
     page = Math.ceil(total / limit);
   }
-  const paginatedDelegates = delegates.slice((page - 1) * limit, page * limit);
-
-  const delegatesWithVp = paginatedDelegates.map(async (delegate) => {
-    delegate.votingPower = await getSnapshotVotingPower({
-      space: SNAPSHOT_SPACE,
-      voter: delegate.address,
-    });
-    delegate.delegationCount = await getDelegationCount(delegate.address as Address, PUB_TOKEN_ADDRESS);
-    return delegate;
-  });
-
-  const data = await Promise.all(delegatesWithVp);
+  const data = delegates.slice((page - 1) * limit, page * limit);
 
   return {
     pagination: {
       total,
       page: page,
-      pages: Math.ceil(data.length / limit),
+      pages: Math.ceil(total / limit),
       limit: limit,
     },
     data,
   };
+};
+
+// Order delegates by sortBy following this order: featuredDelegates, then votingPower and delegationCount
+const sortDelegates = (
+  delegates: IMemberDataListItem[],
+  featured: string[],
+  sortBy: IDelegatesSortBy,
+  sortDir: IDelegatesSortDir
+) => {
+  const sortedDelegates = delegates.sort((a, b) => {
+    if (sortBy === IDelegatesSortBy.FEATURED) {
+      const res = sortByFeatured(featured, a, b);
+      if (res !== 0) {
+        return res;
+      } else {
+        return sortByVotingPower(a, b) || sortByDelegationCount(a, b);
+      }
+    }
+
+    if (sortBy === IDelegatesSortBy.VOTING_POWER) {
+      const res = sortByVotingPower(a, b);
+      if (res !== 0) {
+        return res;
+      } else {
+        return sortByDelegationCount(a, b);
+      }
+    }
+
+    if (sortBy === IDelegatesSortBy.DELEGATION_COUNT) {
+      const res = sortByDelegationCount(a, b);
+      if (res !== 0) {
+        return res;
+      } else {
+        return sortByVotingPower(a, b);
+      }
+    }
+
+    return 0;
+  });
+
+  if (sortDir === IDelegatesSortDir.DESC) {
+    sortedDelegates.reverse();
+  }
+
+  return sortedDelegates;
+};
+
+const sortByFeatured = (featuredDelegatesAddresses: string[], a: IMemberDataListItem, b: IMemberDataListItem) => {
+  const aFeatured = featuredDelegatesAddresses.includes(a.address);
+  const bFeatured = featuredDelegatesAddresses.includes(b.address);
+
+  if (aFeatured && !bFeatured) {
+    return -1;
+  }
+  if (!aFeatured && bFeatured) {
+    return 1;
+  }
+
+  return 0;
+};
+
+const sortByVotingPower = (a: IMemberDataListItem, b: IMemberDataListItem) => {
+  const aVp = a.votingPower ?? 0;
+  const bVp = b.votingPower ?? 0;
+
+  if (aVp > bVp) {
+    return -1;
+  }
+  if (aVp < bVp) {
+    return 1;
+  }
+
+  return 0;
+};
+
+const sortByDelegationCount = (a: IMemberDataListItem, b: IMemberDataListItem) => {
+  const aDelegationCount = a.delegationCount ?? 0;
+  const bDelegationCount = b.delegationCount ?? 0;
+
+  if (aDelegationCount > bDelegationCount) {
+    return -1;
+  }
+  if (aDelegationCount < bDelegationCount) {
+    return 1;
+  }
+
+  return 0;
 };
