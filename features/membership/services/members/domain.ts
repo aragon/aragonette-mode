@@ -8,7 +8,7 @@ export interface IMemberDataListItem {
 
 export type Delegator = {
   address: string;
-  votingPower: string;
+  vp: string;
 };
 
 export type ICouncilMember = {

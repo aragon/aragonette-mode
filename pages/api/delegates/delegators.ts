@@ -1,10 +1,14 @@
 import { getDelegators } from "@/features/membership/services/members/delegates-builder";
-import { type Delegator } from "@/features/membership/services/members/domain";
 import { checkParam } from "@/utils/api-utils";
 import { type IError } from "@/utils/types";
 import { type NextApiRequest, type NextApiResponse } from "next/types";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Delegator[] | IError>) {
+export type IDelegators = {
+  address: string;
+  vp: string;
+};
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<IDelegators[] | IError>) {
   const { address } = req.query;
   const delegate = checkParam(address, "address");
 
