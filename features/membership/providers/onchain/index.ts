@@ -5,13 +5,13 @@ import { Erc20VotesAbi } from "@/artifacts/ERC20Votes.sol";
 import { type Address, getAbiItem } from "viem";
 import { logger } from "@/services/logger";
 
-export const getDelegatesList = async function (chain: number, contractAddress: Address) {
-  return await readContract(config, {
+export const getDelegatesList = async function (chain: number, contractAddress: Address): Promise<Address[]> {
+  return (await readContract(config, {
     chainId: chain,
     address: contractAddress,
     abi: DelegationWallAbi,
     functionName: "getCandidateAddresses",
-  });
+  })) as Address[];
 };
 
 export const getDelegationCount = async function (address: Address, contractAddress: Address) {
@@ -43,7 +43,7 @@ export const getDelegationCount = async function (address: Address, contractAddr
       toBlock: "latest",
     })
     .catch((err) => {
-      logger.error("Could not fetch the proposal details", err);
+      logger.error(`Could not fetch the delegation count for ${address}`, err);
     });
 
   const count =
