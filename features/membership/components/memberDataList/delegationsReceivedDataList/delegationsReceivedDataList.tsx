@@ -1,11 +1,11 @@
-import { DataList, IconType, MemberDataListItem, NumberFormat, formatterUtils, type DataListState } from "@aragon/ods";
+import { PUB_CHAIN, PUB_TOKEN_ADDRESS } from "@/constants";
+import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
+import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { delegationsList } from "../../../services/members/query-options";
-import { generateDataListState } from "../../../../../utils/query";
-import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
-import { PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
 import { formatUnits, type Address } from "viem";
+import { generateDataListState } from "../../../../../utils/query";
+import { delegationsList } from "../../../services/members/query-options";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -31,8 +31,7 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
     placeholderData: keepPreviousData,
   });
 
-  const { data: token } = useTokenBalance({ account: data?.members[0].address as Address, token: PUB_TOKEN_ADDRESS });
-  const tokenSymbol = token?.[2] ?? PUB_TOKEN_SYMBOL;
+  const { data: token } = useTokenBalance({ account: data?.members[0]?.address as Address, token: PUB_TOKEN_ADDRESS });
   const tokenDecimals = token?.[1] ?? 18;
 
   const loading = isLoading || (isError && isRefetching);
@@ -81,6 +80,9 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
           <MemberDataListItem.Structure
             votingPower={Number(formatUnits(BigInt(member.votingPower ?? 0), tokenDecimals))}
             address={member.address}
+            href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}
+            target="_blank"
+            rel="noopener"
             key={member.address}
           />
         ))}
