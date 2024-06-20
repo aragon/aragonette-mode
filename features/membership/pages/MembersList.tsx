@@ -1,6 +1,6 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { PUB_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
-import { Button, Heading, IconType, Link, Toggle, ToggleGroup } from "@aragon/ods";
+import { Button, Heading, IconType, Link, NumberFormat, Toggle, ToggleGroup, formatterUtils } from "@aragon/ods";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
@@ -9,6 +9,8 @@ import { DelegateMemberList } from "../components/memberDataList/delegateMemberL
 import { councilMemberList, delegatesList } from "../services/members/query-options";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { useAccount } from "wagmi";
+import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
+import { formatUnits } from "viem";
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -17,6 +19,9 @@ export default function MembersList() {
   const [showProfileCreationDialog, setShowProfileCreationDialog] = useState(false);
 
   const { address } = useAccount();
+  const { data: token } = useTokenBalance({ account: address!, token: PUB_TOKEN_ADDRESS });
+  const totalSupply = formatUnits(token?.[3] ?? 0n, token?.[1] ?? 18);
+
   const { data: announcement } = useAnnouncement(address);
 
   const { data: councilMemberListData } = useQuery({
@@ -74,20 +79,24 @@ export default function MembersList() {
               </dt>
               <dd className="size-full text-base leading-tight text-neutral-500">{`${delegatesListData?.pagination.total} delegates`}</dd>
             </div>
-            <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
-              <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
-                Token holders
-              </dt>
-              <dd className="size-full text-base leading-tight text-neutral-500">
-                <Link
-                  description="View contract"
-                  iconRight={IconType.LINK_EXTERNAL}
-                  target="_blank"
-                  rel="noopener"
-                  href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${PUB_TOKEN_ADDRESS}`}
-                >{`TOTAL SUPPLY ${PUB_TOKEN_SYMBOL} holders`}</Link>
-              </dd>
-            </div>
+            {token && (
+              <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
+                  Token holders
+                </dt>
+                <dd className="size-full text-base leading-tight text-neutral-500">
+                  <Link
+                    description="View contract"
+                    iconRight={IconType.LINK_EXTERNAL}
+                    target="_blank"
+                    rel="noopener"
+                    href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${PUB_TOKEN_ADDRESS}`}
+                  >
+                    {`${formatterUtils.formatNumber(totalSupply, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL} holders`}
+                  </Link>
+                </dd>
+              </div>
+            )}
           </dl>
           <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)}>
             {announcement ? "Update your delegate profile" : "Create your delegate profile"}
