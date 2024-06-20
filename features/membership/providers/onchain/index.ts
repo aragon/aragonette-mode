@@ -2,7 +2,7 @@ import { DelegationWallAbi } from "@/artifacts/DelegationWall.sol";
 import { config } from "@/context/Web3Modal";
 import { readContract, getPublicClient } from "@wagmi/core";
 import { Erc20VotesAbi } from "@/artifacts/ERC20Votes.sol";
-import { type Address, getAbiItem } from "viem";
+import { type Address, getAbiItem, decodeEventLog } from "viem";
 import { logger } from "@/services/logger";
 
 export const getDelegatesList = async function (chain: number, contractAddress: Address): Promise<Address[]> {
@@ -14,7 +14,7 @@ export const getDelegatesList = async function (chain: number, contractAddress: 
   })) as Address[];
 };
 
-export const getDelegationCount = async function (address: Address, contractAddress: Address) {
+export const getDelegations = async function (chain: number, address: Address, contractAddress: Address) {
   const publicClient = getPublicClient(config);
 
   /* 
@@ -35,10 +35,6 @@ export const getDelegationCount = async function (address: Address, contractAddr
     ?.getLogs({
       address: contractAddress,
       event: DelegateChangedEvent,
-      args: {
-        toDelegate: [address],
-        fromDelegate: [address],
-      },
       fromBlock: BigInt(0),
       toBlock: "latest",
     })
@@ -46,18 +42,38 @@ export const getDelegationCount = async function (address: Address, contractAddr
       logger.error(`Could not fetch the delegation count for ${address}`, err);
     });
 
-  const count =
-    logs?.reduce((acc, log) => {
-      if (log.topics[2] === address) {
-        acc += 1;
+  const parsedLogs = logs
+    ?.map((log: any) => decodeEventLog({ abi: Erc20VotesAbi, data: log.data, topics: log.topics }))
+    .filter((log) => log !== null) as any[];
+
+  const delegators: Address[] =
+    parsedLogs?.reduce((acc, log) => {
+      if (log.args.toDelegate === address) {
+        if (!acc.includes(log.args.delegator) && log.args.delegator !== address) acc.push(log.args.delegator);
       }
-      if (log.topics[1] === address) {
-        acc -= 1;
+      if (log.args.fromDelegate === address) {
+        const index = acc.indexOf(log.args.delegator);
+        if (index > -1) {
+          acc.splice(index, 1);
+        }
       }
       return acc;
-    }, 0) ?? 0;
+    }, [] as Address[]) ?? [];
 
-  return Math.max(count - 1, 0); // Remove the initial delegation
+  const delegatorsWithVp = await Promise.all(
+    delegators.map(async (delegator) => {
+      const delegatorVp = await readContract(config, {
+        chainId: chain,
+        address: contractAddress,
+        abi: Erc20VotesAbi,
+        args: [delegator],
+        functionName: "balanceOf",
+      });
+      return { address: delegator, vp: delegatorVp.toString() };
+    })
+  );
+
+  return delegatorsWithVp;
 };
 
 export const getDelegateMessage = async function (chain: number, contractAddress: Address) {
