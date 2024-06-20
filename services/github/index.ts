@@ -26,7 +26,7 @@ const cachedFetch = async (url: string, headers?: any, ttl: number = 3600): Prom
   return data;
 };
 
-export async function downloadPIPs(url: string) {
+export async function downloadGitHubFile(url: string) {
   const data: string = await cachedFetch(
     url,
     {
@@ -47,14 +47,13 @@ export async function downloadPIPs(url: string) {
     if (item.type === "file") {
       const fileUrl = item.download_url;
       const fileResponse = await cachedFetch(fileUrl, {}, 60 * 60);
-      const fileData = await fileResponse;
 
       result.push({
         link: item.html_url,
-        data: fileData,
+        data: fileResponse,
       });
     } else if (item.type === "dir") {
-      const res = await downloadPIPs(item.url);
+      const res = await downloadGitHubFile(item.url);
       result = result.concat(res);
     }
   }

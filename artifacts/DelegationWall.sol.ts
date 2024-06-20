@@ -1,68 +1,96 @@
 export const DelegationWallAbi = [
   {
-    inputs: [],
     name: "EmptyMessage",
+    inputs: [],
+    outputs: [],
+    stateMutability: "payable",
     type: "error",
   },
   {
-    anonymous: false,
+    name: "register",
     inputs: [
       {
-        indexed: true,
+        internalType: "bytes",
+        name: "_message",
+        type: "bytes",
+      },
+      {
+        internalType: "bytes",
+        name: "_socialUrl",
+        type: "bytes",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    name: "candidateAddresses",
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
         internalType: "address",
-        name: "candidate",
+        name: "",
         type: "address",
       },
-      { indexed: false, internalType: "bytes", name: "message", type: "bytes" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    name: "candidateCount",
+    inputs: [],
+    outputs: [
       {
-        indexed: false,
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    name: "candidates",
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "message",
+        type: "bytes",
+      },
+      {
         internalType: "bytes",
         name: "socialUrl",
         type: "bytes",
       },
     ],
-    name: "CandidateRegistered",
-    type: "event",
-  },
-  {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    name: "candidateAddresses",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [],
-    name: "candidateCount",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "address", name: "", type: "address" }],
-    name: "candidates",
-    outputs: [
-      { internalType: "bytes", name: "message", type: "bytes" },
-      { internalType: "bytes", name: "socialUrl", type: "bytes" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "getCandidateAddresses",
-    outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "bytes", name: "_message", type: "bytes" },
-      { internalType: "bytes", name: "_socialUrl", type: "bytes" },
+    inputs: [],
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
     ],
-    name: "register",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
 ] as const;

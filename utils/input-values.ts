@@ -2,6 +2,14 @@ import { decodeCamelCase } from "./case";
 
 export type InputValue = string | boolean | number | bigint | Array<InputValue> | { [k: string]: InputValue };
 
+export const URL_PATTERN =
+  /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]+(:[0-9]{1,5})?(\/.*)?$/i;
+
+export const URL_WITH_PROTOCOL_PATTERN =
+  /^(http:\/\/|https:\/\/)[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]+(:[0-9]{1,5})?(\/.*)?$/i;
+
+export const EMAIL_PATTERN = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]+(?:\.[a-z]+)?)$/i;
+
 export function isValidStringValue(value: string, paramType: string): boolean {
   if (!value || !paramType) return false;
 
@@ -25,7 +33,7 @@ export function isValidStringValue(value: string, paramType: string): boolean {
   } else if (paramType.match(/^int[0-9]+$/)) {
     return /^-?[0-9]*$/.test(value);
   }
-  throw new Error("Complex types need to be checked in a higher order function. Got: " + paramType);
+  throw new Error(`Complex types need to be checked in a higher order function. Got: ${paramType}`);
 }
 
 export function handleStringValue(value: string, paramType: string): InputValue | null {
@@ -47,7 +55,7 @@ export function handleStringValue(value: string, paramType: string): InputValue 
   } else if (paramType.match(/^uint[0-9]+$/) || paramType.match(/^int[0-9]+$/)) {
     return BigInt(value);
   }
-  throw new Error("Complex types need to be checked in a higher order function. Got: " + paramType);
+  throw new Error(`Complex types need to be checked in a higher order function. Got: ${paramType}`);
 }
 
 export function readableTypeName(paramType: string): string {
@@ -64,7 +72,7 @@ export function readableTypeName(paramType: string): string {
 
   if (paramType.match(/^bytes[0-9]{1,2}$/)) {
     const len = paramType.replace(/^bytes/, "");
-    return "Hexadecimal bytes (" + len + ")";
+    return `Hexadecimal bytes (${len})`;
   } else if (paramType.match(/^uint[0-9]+$/)) {
     return "Positive number (in wei)";
   } else if (paramType.match(/^int[0-9]+$/)) {

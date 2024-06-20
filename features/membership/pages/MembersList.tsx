@@ -1,21 +1,21 @@
 import { MainSection } from "@/components/layout/mainSection";
-import { Button, Heading, IconType, Link, Toggle, ToggleGroup } from "@aragon/ods";
-import { useState } from "react";
-import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { PUB_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
+import { Button, Heading, IconType, Link, Toggle, ToggleGroup } from "@aragon/ods";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
+import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { councilMemberList, delegatesList } from "../services/members/query-options";
 
 const DEFAULT_PAGE_SIZE = 12;
 
 export default function MembersList() {
   const [toggleValue, setToggleValue] = useState<string>("council");
+  const [showProfileCreationDialog, setShowProfileCreationDialog] = useState(false);
 
-  const { data: councilMemberListData } = useInfiniteQuery({
-    ...councilMemberList({
-      limit: DEFAULT_PAGE_SIZE,
-    }),
+  const { data: councilMemberListData } = useQuery({
+    ...councilMemberList(),
   });
 
   const { data: delegatesListData } = useInfiniteQuery({
@@ -61,7 +61,7 @@ export default function MembersList() {
               <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
                 Protocol council
               </dt>
-              <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData?.pagination.total} Multisig members`}</dd>
+              <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData?.length} Multisig members`}</dd>
             </div>
             <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
               <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
@@ -84,9 +84,14 @@ export default function MembersList() {
               </dd>
             </div>
           </dl>
-          <Button className="!rounded-full" onClick={handleCreateDelegateProfile}>
+          <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)}>
             Create your delegate profile
           </Button>
+          <DelegateAnnouncementDialog
+            onClose={() => setShowProfileCreationDialog(false)}
+            open={showProfileCreationDialog}
+            onCreateProfile={handleCreateDelegateProfile}
+          />
         </aside>
       </div>
     </MainSection>

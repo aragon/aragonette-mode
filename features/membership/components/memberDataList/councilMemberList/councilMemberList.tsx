@@ -1,22 +1,13 @@
 import { PUB_CHAIN } from "@/constants";
 import { generateDataListState } from "@/utils/query";
-import { DataList, IconType, MemberDataListItem, useDebouncedValue, type DataListState } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { councilMemberList } from "../../../services/members/query-options";
 
 const DEFAULT_PAGE_SIZE = 12;
-const SEARCH_DEBOUNCE_MILLS = 500;
 
 export const CouncilMemberList: React.FC = () => {
-  const [searchValue, setSearchValue] = useState<string>();
-  const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
-    searchValue?.trim()?.toLowerCase(),
-    {
-      delay: SEARCH_DEBOUNCE_MILLS,
-    }
-  );
-
   const {
     data: councilMemberListData,
     isError,
@@ -24,49 +15,24 @@ export const CouncilMemberList: React.FC = () => {
     isFetching,
     isRefetching,
     isRefetchError,
-    isFetchingNextPage,
-    isFetchNextPageError,
     refetch,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    ...councilMemberList({
-      limit: DEFAULT_PAGE_SIZE,
-      ...(debouncedQuery ? { search: debouncedQuery } : {}),
-    }),
+  } = useQuery({
+    ...councilMemberList(),
   });
 
-  const isFiltered = searchValue != null && searchValue.trim().length > 0;
   const loading = isLoading || (isError && isRefetching);
-  const error = isError && !isRefetchError && !isFetchNextPageError;
+  const error = isError && !isRefetchError;
   const [dataListState, setDataListState] = useState<DataListState>(() =>
-    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
+    generateDataListState(loading, error, false, isFetching && !isRefetching, false)
   );
 
   useEffect(() => {
-    setDataListState(
-      generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
-    );
-  }, [isError, isFetching, isFetchingNextPage, loading, isRefetching, isFiltered]);
+    setDataListState(generateDataListState(loading, isError, false, isFetching && !isRefetching, false));
+  }, [isError, isFetching, loading, isRefetching]);
 
-  const resetFilters = () => {
-    setSearchValue("");
-    setDebouncedQuery("");
-    // setActiveSort("");
-  };
-
-  const totalMembers = councilMemberListData?.pagination?.total;
+  const totalMembers = councilMemberListData?.length;
   const entityLabel = totalMembers === 1 ? "Protocol council member" : "Protocol council members";
   const showPagination = (totalMembers ?? 0) > DEFAULT_PAGE_SIZE;
-
-  const emptyFilteredState = {
-    heading: "No council members found",
-    description: "Your applied filters are not matching with any results. Reset and search with other filters!",
-    secondaryButton: {
-      label: "Reset all filters",
-      iconLeft: IconType.RELOAD,
-      onclick: () => resetFilters(),
-    },
-  };
 
   const errorState = {
     heading: "Error loading the Protocol council members",
@@ -84,20 +50,13 @@ export const CouncilMemberList: React.FC = () => {
       itemsCount={totalMembers}
       pageSize={DEFAULT_PAGE_SIZE}
       state={dataListState}
-      onLoadMore={fetchNextPage}
     >
-      <DataList.Filter
-        onSearchValueChange={setSearchValue}
-        searchValue={searchValue}
-        placeholder="Search by name or address"
-      />
       <DataList.Container
         SkeletonElement={MemberDataListItem.Skeleton}
         errorState={errorState}
-        emptyFilteredState={emptyFilteredState}
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
-        {councilMemberListData?.members?.map((member) => (
+        {councilMemberListData?.map((member) => (
           <MemberDataListItem.Structure
             key={member.address}
             href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}

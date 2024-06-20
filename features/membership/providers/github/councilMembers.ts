@@ -1,6 +1,6 @@
 import { GITHUB_API_URL } from "@/constants";
-import { downloadPIPs } from "@/services/github";
-import { ICouncilMembersProvider } from "../../models/membership";
+import { downloadGitHubFile } from "@/services/github";
+import { type ICouncilMembersProvider } from "../../models/membership";
 
 interface IGetGitHubCouncilDataParams {
   user: string;
@@ -14,7 +14,7 @@ export const getGitHubCouncilMembersData: ICouncilMembersProvider = async functi
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
   const councilMembersUrl = `${url}/${params.council_filename}`;
 
-  const councilMembersFile = await downloadPIPs(councilMembersUrl);
+  const councilMembersFile = await downloadGitHubFile(councilMembersUrl);
 
   const councilMembers = councilMembersFile.map((file) => {
     return JSON.parse(file.data);

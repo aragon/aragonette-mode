@@ -3,7 +3,7 @@ import {
   GITHUB_REPO,
   GITHUB_USER,
   PUB_CHAIN,
-  PUB_DELEGATION_WALL_ADDRESS,
+  PUB_DELEGATION_CONTRACT_ADDRESS,
   PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
@@ -19,7 +19,7 @@ export const getFeaturedDelegates = async function (page: number, limit: number)
     featured_delegates_filename: GITHUB_FEATURED_DELEGATES_FILENAME,
   });
 
-  const contractDelegates = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_WALL_ADDRESS);
+  const contractDelegates = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
 
   const delegates = featuredDelegates.filter((delegate) => {
     return contractDelegates
