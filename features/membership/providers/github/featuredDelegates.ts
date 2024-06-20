@@ -18,23 +18,23 @@ export const getGitHubFeaturedDelegatesData: IFeatureDelegateProvider = async fu
 
   const featuredDelegatesFile = await downloadGitHubFile(featuredDelegatesUrl);
 
-  const featuredDelegatesMembers = featuredDelegatesFile.flatMap((file) => {
-    try {
-      const member = JSON.parse(file.data);
-
-      if (!member?.address) return null;
-
+  const featuredDelegatesMembers = featuredDelegatesFile
+    .flatMap((file) => {
+      try {
+        return JSON.parse(file.data);
+      } catch (e) {
+        logger.error("Could not parse the featured delegate data", e);
+        return null;
+      }
+    })
+    .map((member) => {
       return {
         address: member.address,
         name: member.name,
         votingPower: 0,
         delegationCount: 0,
-      } as IMemberDataListItem;
-    } catch (e) {
-      logger.error("Could not parse the featured delegate data", e);
-      return null;
-    }
-  }) as IMemberDataListItem[];
+      };
+    });
 
   return featuredDelegatesMembers;
 };
