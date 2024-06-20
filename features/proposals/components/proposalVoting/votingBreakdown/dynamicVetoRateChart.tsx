@@ -5,6 +5,7 @@ import { AvatarIcon, IconType, NumberFormat, formatterUtils } from "@aragon/ods"
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { type ContentType } from "recharts/types/component/Tooltip";
+import { calculateCubicRoots } from "@/utils/cubic-roots";
 
 interface IDynamicVetoRateChart {
   proposalId: string;
@@ -162,7 +163,8 @@ function calculateDynamicVetoRate(noVotes: number, turnout: number): number {
 }
 
 function calculateNoVotesForVeto(yesVotes: number, totalSupply: number): number {
-  return Math.sqrt(totalSupply) - yesVotes;
+  // formula: no^3 + yes * no^2 - yes^2 * electorate = 0
+  return calculateCubicRoots(1, yesVotes, 0, -yesVotes * yesVotes * totalSupply)[0];
 }
 
 function generateDataPoints(votes: { yes: number; no: number }[], totalSupply: number): VotingDataPoint[] {
