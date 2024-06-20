@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { formatUnits, type Address } from "viem";
 import { generateDataListState } from "../../../../../utils/query";
 import { delegationsList } from "../../../services/members/query-options";
+import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -77,7 +78,7 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
         {data?.members?.map((member) => (
-          <MemberDataListItem.Structure
+          <MemberDataListItemStructure
             votingPower={Number(formatUnits(BigInt(member.votingPower ?? 0), tokenDecimals))}
             address={member.address}
             href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}

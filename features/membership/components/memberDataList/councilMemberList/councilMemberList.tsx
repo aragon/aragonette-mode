@@ -4,6 +4,7 @@ import { DataList, IconType, MemberDataListItem, type DataListState } from "@ara
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { councilMemberList } from "../../../services/members/query-options";
+import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -57,7 +58,7 @@ export const CouncilMemberList: React.FC = () => {
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
         {councilMemberListData?.map((member) => (
-          <MemberDataListItem.Structure
+          <MemberDataListItemStructure
             key={member.address}
             href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}
             target="_blank"
