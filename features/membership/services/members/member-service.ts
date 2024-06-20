@@ -38,27 +38,10 @@ class MemberService {
   }
 
   async fetchDelegates(params: IFetchDelegatesParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
-    // const url = encodeSearchParams(`${PUB_API_BASE_URL}/delegates`, params);
-    // const response = await fetch(url);
-    // const parsed: IPaginatedResponse<IMember> = await response.json();
-    // return parsed;
-
-    // NOTE: if sorting on frontend, all data should be returned and
-    // values will be sorted and paginated on frontend
-    const dummyMembers = [...addresses, ...addresses];
-    return {
-      pagination: {
-        total: dummyMembers.length,
-        page: params.page ?? 1,
-        pages: Math.ceil(dummyMembers.length / (params.limit ?? 12)),
-        limit: params.limit ?? 12,
-      },
-      data: dummyMembers.map((m) => ({
-        ...m,
-        votingPower: Math.random() * 10000,
-        delegationCount: Math.ceil(Math.random() * 100),
-      })),
-    };
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/delegates`, params);
+    const response = await fetch(url);
+    const parsed: IPaginatedResponse<IMemberDataListItem> = await response.json();
+    return parsed;
   }
 
   async fetchVotingActivity(params: IFetchVotingActivityParams): Promise<IPaginatedResponse<IDelegateVotingActivity>> {

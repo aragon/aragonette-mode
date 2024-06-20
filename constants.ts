@@ -35,6 +35,7 @@ export const GITHUB_REPO = process.env.GITHUB_REPO ?? "";
 export const GITHUB_PIPS_PATH = process.env.GITHUB_PIPS_PATH ?? "";
 export const GITHUB_TRANSPARENCY_REPORTS_PATH = process.env.GITHUB_TRANSPARENCY_REPORTS_PATH ?? "";
 export const GITHUB_COUNCIL_FILENAME = process.env.GITHUB_COUNCIL_FILENAME ?? "";
+export const GITHUB_FEATURED_DELEGATES_FILENAME = process.env.GITHUB_FEATURED_DELEGATES_FILENAME ?? "";
 
 // Snapshot
 export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/graphql";

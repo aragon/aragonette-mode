@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { delegatesList } from "../../../services/members/query-options";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { generateSortOptions, sortItems } from "./utils";
+import { IDelegatesSortBy, IDelegatesSortDir } from "@/features/membership/services/members/domain";
 
 const DEFAULT_PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -15,7 +16,7 @@ interface IDelegateMemberListProps {
 }
 
 export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnounceDelegation }) => {
-  const [activeSort, setActiveSort] = useState<string>();
+  const [activeSort, setActiveSort] = useState<string>(`${IDelegatesSortBy.FEATURED}-${IDelegatesSortDir.ASC}`);
   const [searchValue, setSearchValue] = useState<string>();
   const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
     searchValue?.trim()?.toLowerCase(),

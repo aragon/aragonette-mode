@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     res.status(200).json(councilMembers);
   } catch (error) {
     // TODO: Add error handling
-    logger.error("Error fetching council members:", error);
-    res.status(500).json({ error: { message: "Error council members" } });
+    logger.error("Error fetching featured delegates:", error);
+    res.status(500).json({ error: { message: "Error fetching featured delegates" } });
   }
 }
