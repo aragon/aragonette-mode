@@ -8,7 +8,9 @@ import type {
   IFetchDelegatesParams,
   IFetchDelegationsParams,
   IFetchVotingActivityParams,
+  IFetchVotingPowerParams,
 } from "./params";
+import { type IVotingPower, printStageParam } from "@/features/proposals";
 
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
@@ -59,6 +61,17 @@ class MemberService {
         limit: params.limit ?? parsed.length,
       },
     };
+  }
+
+  async fetchVotingPower(params: IFetchVotingPowerParams): Promise<IVotingPower> {
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/votingPower`, {
+      ...params,
+      stage: printStageParam(params.stage),
+    });
+
+    const response = await fetch(url);
+    const parsed: IVotingPower = await response.json();
+    return parsed;
   }
 }
 
