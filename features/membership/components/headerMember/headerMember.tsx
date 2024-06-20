@@ -1,4 +1,5 @@
 import { PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
+import { ProposalStages } from "@/features/proposals";
 import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useDelegateVotingPower } from "@/plugins/erc20Votes/hooks/useDelegateVotingPower";
 import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
@@ -22,7 +23,6 @@ import { formatUnits, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import { useAccount, useEnsName } from "wagmi";
 import { delegationsList, votingPower as votingPowerQueryOptions } from "../../services/members/query-options";
-import { ProposalStages } from "@/features/proposals";
 
 interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];

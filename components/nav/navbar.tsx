@@ -7,6 +7,7 @@ import { useState } from "react";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
 import { Dashboard, Learn, Members, Proposals } from "./routes";
+import { BrandingSubline } from "../brandingSubline/brandingSubline";
 
 export const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -15,9 +16,9 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <nav className="h-30 sticky top-0 z-[var(--hub-navbar-z-index)] flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
-        <div className="w-full max-w-[1280px] flex-col gap-2 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-3">
+        <div className="flex w-full max-w-[1280px] flex-col gap-x-2 gap-y-3 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-x-3">
           <div className="flex w-full items-center justify-between">
-            <div className="flex">
+            <div className="flex gap-2 sm:flex-col">
               <Link
                 href="/"
                 className={classNames(
@@ -42,10 +43,7 @@ export const Navbar: React.FC = () => {
                   priority={true}
                 />
               </Link>
-              <div className="flex items-center gap-x-2 px-4">
-                <span className="text-sm leading-tight text-neutral-500">Powered by</span>
-                <Image src="/logo-aragon-bw-sm.png" width="24" height="24" alt="Aragon" />
-              </div>
+              <BrandingSubline />
             </div>
 
             <div className="flex items-center gap-x-2">
