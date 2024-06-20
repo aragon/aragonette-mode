@@ -64,7 +64,7 @@ export const MemberDataListItemStructure: React.FC<IMemberDataListItemProps> = (
         {hasDelegationOrVotingPower && (
           <div className="flex h-12 flex-col gap-y-2">
             <span className="h-6">
-              {delegationCount != null && (
+              {delegationCount != null && delegationCount > 0 && (
                 <p className="text-sm md:text-base">
                   {formatterUtils.formatNumber(delegationCount, { format: NumberFormat.GENERIC_SHORT })}
                   <span className="text-neutral-500">{` Delegation${delegationCount === 1 ? "" : "s"}`}</span>

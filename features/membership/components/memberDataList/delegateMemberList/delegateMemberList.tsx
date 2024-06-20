@@ -9,6 +9,7 @@ import { generateSortOptions, sortItems } from "./utils";
 import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useAccount } from "wagmi";
 import { isAddressEqual } from "@/utils/evm";
+import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -131,7 +132,7 @@ export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnou
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
         {delegatesQueryData?.delegates?.map((delegate) => (
-          <MemberDataListItem.Structure
+          <MemberDataListItemStructure
             votingPower={delegate.votingPower}
             address={delegate.address}
             isDelegate={isAddressEqual(yourDelegate, delegate.address)}

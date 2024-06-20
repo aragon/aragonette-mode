@@ -17,7 +17,7 @@ import {
   formatterUtils,
   type IBreadcrumbsLink,
 } from "@aragon/ods";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
@@ -38,8 +38,9 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const formattedAddress = formatHexString(memberProfileAddress);
 
   // stats
-  const delegationsReceived = "5";
   const lastActivity = ""; // last activity = proposal vote vs creation
+
+  const { data: delegations } = useInfiniteQuery({ ...delegationsList({ address: memberProfileAddress }) });
 
   const { data: votingPower } = useQuery({
     ...votingPowerQueryOptions({ address: memberProfileAddress, stage: ProposalStages.COMMUNITY_VOTING }),
@@ -169,10 +170,14 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                 <span className="text-sm text-neutral-500">Token balance</span>
               </div>
               {/* Delegations */}
-              <div className="flex flex-col gap-y-1 leading-tight">
-                <span className="text-2xl text-neutral-800">{formatterUtils.formatNumber(delegationsReceived)}</span>
-                <span className="text-sm text-neutral-500">Delegations</span>
-              </div>
+              {delegations && (
+                <div className="flex flex-col gap-y-1 leading-tight">
+                  <span className="text-2xl text-neutral-800">
+                    {formatterUtils.formatNumber(delegations?.pagination.total)}
+                  </span>
+                  <span className="text-sm text-neutral-500">Delegations</span>
+                </div>
+              )}
               {/* Last Activity */}
               {lastActivity && (
                 <div className="flex flex-col gap-y-1 leading-tight">
