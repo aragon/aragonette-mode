@@ -183,11 +183,14 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
               )}
             </div>
             <span className="flex gap-x-4">
-              {!connectedMemberIsSelfDelegated && (
-                <Button className="!rounded-full" isLoading={isConfirming} onClick={handleCtaClick}>
-                  {getCtaLabel()}
-                </Button>
-              )}
+              <Button
+                className="!rounded-full"
+                isLoading={isConfirming}
+                onClick={handleCtaClick}
+                disabled={connectedMemberIsSelfDelegated}
+              >
+                {getCtaLabel()}
+              </Button>
               <Dropdown.Container
                 customTrigger={
                   <Button className="!rounded-full" variant="tertiary" iconRight={IconType.CHEVRON_DOWN}>
