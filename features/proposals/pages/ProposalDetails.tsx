@@ -217,7 +217,7 @@ export default function ProposalDetails() {
     if (isAdvancingToNextStage) {
       return "Advancing stage…";
     } else if (!isConnected) {
-      return "Login to approve";
+      return "Connect to approve";
     } else if (isApproving) {
       return "Approving…";
     } else if (userCanApprove && canAdvanceWithNextApproval) {
@@ -235,7 +235,7 @@ export default function ProposalDetails() {
     } else if (userHasVoted) {
       return "Confirmed";
     } else if (!isConnected) {
-      return "Login to confirm";
+      return "Connect to confirm";
     } else {
       return "Confirm";
     }
@@ -247,7 +247,7 @@ export default function ProposalDetails() {
     } else if (userHasVoted) {
       return "Change vote";
     } else if (!isConnected) {
-      return "Login to vote";
+      return "Connect to vote";
     } else {
       return "Vote";
     }

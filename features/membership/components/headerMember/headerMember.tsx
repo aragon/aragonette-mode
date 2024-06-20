@@ -49,7 +49,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const tokenDecimals = data?.[1] ?? 18;
   const tokenBalance = formatUnits(data?.[0] ?? 0n, tokenDecimals);
 
-  const { address: connectedAccount } = useAccount();
+  const { address: connectedAccount, isConnected } = useAccount();
   const { data: connectedAccountDelegate, queryKey: delegateQueryKey } = useDelegate(connectedAccount);
 
   // profile is for the connected account
@@ -111,7 +111,9 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   };
 
   const getCtaLabel = () => {
-    if (connectedMemberIsSelfDelegated || connectedMemberDelegationInactive) {
+    if (!isConnected) {
+      return "Connect to delegate";
+    } else if (connectedMemberIsSelfDelegated || connectedMemberDelegationInactive) {
       return isConfirming ? "Claiming voting power" : "Claim voting power";
     } else if (memberIsconnectedAccountDelegate || memberIsConnectedAccount) {
       return isConfirming ? "Reclaiming voting power" : "Reclaim voting power";
@@ -187,7 +189,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                 className="!rounded-full"
                 isLoading={isConfirming}
                 onClick={handleCtaClick}
-                disabled={connectedMemberIsSelfDelegated}
+                disabled={connectedMemberIsSelfDelegated || !isConnected}
               >
                 {getCtaLabel()}
               </Button>
