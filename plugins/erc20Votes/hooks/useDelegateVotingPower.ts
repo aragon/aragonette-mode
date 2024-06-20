@@ -6,7 +6,7 @@ import { useCallback, useEffect } from "react";
 import { type Address } from "viem";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
-export const useDelegateVotingPower = (onSuccess?: () => void) => {
+export const useDelegateVotingPower = (mode: "delegate" | "claim" = "delegate", onSuccess?: () => void) => {
   const { addAlert } = useAlerts();
   const { writeContract, data: hash, error, status } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
@@ -19,8 +19,8 @@ export const useDelegateVotingPower = (onSuccess?: () => void) => {
           timeout: 4 * 1000,
         });
       } else {
-        logger.error("Could not delegate voting power", error);
-        addAlert("Could not delegate voting power", { type: "error" });
+        logger.error(`Could not ${mode} voting power`, error);
+        addAlert(`Could not ${mode} voting power`, { type: "error" });
       }
       return;
     }
@@ -44,7 +44,7 @@ export const useDelegateVotingPower = (onSuccess?: () => void) => {
     onSuccess?.();
   }, [status, hash, isConfirming, isConfirmed]);
 
-  const delegate = useCallback(
+  const delegateVotingPower = useCallback(
     async (address: Address | undefined) => {
       if (address) {
         writeContract({
@@ -59,7 +59,7 @@ export const useDelegateVotingPower = (onSuccess?: () => void) => {
   );
 
   return {
-    announceDelegation: delegate,
+    delegateVotingPower,
     isConfirmed,
     isConfirming,
     status,
