@@ -6,6 +6,9 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { delegatesList } from "../../../services/members/query-options";
 import { generateSortOptions, sortItems } from "./utils";
+import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
+import { useAccount } from "wagmi";
+import { isAddressEqual } from "@/utils/evm";
 
 const DEFAULT_PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -23,6 +26,9 @@ export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnou
       delay: SEARCH_DEBOUNCE_MILLS,
     }
   );
+
+  const { address } = useAccount();
+  const { data: yourDelegate } = useDelegate(address);
 
   const {
     data: delegatesQueryData,
@@ -128,7 +134,7 @@ export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnou
           <MemberDataListItem.Structure
             votingPower={delegate.votingPower}
             address={delegate.address}
-            // isDelegate={} // check if is delegate
+            isDelegate={isAddressEqual(yourDelegate, delegate.address)}
             delegationCount={delegate.delegationCount}
             href={MemberProfile.getPath(delegate.address)}
             key={delegate.address}

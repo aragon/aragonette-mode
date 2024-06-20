@@ -21,7 +21,7 @@ import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import { useAccount, useEnsName } from "wagmi";
-import { votingPower as votingPowerQueryOptions } from "../../services/members/query-options";
+import { delegationsList, votingPower as votingPowerQueryOptions } from "../../services/members/query-options";
 import { ProposalStages } from "@/features/proposals";
 
 interface IHeaderMemberProps {
@@ -88,6 +88,13 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
     queryClient.invalidateQueries({
       queryKey: votingPowerQueryOptions({ address: memberProfileAddress, stage: ProposalStages.COMMUNITY_VOTING })
         .queryKey,
+      type: "all",
+      refetchType: "all",
+    });
+
+    // delegations received
+    queryClient.invalidateQueries({
+      queryKey: delegationsList({ address: memberProfileAddress }).queryKey,
       type: "all",
       refetchType: "all",
     });
