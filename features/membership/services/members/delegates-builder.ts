@@ -11,6 +11,7 @@ import { getGitHubFeaturedDelegatesData } from "../../providers/github";
 import { getDelegatesList, getDelegationCount } from "../../providers/onchain";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { Address } from "viem";
+import { IMemberDataListItem } from "./domain";
 
 export const getFeaturedDelegates = async function (page: number, limit: number) {
   const featuredDelegates = await getGitHubFeaturedDelegatesData({
@@ -21,11 +22,28 @@ export const getFeaturedDelegates = async function (page: number, limit: number)
 
   const contractDelegates = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
 
-  const delegates = featuredDelegates.filter((delegate) => {
+  // Filter out the featured delegates that are in the contract
+  const filteredFeaturedDelegates = featuredDelegates.filter((delegate) => {
     return contractDelegates
       .map((contractDelegate) => contractDelegate.toLowerCase())
       .includes(delegate.address.toLowerCase());
   });
+
+  // Filter out the contract delegates that are not in the featured delegates
+  const filteredContractDelegates = contractDelegates
+    .filter((contractDelegate) => {
+      return !filteredFeaturedDelegates
+        .map((delegate) => delegate.address.toLowerCase())
+        .includes(contractDelegate.toLowerCase());
+    })
+    .map((contractDelegate) => {
+      return {
+        address: contractDelegate,
+      } as IMemberDataListItem;
+    });
+
+  // Combine the featured and contract delegates
+  const delegates = [...filteredFeaturedDelegates, ...filteredContractDelegates];
 
   const total = delegates.length;
   if (total === 0) {
