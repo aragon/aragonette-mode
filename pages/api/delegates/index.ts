@@ -40,7 +40,7 @@ export default async function handler(
     res.status(200).json(paginatedDelegates);
   } catch (error) {
     // TODO: Add error handling
-    logger.error("Error fetching council members:", error);
-    res.status(500).json({ error: { message: "Error council members" } });
+    logger.error("Error fetching delegates:", error);
+    res.status(500).json({ error: { message: "Error fetching delegates" } });
   }
 }
