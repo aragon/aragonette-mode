@@ -6,6 +6,7 @@ import {
   type IFetchVotingActivityParams,
   type IFetchDelegationsParams,
 } from "./params";
+import { IDelegatesSortBy, IDelegatesSortDir } from "./domain";
 
 export const memberKeys = {
   all: ["members"] as const,
@@ -27,7 +28,13 @@ export function councilMemberList(params: IFetchCouncilMembersParams = {}) {
 export function delegatesList(params: IFetchDelegatesParams = {}) {
   return infiniteQueryOptions({
     queryKey: memberKeys.delegates(params),
-    queryFn: async (ctx) => membersService.fetchDelegates({ ...params, page: ctx.pageParam }),
+    queryFn: async (ctx) =>
+      membersService.fetchDelegates({
+        ...params,
+        sortBy: params.sortBy ?? IDelegatesSortBy.FEATURED,
+        sortDir: params.sortDir ?? IDelegatesSortDir.ASC,
+        page: ctx.pageParam,
+      }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, _pages, lastPageParam) =>
       (lastPage?.pagination?.pages ?? 1) > lastPageParam ? lastPageParam + 1 : undefined,

@@ -3,7 +3,13 @@ export interface IMemberDataListItem {
   name?: string; // name or ensName
   votingPower?: number;
   delegationCount?: number;
+  delegators?: IDelegator[];
 }
+
+export type IDelegator = {
+  address: string;
+  vp: string;
+};
 
 export type ICouncilMember = {
   name?: string;

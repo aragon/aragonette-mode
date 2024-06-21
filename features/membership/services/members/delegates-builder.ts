@@ -10,8 +10,14 @@ import {
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
-import { getDelegatesList, getDelegationCount } from "../../providers/onchain";
-import { IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
+import { getDelegatesList, getDelegations } from "../../providers/onchain";
+import { type IDelegator, IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
+
+export const getDelegators = async function (address: string, page: number, limit: number) {
+  const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
+
+  return paginateDelegates<IDelegator>(delegations, page, limit);
+};
 
 // TODO: Store in the DB or replace with delegates from App
 export const getFeaturedDelegates = async function (
@@ -34,7 +40,8 @@ export const getFeaturedDelegates = async function (
         space: SNAPSHOT_SPACE,
         voter: delegate.address,
       });
-      delegate.delegationCount = await getDelegationCount(delegate.address as Address, PUB_TOKEN_ADDRESS);
+      delegate.delegators = await getDelegations(PUB_CHAIN.id, delegate.address as Address, PUB_TOKEN_ADDRESS);
+      delegate.delegationCount = delegate.delegators.length;
       return delegate;
     })
   );
@@ -61,7 +68,7 @@ export const getFeaturedDelegates = async function (
   return paginateDelegates(delegates, page, limit);
 };
 
-const paginateDelegates = (delegates: IMemberDataListItem[], page: number, limit: number) => {
+const paginateDelegates = <T>(delegates: T[], page: number, limit: number) => {
   const total = delegates.length;
   if (total === 0) {
     return {
