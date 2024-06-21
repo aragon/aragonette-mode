@@ -1,3 +1,5 @@
+import { isAddress as isWeb3Address } from "viem";
+
 export const isAddress = (maybeAddress: any) => {
   if (!maybeAddress || typeof maybeAddress !== "string") return false;
   else if (!maybeAddress.match(/^0x[0-9a-fA-F]{40}$/)) return false;
@@ -20,5 +22,9 @@ export function formatHexString(address: string): string {
  * @returns true if the addresses are the same, false otherwise
  */
 export function isAddressEqual(addressOne = "", addressTwo = ""): boolean {
-  return isAddress(addressOne) && isAddress(addressTwo) && addressOne?.toLowerCase() === addressTwo?.toLowerCase();
+  return (
+    isWeb3Address(addressOne, { strict: false }) &&
+    isWeb3Address(addressTwo, { strict: false }) &&
+    addressOne?.toLowerCase() === addressTwo?.toLowerCase()
+  );
 }
