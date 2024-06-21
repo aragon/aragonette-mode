@@ -9,7 +9,7 @@ export const generateSortOptions = (sort: string) => {
 
 export const sortItems = [
   {
-    value: `${IDelegatesSortBy.FEATURED}-${IDelegatesSortDir.ASC}`,
+    value: `${IDelegatesSortBy.FEATURED}-${IDelegatesSortDir.DESC}`,
     label: "Sort by featured",
     type: "ASC" as const,
   },
