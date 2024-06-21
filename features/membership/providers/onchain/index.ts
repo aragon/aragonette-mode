@@ -42,9 +42,9 @@ export const getDelegations = async function (chain: number, address: Address, c
       logger.error(`Could not fetch the delegation count for ${address}`, err);
     });
 
-  const parsedLogs = logs
-    ?.map((log: any) => decodeEventLog({ abi: Erc20VotesAbi, data: log.data, topics: log.topics }))
-    .filter((log) => log !== null) as any[];
+  const parsedLogs = logs?.flatMap((log: any) =>
+    decodeEventLog({ abi: Erc20VotesAbi, data: log.data, topics: log.topics })
+  ) as any[];
 
   const delegators: Address[] =
     parsedLogs?.reduce((acc, log) => {

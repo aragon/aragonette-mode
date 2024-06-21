@@ -3,10 +3,10 @@ export interface IMemberDataListItem {
   name?: string; // name or ensName
   votingPower?: number;
   delegationCount?: number;
-  delegators?: Delegator[];
+  delegators?: IDelegator[];
 }
 
-export type Delegator = {
+export type IDelegator = {
   address: string;
   vp: string;
 };
