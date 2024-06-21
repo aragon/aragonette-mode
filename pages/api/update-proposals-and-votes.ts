@@ -3,6 +3,11 @@ import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+// This function can run for a maximum of 5 min
+export const config = {
+  maxDuration: 300,
+};
+
 export default async function handler(_: NextApiRequest, res: NextApiResponse<any>) {
   // TODO: Enable authentication for cron job
   /*
