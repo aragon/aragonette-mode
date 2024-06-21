@@ -7,12 +7,17 @@ import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDi
 import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
 import { councilMemberList, delegatesList } from "../services/members/query-options";
+import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
+import { useAccount } from "wagmi";
 
 const DEFAULT_PAGE_SIZE = 12;
 
 export default function MembersList() {
   const [toggleValue, setToggleValue] = useState<string>("council");
   const [showProfileCreationDialog, setShowProfileCreationDialog] = useState(false);
+
+  const { address } = useAccount();
+  const { data: announcement } = useAnnouncement(address);
 
   const { data: councilMemberListData } = useQuery({
     ...councilMemberList(),
@@ -30,8 +35,6 @@ export default function MembersList() {
     }
   };
 
-  const handleCreateDelegateProfile = () => {};
-
   return (
     <MainSection className="md:px-16 md:pb-20 xl:pt-12">
       <div className="flex w-full max-w-[1280] gap-x-20">
@@ -45,7 +48,9 @@ export default function MembersList() {
             </ToggleGroup>
           </div>
           {toggleValue === "council" && <CouncilMemberList />}
-          {toggleValue === "delegates" && <DelegateMemberList onAnnounceDelegation={handleCreateDelegateProfile} />}
+          {toggleValue === "delegates" && (
+            <DelegateMemberList onAnnounceDelegation={() => setShowProfileCreationDialog(true)} />
+          )}
         </div>
         <aside className="flex max-w-[320px] flex-col gap-y-6">
           <div className="flex flex-col gap-y-3">
@@ -85,12 +90,11 @@ export default function MembersList() {
             </div>
           </dl>
           <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)}>
-            Create your delegate profile
+            {announcement ? "Update your delegate profile" : "Create your delegate profile"}
           </Button>
           <DelegateAnnouncementDialog
             onClose={() => setShowProfileCreationDialog(false)}
             open={showProfileCreationDialog}
-            onCreateProfile={handleCreateDelegateProfile}
           />
         </aside>
       </div>

@@ -2,15 +2,12 @@ import { proseClasses } from "@/features/proposals";
 import { CardCollapsible, DocumentParser, Heading } from "@aragon/ods";
 import React from "react";
 
-interface IDelegationStatementProps {}
+interface IDelegationStatementProps {
+  message: string | undefined;
+}
 
-export const DelegationStatement: React.FC<IDelegationStatementProps> = () => {
-  const statement = ` Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-        dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
-        consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
-        diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-        takimata sanctus est Lorem ipsum dolor sit amet.`;
+export const DelegationStatement: React.FC<IDelegationStatementProps> = ({ message }) => {
+  if (!message) return;
 
   return (
     <>
@@ -21,7 +18,7 @@ export const DelegationStatement: React.FC<IDelegationStatementProps> = () => {
         collapsedSize="md"
         className="shadow-neutral"
       >
-        <DocumentParser document={statement} className={proseClasses} />
+        <DocumentParser document={message} className={proseClasses} />
       </CardCollapsible>
     </>
   );

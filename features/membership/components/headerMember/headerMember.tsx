@@ -20,15 +20,15 @@ import { useEnsName } from "wagmi";
 interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];
   address: string;
+  bio: string | undefined;
 }
 
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
-  const { breadcrumbs, address } = props;
+  const { breadcrumbs, address, bio } = props;
 
   const { data: ensName } = useEnsName({ chainId: mainnet.id, address: address as Address });
 
   const formattedAddress = formatHexString(address);
-  const bio = "Product Designer building in Web 3 — Onchain Enthusiast, Cyclist + Music Nerd";
 
   // stats
   const votingPower = "400000";
@@ -45,7 +45,6 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
         />
 
         {/* Content Wrapper */}
-        {/* TODO: fetch delegate metadata */}
         <div className="flex w-full gap-x-20">
           <div className="flex w-full max-w-[720px] flex-col gap-y-4">
             <Heading size="h1">{formattedAddress}</Heading>

@@ -1,12 +1,12 @@
 import { DelegationWallAbi } from "@/artifacts/DelegationWall.sol";
-import { PUB_DAO_ADDRESS, PUB_DELEGATION_CONTRACT_ADDRESS } from "@/constants";
+import { PUB_DELEGATION_CONTRACT_ADDRESS } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
-import { type IDelegationWallMetadata } from "@/features/membership/utils/types";
 import { logger } from "@/services/logger";
 import { uploadToPinata } from "@/utils/ipfs";
 import { useCallback, useEffect } from "react";
 import { toHex } from "viem";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { type IDelegationWallMetadata } from "../utils/types";
 
 export function useAnnounceDelegation(onSuccess?: () => void) {
   const { addAlert } = useAlerts();
