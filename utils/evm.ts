@@ -12,3 +12,13 @@ export function formatHexString(address: string): string {
   // Take the first 5 characters (including '0x') and the last 4 characters
   return `${address.substring(0, 5)}...${address.substring(address.length - 4)}`;
 }
+
+/**
+ * Compares two addresses (ignoring checksum) to see if they are the same
+ * @param addressOne The first address
+ * @param addressTwo The second address
+ * @returns true if the addresses are the same, false otherwise
+ */
+export function isAddressEqual(addressOne = "", addressTwo = ""): boolean {
+  return isAddress(addressOne) && isAddress(addressTwo) && addressOne?.toLowerCase() === addressTwo?.toLowerCase();
+}

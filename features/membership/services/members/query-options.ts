@@ -5,6 +5,7 @@ import {
   type IFetchCouncilMembersParams,
   type IFetchVotingActivityParams,
   type IFetchDelegationsParams,
+  type IFetchVotingPowerParams,
 } from "./params";
 import { IDelegatesSortBy, IDelegatesSortDir } from "./domain";
 
@@ -15,6 +16,7 @@ export const memberKeys = {
   delegates: (params: IFetchDelegatesParams) => [...memberKeys.all, "delegates", params] as const,
   delegations: (params: IFetchDelegationsParams) => [...memberKeys.delegate(), "delegations", params] as const,
   votingActivity: (params: IFetchVotingActivityParams) => [...memberKeys.delegate(), "votingActivity", params] as const,
+  votingPower: (params: IFetchVotingPowerParams) => [...memberKeys.delegate(), "votingPower", params] as const,
 };
 
 export function councilMemberList(params: IFetchCouncilMembersParams = {}) {
@@ -71,5 +73,14 @@ export function votingActivity(params: IFetchVotingActivityParams) {
       votes: data.pages.flatMap((p) => p.data.filter((data) => !!data.proposal)),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },
     }),
+  });
+}
+
+export function votingPower(params: IFetchVotingPowerParams) {
+  return queryOptions({
+    queryKey: memberKeys.votingPower(params),
+    queryFn: () => membersService.fetchVotingPower(params),
+    select: (data) => data.vp,
+    enabled: !!params.address,
   });
 }

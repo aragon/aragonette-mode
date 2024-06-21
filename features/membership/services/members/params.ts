@@ -1,3 +1,4 @@
+import { type ProposalStages } from "@/features/proposals";
 import { type IFetchPaginatedParams } from "@/utils/types";
 import { type IDelegatesSortBy, type IDelegatesSortDir } from "./domain";
 
@@ -14,4 +15,9 @@ export interface IFetchVotingActivityParams extends IFetchPaginatedParams {
 
 export interface IFetchDelegationsParams extends IFetchPaginatedParams {
   address: string;
+}
+
+export interface IFetchVotingPowerParams {
+  address: string;
+  stage: ProposalStages;
 }
