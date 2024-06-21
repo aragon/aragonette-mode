@@ -148,10 +148,10 @@ const sortByFeatured = (featuredDelegatesAddresses: string[], a: IMemberDataList
   const bFeatured = featuredDelegatesAddresses.includes(b.address);
 
   if (aFeatured && !bFeatured) {
-    return -1;
+    return 1;
   }
   if (!aFeatured && bFeatured) {
-    return 1;
+    return -1;
   }
 
   return 0;
