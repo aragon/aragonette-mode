@@ -22,7 +22,11 @@ import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import { useAccount, useEnsName } from "wagmi";
-import { delegationsList, votingPower as votingPowerQueryOptions } from "../../services/members/query-options";
+import {
+  delegatesList,
+  delegationsList,
+  votingPower as votingPowerQueryOptions,
+} from "../../services/members/query-options";
 
 interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];
@@ -96,6 +100,13 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
     // delegations received
     queryClient.invalidateQueries({
       queryKey: delegationsList({ address: memberProfileAddress }).queryKey,
+      type: "all",
+      refetchType: "all",
+    });
+
+    // list of delegates
+    queryClient.invalidateQueries({
+      queryKey: delegatesList({ limit: 12 }).queryKey,
       type: "all",
       refetchType: "all",
     });

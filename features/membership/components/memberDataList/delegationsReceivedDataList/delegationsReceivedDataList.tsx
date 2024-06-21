@@ -7,6 +7,7 @@ import { formatUnits, type Address } from "viem";
 import { generateDataListState } from "../../../../../utils/query";
 import { delegationsList } from "../../../services/members/query-options";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
+import classNames from "classnames";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -75,7 +76,9 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
         SkeletonElement={MemberDataListItem.Skeleton}
         errorState={errorState}
         emptyState={emptyState}
-        className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
+        className={classNames({
+          "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !isError && (totalVotes ?? 0) > 0,
+        })}
       >
         {data?.members?.map((member) => (
           <MemberDataListItemStructure
