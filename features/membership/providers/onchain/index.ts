@@ -76,8 +76,7 @@ export const getDelegations = async function (chain: number, address: Address, c
     })
   );
 
-  // Filter out the delegator if they have no voting power
-  return delegatorsWithVp.filter((delegator) => delegator.votingPower !== "0");
+  return delegatorsWithVp;
 };
 
 export const getDelegateMessage = async function (chain: number, contractAddress: Address) {
