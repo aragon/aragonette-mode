@@ -71,7 +71,7 @@ export const getDelegations = async function (chain: number, address: Address, c
       });
       return {
         address: delegator.toString(),
-        vp: delegatorVp.toString(),
+        votingPower: delegatorVp.toString(),
       };
     })
   );
