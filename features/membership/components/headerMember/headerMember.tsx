@@ -32,10 +32,11 @@ interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];
   address: string;
   bio: string | undefined;
+  identifier: string | undefined;
 }
 
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
-  const { breadcrumbs, address: memberProfileAddress, bio } = props;
+  const { breadcrumbs, address: memberProfileAddress, bio, identifier } = props;
 
   const { data: ensName } = useEnsName({ chainId: mainnet.id, address: memberProfileAddress as Address });
 
@@ -154,7 +155,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
         <div className="flex flex-col gap-y-4">
           <div className="flex w-full md:gap-x-20">
             <div className="flex w-full max-w-[720px] flex-col gap-y-4">
-              <Heading size="h1">{formattedAddress}</Heading>
+              <Heading size="h1">{identifier ?? formattedAddress}</Heading>
               {/* Bio */}
               <p className="text-lg text-neutral-500">{bio}</p>
               {/* Stats */}

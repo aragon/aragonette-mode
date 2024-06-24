@@ -1,15 +1,15 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
+import { isAddressEqual } from "@/utils/evm";
 import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { delegatesList } from "../../../services/members/query-options";
-import { generateSortOptions, sortItems } from "./utils";
-import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useAccount } from "wagmi";
-import { isAddressEqual } from "@/utils/evm";
+import { delegatesList } from "../../../services/members/query-options";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
+import { generateSortOptions, sortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MILLS = 500;

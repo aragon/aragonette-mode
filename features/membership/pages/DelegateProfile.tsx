@@ -18,7 +18,12 @@ export const DelegateProfile = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <HeaderMember breadcrumbs={breadcrumbs} address={address} bio={announcement?.bio} />
+      <HeaderMember
+        address={address}
+        bio={announcement?.bio}
+        breadcrumbs={breadcrumbs}
+        identifier={announcement?.identifier}
+      />
       <div className="flex w-full max-w-screen-xl flex-col gap-x-16 gap-y-12 px-4 py-6 md:flex-row md:px-16 md:pb-20 md:pt-12">
         {/* Main section */}
         <div className="flex flex-col gap-y-12 md:w-[720px] md:gap-y-20">
