@@ -134,11 +134,12 @@ export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnou
         {delegatesQueryData?.delegates?.map((delegate) => (
           <MemberDataListItemStructure
             votingPower={delegate.votingPower}
-            address={delegate.address}
             isDelegate={isAddressEqual(yourDelegate, delegate.address)}
             delegationCount={delegate.delegationCount}
-            href={MemberProfile.getPath(delegate.address)}
             key={delegate.address}
+            href={MemberProfile.getPath(delegate.address)}
+            name={delegate.name}
+            address={delegate.address}
           />
         ))}
       </DataList.Container>
