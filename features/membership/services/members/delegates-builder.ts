@@ -136,7 +136,7 @@ const sortDelegates = (
     return 0;
   });
 
-  if (sortDir === IDelegatesSortDir.DESC) {
+  if (sortDir === IDelegatesSortDir.ASC) {
     sortedDelegates.reverse();
   }
 

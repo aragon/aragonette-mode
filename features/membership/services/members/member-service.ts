@@ -50,17 +50,8 @@ class MemberService {
     const url = encodeSearchParams(`${this.endpoint}/delegators`, params);
     const response = await fetch(url);
 
-    const parsed: IMemberDataListItem[] = await response.json();
-
-    return {
-      data: parsed,
-      pagination: {
-        total: parsed.length,
-        page: params.page ?? 1,
-        pages: Math.ceil(parsed.length / (params.limit ?? 12)),
-        limit: params.limit ?? parsed.length,
-      },
-    };
+    const parsed: IPaginatedResponse<IMemberDataListItem> = await response.json();
+    return parsed;
   }
 
   async fetchVotingPower(params: IFetchVotingPowerParams): Promise<IVotingPower> {

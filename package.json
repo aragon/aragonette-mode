@@ -10,7 +10,8 @@
     "format": "prettier --check .; echo 'To write the changes: bun run format:fix'",
     "format:fix": "prettier -w . --list-different",
     "deploy-dao": "bun ./scripts/deploy.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "prisma generate"
   },
   "lint-staged": {
     "*.{js, jsx,ts,tsx}": [

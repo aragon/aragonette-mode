@@ -1,8 +1,13 @@
+import { PUB_CHAIN, PUB_TOKEN_ADDRESS } from "@/constants";
+import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { delegationsList } from "../../../services/members/query-options";
+import { formatUnits, type Address } from "viem";
 import { generateDataListState } from "../../../../../utils/query";
+import { delegationsList } from "../../../services/members/query-options";
+import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
+import classNames from "classnames";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -27,6 +32,9 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
     ...delegationsList({ address }),
     placeholderData: keepPreviousData,
   });
+
+  const { data: token } = useTokenBalance({ account: data?.members[0]?.address as Address, token: PUB_TOKEN_ADDRESS });
+  const tokenDecimals = token?.[1] ?? 18;
 
   const loading = isLoading || (isError && isRefetching);
   const error = isError && !isRefetchError && !isFetchNextPageError;
@@ -68,9 +76,20 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
         SkeletonElement={MemberDataListItem.Skeleton}
         errorState={errorState}
         emptyState={emptyState}
-        className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
+        className={classNames({
+          "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !isError && (totalVotes ?? 0) > 0,
+        })}
       >
-        {data?.members?.map((member) => <MemberDataListItem.Structure {...member} key={member.address} />)}
+        {data?.members?.map((member) => (
+          <MemberDataListItemStructure
+            votingPower={Number(formatUnits(BigInt(member.votingPower ?? 0), tokenDecimals))}
+            address={member.address}
+            href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}
+            target="_blank"
+            rel="noopener"
+            key={member.address}
+          />
+        ))}
       </DataList.Container>
       {showPagination && <DataList.Pagination />}
     </DataList.Root>

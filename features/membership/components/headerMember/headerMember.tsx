@@ -1,4 +1,5 @@
 import { PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
+import { ProposalStages } from "@/features/proposals";
 import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useDelegateVotingPower } from "@/plugins/erc20Votes/hooks/useDelegateVotingPower";
 import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
@@ -16,13 +17,16 @@ import {
   formatterUtils,
   type IBreadcrumbsLink,
 } from "@aragon/ods";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import { useAccount, useEnsName } from "wagmi";
-import { votingPower as votingPowerQueryOptions } from "../../services/members/query-options";
-import { ProposalStages } from "@/features/proposals";
+import {
+  delegatesList,
+  delegationsList,
+  votingPower as votingPowerQueryOptions,
+} from "../../services/members/query-options";
 
 interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];
@@ -38,8 +42,9 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const formattedAddress = formatHexString(memberProfileAddress);
 
   // stats
-  const delegationsReceived = "5";
   const lastActivity = ""; // last activity = proposal vote vs creation
+
+  const { data: delegations } = useInfiniteQuery({ ...delegationsList({ address: memberProfileAddress }) });
 
   const { data: votingPower } = useQuery({
     ...votingPowerQueryOptions({ address: memberProfileAddress, stage: ProposalStages.COMMUNITY_VOTING }),
@@ -49,7 +54,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const tokenDecimals = data?.[1] ?? 18;
   const tokenBalance = formatUnits(data?.[0] ?? 0n, tokenDecimals);
 
-  const { address: connectedAccount } = useAccount();
+  const { address: connectedAccount, isConnected } = useAccount();
   const { data: connectedAccountDelegate, queryKey: delegateQueryKey } = useDelegate(connectedAccount);
 
   // profile is for the connected account
@@ -91,6 +96,20 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
       type: "all",
       refetchType: "all",
     });
+
+    // delegations received
+    queryClient.invalidateQueries({
+      queryKey: delegationsList({ address: memberProfileAddress }).queryKey,
+      type: "all",
+      refetchType: "all",
+    });
+
+    // list of delegates
+    queryClient.invalidateQueries({
+      queryKey: delegatesList({ limit: 12 }).queryKey,
+      type: "all",
+      refetchType: "all",
+    });
   }
 
   const getTagLabel = () => {
@@ -104,7 +123,9 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   };
 
   const getCtaLabel = () => {
-    if (connectedMemberIsSelfDelegated || connectedMemberDelegationInactive) {
+    if (!isConnected) {
+      return "Connect to delegate";
+    } else if (connectedMemberIsSelfDelegated || connectedMemberDelegationInactive) {
       return isConfirming ? "Claiming voting power" : "Claim voting power";
     } else if (memberIsconnectedAccountDelegate || memberIsConnectedAccount) {
       return isConfirming ? "Reclaiming voting power" : "Reclaim voting power";
@@ -160,10 +181,14 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                 <span className="text-sm text-neutral-500">Token balance</span>
               </div>
               {/* Delegations */}
-              <div className="flex flex-col gap-y-1 leading-tight">
-                <span className="text-2xl text-neutral-800">{formatterUtils.formatNumber(delegationsReceived)}</span>
-                <span className="text-sm text-neutral-500">Delegations</span>
-              </div>
+              {delegations && (
+                <div className="flex flex-col gap-y-1 leading-tight">
+                  <span className="text-2xl text-neutral-800">
+                    {formatterUtils.formatNumber(delegations?.pagination.total)}
+                  </span>
+                  <span className="text-sm text-neutral-500">Delegations</span>
+                </div>
+              )}
               {/* Last Activity */}
               {lastActivity && (
                 <div className="flex flex-col gap-y-1 leading-tight">
@@ -176,11 +201,14 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
               )}
             </div>
             <span className="flex gap-x-4">
-              {!connectedMemberIsSelfDelegated && (
-                <Button className="!rounded-full" isLoading={isConfirming} onClick={handleCtaClick}>
-                  {getCtaLabel()}
-                </Button>
-              )}
+              <Button
+                className="!rounded-full"
+                isLoading={isConfirming}
+                onClick={handleCtaClick}
+                disabled={connectedMemberIsSelfDelegated || !isConnected}
+              >
+                {getCtaLabel()}
+              </Button>
               <Dropdown.Container
                 customTrigger={
                   <Button className="!rounded-full" variant="tertiary" iconRight={IconType.CHEVRON_DOWN}>

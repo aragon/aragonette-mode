@@ -3,6 +3,7 @@ import { formatHexString } from "@/utils/evm";
 import { Button, Dialog, IconType, clipboardUtils, type IDialogRootProps } from "@aragon/ods";
 import Image from "next/image";
 import { NavLink, type INavLink } from "./navLink";
+import { BrandingSubline } from "../brandingSubline/brandingSubline";
 
 interface IMobileNavDialogProps extends IDialogRootProps {
   navLinks: INavLink[];
@@ -39,10 +40,7 @@ export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
             <NavLink key={navLink.id} {...navLink} onClick={() => dialogRootProps.onOpenChange?.(false)} />
           ))}
         </ul>
-        <div className="flex items-center gap-x-2 px-4">
-          <span className="text-sm leading-tight text-neutral-500">Powered by</span>
-          <Image src="/logo-aragon-bw-sm.png" width="24" height="24" alt="Aragon" />
-        </div>
+        <BrandingSubline />
       </Dialog.Content>
     </Dialog.Root>
   );

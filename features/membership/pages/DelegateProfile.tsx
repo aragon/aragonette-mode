@@ -1,14 +1,13 @@
+import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { Heading } from "@aragon/ods";
 import { useRouter } from "next/router";
+import { type Address } from "viem";
 import { DelegateAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
-import { ProposalsCreatedDataList } from "../components/proposalsCreatedDataList/proposalsCreatedDataList";
-import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
-import { type Address } from "viem";
 
 export const DelegateProfile = () => {
   const { query, asPath } = useRouter();
@@ -37,12 +36,6 @@ export const DelegateProfile = () => {
             {/* Voting activity */}
             <Heading size="h2">Voting activity</Heading>
             <MemberVotesDataList address={address} />
-          </div>
-
-          <div className="flex w-full flex-col gap-y-6">
-            {/* Proposal creation */}
-            <Heading size="h2">Proposal creation</Heading>
-            <ProposalsCreatedDataList />
           </div>
         </div>
         {/* Aside */}
