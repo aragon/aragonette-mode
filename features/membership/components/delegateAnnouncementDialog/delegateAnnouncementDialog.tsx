@@ -116,7 +116,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
         <InputText
           label="Identifier"
           readOnly={isConfirming}
-          placeholder="Name, ENS name, polygon id"
+          placeholder="Name, ENS name, Privado ID, etc."
           {...register("identifier")}
           {...(errors.identifier?.message
             ? { alert: { variant: "critical", message: errors.identifier.message } }
