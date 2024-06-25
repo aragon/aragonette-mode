@@ -1,29 +1,49 @@
-const PROPOSALS_PER_PAGE = 10;
+import { IPaginatedResponse } from "./types";
 
-export function digestPagination(proposalCount: number, page: number) {
-  if (proposalCount < 0 || page < 0) throw new Error("Invalid parameters");
-  else if (!proposalCount) {
-    return {
-      visibleProposalIds: [],
-      showNext: false,
-      showPrev: false,
-    };
+export const checkPaginationParams = (page: number, limit: number, total: number, maxLimit: number = 100) => {
+  if (isNaN(limit) || limit < 1 || limit > maxLimit) {
+    limit = 10;
   }
 
-  const visibleProposalIds = [] as number[];
-  for (let i = 0; i < PROPOSALS_PER_PAGE; i++) {
-    const n = proposalCount - 1 - page * PROPOSALS_PER_PAGE - i;
-    if (n < 0) break;
-
-    visibleProposalIds.push(n);
+  if (isNaN(page) || page < 1) {
+    page = 1;
   }
 
-  const showPrev = page > 0;
-  const showNext = (visibleProposalIds.length && visibleProposalIds[visibleProposalIds.length - 1] > 0) || false;
+  if (page > Math.ceil(total / limit)) {
+    page = Math.ceil(total / limit);
+  }
+
+  return { page, limit, pages: Math.ceil(total / limit) };
+};
+
+export const emptyPagination = {
+  data: [],
+  pagination: {
+    total: 0,
+    page: 1,
+    pages: 1,
+    limit: 10,
+  },
+};
+
+export const paginateArray = <T>(delegates: T[], page: number, limit: number): IPaginatedResponse<T> => {
+  const total = delegates.length;
+  if (total === 0) {
+    return emptyPagination;
+  }
+
+  if (total / limit < page) {
+    page = Math.ceil(total / limit);
+  }
+  const data = delegates.slice((page - 1) * limit, page * limit);
 
   return {
-    visibleProposalIds,
-    showPrev,
-    showNext,
+    pagination: {
+      total,
+      page: page,
+      pages: Math.ceil(total / limit),
+      limit: limit,
+    },
+    data,
   };
-}
+};

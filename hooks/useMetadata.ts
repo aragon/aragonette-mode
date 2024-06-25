@@ -1,4 +1,4 @@
-import { fetchJsonFromIpfs } from "@/utils/ipfs";
+import { fetchJsonFromIpfs } from "@/services/ipfs";
 import { type JsonValue } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 

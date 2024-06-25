@@ -4,6 +4,7 @@ import { type IProposal, StageOrder, ProposalStatus } from "../services/proposal
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 import { logger } from "@/services/logger";
 import { type StageType } from "@prisma/client";
+import { checkPaginationParams } from "@/utils/pagination";
 
 export enum ProposalSortBy {
   Title = "title",
@@ -131,22 +132,12 @@ class ProposalRepository {
         orderBy = { createdAt: sortDir };
       }
 
-      if (limit < 1 || limit > 100) {
-        limit = 10;
-      }
-
-      if (page < 1) {
-        page = 1;
-      }
-
-      if (page > Math.ceil(totalProposals / limit)) {
-        page = Math.ceil(totalProposals / limit);
-      }
+      const { page: pageV, limit: limitV, pages: pagesV } = checkPaginationParams(page, limit, totalProposals);
 
       const proposals = await PrismaDatabase.proposal.findMany({
         relationLoadStrategy: "join",
-        skip: limit * (page - 1),
-        take: limit,
+        skip: limitV * (pageV - 1),
+        take: limitV,
         orderBy,
         where,
         include: {
@@ -167,9 +158,9 @@ class ProposalRepository {
         data: proposalsWithStages,
         pagination: {
           total: totalProposals,
-          page,
-          pages: Math.ceil(totalProposals / limit),
-          limit,
+          page: pageV,
+          pages: pagesV,
+          limit: limitV,
         },
       };
     } catch (error) {

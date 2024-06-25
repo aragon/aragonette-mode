@@ -3,7 +3,7 @@ import { PUB_MULTISIG_ADDRESS } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
 import { type SecondaryMetadata } from "@/features/proposals/providers/multisig/types";
 import { logger } from "@/services/logger";
-import { uploadToPinata } from "@/utils/ipfs";
+import { uploadToPinata } from "@/services/ipfs";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toHex } from "viem";

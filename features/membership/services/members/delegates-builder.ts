@@ -12,11 +12,12 @@ import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
 import { getDelegatesList, getDelegations } from "@/services/rpc/delegationWall";
 import { type IDelegator, IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
+import { paginateArray } from "@/utils/pagination";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
 
-  return paginateDelegates<IDelegator>(delegations, page, limit);
+  return paginateArray<IDelegator>(delegations, page, limit);
 };
 
 // TODO: Store in the DB or replace with delegates from App
@@ -65,37 +66,7 @@ export const getFeaturedDelegates = async function (
     };
   });
 
-  return paginateDelegates(delegates, page, limit);
-};
-
-const paginateDelegates = <T>(delegates: T[], page: number, limit: number) => {
-  const total = delegates.length;
-  if (total === 0) {
-    return {
-      pagination: {
-        total,
-        page: 1,
-        pages: 1,
-        limit,
-      },
-      data: [],
-    };
-  }
-
-  if (total / limit < page) {
-    page = Math.ceil(total / limit);
-  }
-  const data = delegates.slice((page - 1) * limit, page * limit);
-
-  return {
-    pagination: {
-      total,
-      page: page,
-      pages: Math.ceil(total / limit),
-      limit: limit,
-    },
-    data,
-  };
+  return paginateArray(delegates, page, limit);
 };
 
 // Order delegates by sortBy following this order: featuredDelegates, then votingPower and delegationCount

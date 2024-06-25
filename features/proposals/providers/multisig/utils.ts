@@ -3,7 +3,7 @@ import { type ProposalStage, type Vote, type VotingData } from "@/features/propo
 import { type VotesData } from "@/features/proposals/providers/multisig/types";
 import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
-import { fetchJsonFromIpfs } from "@/utils/ipfs";
+import { fetchJsonFromIpfs } from "@/services/ipfs";
 import { fromHex, type Address, type Hex } from "viem";
 import {
   type MultiSigProposalVotingData,
