@@ -1,7 +1,7 @@
-import { PUB_CHAIN, SNAPSHOT_API_URL } from "@/constants";
+import { PUB_CHAIN } from "@/constants";
 import { ProposalStages, ProposalStatus, StageStatus } from "../../services";
-import { type ProposalStage, type VotingData, type VotingScores } from "../../models/proposals";
-import { type SnapshotProposalData } from "./types";
+import { type ProposalStage, type Vote, type VotingData, type VotingScores } from "../../models/proposals";
+import { type SnapshotProposalData, type SnapshotVoteData } from "@/services/snapshot/types";
 
 const computeStatus = (proposalState: string, scores: VotingScores[]): [StageStatus, ProposalStatus] => {
   switch (proposalState) {
@@ -14,16 +14,6 @@ const computeStatus = (proposalState: string, scores: VotingScores[]): [StageSta
     default:
       return [StageStatus.PENDING, ProposalStatus.ACTIVE];
   }
-};
-
-export const requestProposalData = async function (query: string) {
-  return fetch(SNAPSHOT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query }),
-  }).then((response) => response.json());
 };
 
 export function parseSnapshotData(data: SnapshotProposalData[]): ProposalStage[] {
@@ -124,4 +114,16 @@ function evaluateVotingResult(votingData: VotingScores[]): [StageStatus, Proposa
   return yesVotes > noVotes
     ? [StageStatus.APPROVED, ProposalStatus.ACTIVE]
     : [StageStatus.REJECTED, ProposalStatus.ACTIVE];
+}
+
+export function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
+  return data.map((vote) => {
+    return {
+      id: vote.id,
+      voter: vote.voter,
+      choice: vote.choice.toString(), // TODO: Pick from proposal choices in storage -> proposal.choices[vote.choice]
+      amount: vote.vp,
+      timestamp: vote.created.toString(),
+    };
+  });
 }
