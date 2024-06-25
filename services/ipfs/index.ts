@@ -1,8 +1,19 @@
 import { PUB_IPFS_API_KEY, PUB_IPFS_ENDPOINT } from "@/constants";
+import Cache from "../cache/VercelCache";
 import { fromHex, type Hex } from "viem";
 
-export function fetchJsonFromIpfs(ipfsUri: string) {
-  return fetchFromIPFS(ipfsUri).then((res) => res.json());
+export async function fetchJsonFromIpfs(ipfsUri: string) {
+  const cache = new Cache();
+  const cachedResponse = await cache.get(ipfsUri);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  const res = await fetchFromIPFS(ipfsUri);
+  const data = res.json();
+  await cache.set(ipfsUri, data);
+
+  return data;
 }
 
 export function uploadToPinata(data: any): Promise<string> {
