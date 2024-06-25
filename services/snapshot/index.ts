@@ -1,6 +1,19 @@
 import { SNAPSHOT_API_URL } from "@/constants";
-import { snapshotVotesQuery, snapshotVotingPowerQuery, snapshotProposalsQuery, snapshotProposalQuery } from "./gql";
-import { type SnapshotVoteData, type SnapshotVotingPowerData, type SnapshotProposalData } from "./types";
+import {
+  snapshotVotesQuery,
+  snapshotVotingPowerQuery,
+  snapshotProposalsQuery,
+  snapshotProposalQuery,
+  snapshotVotingActivityQuery,
+} from "./gql";
+import {
+  type SnapshotVoteData,
+  type SnapshotVotingPowerData,
+  type SnapshotProposalData,
+  SnapshotVotingActivityQueryResponse,
+} from "./types";
+import { IFetchSnapshotVotingActivity } from "./params";
+import { logger } from "../logger";
 
 const requestProposalData = async function (query: string) {
   return fetch(SNAPSHOT_API_URL, {
@@ -37,3 +50,15 @@ export const getSnapshotVotingPowerData = async function (params: {
     (res) => res.data.vp as SnapshotVotingPowerData
   );
 };
+
+export async function getSnapshotVotingActivityData(params: IFetchSnapshotVotingActivity) {
+  try {
+    logger.info(`Fetching Snapshot voting activity for delegate: ${params.voter}...`);
+    return requestProposalData(/*<SnapshotVotingActivityQueryResponse>*/ snapshotVotingActivityQuery(params)).then(
+      (res) => res.data.votes as SnapshotVotingActivityQueryResponse
+    );
+  } catch (err) {
+    logger.error(`Failed to fetch Snapshot voting activity:`, err);
+    throw err;
+  }
+}

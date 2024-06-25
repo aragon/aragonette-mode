@@ -1,13 +1,12 @@
 import { logger } from "@/services/logger";
-import { snapshotVotingActivityQuery } from "./gql";
-import { type IFetchSnapshotVotingActivity } from "./params";
-import { type SnapshotVotingActivity, type SnapshotVotingActivityQueryResponse } from "./types";
-import { fetchSnapshotData } from "./utils";
+import { type IFetchSnapshotVotingActivity } from "@/services/snapshot/params";
+import { type SnapshotVotingActivity, type SnapshotVotingActivityQueryResponse } from "@/services/snapshot/types";
+import { getSnapshotVotingActivityData } from "@/services/snapshot";
 
 export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActivity) {
   try {
     logger.info(`Fetching Snapshot voting activity for delegate: ${params.voter}...`);
-    const response = await fetchSnapshotData<SnapshotVotingActivityQueryResponse>(snapshotVotingActivityQuery(params));
+    const response = await getSnapshotVotingActivityData(params);
 
     logger.info(`Returning Snapshot voting activity...`);
     return parseVotingActivity(response);

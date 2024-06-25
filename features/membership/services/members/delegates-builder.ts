@@ -10,7 +10,7 @@ import {
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
-import { getDelegatesList, getDelegations } from "../../providers/onchain";
+import { getDelegatesList, getDelegations } from "@/services/rpc/delegationWall";
 import { type IDelegator, IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {

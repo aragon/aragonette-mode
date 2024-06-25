@@ -1,3 +1,5 @@
+import { type IFetchSnapshotVotingActivity } from "./params";
+
 export const snapshotProposalsQuery = (space: string) => `
   query Proposals {
     proposals(first: 20, skip: 0, where: {space: "${space}"}, orderBy: "created", orderDirection: desc) {
@@ -77,3 +79,25 @@ export const snapshotVotingPowerQuery = (space: string, voter: string, proposal?
         vp
       }
     }`;
+
+export const snapshotVotingActivityQuery = (params: IFetchSnapshotVotingActivity) => `
+    query Votes {
+      votes(
+        first: 1000,
+        where: {
+          space: "${params.space}",
+          voter: "${params.voter}"
+        },
+        orderBy: "created",
+        orderDirection: desc
+      ) {
+        id
+        proposal {
+          id
+          choices
+        }
+        choice
+        created
+      }
+    }
+    `;
