@@ -1,28 +1,58 @@
+import { checkNullableParam } from "./api-utils";
 import { IPaginatedResponse } from "./types";
 
-export const checkPaginationParams = (page: number, limit: number, total: number, maxLimit: number = 100) => {
-  if (isNaN(limit) || limit < 1 || limit > maxLimit) {
-    limit = 10;
+const DEFAULT_MAX_LIMIT = 100;
+
+type PaginationParams = {
+  page: number;
+  limit: number;
+};
+
+const DefaultPaginationParams = {
+  page: 1,
+  limit: 10,
+};
+
+export const parsePaginationParams = (
+  page: string | string[] | undefined,
+  limit: string | string[] | undefined
+): PaginationParams => {
+  const parsedPage = checkNullableParam(page, "page");
+  const parsedLimit = checkNullableParam(limit, "limit");
+
+  if (!parsedPage && !parsedLimit) {
+    return DefaultPaginationParams;
+  }
+
+  const pageInt = parsedPage ? parseInt(parsedPage) : DefaultPaginationParams.page;
+  const limitInt = parsedLimit ? parseInt(parsedLimit) : DefaultPaginationParams.limit;
+
+  return checkPaginationParams(pageInt, limitInt);
+};
+
+export const checkPaginationParams = (page: number, limit: number, total?: number) => {
+  if (isNaN(limit) || limit < 1 || limit > DEFAULT_MAX_LIMIT) {
+    limit = DefaultPaginationParams.limit;
   }
 
   if (isNaN(page) || page < 1) {
-    page = 1;
+    page = DefaultPaginationParams.page;
   }
 
-  if (page > Math.ceil(total / limit)) {
-    page = Math.ceil(total / limit);
+  const numPages = total ? Math.ceil(total / limit) : 0;
+  if (numPages && page > numPages) {
+    page = numPages;
   }
 
-  return { page, limit, pages: Math.ceil(total / limit) };
+  return { page, limit, pages: numPages };
 };
 
 export const emptyPagination = {
   data: [],
   pagination: {
     total: 0,
-    page: 1,
     pages: 1,
-    limit: 10,
+    ...DefaultPaginationParams,
   },
 };
 
@@ -32,16 +62,15 @@ export const paginateArray = <T>(delegates: T[], page: number, limit: number): I
     return emptyPagination;
   }
 
-  if (total / limit < page) {
-    page = Math.ceil(total / limit);
-  }
-  const data = delegates.slice((page - 1) * limit, page * limit);
+  const { page: newPage, limit: newLimit, pages } = checkPaginationParams(page, limit, total);
+
+  const data = delegates.slice((newPage - 1) * newLimit, newPage * newLimit);
 
   return {
     pagination: {
       total,
       page: page,
-      pages: Math.ceil(total / limit),
+      pages: pages,
       limit: limit,
     },
     data,

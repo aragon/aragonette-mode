@@ -1,4 +1,5 @@
 import {
+  GITHUB_COUNCIL_FILENAME,
   GITHUB_FEATURED_DELEGATES_FILENAME,
   GITHUB_REPO,
   GITHUB_USER,
@@ -9,7 +10,7 @@ import {
 } from "@/constants";
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
-import { getGitHubFeaturedDelegatesData } from "../../providers/github";
+import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "../../providers/github";
 import { getDelegatesList, getDelegations } from "@/services/rpc/delegationWall";
 import { type IDelegator, IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
 import { paginateArray } from "@/utils/pagination";
@@ -18,6 +19,14 @@ export const getDelegators = async function (address: string, page: number, limi
   const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
 
   return paginateArray<IDelegator>(delegations, page, limit);
+};
+
+export const getCouncilMembers = async function () {
+  return getGitHubCouncilMembersData({
+    user: GITHUB_USER,
+    repo: GITHUB_REPO,
+    council_filename: GITHUB_COUNCIL_FILENAME,
+  });
 };
 
 // TODO: Store in the DB or replace with delegates from App
