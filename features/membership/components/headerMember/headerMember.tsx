@@ -32,10 +32,11 @@ interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];
   address: string;
   bio: string | undefined;
+  identifier: string | undefined;
 }
 
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
-  const { breadcrumbs, address: memberProfileAddress, bio } = props;
+  const { breadcrumbs, address: memberProfileAddress, bio, identifier } = props;
 
   const { data: ensName } = useEnsName({ chainId: mainnet.id, address: memberProfileAddress as Address });
 
@@ -144,63 +145,71 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
 
   return (
     <div className="flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
-      <div className="w-full max-w-screen-xl gap-y-6  px-4 py-6 md:px-16 md:py-10">
+      <div className="flex w-full max-w-screen-xl flex-col gap-y-6 px-4 py-6 md:px-16 md:py-10">
         <Breadcrumbs
           links={breadcrumbs.map((v) => ({ ...v, label: formatHexString(v.label) }))}
           tag={{ label: getTagLabel(), variant: "info" }}
         />
 
         {/* Content Wrapper */}
-        <div className="flex w-full gap-x-20">
-          <div className="flex w-full max-w-[720px] flex-col gap-y-4">
-            <Heading size="h1">{formattedAddress}</Heading>
-            {/* Bio */}
-            <p className="text-lg text-neutral-500">{bio}</p>
-            {/* Stats */}
-            <div className="flex gap-x-16  py-4">
-              {/* Voting power */}
-              <div className="flex flex-col gap-y-1 leading-tight">
-                <div className="flex items-baseline gap-x-1">
-                  <span className="text-2xl text-neutral-800">
-                    {formatterUtils.formatNumber(votingPower, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}
-                  </span>
-                  <span className="text-base text-neutral-500">{tokenSymbol}</span>
-                </div>
-                <span className="text-sm text-neutral-500">Voting power</span>
-              </div>
-              {/* Token Balance */}
-              <div className="flex flex-col gap-y-1 leading-tight">
-                <div className="flex items-baseline gap-x-1">
-                  <span className="text-2xl text-neutral-800">
-                    {formatterUtils.formatNumber(tokenBalance, {
-                      format: NumberFormat.TOKEN_AMOUNT_SHORT,
-                    })}
-                  </span>
-                  <span className="text-base text-neutral-500">{tokenSymbol}</span>
-                </div>
-                <span className="text-sm text-neutral-500">Token balance</span>
-              </div>
-              {/* Delegations */}
-              {delegations && (
-                <div className="flex flex-col gap-y-1 leading-tight">
-                  <span className="text-2xl text-neutral-800">
-                    {formatterUtils.formatNumber(delegations?.pagination.total)}
-                  </span>
-                  <span className="text-sm text-neutral-500">Delegations</span>
-                </div>
-              )}
-              {/* Last Activity */}
-              {lastActivity && (
+        <div className="flex flex-col gap-y-4">
+          <div className="flex w-full md:gap-x-20">
+            <div className="flex w-full max-w-[720px] flex-col gap-y-4">
+              <Heading size="h1">{identifier ?? formattedAddress}</Heading>
+              {/* Bio */}
+              <p className="text-lg text-neutral-500">{bio}</p>
+              {/* Stats */}
+              <div className="flex flex-row justify-between gap-y-3 py-4 md:justify-normal md:gap-x-16">
+                {/* Voting power */}
                 <div className="flex flex-col gap-y-1 leading-tight">
                   <div className="flex items-baseline gap-x-1">
-                    <span className="text-2xl text-neutral-800">{lastActivity}</span>
-                    <span className="text-base text-neutral-500">days ago</span>
+                    <span className="text-2xl text-neutral-800">
+                      {formatterUtils.formatNumber(votingPower, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}
+                    </span>
+                    <span className="text-base text-neutral-500">{tokenSymbol}</span>
                   </div>
-                  <span className="text-sm text-neutral-500">Last activity</span>
+                  <span className="text-sm text-neutral-500">Voting power</span>
                 </div>
-              )}
+                {/* Token Balance */}
+                <div className="flex flex-col gap-y-1 leading-tight">
+                  <div className="flex items-baseline gap-x-1">
+                    <span className="text-2xl text-neutral-800">
+                      {formatterUtils.formatNumber(tokenBalance, {
+                        format: NumberFormat.TOKEN_AMOUNT_SHORT,
+                      })}
+                    </span>
+                    <span className="text-base text-neutral-500">{tokenSymbol}</span>
+                  </div>
+                  <span className="text-sm text-neutral-500">Token balance</span>
+                </div>
+                {/* Delegations */}
+                {delegations && (
+                  <div className="flex flex-col gap-y-1 leading-tight">
+                    <span className="text-2xl text-neutral-800">
+                      {formatterUtils.formatNumber(delegations?.pagination.total)}
+                    </span>
+                    <span className="text-sm text-neutral-500">Delegations</span>
+                  </div>
+                )}
+                {/* Last Activity */}
+                {lastActivity && (
+                  <div className="flex flex-col gap-y-1 leading-tight">
+                    <div className="flex items-baseline gap-x-1">
+                      <span className="text-2xl text-neutral-800">{lastActivity}</span>
+                      <span className="text-base text-neutral-500">days ago</span>
+                    </div>
+                    <span className="text-sm text-neutral-500">Last activity</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <span className="flex gap-x-4">
+            <span>
+              {/* TODO: Should be size 2xl */}
+              <MemberAvatar address={memberProfileAddress} size="lg" />
+            </span>
+          </div>
+          <div>
+            <span className="flex w-full flex-col gap-x-4 gap-y-3 md:flex-row">
               <Button
                 className="!rounded-full"
                 isLoading={isConfirming}
@@ -231,10 +240,6 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
               </Dropdown.Container>
             </span>
           </div>
-          <span>
-            {/* TODO: Should be size 2xl */}
-            <MemberAvatar address={memberProfileAddress} size="lg" />
-          </span>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ import {
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
-import { getDelegatesList, getDelegations } from "../../providers/onchain";
+import { getDelegateMessage, getDelegatesList, getDelegations } from "../../providers/onchain";
 import { type IDelegator, IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
@@ -65,7 +65,15 @@ export const getFeaturedDelegates = async function (
     };
   });
 
-  return paginateDelegates(delegates, page, limit);
+  const identifiers = await Promise.all(
+    delegates.map((delegate) => getDelegateMessage(PUB_CHAIN.id, delegate.address as Address))
+  );
+
+  return paginateDelegates(
+    delegates.map((d, index) => ({ ...d, name: d.name ?? identifiers[index].identifier })),
+    page,
+    limit
+  );
 };
 
 const paginateDelegates = <T>(delegates: T[], page: number, limit: number) => {

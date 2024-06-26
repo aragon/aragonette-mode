@@ -48,6 +48,7 @@ const ResourceSchema = z
   );
 
 const MetadataSchema = z.object({
+  identifier: z.string().min(1, { message: "Identifier is required" }),
   bio: z.string().min(1, { message: "A short bio is required" }),
   message: z.string().regex(EmptyParagraphRegex, { message: "Delegation statement is required" }),
   resources: z.array(ResourceSchema).optional(),
@@ -112,6 +113,15 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
     <DialogRoot {...otherProps} containerClassName="!max-w-[520px]">
       <DialogHeader title="Create your delegation profile" onCloseClick={onClose} onBackClick={onClose} />
       <DialogContent className="flex flex-col gap-y-4 md:gap-y-6">
+        <InputText
+          label="Identifier"
+          readOnly={isConfirming}
+          placeholder="Name, ENS name, Privado ID, etc."
+          {...register("identifier")}
+          {...(errors.identifier?.message
+            ? { alert: { variant: "critical", message: errors.identifier.message } }
+            : {})}
+        />
         <TextArea
           placeholder="Brief description of who you are and your relevant experiences"
           label="Bio"

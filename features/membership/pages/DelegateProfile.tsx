@@ -18,12 +18,17 @@ export const DelegateProfile = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <HeaderMember breadcrumbs={breadcrumbs} address={address} bio={announcement?.bio} />
-      <div className="flex w-full max-w-screen-xl gap-x-16 gap-y-6 px-4 py-6 md:px-16 md:pb-20 md:pt-12">
+      <HeaderMember
+        address={address}
+        bio={announcement?.bio}
+        breadcrumbs={breadcrumbs}
+        identifier={announcement?.identifier}
+      />
+      <div className="flex w-full max-w-screen-xl flex-col gap-x-16 gap-y-12 px-4 py-6 md:flex-row md:px-16 md:pb-20 md:pt-12">
         {/* Main section */}
-        <div className="flex w-[720px] flex-col gap-y-20">
+        <div className="flex flex-col gap-y-12 md:w-[720px] md:gap-y-20">
           {/* Delegation Statement */}
-          <div className="flex w-full flex-col gap-y-6">
+          <div className="flex w-full flex-col gap-y-6 overflow-auto">
             <DelegationStatement message={announcement?.message} />
             {/* Delegations Received */}
             <div className="flex flex-col gap-y-3">
@@ -39,7 +44,9 @@ export const DelegateProfile = () => {
           </div>
         </div>
         {/* Aside */}
-        <DelegateAside address={address} resources={announcement?.resources} />
+        <aside className="flex w-full flex-1 flex-col gap-y-12 md:max-w-[320px] md:gap-y-20">
+          <DelegateAside address={address} resources={announcement?.resources} />
+        </aside>
       </div>
     </div>
   );
