@@ -14,6 +14,7 @@ export type IDelegator = {
 export type ICouncilMember = {
   name?: string;
   address: string;
+  bio?: string;
 };
 
 export enum IDelegatesSortBy {

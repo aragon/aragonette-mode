@@ -14,7 +14,7 @@ import { type IVotingPower, printStageParam } from "@/features/proposals";
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
 
-  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IMemberDataListItem[]> {
+  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<ICouncilMember[]> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/councilMembers`, params);
     const response = await fetch(url);
     const parsed: ICouncilMember[] = await response.json();
