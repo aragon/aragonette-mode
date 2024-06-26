@@ -5,8 +5,8 @@ import { type Address } from "viem";
 import { ProposalStages } from "../../services";
 import { getMultisigVotingPower } from "../multisig/utils";
 import { getMultisigApprovalData, getMultisigConfirmationData } from "../multisig/votes";
-import { getSnapshotProposalStageData } from "../snapshot/proposalStages";
-import { getSnapshotVotesData, getSnapshotVotingPower } from "../snapshot/votes";
+import { getSnapshotProposalStage } from "../snapshot/proposalStages";
+import { getSnapshotVotes, getSnapshotVotingPower } from "../snapshot/votes";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {
@@ -24,11 +24,11 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
       return multisigVotes;
     }
     case ProposalStages.COMMUNITY_VOTING: {
-      const snapshotVotes = await getSnapshotVotesData({ providerId });
-      const snapshotProposalData = await getSnapshotProposalStageData({ proposalId: providerId });
+      const snapshotVotes = await getSnapshotVotes({ providerId });
+      const snapshotProposal = await getSnapshotProposalStage({ proposalId: providerId });
 
       return snapshotVotes.map((vote) => {
-        const choices = snapshotProposalData?.voting?.choices || ["approve", "reject"];
+        const choices = snapshotProposal?.voting?.choices || ["approve", "reject"];
         const choiceIndex = parseInt(vote.choice);
         const choice = isNaN(choiceIndex) ? vote.choice : choices[choiceIndex - 1];
         return {

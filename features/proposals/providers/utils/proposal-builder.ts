@@ -25,7 +25,7 @@ import {
   getGithubTransparencyReport,
 } from "../github/proposalStages";
 import { getMultisigProposalsData, getMultisigProposalData, getMultisigVotingData } from "../multisig/proposalStages";
-import { getSnapshotProposalStagesData, getSnapshotProposalStageData } from "../snapshot/proposalStages";
+import { getSnapshotProposalStages, getSnapshotProposalStage } from "../snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals";
 import { logger } from "@/services/logger";
 
@@ -274,7 +274,7 @@ export async function getAllProposalsStages() {
       repo: GITHUB_REPO,
       transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
     }),
-    getSnapshotProposalStagesData({ space: SNAPSHOT_SPACE }),
+    getSnapshotProposalStages({ space: SNAPSHOT_SPACE }),
     getMultisigProposalsData({
       chain: PUB_CHAIN.id,
       contractAddress: PUB_MULTISIG_ADDRESS,
@@ -333,7 +333,7 @@ export async function getProposalStages(onchainProposalId: string): Promise<Prop
             pip: id,
           });
         case ProposalStages.COMMUNITY_VOTING:
-          return getSnapshotProposalStageData({ providerId: id });
+          return getSnapshotProposalStage({ providerId: id });
       }
     })
   );
@@ -562,7 +562,7 @@ export function buildProposalResponse(proposalStages: ProposalStage[]): IProposa
 export async function getVotingData(stage: ProposalStages, providerId: string): Promise<VotingData | undefined> {
   switch (stage) {
     case ProposalStages.COMMUNITY_VOTING:
-      return (await getSnapshotProposalStageData({ providerId }))?.voting;
+      return (await getSnapshotProposalStage({ providerId }))?.voting;
     case ProposalStages.COUNCIL_APPROVAL:
       return await getMultisigVotingData({
         chain: PUB_CHAIN.id,
