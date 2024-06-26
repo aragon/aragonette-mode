@@ -2,7 +2,7 @@ import { PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
 import { ProposalStages } from "@/features/proposals";
 import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useDelegateVotingPower } from "@/plugins/erc20Votes/hooks/useDelegateVotingPower";
-import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
+import { useTokenInfo } from "@/plugins/erc20Votes/hooks/useTokenBalance";
 import { formatHexString, isAddressEqual } from "@/utils/evm";
 import { queryClient } from "@/utils/query-client";
 import {
@@ -27,39 +27,52 @@ import {
   delegationsList,
   votingPower as votingPowerQueryOptions,
 } from "../../services/members/query-options";
+import classNames from "classnames";
+import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
+
+export type MemberType = "majorityVoting" | "approvalThreshold";
 
 interface IHeaderMemberProps {
   breadcrumbs: IBreadcrumbsLink[];
-  address: string;
+  address: Address;
   bio: string | undefined;
   identifier: string | undefined;
+  type?: MemberType;
 }
 
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
-  const { breadcrumbs, address: memberProfileAddress, bio, identifier } = props;
-
-  const { data: ensName } = useEnsName({ chainId: mainnet.id, address: memberProfileAddress as Address });
-
-  const formattedAddress = formatHexString(memberProfileAddress);
-
-  // stats
-  const lastActivity = ""; // last activity = proposal vote vs creation
-
-  const { data: delegations } = useInfiniteQuery({ ...delegationsList({ address: memberProfileAddress }) });
-
-  const { data: votingPower } = useQuery({
-    ...votingPowerQueryOptions({ address: memberProfileAddress, stage: ProposalStages.COMMUNITY_VOTING }),
-  });
-  const { data } = useTokenBalance({ account: memberProfileAddress as Address, token: PUB_TOKEN_ADDRESS });
-  const tokenSymbol = data?.[2] ?? PUB_TOKEN_SYMBOL;
-  const tokenDecimals = data?.[1] ?? 18;
-  const tokenBalance = formatUnits(data?.[0] ?? 0n, tokenDecimals);
+  const { breadcrumbs, address: profileAddress, bio, identifier, type = "approvalThreshold" } = props;
 
   const { address: connectedAccount, isConnected } = useAccount();
-  const { data: connectedAccountDelegate, queryKey: delegateQueryKey } = useDelegate(connectedAccount);
+  const { data: ensName } = useEnsName({ chainId: mainnet.id, address: profileAddress });
+
+  // delegate hooks
+  const isTokenVoting = type === "majorityVoting";
+  const { data: announcementData } = useAnnouncement(profileAddress, { enabled: isTokenVoting && !!profileAddress });
+  const hasDelegationProfile = !!announcementData?.[0];
+
+  const { data: delegationCount } = useInfiniteQuery({
+    ...delegationsList({ address: profileAddress }),
+    select: (data) => data.pages[0]?.pagination?.total ?? 0,
+    enabled: hasDelegationProfile,
+  });
+
+  const { data: connectedAccountDelegate, queryKey: delegateQueryKey } = useDelegate(connectedAccount, {
+    enabled: !!connectedAccount && isTokenVoting,
+  });
+
+  const { data: tokenData } = useTokenInfo(
+    { account: profileAddress, token: PUB_TOKEN_ADDRESS },
+    { enabled: !!profileAddress && !!PUB_TOKEN_ADDRESS && !!isTokenVoting }
+  );
+
+  const { data: votingPower } = useQuery({
+    ...votingPowerQueryOptions({ address: profileAddress, stage: ProposalStages.COMMUNITY_VOTING }),
+    enabled: !!profileAddress && isTokenVoting,
+  });
 
   // profile is for the connected account
-  const memberIsConnectedAccount = isAddressEqual(connectedAccount, memberProfileAddress);
+  const memberIsConnectedAccount = isAddressEqual(connectedAccount, profileAddress);
 
   // profile is for the connected account; self-delegation
   const connectedMemberIsSelfDelegated =
@@ -71,10 +84,16 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
 
   // profile is the delegate of the connected account but not the connected account
   const memberIsconnectedAccountDelegate =
-    !memberIsConnectedAccount && isAddressEqual(memberProfileAddress, connectedAccountDelegate);
+    !memberIsConnectedAccount && isAddressEqual(profileAddress, connectedAccountDelegate);
 
   const mode = memberIsconnectedAccountDelegate || connectedMemberDelegationInactive ? "claim" : "delegate";
   const { delegateVotingPower, isConfirming } = useDelegateVotingPower(mode, invalidateQueries);
+
+  // stats
+  const formattedAddress = formatHexString(profileAddress);
+  const tokenSymbol = tokenData?.[2] ?? PUB_TOKEN_SYMBOL;
+  const tokenDecimals = tokenData?.[1] ?? 18;
+  const tokenBalance = formatUnits(tokenData?.[0] ?? 0n, tokenDecimals);
 
   function invalidateQueries() {
     // voting power of the previous delegate
@@ -92,15 +111,14 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
 
     // voting power of the member profile address
     queryClient.invalidateQueries({
-      queryKey: votingPowerQueryOptions({ address: memberProfileAddress, stage: ProposalStages.COMMUNITY_VOTING })
-        .queryKey,
+      queryKey: votingPowerQueryOptions({ address: profileAddress, stage: ProposalStages.COMMUNITY_VOTING }).queryKey,
       type: "all",
       refetchType: "all",
     });
 
     // delegations received
     queryClient.invalidateQueries({
-      queryKey: delegationsList({ address: memberProfileAddress }).queryKey,
+      queryKey: delegationsList({ address: profileAddress }).queryKey,
       type: "all",
       refetchType: "all",
     });
@@ -114,7 +132,9 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   }
 
   const getTagLabel = () => {
-    if (memberIsConnectedAccount) {
+    if (!isTokenVoting) {
+      return "Council member";
+    } else if (memberIsConnectedAccount) {
       return "You";
     } else if (memberIsconnectedAccountDelegate) {
       return "Your delegate";
@@ -139,85 +159,86 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
     if (memberIsconnectedAccountDelegate || connectedMemberDelegationInactive) {
       delegateVotingPower(connectedAccount);
     } else {
-      delegateVotingPower(memberProfileAddress as Address);
+      delegateVotingPower(profileAddress);
     }
   };
+
+  const isNeitherCouncilNorDelegate = isTokenVoting && !hasDelegationProfile;
+  const showTag = !isNeitherCouncilNorDelegate;
 
   return (
     <div className="flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
       <div className="flex w-full max-w-screen-xl flex-col gap-y-6 px-4 py-6 md:px-16 md:py-10">
         <Breadcrumbs
           links={breadcrumbs.map((v) => ({ ...v, label: formatHexString(v.label) }))}
-          tag={{ label: getTagLabel(), variant: "info" }}
+          {...(showTag ? { tag: { label: getTagLabel(), variant: "info" } } : {})}
         />
 
         {/* Content Wrapper */}
         <div className="flex flex-col gap-y-4">
           <div className="flex w-full md:gap-x-20">
-            <div className="flex w-full max-w-[720px] flex-col gap-y-4">
+            <div
+              className={classNames("flex w-full max-w-[720px] flex-col gap-y-4", {
+                "justify-center": !isTokenVoting || isNeitherCouncilNorDelegate,
+              })}
+            >
               <Heading size="h1">{identifier ?? formattedAddress}</Heading>
               {/* Bio */}
-              <p className="text-lg text-neutral-500">{bio}</p>
+              {bio && <p className="text-lg text-neutral-500">{bio}</p>}
               {/* Stats */}
-              <div className="flex flex-row justify-between gap-y-3 py-4 md:justify-normal md:gap-x-16">
-                {/* Voting power */}
-                <div className="flex flex-col gap-y-1 leading-tight">
-                  <div className="flex items-baseline gap-x-1">
-                    <span className="text-2xl text-neutral-800">
-                      {formatterUtils.formatNumber(votingPower, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}
-                    </span>
-                    <span className="text-base text-neutral-500">{tokenSymbol}</span>
+              {isTokenVoting && (
+                <div className="flex flex-row justify-between gap-y-3 py-4 md:justify-normal md:gap-x-16">
+                  {/* Voting power */}
+                  <div className="flex flex-col gap-y-1 leading-tight">
+                    <div className="flex items-baseline gap-x-1">
+                      <span className="text-2xl text-neutral-800">
+                        {formatterUtils.formatNumber(votingPower, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}
+                      </span>
+                      <span className="text-base text-neutral-500">{tokenSymbol}</span>
+                    </div>
+                    <span className="text-sm text-neutral-500">Voting power</span>
                   </div>
-                  <span className="text-sm text-neutral-500">Voting power</span>
-                </div>
-                {/* Token Balance */}
-                <div className="flex flex-col gap-y-1 leading-tight">
-                  <div className="flex items-baseline gap-x-1">
-                    <span className="text-2xl text-neutral-800">
-                      {formatterUtils.formatNumber(tokenBalance, {
-                        format: NumberFormat.TOKEN_AMOUNT_SHORT,
-                      })}
-                    </span>
-                    <span className="text-base text-neutral-500">{tokenSymbol}</span>
+
+                  {/* Token Balance */}
+                  <div className="flex flex-col gap-y-1 leading-tight">
+                    <div className="flex items-baseline gap-x-1">
+                      <span className="text-2xl text-neutral-800">
+                        {formatterUtils.formatNumber(tokenBalance, {
+                          format: NumberFormat.TOKEN_AMOUNT_SHORT,
+                        })}
+                      </span>
+                      <span className="text-base text-neutral-500">{tokenSymbol}</span>
+                    </div>
+                    <span className="text-sm text-neutral-500">Token balance</span>
                   </div>
-                  <span className="text-sm text-neutral-500">Token balance</span>
-                </div>
-                {/* Delegations */}
-                {delegations && (
+
+                  {/* Delegations */}
                   <div className="flex flex-col gap-y-1 leading-tight">
                     <span className="text-2xl text-neutral-800">
-                      {formatterUtils.formatNumber(delegations?.pagination.total)}
+                      {formatterUtils.formatNumber(delegationCount ?? 0, { format: NumberFormat.GENERIC_SHORT })}
                     </span>
                     <span className="text-sm text-neutral-500">Delegations</span>
                   </div>
-                )}
-                {/* Last Activity */}
-                {lastActivity && (
-                  <div className="flex flex-col gap-y-1 leading-tight">
-                    <div className="flex items-baseline gap-x-1">
-                      <span className="text-2xl text-neutral-800">{lastActivity}</span>
-                      <span className="text-base text-neutral-500">days ago</span>
-                    </div>
-                    <span className="text-sm text-neutral-500">Last activity</span>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
             <span>
               {/* TODO: Should be size 2xl */}
-              <MemberAvatar address={memberProfileAddress} size="lg" />
+              <MemberAvatar address={profileAddress} size="lg" responsiveSize={{}} />
             </span>
           </div>
           <div>
             <span className="flex w-full flex-col gap-x-4 gap-y-3 md:flex-row">
-              <Button
-                className="!rounded-full"
-                isLoading={isConfirming}
-                onClick={handleCtaClick}
-                disabled={connectedMemberIsSelfDelegated || !isConnected}
-              >
-                {getCtaLabel()}
-              </Button>
+              {hasDelegationProfile && (
+                <Button
+                  className="!rounded-full"
+                  isLoading={isConfirming}
+                  onClick={handleCtaClick}
+                  disabled={connectedMemberIsSelfDelegated || !isConnected}
+                >
+                  {getCtaLabel()}
+                </Button>
+              )}
               <Dropdown.Container
                 customTrigger={
                   <Button className="!rounded-full" variant="tertiary" iconRight={IconType.CHEVRON_DOWN}>
@@ -233,7 +254,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                 <Dropdown.Item
                   icon={IconType.COPY}
                   iconPosition="right"
-                  onClick={() => clipboardUtils.copy(memberProfileAddress)}
+                  onClick={() => clipboardUtils.copy(profileAddress)}
                 >
                   {formattedAddress}
                 </Dropdown.Item>
