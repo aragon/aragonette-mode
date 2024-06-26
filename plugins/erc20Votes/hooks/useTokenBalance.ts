@@ -1,4 +1,5 @@
-import { erc20Abi, zeroAddress, type Address } from "viem";
+import { PUB_CHAIN } from "@/constants";
+import { erc20Abi, type Address } from "viem";
 import { useReadContracts } from "wagmi";
 
 interface ITokenBalanceParams {
@@ -6,32 +7,36 @@ interface ITokenBalanceParams {
   account: Address;
 }
 
-// Todo: rename
-export const useTokenBalance = (params: ITokenBalanceParams) => {
+export const useTokenInfo = (params: ITokenBalanceParams, options = {}) => {
   return useReadContracts({
     allowFailure: false,
     contracts: [
       {
+        chainId: PUB_CHAIN.id,
         address: params.token,
         abi: erc20Abi,
         functionName: "balanceOf",
-        args: [params.account ?? zeroAddress],
+        args: [params.account],
       },
       {
+        chainId: PUB_CHAIN.id,
         address: params.token,
         abi: erc20Abi,
         functionName: "decimals",
       },
       {
+        chainId: PUB_CHAIN.id,
         address: params.token,
         abi: erc20Abi,
         functionName: "symbol",
       },
       {
+        chainId: PUB_CHAIN.id,
         address: params.token,
         abi: erc20Abi,
         functionName: "totalSupply",
       },
     ],
+    query: { ...options },
   });
 };
