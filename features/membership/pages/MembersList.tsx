@@ -9,6 +9,8 @@ import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDi
 import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
 import { councilMemberList, delegatesList } from "../services/members/query-options";
+import { useMetadata } from "@/hooks/useMetadata";
+import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -18,7 +20,8 @@ export default function MembersList() {
 
   const { address, isConnected } = useAccount();
 
-  const { data: announcement } = useAnnouncement(address);
+  const { data: announcementData } = useAnnouncement(address);
+  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementData?.[0]);
 
   const { data: councilMemberListData } = useQuery({
     ...councilMemberList(),
@@ -33,6 +36,16 @@ export default function MembersList() {
   const onToggleChange = (value: string | undefined) => {
     if (value) {
       setToggleValue(value);
+    }
+  };
+
+  const getButtonLabel = () => {
+    if (!isConnected) {
+      return "Connect to create delegation profile";
+    } else if (announcement) {
+      return "Update delegation profile";
+    } else {
+      return "Create delegation profile";
     }
   };
 
@@ -75,31 +88,9 @@ export default function MembersList() {
               </dt>
               <dd className="size-full text-base leading-tight text-neutral-500">{`${delegatesListData?.pagination.total} delegates`}</dd>
             </div>
-            {/* {token && (
-              <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
-                <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
-                  Token holders
-                </dt>
-                <dd className="size-full text-base leading-tight text-neutral-500">
-                  <Link
-                    description="View contract"
-                    iconRight={IconType.LINK_EXTERNAL}
-                    target="_blank"
-                    rel="noopener"
-                    href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${PUB_TOKEN_ADDRESS}`}
-                  >
-                    {`${formatterUtils.formatNumber(totalSupply, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL} holders`}
-                  </Link>
-                </dd>
-              </div>
-            )} */}
           </dl>
           <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)} disabled={!isConnected}>
-            {!isConnected
-              ? "Connect to create delegation profile"
-              : announcement
-                ? "Update delegation profile"
-                : "Create delegation profile"}
+            {getButtonLabel()}
           </Button>
           <DelegateAnnouncementDialog
             onClose={() => setShowProfileCreationDialog(false)}
