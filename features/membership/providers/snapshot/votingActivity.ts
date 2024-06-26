@@ -1,8 +1,9 @@
 import { logger } from "@/services/logger";
 import { snapshotVotingActivityQuery } from "./gql";
 import { type IFetchSnapshotVotingActivity } from "./params";
-import { type SnapshotVotingActivity, type SnapshotVotingActivityQueryResponse } from "./types";
+import { type SnapshotVotingActivityQueryResponse } from "./types";
 import { fetchSnapshotData } from "./utils";
+import { type IProviderVotingActivity } from "../../services/members/domain";
 
 export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActivity) {
   try {
@@ -17,11 +18,11 @@ export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActi
   }
 }
 
-function parseVotingActivity(data: SnapshotVotingActivityQueryResponse): SnapshotVotingActivity[] {
+function parseVotingActivity(data: SnapshotVotingActivityQueryResponse): IProviderVotingActivity[] {
   return data.votes.map((vote) => ({
     id: vote.id,
     choice: vote.proposal.choices[Number(vote.choice) - 1],
-    proposalId: vote.proposal.id,
+    providerId: vote.proposal.id,
     createdAt: new Date(Number(vote.created) * 1000).toISOString(),
   }));
 }
