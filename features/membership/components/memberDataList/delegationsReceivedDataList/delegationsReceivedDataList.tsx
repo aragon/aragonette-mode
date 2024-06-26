@@ -1,5 +1,5 @@
 import { PUB_CHAIN, PUB_TOKEN_ADDRESS } from "@/constants";
-import { useTokenBalance } from "@/plugins/erc20Votes/hooks/useTokenBalance";
+import { useTokenInfo } from "@/plugins/erc20Votes/hooks/useTokenBalance";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -33,7 +33,7 @@ export const DelegationsReceivedDataList: React.FC<IDelegationsReceivedDataListP
     placeholderData: keepPreviousData,
   });
 
-  const { data: token } = useTokenBalance({ account: data?.members[0]?.address as Address, token: PUB_TOKEN_ADDRESS });
+  const { data: token } = useTokenInfo({ account: data?.members[0]?.address as Address, token: PUB_TOKEN_ADDRESS });
   const tokenDecimals = token?.[1] ?? 18;
 
   const loading = isLoading || (isError && isRefetching);

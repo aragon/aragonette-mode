@@ -6,12 +6,12 @@ import React from "react";
 import { type Address } from "viem";
 import { useEnsName } from "wagmi";
 
-interface IDelegateAsideProps {
+interface IProfileAsideProps {
   address: string;
   resources?: IResource[];
 }
 
-export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
+export const ProfileAside: React.FC<IProfileAsideProps> = (props) => {
   const { address, resources } = props;
 
   const { data: ensName } = useEnsName({ chainId: PUB_CHAIN.id, address: address as Address });
