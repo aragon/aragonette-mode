@@ -13,6 +13,7 @@ import { HeaderMember } from "../components/headerMember/headerMember";
 import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 import { councilMemberList } from "../services/members/query-options";
+import { ProposalStages } from "@/features/proposals";
 
 export const MemberProfile = () => {
   const { query, asPath } = useRouter();
@@ -58,7 +59,10 @@ export const MemberProfile = () => {
           <div className="flex w-full flex-col gap-y-6">
             {/* Voting activity */}
             <Heading size="h2">Voting activity</Heading>
-            <MemberVotesDataList address={profileAddress} />
+            <MemberVotesDataList
+              address={profileAddress}
+              stage={isCouncilMember ? ProposalStages.COUNCIL_APPROVAL : ProposalStages.COMMUNITY_VOTING}
+            />
           </div>
         </div>
         {/* Aside */}

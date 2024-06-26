@@ -1,5 +1,5 @@
 import { getVotingActivity } from "@/features/membership/services/members/delegates-builder";
-import { IVoterVotingActivity } from "@/features/membership/services/members/domain";
+import { type IVoterVotingActivity } from "@/features/membership/services/members/domain";
 import { parseSnapshotChoice } from "@/features/proposals/providers/snapshot/utils";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
