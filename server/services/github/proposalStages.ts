@@ -1,5 +1,5 @@
 import { GITHUB_API_URL } from "@/constants";
-import { type IProposalStagesProvider, type IProposalStageProvider } from "../../models/proposals";
+import { type IProposalStagesProvider, type IProposalStageProvider } from "../../models/proposals/types";
 import {
   extractHeader,
   extractYamlHeader,
@@ -8,7 +8,7 @@ import {
   parseHeader,
   parseTransparencyReport,
 } from "./utils";
-import { downloadGitHubFile } from "@/services/github";
+import { downloadGitHubFile } from "@/server/services/github/fetch";
 
 interface IGetGitHubProposalStagesDataParams {
   user: string;

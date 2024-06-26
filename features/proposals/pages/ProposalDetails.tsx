@@ -21,7 +21,7 @@ import {
   TransparencyReport,
   type IBreakdownApprovalThresholdResult,
 } from "../components";
-import { type SecondaryMetadata } from "../providers/multisig/types";
+import { type SecondaryMetadata } from "../../../server/services/rpc/multisig/types2";
 import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,

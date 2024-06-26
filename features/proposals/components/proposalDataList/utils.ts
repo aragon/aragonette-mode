@@ -1,4 +1,4 @@
-import { ProposalSortBy, ProposalSortDir } from "../../repository/proposal";
+import { ProposalSortBy, ProposalSortDir } from "../../../../server/models/proposals";
 
 export const generateSortOptions = (sort: string) => {
   if (!sort) return {};

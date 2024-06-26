@@ -6,8 +6,13 @@ import {
   StageType,
 } from "@prisma/client";
 
-import { type IProposal } from "..";
-import { type IProposalStage, ProposalStages, ProposalStatus, StageStatus } from "../services/proposal/domain";
+import { type IProposal } from "../../../features/proposals";
+import {
+  type IProposalStage,
+  ProposalStages,
+  ProposalStatus,
+  StageStatus,
+} from "../../../features/proposals/services/proposal/domain";
 
 const serializeType = (type: ProposalStages): StageType => {
   switch (type) {

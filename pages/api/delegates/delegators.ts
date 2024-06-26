@@ -1,5 +1,5 @@
-import { getDelegators } from "@/features/membership/services/members/delegates-builder";
-import { checkParam, checkNullableParam } from "@/utils/api-utils";
+import { getDelegators } from "@/server/composers/delegates-builder";
+import { checkParam, checkNullableParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import { type NextApiRequest, type NextApiResponse } from "next/types";
 import { type IDelegator } from "@/features/membership/services/members/domain";

@@ -1,11 +1,11 @@
-import { getFeaturedDelegates } from "@/features/membership/services/members/delegates-builder";
+import { getFeaturedDelegates } from "@/server/composers/delegates-builder";
 import {
   parseDelegatesSortBy,
   parseDelegatesSortDir,
   type IMemberDataListItem,
 } from "@/features/membership/services/members/domain";
 import { logger } from "@/services/logger";
-import { checkNullableParam } from "@/utils/api-utils";
+import { checkNullableParam } from "@/server/utils";
 import { parsePaginationParams } from "@/utils/pagination";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";

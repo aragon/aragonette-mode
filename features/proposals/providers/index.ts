@@ -1,3 +1,3 @@
 export * from "./github";
 export * from "./snapshot";
-export * from "./utils/proposal-builder";
+export * from "../../../server/composers/proposal-builder";

@@ -23,10 +23,14 @@ import {
   getGithubTransparencyReports,
   getGitHubProposalStageData,
   getGithubTransparencyReport,
-} from "../github/proposalStages";
-import { getMultisigProposalsData, getMultisigProposalData, getMultisigVotingData } from "../multisig/proposalStages";
-import { getSnapshotProposalStages, getSnapshotProposalStage } from "../snapshot/proposalStages";
-import { type ProposalStage, type VotingData } from "../../models/proposals";
+} from "../services/github/proposalStages";
+import {
+  getMultisigProposalsData,
+  getMultisigProposalData,
+  getMultisigVotingData,
+} from "../services/rpc/multisig/proposalStages";
+import { getSnapshotProposalStages, getSnapshotProposalStage } from "../services/snapshot/proposalStages";
+import { type ProposalStage, type VotingData } from "../models/proposals/types";
 import { logger } from "@/services/logger";
 
 /**

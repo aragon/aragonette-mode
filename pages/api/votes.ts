@@ -1,10 +1,10 @@
 import { type IProposalVote } from "@/features/proposals";
-import { buildVotesResponse } from "@/features/proposals/providers/utils/votes-builder";
-import { checkParam, parseStageParam } from "@/utils/api-utils";
+import { buildVotesResponse } from "@/server/composers/votes-builder";
+import { checkParam, parseStageParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger } from "@/services/logger";
-import proposalRepository from "@/features/proposals/repository/proposal";
+import proposalRepository from "@/server/models/proposals";
 
 export default async function handler(
   req: NextApiRequest,

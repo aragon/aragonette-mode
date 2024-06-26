@@ -1,4 +1,4 @@
-import { getCouncilMembers } from "@/features/membership/services/members/delegates-builder";
+import { getCouncilMembers } from "@/server/composers/delegates-builder";
 import { type ICouncilMember } from "@/features/membership/services/members/domain";
 import { logger } from "@/services/logger";
 import { type IError } from "@/utils/types";

@@ -1,9 +1,9 @@
 import { SNAPSHOT_SPACE } from "@/constants";
-import { getSnapshotVotingActivity } from "@/features/membership/providers/snapshot/votingActivity";
-import { parseSnapshotChoice } from "@/features/proposals/providers/snapshot/utils";
-import proposalRepository from "@/features/proposals/repository/proposal";
+import { getSnapshotVotingActivity } from "@/server/services/snapshot/votingActivity";
+import { parseSnapshotChoice } from "@/server/services/snapshot/utils";
+import proposalRepository from "@/server/models/proposals";
 import { logger } from "@/services/logger";
-import { checkParam } from "@/utils/api-utils";
+import { checkParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
 import { StageType } from "@prisma/client";
 import { type NextApiRequest, type NextApiResponse } from "next/types";

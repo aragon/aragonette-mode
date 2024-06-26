@@ -13,7 +13,7 @@ import {
   SnapshotVotingActivityQueryResponse,
 } from "./types";
 import { IFetchSnapshotVotingActivity } from "./params";
-import { logger } from "../logger";
+import { logger } from "../../../services/logger";
 
 const requestProposalData = async function (query: string) {
   return fetch(SNAPSHOT_API_URL, {

@@ -1,6 +1,6 @@
 import { type Address } from "viem";
 import { type ProposalStatus, type ProposalStages } from "./domain";
-import { type ProposalSortBy, type ProposalSortDir } from "../../repository/proposal";
+import { type ProposalSortBy, type ProposalSortDir } from "../../../../server/models/proposals";
 import { type IFetchPaginatedParams } from "@/utils/types";
 
 export interface IFetchProposalParams {

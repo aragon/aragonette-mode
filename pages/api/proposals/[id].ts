@@ -1,7 +1,7 @@
 import { type IProposal } from "@/features/proposals";
 import { buildLiveProposalResponse } from "@/features/proposals/providers";
-import proposalRepository from "@/features/proposals/repository/proposal";
-import { checkParam } from "@/utils/api-utils";
+import proposalRepository from "@/server/models/proposals";
+import { checkParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 

@@ -1,7 +1,7 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { PUB_MULTISIG_ADDRESS } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
-import { type SecondaryMetadata } from "@/features/proposals/providers/multisig/types";
+import { type SecondaryMetadata } from "@/server/services/rpc/multisig/types2";
 import { logger } from "@/services/logger";
 import { uploadToPinata } from "@/services/ipfs";
 import { useRouter } from "next/router";

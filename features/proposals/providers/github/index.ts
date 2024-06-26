@@ -1,1 +1,1 @@
-export * from "./proposalStages";
+export * from "../../../../server/services/github/proposalStages";

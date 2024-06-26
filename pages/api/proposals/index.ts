@@ -4,9 +4,9 @@ import proposalRepository, {
   parseProposalSortBy,
   parseProposalSortDir,
   parsedProposalStatus,
-} from "@/features/proposals/repository/proposal";
+} from "@/server/models/proposals";
 import { logger } from "@/services/logger";
-import { checkNullableParam } from "@/utils/api-utils";
+import { checkNullableParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 

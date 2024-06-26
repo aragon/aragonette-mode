@@ -1,5 +1,5 @@
-import { type IProposalVotesProvider, type IProposalVotingPowerProvider } from "../../models/proposals";
-import { getSnapshotVotesData, getSnapshotVotingPowerData } from "@/services/snapshot";
+import { type IProposalVotesProvider, type IProposalVotingPowerProvider } from "../../models/proposals/types";
+import { getSnapshotVotesData, getSnapshotVotingPowerData } from "@/server/services/snapshot/fetch";
 import { parseSnapshotVoteData } from "./utils";
 
 export const getSnapshotVotes: IProposalVotesProvider = async function (params: { providerId: string }) {

@@ -1,4 +1,4 @@
-import { type IProposalStagesProvider, type IProposalVotingDataProvider } from "@/features/proposals/models/proposals";
+import { type IProposalStagesProvider, type IProposalVotingDataProvider } from "@/server/models/proposals/types";
 import {
   requestProposalsData,
   requestProposalData,

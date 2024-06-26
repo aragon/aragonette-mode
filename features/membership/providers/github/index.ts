@@ -1,2 +1,2 @@
-export * from "./councilMembers";
-export * from "./featuredDelegates";
+export * from "../../../../server/services/github/councilMembers";
+export * from "../../../../server/services/github/featuredDelegates";

@@ -1,6 +1,6 @@
 import { GITHUB_API_URL } from "@/constants";
-import { downloadGitHubFile } from "@/services/github";
-import { type ICouncilMembersProvider } from "../../models/membership";
+import { downloadGitHubFile } from "@/server/services/github/fetch";
+import { type ICouncilMembersProvider } from "../../models/members/types";
 
 interface IGetGitHubCouncilDataParams {
   user: string;

@@ -1,6 +1,6 @@
 import { PUB_CHAIN } from "@/constants";
-import { type ProposalStage, type Vote, type VotingData } from "@/features/proposals/models/proposals";
-import { type VotesData } from "@/features/proposals/providers/multisig/types";
+import { type ProposalStage, type Vote, type VotingData } from "@/server/models/proposals/types";
+import { type VotesData } from "@/server/services/rpc/multisig/types2";
 import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { fetchJsonFromIpfs } from "@/services/ipfs";
@@ -10,7 +10,7 @@ import {
   type MultisigProposal,
   type PrimaryMetadata,
   type SecondaryMetadata,
-} from "./types";
+} from "./types2";
 import {
   getApproveLogs,
   getBlockTimestamp,
@@ -21,8 +21,8 @@ import {
   getNumProposals,
   getProposalCreationData,
   getProposalData,
-} from "@/services/rpc/multisig";
-import { ProposalData } from "@/services/rpc/multisig/types";
+} from "@/server/services/rpc/multisig";
+import { ProposalData } from "@/server/services/rpc/multisig/types";
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
   const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
