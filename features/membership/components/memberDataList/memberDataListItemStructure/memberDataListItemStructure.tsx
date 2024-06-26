@@ -24,9 +24,8 @@ export interface IMemberDataListItemProps extends IDataListItemProps {
    */
   votingPower?: number;
   /**
-   * ENS name of the user.
+   * Identifier of the user
    */
-  ensName?: string;
   name?: string;
   /**
    * 0x address of the user.
@@ -39,13 +38,13 @@ export interface IMemberDataListItemProps extends IDataListItemProps {
 }
 
 export const MemberDataListItemStructure: React.FC<IMemberDataListItemProps> = (props) => {
-  const { isDelegate, delegationCount, votingPower, avatarSrc, ensName, name, address, ...otherProps } = props;
+  const { isDelegate, delegationCount, votingPower, avatarSrc, name, address, ...otherProps } = props;
 
   const { address: currentUserAddress, isConnected } = useAccount();
 
   const isCurrentUser = isConnected && address && isAddressEqual(currentUserAddress, address);
 
-  const resolvedUserHandle = ensName != null && ensName !== "" ? ensName : formatHexString(address);
+  const resolvedUserHandle = name != null && name !== "" ? name : formatHexString(address);
 
   const hasDelegationOrVotingPower = delegationCount != null || votingPower != null;
 
@@ -53,12 +52,11 @@ export const MemberDataListItemStructure: React.FC<IMemberDataListItemProps> = (
     <DataList.Item className="min-w-fit !py-0 px-4 md:px-6" {...otherProps}>
       <div className="flex flex-col items-start justify-center gap-y-3 py-4 md:min-w-44 md:py-6">
         <div className="flex w-full items-center justify-between">
-          <MemberAvatar ensName={ensName} address={address} avatarSrc={avatarSrc} responsiveSize={{ md: "md" }} />
+          <MemberAvatar address={address} avatarSrc={avatarSrc} responsiveSize={{ md: "md" }} />
           {isDelegate && !isCurrentUser && <Tag variant="info" label="Your Delegate" />}
           {isCurrentUser && <Tag variant="neutral" label="You" />}
         </div>
 
-        {name && <p className="inline-block w-full truncate text-lg text-neutral-800 md:text-xl">{name}</p>}
         <p className="inline-block w-full truncate text-lg text-neutral-800 md:text-xl">{resolvedUserHandle}</p>
 
         {hasDelegationOrVotingPower && (

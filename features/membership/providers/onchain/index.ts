@@ -1,10 +1,13 @@
 import { DelegationWallAbi } from "@/artifacts/DelegationWall.sol";
-import { config } from "@/context/Web3Modal";
-import { readContract, getPublicClient } from "@wagmi/core";
 import { Erc20VotesAbi } from "@/artifacts/ERC20Votes.sol";
-import { type Address, getAbiItem, decodeEventLog } from "viem";
-import { logger } from "@/services/logger";
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
+import { PUB_DELEGATION_CONTRACT_ADDRESS } from "@/constants";
+import { config } from "@/context/Web3Modal";
+import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
+import { logger } from "@/services/logger";
+import { fetchJsonFromIpfs } from "@/utils/ipfs";
+import { getPublicClient, readContract } from "@wagmi/core";
+import { decodeEventLog, getAbiItem, type Address } from "viem";
 import { type IProviderVotingActivity } from "../../services/members/domain";
 
 export const getDelegatesList = async function (chain: number, contractAddress: Address): Promise<Address[]> {
@@ -82,14 +85,16 @@ export const getDelegations = async function (chain: number, address: Address, c
   return delegatorsWithVp.filter((delegator) => delegator.votingPower !== "0");
 };
 
-export const getDelegateMessage = async function (chain: number, contractAddress: Address) {
-  return await readContract(config, {
+export const getDelegateMessage = async function (chain: number, delegate: Address) {
+  const [messageIPFSCid] = await readContract(config, {
     chainId: chain,
-    address: contractAddress,
+    address: PUB_DELEGATION_CONTRACT_ADDRESS,
     abi: DelegationWallAbi,
-    args: [contractAddress],
+    args: [delegate],
     functionName: "candidates",
   });
+
+  return (await fetchJsonFromIpfs(messageIPFSCid)) as IDelegationWallMetadata;
 };
 
 export const getMultisigVotingActivity = async function (

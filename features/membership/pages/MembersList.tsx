@@ -38,7 +38,7 @@ export default function MembersList() {
 
   return (
     <MainSection className="md:px-16 md:pb-20 xl:pt-12">
-      <div className="flex w-full max-w-[1280] gap-x-20">
+      <div className="flex w-full max-w-[1280] flex-col gap-x-20 gap-y-8 md:flex-row">
         <div className="flex flex-1 flex-col gap-y-6">
           <div className="flex items-center justify-between">
             <Heading size="h1">Members</Heading>
@@ -53,7 +53,7 @@ export default function MembersList() {
             <DelegateMemberList onAnnounceDelegation={() => setShowProfileCreationDialog(true)} />
           )}
         </div>
-        <aside className="flex max-w-[320px] flex-col gap-y-6">
+        <aside className="flex w-full flex-col gap-y-4 md:max-w-[320px] md:gap-y-6">
           <div className="flex flex-col gap-y-3">
             <Heading size="h3">Details</Heading>
             <p className="text-neutral-500">

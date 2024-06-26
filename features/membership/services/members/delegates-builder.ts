@@ -8,19 +8,24 @@ import {
   PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
+import { ProposalStages } from "@/features/proposals";
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
-import { getDelegatesList, getDelegations, getMultisigVotingActivity } from "../../providers/onchain";
 import {
-  type IDelegator,
+  getDelegateMessage,
+  getDelegatesList,
+  getDelegations,
+  getMultisigVotingActivity,
+} from "../../providers/onchain";
+import { getSnapshotVotingActivity } from "../../providers/snapshot/votingActivity";
+import {
   IDelegatesSortBy,
   IDelegatesSortDir,
+  type IDelegator,
   type IMemberDataListItem,
   type IProviderVotingActivity,
 } from "./domain";
-import { getSnapshotVotingActivity } from "../../providers/snapshot/votingActivity";
-import { ProposalStages } from "@/features/proposals";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
@@ -92,7 +97,15 @@ export const getFeaturedDelegates = async function (
     };
   });
 
-  return paginateDelegates(delegates, page, limit);
+  const identifiers = await Promise.all(
+    delegates.map((delegate) => getDelegateMessage(PUB_CHAIN.id, delegate.address as Address))
+  );
+
+  return paginateDelegates(
+    delegates.map((d, index) => ({ ...d, name: d.name ?? identifiers[index].identifier })),
+    page,
+    limit
+  );
 };
 
 const paginateDelegates = <T>(delegates: T[], page: number, limit: number) => {
