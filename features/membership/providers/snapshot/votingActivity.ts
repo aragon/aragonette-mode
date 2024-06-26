@@ -19,10 +19,12 @@ export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActi
 }
 
 function parseVotingActivity(data: SnapshotVotingActivityQueryResponse): IProviderVotingActivity[] {
-  return data.votes.map((vote) => ({
-    id: vote.id,
-    choice: vote.proposal.choices[Number(vote.choice) - 1],
-    providerId: vote.proposal.id,
-    createdAt: new Date(Number(vote.created) * 1000).toISOString(),
-  }));
+  return (
+    data.votes?.map((vote) => ({
+      id: vote.id,
+      choice: vote.proposal.choices[Number(vote.choice) - 1],
+      providerId: vote.proposal.id,
+      createdAt: new Date(Number(vote.created) * 1000).toISOString(),
+    })) ?? []
+  );
 }
