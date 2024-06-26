@@ -29,7 +29,7 @@ class MemberService {
   }
 
   async fetchVotingActivity(params: IFetchVotingActivityParams): Promise<IPaginatedResponse<IVoterVotingActivity>> {
-    const url = encodeSearchParams(`${this.endpoint}/votingActivity`, {
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/votingActivity`, {
       ...params,
       stage: printStageParam(params.stage),
     });

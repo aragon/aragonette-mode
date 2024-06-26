@@ -229,7 +229,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
           </div>
           <div>
             <span className="flex w-full flex-col gap-x-4 gap-y-3 md:flex-row">
-              {hasDelegationProfile && (
+              {hasDelegationProfile && isTokenVoting && (
                 <Button
                   className="!rounded-full"
                   isLoading={isConfirming}

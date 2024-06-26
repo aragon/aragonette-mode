@@ -1,5 +1,6 @@
 import { getVotingActivity } from "@/features/membership/services/members/delegates-builder";
 import { type IVoterVotingActivity } from "@/features/membership/services/members/domain";
+import { ProposalStages } from "@/features/proposals";
 import { parseSnapshotChoice } from "@/features/proposals/providers/snapshot/utils";
 import proposalRepository from "@/features/proposals/repository/proposal";
 import { logger } from "@/services/logger";
@@ -18,6 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const parsedAddress = getAddress(address);
 
     // get voting activity
+    logger.info(`Fetching voting activity for: ${parsedAddress} with stage: ${stageEnum}`);
     const votingActivity = await getVotingActivity(parsedAddress, stageEnum);
 
     if (!votingActivity || votingActivity.length === 0) {
@@ -36,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
           return {
             id,
-            choice: parseSnapshotChoice(choice),
+            choice: stageEnum === ProposalStages.COMMUNITY_VOTING ? parseSnapshotChoice(choice) : choice,
             createdAt,
             proposal: { id: proposal?.id, title: proposal?.title },
           };
