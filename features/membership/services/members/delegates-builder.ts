@@ -4,19 +4,51 @@ import {
   GITHUB_USER,
   PUB_CHAIN,
   PUB_DELEGATION_CONTRACT_ADDRESS,
+  PUB_MULTISIG_ADDRESS,
   PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
+import { ProposalStages } from "@/features/proposals";
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "../../../proposals/providers/snapshot";
 import { getGitHubFeaturedDelegatesData } from "../../providers/github";
-import { getDelegateMessage, getDelegatesList, getDelegations } from "../../providers/onchain";
-import { type IDelegator, IDelegatesSortBy, IDelegatesSortDir, type IMemberDataListItem } from "./domain";
+import {
+  getDelegateMessage,
+  getDelegatesList,
+  getDelegations,
+  getMultisigVotingActivity,
+} from "../../providers/onchain";
+import { getSnapshotVotingActivity } from "../../providers/snapshot/votingActivity";
+import {
+  IDelegatesSortBy,
+  IDelegatesSortDir,
+  type IDelegator,
+  type IMemberDataListItem,
+  type IProviderVotingActivity,
+} from "./domain";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
 
   return paginateDelegates<IDelegator>(delegations, page, limit);
+};
+
+export const getVotingActivity = async function (
+  address: Address,
+  stage: ProposalStages
+): Promise<IProviderVotingActivity[]> {
+  switch (stage) {
+    case ProposalStages.COMMUNITY_VOTING:
+      return getSnapshotVotingActivity({
+        space: SNAPSHOT_SPACE,
+        voter: address,
+      });
+    case ProposalStages.COUNCIL_APPROVAL:
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return getMultisigVotingActivity(address, PUB_MULTISIG_ADDRESS);
+    default:
+      return [];
+  }
 };
 
 // TODO: Store in the DB or replace with delegates from App

@@ -1,8 +1,7 @@
 import { PUB_API_BASE_URL } from "@/constants";
-import { type IDelegateVotingActivity } from "@/pages/api/delegates/votingActivity";
 import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type ICouncilMember, type IMemberDataListItem } from "./domain";
+import { IVoterVotingActivity, type ICouncilMember, type IMemberDataListItem } from "./domain";
 import type {
   IFetchCouncilMembersParams,
   IFetchDelegatesParams,
@@ -29,11 +28,11 @@ class MemberService {
     return parsed;
   }
 
-  async fetchVotingActivity(params: IFetchVotingActivityParams): Promise<IPaginatedResponse<IDelegateVotingActivity>> {
+  async fetchVotingActivity(params: IFetchVotingActivityParams): Promise<IPaginatedResponse<IVoterVotingActivity>> {
     const url = encodeSearchParams(`${this.endpoint}/votingActivity`, params);
 
     const response = await fetch(url);
-    const parsed: IDelegateVotingActivity[] = await response.json();
+    const parsed: IVoterVotingActivity[] = await response.json();
 
     return {
       data: parsed,

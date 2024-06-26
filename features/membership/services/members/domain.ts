@@ -56,3 +56,20 @@ export const parseDelegatesSortDir = (value?: string): IDelegatesSortDir => {
     throw new Error(`Invalid sort direction value: ${value}`);
   }
 };
+
+export type IProviderVotingActivity = {
+  id: string;
+  choice: string;
+  createdAt: string;
+  providerId: string;
+};
+
+export type IVoterVotingActivity = {
+  id: string;
+  choice: string;
+  createdAt: string;
+  proposal: {
+    id: string;
+    title: string;
+  };
+};
