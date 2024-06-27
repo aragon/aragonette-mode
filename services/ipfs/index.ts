@@ -1,6 +1,7 @@
 import { PUB_IPFS_API_KEY, PUB_IPFS_ENDPOINT } from "@/constants";
 import Cache from "../cache/VercelCache";
 import { fromHex, type Hex } from "viem";
+import { logger } from "../logger";
 
 export async function fetchJsonFromIpfs(ipfsUri: string) {
   const cache = new Cache();
@@ -60,7 +61,8 @@ async function fetchFromIPFS(ipfsUri: string): Promise<Response> {
   });
 
   if (!response.ok) {
-    throw new Error("Could not connect to the IPFS endpoint");
+    logger.error(`Failed to fetch IPFS data from ${ipfsUri}`);
+    throw new Error("Failed to fetch IPFS data");
   }
   return response; // .json(), .text(), .blob(), etc.
 }
