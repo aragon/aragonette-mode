@@ -22,16 +22,16 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
   try {
     const proposals = await buildProposalsResponse();
-    // await Promise.all(
-    //   proposals.map(async (proposal) => {
-    //     logger.info(`Upserting proposal ${proposal.id}...`);
-    //     return await proposalRepository.upsertProposal({ ...proposal });
-    //   })
-    // );
-    for (const proposal of proposals) {
-      logger.info(`Upserting proposal ${proposal.id}...`);
-      await proposalRepository.upsertProposal({ ...proposal });
-    }
+    await Promise.all(
+      proposals.map(async (proposal) => {
+        logger.info(`Upserting proposal ${proposal.id}...`);
+        return await proposalRepository.upsertProposal({ ...proposal });
+      })
+    );
+    //for (const proposal of proposals) {
+    //  logger.info(`Upserting proposal ${proposal.id}...`);
+    //  await proposalRepository.upsertProposal({ ...proposal });
+    //}
     // for (const proposal of proposals) {
     //   await proposalRepository.upsertProposal({
     //     ...proposal,

@@ -41,22 +41,23 @@ export async function downloadGitHubFile(url: string) {
 
   if (!Array.isArray(githubData)) githubData = [githubData];
 
-  let result: GithubData[] = [];
-
+  const promises: Promise<GithubData[]>[] = [];
   for (const item of githubData) {
     if (item.type === "file") {
       const fileUrl = item.download_url;
-      const fileResponse = await cachedFetch(fileUrl, {}, 60 * 60);
-
-      result.push({
-        link: item.html_url,
-        data: fileResponse,
-      });
+      promises.push(
+        cachedFetch(fileUrl, {}, 60 * 60).then((res) => [
+          {
+            link: item.html_url,
+            data: res,
+          },
+        ])
+      );
     } else if (item.type === "dir") {
-      const res = await downloadGitHubFile(item.url);
-      result = result.concat(res);
+      promises.push(downloadGitHubFile(item.url));
     }
   }
+  const result: GithubData[] = (await Promise.all(promises)).flat();
 
   return result;
 }
