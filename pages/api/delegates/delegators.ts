@@ -1,8 +1,8 @@
-import { getDelegators } from "@/server/composers/delegates-builder";
+import { getDelegators } from "@/server/services/builders/delegates-builder";
 import { checkParam, checkNullableParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import { type NextApiRequest, type NextApiResponse } from "next/types";
-import { type IDelegator } from "@/features/membership/services/members/domain";
+import { type IDelegator } from "@/server/client/types/domain";
 import { parsePaginationParams } from "@/utils/pagination";
 
 export default async function handler(

@@ -1,5 +1,5 @@
-import { getCouncilMembers } from "@/server/composers/delegates-builder";
-import { type ICouncilMember } from "@/features/membership/services/members/domain";
+import { getCouncilMembers } from "@/server/services/builders/delegates-builder";
+import { type ICouncilMember } from "@/server/client/types/domain";
 import { logger } from "@/services/logger";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";

@@ -1,2 +1,2 @@
-export * from "../../../../server/services/rpc/multisig/proposalStages";
-export * from "../../../../server/services/rpc/multisig/votes";
+export * from "../../../../services/rpc/multisig/proposalStages";
+export * from "../../../../services/rpc/multisig/votes";

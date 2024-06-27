@@ -1,9 +1,5 @@
-import { getFeaturedDelegates } from "@/server/composers/delegates-builder";
-import {
-  parseDelegatesSortBy,
-  parseDelegatesSortDir,
-  type IMemberDataListItem,
-} from "@/features/membership/services/members/domain";
+import { getFeaturedDelegates } from "@/server/services/builders/delegates-builder";
+import { parseDelegatesSortBy, parseDelegatesSortDir, type IMemberDataListItem } from "@/server/client/types/domain";
 import { logger } from "@/services/logger";
 import { checkNullableParam } from "@/server/utils";
 import { parsePaginationParams } from "@/utils/pagination";

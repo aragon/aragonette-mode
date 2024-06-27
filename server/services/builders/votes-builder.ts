@@ -2,11 +2,11 @@ import { PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
 import { type IProposalVote } from "@/features/proposals";
 import { type Vote } from "@/server/models/proposals/types";
 import { type Address } from "viem";
-import { ProposalStages } from "../../features/proposals/services";
-import { getMultisigVotingPower } from "../services/rpc/multisig/utils";
-import { getMultisigApprovalData, getMultisigConfirmationData } from "../services/rpc/multisig/votes";
-import { getSnapshotProposalStage } from "../services/snapshot/proposalStages";
-import { getSnapshotVotes, getSnapshotVotingPower } from "../services/snapshot/votes";
+import { ProposalStages } from "../../../features/proposals/services";
+import { getMultisigVotingPower } from "../../../services/rpc/multisig/utils";
+import { getMultisigApprovalData, getMultisigConfirmationData } from "../../../services/rpc/multisig/votes";
+import { getSnapshotProposalStage } from "../../../services/snapshot/proposalStages";
+import { getSnapshotVotes, getSnapshotVotingPower } from "../../../services/snapshot/votes";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
   switch (stage) {

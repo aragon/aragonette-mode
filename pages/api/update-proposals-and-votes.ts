@@ -1,4 +1,4 @@
-import { buildProposalsResponse } from "@/server/composers/proposal-builder";
+import { buildProposalsResponse } from "@/server/services/builders/proposal-builder";
 import proposalRepository from "@/server/models/proposals";
 import { logger } from "@/services/logger";
 import type { NextApiRequest, NextApiResponse } from "next";

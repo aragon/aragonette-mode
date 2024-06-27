@@ -7,7 +7,7 @@ import {
   type IFetchDelegationsParams,
   type IFetchVotingPowerParams,
 } from "./params";
-import { IDelegatesSortBy, IDelegatesSortDir } from "./domain";
+import { IDelegatesSortBy, IDelegatesSortDir } from "../../../../server/client/types/domain";
 
 export const memberKeys = {
   all: ["members"] as const,

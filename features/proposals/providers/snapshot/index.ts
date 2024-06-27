@@ -1,2 +1,2 @@
-export * from "../../../../server/services/snapshot/proposalStages";
-export * from "../../../../server/services/snapshot/votes";
+export * from "../../../../services/snapshot/proposalStages";
+export * from "../../../../services/snapshot/votes";

@@ -1,5 +1,5 @@
 import { type IProposalVote } from "@/features/proposals";
-import { buildVotesResponse } from "@/server/composers/votes-builder";
+import { buildVotesResponse } from "@/server/services/builders/votes-builder";
 import { checkParam, parseStageParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";

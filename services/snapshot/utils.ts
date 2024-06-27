@@ -1,7 +1,7 @@
 import { PUB_CHAIN } from "@/constants";
-import { ProposalStages, ProposalStatus, StageStatus } from "../../../features/proposals/services";
-import { type ProposalStage, type Vote, type VotingData, type VotingScores } from "../../models/proposals/types";
-import { type SnapshotProposalData, type SnapshotVoteData } from "@/server/services/snapshot/types";
+import { ProposalStages, ProposalStatus, StageStatus } from "../../features/proposals/services";
+import { type ProposalStage, type Vote, type VotingData, type VotingScores } from "../../server/models/proposals/types";
+import { type SnapshotProposalData, type SnapshotVoteData } from "@/services/snapshot/types";
 
 const computeStatus = (proposalState: string, scores: VotingScores[]): [StageStatus, ProposalStatus] => {
   switch (proposalState) {

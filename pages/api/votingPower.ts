@@ -1,5 +1,5 @@
 import { type IVotingPower } from "@/features/proposals";
-import { buildVotingPowerResponse } from "@/server/composers/votes-builder";
+import { buildVotingPowerResponse } from "@/server/services/builders/votes-builder";
 import { checkParam, parseStageParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";

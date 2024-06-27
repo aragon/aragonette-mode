@@ -9,18 +9,18 @@ import {
   SNAPSHOT_SPACE,
 } from "@/constants";
 import { type Address } from "viem";
-import { getSnapshotVotingPower } from "../../features/proposals/providers/snapshot";
+import { getSnapshotVotingPower } from "../../../features/proposals/providers/snapshot";
 import {
   getGitHubCouncilMembersData,
   getGitHubFeaturedDelegatesData,
-} from "../../features/membership/providers/github";
-import { getDelegatesList, getDelegations } from "@/server/services/rpc/delegationWall";
+} from "../../../features/membership/providers/github";
+import { getDelegatesList, getDelegations } from "@/services/rpc/delegationWall";
 import {
   type IDelegator,
   IDelegatesSortBy,
   IDelegatesSortDir,
   type IMemberDataListItem,
-} from "../../features/membership/services/members/domain";
+} from "../../client/types/domain";
 import { paginateArray } from "@/utils/pagination";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {

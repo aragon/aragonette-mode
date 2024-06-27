@@ -1,7 +1,7 @@
 import { type IVoted } from "@/features/proposals";
 import { checkParam, parseStageParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
-import { buildVotesResponse } from "@/server/composers/votes-builder";
+import { buildVotesResponse } from "@/server/services/builders/votes-builder";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
 import proposalRepository from "@/server/models/proposals";

@@ -1,10 +1,7 @@
 import { logger } from "@/services/logger";
-import { type IFetchSnapshotVotingActivity } from "@/server/services/snapshot/params";
-import {
-  type SnapshotVotingActivity,
-  type SnapshotVotingActivityQueryResponse,
-} from "@/server/services/snapshot/types";
-import { getSnapshotVotingActivityData } from "@/server/services/snapshot/fetch";
+import { type IFetchSnapshotVotingActivity } from "@/services/snapshot/params";
+import { type SnapshotVotingActivity, type SnapshotVotingActivityQueryResponse } from "@/services/snapshot/types";
+import { getSnapshotVotingActivityData } from "@/services/snapshot/fetch";
 
 export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActivity) {
   try {

@@ -1,6 +1,6 @@
 import { SNAPSHOT_SPACE } from "@/constants";
-import { getSnapshotVotingActivity } from "@/server/services/snapshot/votingActivity";
-import { parseSnapshotChoice } from "@/server/services/snapshot/utils";
+import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
+import { parseSnapshotChoice } from "@/services/snapshot/utils";
 import proposalRepository from "@/server/models/proposals";
 import { logger } from "@/services/logger";
 import { checkParam } from "@/server/utils";
