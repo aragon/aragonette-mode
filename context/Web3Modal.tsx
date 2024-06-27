@@ -22,7 +22,7 @@ const metadata = {
 export const config = defaultWagmiConfig({
   chains: [PUB_CHAIN],
   projectId: PUB_WALLET_CONNECT_PROJECT_ID,
-  ssr: false,
+  ssr: true,
   metadata,
   auth: {
     email: false,
