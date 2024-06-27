@@ -19,14 +19,17 @@ import {
   type IMemberDataListItem,
 } from "../../client/types/domain";
 import { paginateArray } from "@/utils/pagination";
+import { logger } from "@/services/logger";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
+  logger.info(`Fetching delegators for address: ${address} (page: ${page}, limit: ${limit})...`);
   const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
 
   return paginateArray<IDelegator>(delegations, page, limit);
 };
 
 export const getCouncilMembers = async function () {
+  logger.info("Fetching council members...");
   return getGitHubCouncilMembersData({
     user: GITHUB_USER,
     repo: GITHUB_REPO,
@@ -41,7 +44,13 @@ export const getFeaturedDelegates = async function (
   sortBy: IDelegatesSortBy = IDelegatesSortBy.FEATURED,
   sortDir: IDelegatesSortDir = IDelegatesSortDir.DESC
 ) {
+  logger.info(
+    `Fetching featured delegates (page: ${page}, limit: ${limit}, sortBy: ${sortBy}, sortDir: ${sortDir})...`
+  );
+
+  logger.info(`Fetching contract delegates data...`);
   const contractDelegatesRes = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
+  logger.info(`Contract delegates: ${contractDelegatesRes.length}`);
 
   const contractDelegates = contractDelegatesRes.map((delegate) => {
     return {
@@ -49,6 +58,7 @@ export const getFeaturedDelegates = async function (
     } as IMemberDataListItem;
   });
 
+  logger.info(`Fetching voting power for contract delegates...`);
   const delegatesWithVp = await Promise.all(
     contractDelegates.map(async (delegate) => {
       delegate.votingPower = await getSnapshotVotingPower({
@@ -61,6 +71,7 @@ export const getFeaturedDelegates = async function (
     })
   );
 
+  logger.info(`Fetching featured delegates data...`);
   const featuredDelegates = await getGitHubFeaturedDelegatesData({
     user: GITHUB_USER,
     repo: GITHUB_REPO,

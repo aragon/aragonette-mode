@@ -505,7 +505,9 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
 }
 
 export function buildProposalResponse(proposalStages: ProposalStage[]): IProposal {
-  logger.info(`Building proposal ${proposalStages.find((stage) => stage.pip)?.pip} with stages...`);
+  logger.info(
+    `Building proposal ${proposalStages.find((stage) => stage.pip)?.pip} with ${proposalStages.length} stages...`
+  );
 
   const title = computeTitle(proposalStages);
   const type = computeProposalType(proposalStages);
@@ -564,6 +566,8 @@ export function buildProposalResponse(proposalStages: ProposalStage[]): IProposa
 }
 
 export async function getVotingData(stage: ProposalStages, providerId: string): Promise<VotingData | undefined> {
+  logger.info(`Getting voting data for proposal ${providerId}-${stage}...`);
+
   switch (stage) {
     case ProposalStages.COMMUNITY_VOTING:
       return (await getSnapshotProposalStage({ providerId }))?.voting;
@@ -589,10 +593,20 @@ export async function getVotingData(stage: ProposalStages, providerId: string): 
 export async function buildVotingResponse(
   stage: IProposalStage
 ): Promise<[IVotingData, StageStatus, ProposalStatus] | undefined> {
-  if (!stage.voting) return undefined;
+  logger.info(`Building voting response for stage ${stage.id}...`);
+
+  if (!stage.voting) {
+    logger.info(`No voting data found for stage ${stage.id}.`);
+    return undefined;
+  }
+
+  logger.info(`Getting voting data for stage ${stage.id}...`);
   const voting = await getVotingData(stage.type, stage.voting.providerId);
 
-  if (!voting) return undefined;
+  if (!voting) {
+    logger.info(`No voting data found for stage ${stage.id}.`);
+    return undefined;
+  }
 
   return [buildVotingData(voting), voting.status, voting.overallStatus];
 }

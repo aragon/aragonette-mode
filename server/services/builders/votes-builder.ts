@@ -7,8 +7,10 @@ import { getMultisigVotingPower } from "../../../services/rpc/multisig/utils";
 import { getMultisigApprovalData, getMultisigConfirmationData } from "../../../services/rpc/multisig/votes";
 import { getSnapshotProposalStage } from "../../../services/snapshot/proposalStages";
 import { getSnapshotVotes, getSnapshotVotingPower } from "../../../services/snapshot/votes";
+import { logger } from "@/services/logger";
 
 export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
+  logger.info(`Fetching votes for proposalId (${providerId}-${stage})...`);
   switch (stage) {
     case ProposalStages.DRAFT:
     case ProposalStages.TRANSPARENCY_REPORT: {
@@ -53,6 +55,7 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
 }
 
 export async function getVotingPower(stage: ProposalStages, address: string, providerId?: string): Promise<number> {
+  logger.info(`Fetching voting power for address (${address}) in proposal (${providerId}-${stage})...`);
   switch (stage) {
     case ProposalStages.DRAFT:
     case ProposalStages.TRANSPARENCY_REPORT: {
@@ -87,6 +90,7 @@ const parseVotesData = (data: Vote[]): IProposalVote[] => {
 };
 
 export async function buildVotesResponse(providerId: string, proposalStage: ProposalStages): Promise<IProposalVote[]> {
+  logger.info(`Fetching votes for proposalId (${providerId}-${proposalStage})...`);
   const proposalVotes = await getVotes(providerId, proposalStage);
 
   return parseVotesData(proposalVotes);
@@ -97,5 +101,6 @@ export async function buildVotingPowerResponse(
   address: string,
   proposalId?: string
 ): Promise<number> {
+  logger.info(`Fetching voting power for address (${address}) in proposal (${proposalId}-${stage})...`);
   return getVotingPower(stage, address, proposalId);
 }
