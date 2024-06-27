@@ -5,7 +5,7 @@ import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useEffect, useState } from "react";
-import { votingActivity } from "../../services/members/query-options";
+import { votingActivity } from "../../services/query-options";
 import { MemberVotesDataListItemStructure, type VotingOption } from "./memberVotesDataListItemStructure";
 import { ProposalDetails } from "@/components/nav/routes";
 dayjs.extend(relativeTime);

@@ -16,7 +16,7 @@ import {
   type IVotingData,
   StageStatus,
   ProposalStatus,
-} from "@/features/proposals/services/proposal/domain";
+} from "@/features/proposals/services/domain";
 import { type IPublisher } from "@aragon/ods";
 import {
   getGitHubProposalStagesData,

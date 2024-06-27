@@ -1,6 +1,6 @@
 import { PUB_CHAIN } from "@/constants";
 import { type ProposalStage, type Vote, type VotingData } from "@/server/models/proposals/types";
-import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/proposal/domain";
+import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/domain";
 import { logger } from "@/services/logger";
 import { fetchJsonFromIpfs } from "@/services/ipfs";
 import { fromHex, type Address, type Hex } from "viem";

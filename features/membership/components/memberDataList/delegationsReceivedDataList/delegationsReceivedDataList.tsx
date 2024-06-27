@@ -4,8 +4,8 @@ import { DataList, IconType, MemberDataListItem, type DataListState } from "@ara
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { formatUnits, type Address } from "viem";
-import { generateDataListState } from "../../../../../utils/query";
-import { delegationsList } from "../../../services/members/query-options";
+import { generateDataListState } from "@/utils/query";
+import { delegationsList } from "@/features/membership/services/query-options";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 import classNames from "classnames";
 

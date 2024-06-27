@@ -1,5 +1,5 @@
 import { type IProposal } from "@/features/proposals";
-import { buildVotingResponse } from "@/features/proposals/providers";
+import { buildVotingResponse } from "@/server/services/builders/proposal-builder";
 import proposalRepository, {
   parseProposalSortBy,
   parseProposalSortDir,

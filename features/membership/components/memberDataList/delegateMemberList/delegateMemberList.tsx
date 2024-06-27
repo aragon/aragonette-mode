@@ -4,7 +4,7 @@ import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { delegatesList } from "../../../services/members/query-options";
+import { delegatesList } from "@/features/membership/services/query-options";
 import { generateSortOptions, sortItems } from "./utils";
 import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useAccount } from "wagmi";

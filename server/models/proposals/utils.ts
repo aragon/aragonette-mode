@@ -12,7 +12,7 @@ import {
   ProposalStages,
   ProposalStatus,
   StageStatus,
-} from "../../../features/proposals/services/proposal/domain";
+} from "../../../features/proposals/services/domain";
 
 const serializeType = (type: ProposalStages): StageType => {
   switch (type) {

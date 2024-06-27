@@ -1,6 +1,6 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { type ProposalStages } from "@/features/proposals";
-import { proposalVotes } from "@/features/proposals/services/proposal";
+import { proposalVotes } from "@/features/proposals/services";
 import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, type DataListState } from "@aragon/ods";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";

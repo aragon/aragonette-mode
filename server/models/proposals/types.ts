@@ -4,7 +4,7 @@ import {
   type ProposalStages,
   type IProposalResource,
   type StageStatus,
-} from "@/features/proposals/services/proposal/domain";
+} from "@/features/proposals/services/domain";
 import { type Action } from "@/utils/types";
 
 export type Vote = {

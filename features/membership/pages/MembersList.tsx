@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
 import { CouncilMemberList } from "../components/memberDataList/councilMemberList/councilMemberList";
 import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
-import { councilMemberList, delegatesList } from "../services/members/query-options";
+import { councilMemberList, delegatesList } from "../services/query-options";
 
 const DEFAULT_PAGE_SIZE = 12;
 

@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import React from "react";
-import { type ITransformedStage } from "../../services/proposal/selectors";
+import { type ITransformedStage } from "../../services/selectors";
 import { VotingStage, type IVotingStageProps } from "./votingStage/votingStage";
 
 dayjs.extend(utc);

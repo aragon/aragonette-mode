@@ -9,11 +9,8 @@ import {
   SNAPSHOT_SPACE,
 } from "@/constants";
 import { type Address } from "viem";
-import { getSnapshotVotingPower } from "../../../features/proposals/providers/snapshot";
-import {
-  getGitHubCouncilMembersData,
-  getGitHubFeaturedDelegatesData,
-} from "../../../features/membership/providers/github";
+import { getSnapshotVotingPower } from "@/services/snapshot";
+import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
 import { getDelegatesList, getDelegations } from "@/services/rpc/delegationWall";
 import {
   type IDelegator,

@@ -11,7 +11,7 @@ import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/appro
 import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
 import { type VotingCta } from "../votingBreakdown/types";
-import { StageStatus } from "@/features/proposals/services/proposal/domain";
+import { StageStatus } from "@/features/proposals/services/domain";
 
 export interface IVotingStageDetails {
   censusBlock: number;

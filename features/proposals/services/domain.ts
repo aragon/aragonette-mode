@@ -1,6 +1,6 @@
 import { type IPublisher } from "@aragon/ods";
 import { type Address } from "viem";
-import { type VotingScores } from "../../../../server/models/proposals/types";
+import { type VotingScores } from "../../../server/models/proposals/types";
 import { type IResource } from "@/utils/types";
 
 export enum ProposalStages {

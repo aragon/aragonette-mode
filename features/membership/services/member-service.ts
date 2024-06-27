@@ -2,7 +2,7 @@ import { PUB_API_BASE_URL } from "@/constants";
 import { type IDelegateVotingActivity } from "@/pages/api/delegates/votingActivity";
 import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type ICouncilMember, type IMemberDataListItem } from "../../../../server/client/types/domain";
+import { type ICouncilMember, type IMemberDataListItem } from "../../../server/client/types/domain";
 import type {
   IFetchCouncilMembersParams,
   IFetchDelegatesParams,

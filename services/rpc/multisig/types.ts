@@ -3,7 +3,7 @@ import {
   type ProposalStatus,
   type StageStatus,
   type IProposalResource,
-} from "@/features/proposals/services/proposal/domain";
+} from "@/features/proposals/services/domain";
 import { type Action } from "@/utils/types";
 import { type Address } from "viem";
 

@@ -1,6 +1,6 @@
 import { Card, CardEmptyState, Heading, IconType, Link } from "@aragon/ods";
 import React from "react";
-import { type IProposalResource } from "../../services/proposal/domain";
+import { type IProposalResource } from "../../services/domain";
 
 interface ICardResourcesProps {
   displayLink?: boolean;

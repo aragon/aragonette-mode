@@ -8,7 +8,7 @@ import {
   type IProposalResource,
   ProposalStatus,
   StageStatus,
-} from "../../features/proposals/services/proposal/domain";
+} from "../../features/proposals/services/domain";
 import yaml from "js-yaml";
 
 type MarkdownLink = {

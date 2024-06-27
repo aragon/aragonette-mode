@@ -27,7 +27,7 @@ import {
   canVote as canVoteQueryOptions,
   proposal as proposalQueryOptions,
   voted as votedQueryOptions,
-} from "../services/proposal/query-options";
+} from "../services/query-options";
 
 export const PENDING_PROPOSAL_POLLING_INTERVAL = 1000; // 1 sec
 export const ACTIVE_PROPOSAL_POLLING_INTERVAL = 1000 * 60 * 5; // 5 mins

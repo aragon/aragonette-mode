@@ -1,5 +1,5 @@
 import { type IProposal } from "@/features/proposals";
-import { buildLiveProposalResponse } from "@/features/proposals/providers";
+import { buildLiveProposalResponse } from "@/server/services/builders/proposal-builder";
 import proposalRepository from "@/server/models/proposals";
 import { checkParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
