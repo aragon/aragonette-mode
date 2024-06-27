@@ -4,16 +4,8 @@ import { type SnapshotVotingActivity, type SnapshotVotingActivityQueryResponse }
 import { getSnapshotVotingActivityData } from "@/services/snapshot/fetch";
 
 export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActivity) {
-  try {
-    logger.info(`Fetching Snapshot voting activity for delegate: ${params.voter}...`);
-    const response = await getSnapshotVotingActivityData(params);
-
-    logger.info(`Returning Snapshot voting activity...`);
-    return parseVotingActivity(response);
-  } catch (err) {
-    logger.error(`Failed to fetch Snapshot voting activity:`, err);
-    throw err;
-  }
+  const response = await getSnapshotVotingActivityData(params);
+  return parseVotingActivity(response);
 }
 
 function parseVotingActivity(data: SnapshotVotingActivityQueryResponse): SnapshotVotingActivity[] {
