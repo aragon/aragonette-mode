@@ -8,16 +8,18 @@ import { useEffect, useState } from "react";
 import { votingActivity } from "../../services/query-options";
 import { MemberVotesDataListItemStructure, type VotingOption } from "./memberVotesDataListItemStructure";
 import { ProposalDetails } from "@/components/nav/routes";
+import { type ProposalStages } from "@/features/proposals";
 dayjs.extend(relativeTime);
 
 const DEFAULT_PAGE_SIZE = 3;
 
 interface IMemberVotesDataListProps {
   address: string;
+  stage: ProposalStages;
 }
 
 export const MemberVotesDataList: React.FC<IMemberVotesDataListProps> = (props) => {
-  const { address } = props;
+  const { address, stage } = props;
 
   const {
     data,
@@ -30,7 +32,8 @@ export const MemberVotesDataList: React.FC<IMemberVotesDataListProps> = (props) 
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
-    ...votingActivity({ address }),
+    ...votingActivity({ address, stage }),
+    enabled: !!address && !!stage,
     placeholderData: keepPreviousData,
   });
 

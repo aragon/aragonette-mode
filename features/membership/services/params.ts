@@ -11,6 +11,7 @@ export interface IFetchDelegatesParams extends IFetchPaginatedParams {
 
 export interface IFetchVotingActivityParams extends IFetchPaginatedParams {
   address: string;
+  stage: ProposalStages;
 }
 
 export interface IFetchDelegationsParams extends IFetchPaginatedParams {

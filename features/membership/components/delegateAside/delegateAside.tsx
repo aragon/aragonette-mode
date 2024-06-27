@@ -6,12 +6,12 @@ import React from "react";
 import { type Address } from "viem";
 import { useEnsName } from "wagmi";
 
-interface IDelegateAsideProps {
+interface IProfileAsideProps {
   address: string;
   resources?: IResource[];
 }
 
-export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
+export const ProfileAside: React.FC<IProfileAsideProps> = (props) => {
   const { address, resources } = props;
 
   const { data: ensName } = useEnsName({ chainId: PUB_CHAIN.id, address: address as Address });
@@ -22,7 +22,7 @@ export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
   const showResources = !!resources && resources.length > 0;
 
   return (
-    <aside className="flex max-w-[320px] flex-1 flex-col gap-y-20">
+    <>
       <div className="flex flex-col gap-y-1">
         <Heading size="h3">Details</Heading>
         <dl className="divide-y divide-neutral-100">
@@ -30,7 +30,7 @@ export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
             <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
               Address
             </dt>
-            <dd className="size-full text-base leading-tight text-neutral-500">
+            <dd className="flex size-full justify-end text-base leading-tight text-neutral-500">
               <Link iconRight={IconType.LINK_EXTERNAL} target="_blank" rel="noopener" href={explorerUrl}>
                 {formattedAddress}
               </Link>
@@ -41,7 +41,7 @@ export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
               <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
                 Ens
               </dt>
-              <dd className="size-full text-base leading-tight text-neutral-500">
+              <dd className="flex size-full justify-end text-base leading-tight text-neutral-500">
                 <Link iconRight={IconType.LINK_EXTERNAL} target="_blank" rel="noopener" href={explorerUrl}>
                   {ensName}
                 </Link>
@@ -67,6 +67,6 @@ export const DelegateAside: React.FC<IDelegateAsideProps> = (props) => {
           ))}
         </div>
       )}
-    </aside>
+    </>
   );
 };

@@ -5,21 +5,30 @@ import {
   GITHUB_USER,
   PUB_CHAIN,
   PUB_DELEGATION_CONTRACT_ADDRESS,
+  PUB_MULTISIG_ADDRESS,
   PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
+import { ProposalStages } from "@/features/proposals";
 import { type Address } from "viem";
 import { getSnapshotVotingPower } from "@/services/snapshot";
 import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
-import { getDelegatesList, getDelegations } from "@/services/rpc/delegationWall";
 import {
-  type IDelegator,
-  IDelegatesSortBy,
-  IDelegatesSortDir,
-  type IMemberDataListItem,
-} from "../../client/types/domain";
+  getDelegateMessage,
+  getDelegatesList,
+  getDelegations,
+  getMultisigVotingActivity,
+} from "@/services/rpc/delegationWall";
 import { paginateArray } from "@/utils/pagination";
 import { logger } from "@/services/logger";
+import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
+import {
+  IDelegatesSortBy,
+  IDelegatesSortDir,
+  type IDelegator,
+  type IMemberDataListItem,
+  type IProviderVotingActivity,
+} from "@/server/client/types/domain";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   logger.info(`Fetching delegators for address: ${address} (page: ${page}, limit: ${limit})...`);
@@ -35,6 +44,24 @@ export const getCouncilMembers = async function () {
     repo: GITHUB_REPO,
     council_filename: GITHUB_COUNCIL_FILENAME,
   });
+};
+
+export const getVotingActivity = async function (
+  address: Address,
+  stage: ProposalStages
+): Promise<IProviderVotingActivity[]> {
+  switch (stage) {
+    case ProposalStages.COMMUNITY_VOTING:
+      return getSnapshotVotingActivity({
+        space: SNAPSHOT_SPACE,
+        voter: address,
+      });
+    case ProposalStages.COUNCIL_APPROVAL:
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return getMultisigVotingActivity(address, PUB_MULTISIG_ADDRESS);
+    default:
+      return [];
+  }
 };
 
 // TODO: Store in the DB or replace with delegates from App
@@ -91,7 +118,16 @@ export const getFeaturedDelegates = async function (
     };
   });
 
-  return paginateArray(delegates, page, limit);
+  const identifiers = await Promise.all(
+    delegates.map((delegate) => getDelegateMessage(PUB_CHAIN.id, delegate.address as Address))
+  );
+
+  const delegatesWithIdentifiers = delegates.map((d, index) => ({
+    ...d,
+    name: d.name ?? identifiers[index].identifier,
+  }));
+
+  return paginateArray(delegatesWithIdentifiers, page, limit);
 };
 
 // Order delegates by sortBy following this order: featuredDelegates, then votingPower and delegationCount

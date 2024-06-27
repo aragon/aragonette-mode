@@ -1,6 +1,11 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type IProposal, StageOrder, ProposalStatus } from "../../../features/proposals/services/domain";
+import {
+  type IProposal,
+  StageOrder,
+  ProposalStatus,
+  ProposalStages,
+} from "../../../features/proposals/services/domain";
 import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 import { logger } from "@/services/logger";
 import { type StageType } from "@prisma/client";
@@ -71,6 +76,40 @@ export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
       return [ProposalStatus.EXPIRED];
     default:
       throw new Error(`Invalid status value: ${value}`);
+  }
+};
+
+export const parseStageType = (stage: StageType): ProposalStages => {
+  switch (stage) {
+    case "DRAFT":
+      return ProposalStages.DRAFT;
+    case "TRANSPARENCY_REPORT":
+      return ProposalStages.TRANSPARENCY_REPORT;
+    case "COMMUNITY_VOTING":
+      return ProposalStages.COMMUNITY_VOTING;
+    case "COUNCIL_APPROVAL":
+      return ProposalStages.COUNCIL_APPROVAL;
+    case "COUNCIL_CONFIRMATION":
+      return ProposalStages.COUNCIL_CONFIRMATION;
+    default:
+      throw new Error(`Invalid stage value: ${stage}`);
+  }
+};
+
+export const serializeStageType = (stage: ProposalStages): StageType => {
+  switch (stage) {
+    case ProposalStages.DRAFT:
+      return "DRAFT";
+    case ProposalStages.TRANSPARENCY_REPORT:
+      return "TRANSPARENCY_REPORT";
+    case ProposalStages.COMMUNITY_VOTING:
+      return "COMMUNITY_VOTING";
+    case ProposalStages.COUNCIL_APPROVAL:
+      return "COUNCIL_APPROVAL";
+    case ProposalStages.COUNCIL_CONFIRMATION:
+      return "COUNCIL_CONFIRMATION";
+    default:
+      throw new Error(`Invalid stage value: ${stage}`);
   }
 };
 
@@ -169,10 +208,11 @@ class ProposalRepository {
     }
   }
 
-  async getProposalByStage(providerId: string, stageType: StageType) {
+  async getProposalByStage(providerId: string, stageType: ProposalStages) {
     try {
+      const stageDbType = serializeStageType(stageType);
       const stage = await PrismaDatabase.stage.findFirst({
-        where: { type: stageType, voting: { contains: `"providerId":"${providerId}"` } },
+        where: { type: stageDbType, voting: { contains: `"providerId":"${providerId}"` } },
       });
 
       if (stage == null) {

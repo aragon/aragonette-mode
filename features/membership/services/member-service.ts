@@ -1,8 +1,7 @@
 import { PUB_API_BASE_URL } from "@/constants";
-import { type IDelegateVotingActivity } from "@/pages/api/delegates/votingActivity";
 import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type ICouncilMember, type IMemberDataListItem } from "../../../server/client/types/domain";
+import { type IVoterVotingActivity, type ICouncilMember, type IMemberDataListItem } from "@/server/client/types/domain";
 import type {
   IFetchCouncilMembersParams,
   IFetchDelegatesParams,
@@ -15,7 +14,7 @@ import { type IVotingPower, printStageParam } from "@/features/proposals";
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
 
-  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<IMemberDataListItem[]> {
+  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<ICouncilMember[]> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/councilMembers`, params);
     const response = await fetch(url);
     const parsed: ICouncilMember[] = await response.json();
@@ -29,11 +28,14 @@ class MemberService {
     return parsed;
   }
 
-  async fetchVotingActivity(params: IFetchVotingActivityParams): Promise<IPaginatedResponse<IDelegateVotingActivity>> {
-    const url = encodeSearchParams(`${this.endpoint}/votingActivity`, params);
+  async fetchVotingActivity(params: IFetchVotingActivityParams): Promise<IPaginatedResponse<IVoterVotingActivity>> {
+    const url = encodeSearchParams(`${PUB_API_BASE_URL}/votingActivity`, {
+      ...params,
+      stage: printStageParam(params.stage),
+    });
 
     const response = await fetch(url);
-    const parsed: IDelegateVotingActivity[] = await response.json();
+    const parsed: IVoterVotingActivity[] = await response.json();
 
     return {
       data: parsed,

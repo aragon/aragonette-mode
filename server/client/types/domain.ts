@@ -14,6 +14,7 @@ export type IDelegator = {
 export type ICouncilMember = {
   name?: string;
   address: string;
+  bio?: string;
 };
 
 export enum IDelegatesSortBy {
@@ -55,4 +56,21 @@ export const parseDelegatesSortDir = (value?: string): IDelegatesSortDir => {
   } else {
     throw new Error(`Invalid sort direction value: ${value}`);
   }
+};
+
+export type IProviderVotingActivity = {
+  id: string;
+  choice: string;
+  createdAt: string;
+  providerId: string;
+};
+
+export type IVoterVotingActivity = {
+  id: string;
+  choice: string;
+  createdAt: string;
+  proposal: {
+    id: string;
+    title: string;
+  };
 };

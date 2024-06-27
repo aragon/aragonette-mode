@@ -1,15 +1,15 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
+import { isAddressEqual } from "@/utils/evm";
 import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { delegatesList } from "@/features/membership/services/query-options";
-import { generateSortOptions, sortItems } from "./utils";
-import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
 import { useAccount } from "wagmi";
-import { isAddressEqual } from "@/utils/evm";
+import { delegatesList } from "../../../services/query-options";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
+import { generateSortOptions, sortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 12;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -134,11 +134,12 @@ export const DelegateMemberList: React.FC<IDelegateMemberListProps> = ({ onAnnou
         {delegatesQueryData?.delegates?.map((delegate) => (
           <MemberDataListItemStructure
             votingPower={delegate.votingPower}
-            address={delegate.address}
             isDelegate={isAddressEqual(yourDelegate, delegate.address)}
             delegationCount={delegate.delegationCount}
-            href={MemberProfile.getPath(delegate.address)}
             key={delegate.address}
+            href={MemberProfile.getPath(delegate.address)}
+            name={delegate.name}
+            address={delegate.address}
           />
         ))}
       </DataList.Container>

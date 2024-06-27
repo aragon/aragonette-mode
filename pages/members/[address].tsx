@@ -1,5 +1,5 @@
-import { DelegateProfile } from "@/features/membership/pages/DelegateProfile";
+import { MemberProfile } from "@/features/membership/pages/MemberProfile";
 
-export default function MemberProfile() {
-  return <DelegateProfile />;
+export default function Profile() {
+  return <MemberProfile />;
 }

@@ -1,6 +1,3 @@
-import { http, createConfig } from "wagmi";
-import { injected } from "wagmi/connectors";
-import { walletConnect } from "wagmi/connectors";
 import {
   PUB_APP_DESCRIPTION,
   PUB_APP_NAME,
@@ -10,6 +7,8 @@ import {
   PUB_WALLET_ICON,
   PUB_WEB3_ENDPOINT,
 } from "@/constants";
+import { createConfig, http } from "wagmi";
+import { injected, walletConnect } from "wagmi/connectors";
 
 // wagmi config
 const metadata = {

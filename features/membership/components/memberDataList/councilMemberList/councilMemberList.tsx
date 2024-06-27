@@ -1,4 +1,4 @@
-import { PUB_CHAIN } from "@/constants";
+import { MemberProfile } from "@/components/nav/routes";
 import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
@@ -58,13 +58,7 @@ export const CouncilMemberList: React.FC = () => {
         className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3"
       >
         {councilMemberListData?.map((member) => (
-          <MemberDataListItemStructure
-            key={member.address}
-            href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${member.address}`}
-            target="_blank"
-            rel="noopener"
-            {...member}
-          />
+          <MemberDataListItemStructure key={member.address} href={MemberProfile.getPath(member.address)} {...member} />
         ))}
       </DataList.Container>
       {showPagination && <DataList.Pagination />}
