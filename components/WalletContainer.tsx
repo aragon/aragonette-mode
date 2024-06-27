@@ -1,4 +1,4 @@
-import { PUB_ALCHEMY_API_KEY } from "@/constants";
+import { PUB_ENS_CHAIN, PUB_WEB3_ENDPOINT } from "@/constants";
 import { formatHexString } from "@/utils/evm";
 import { MemberAvatar } from "@aragon/ods";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -6,17 +6,13 @@ import classNames from "classnames";
 import { createClient, http } from "viem";
 import { normalize } from "viem/ens";
 import { createConfig, useAccount, useEnsAvatar, useEnsName } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
 
-const config = createConfig({
-  chains: [mainnet, sepolia],
-  ssr: true,
+export const config = createConfig({
+  chains: [PUB_ENS_CHAIN],
   client({ chain }) {
     return createClient({
       chain,
-      // TODO: remove sepolia
-      // transport: http(`https://eth-mainnet.g.alchemy.com/v2/${PUB_ALCHEMY_API_KEY}`, { batch: true }),
-      transport: http(`https://eth-sepolia.g.alchemy.com/v2/${PUB_ALCHEMY_API_KEY}`, { batch: true }),
+      transport: http(PUB_WEB3_ENDPOINT, { batch: true }),
     });
   },
 });
@@ -28,14 +24,14 @@ const WalletContainer = () => {
 
   const { data: ensName } = useEnsName({
     config,
-    chainId: sepolia.id,
+    chainId: PUB_ENS_CHAIN.id,
     address: address,
   });
 
   const { data: ensAvatar } = useEnsAvatar({
     config,
     name: normalize(ensName!),
-    chainId: sepolia.id,
+    chainId: PUB_ENS_CHAIN.id,
     query: { enabled: !!ensName },
   });
 
