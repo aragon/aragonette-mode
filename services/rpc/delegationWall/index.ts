@@ -5,10 +5,10 @@ import { PUB_DELEGATION_CONTRACT_ADDRESS } from "@/constants";
 import { config } from "@/context/Web3Modal";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { logger } from "@/services/logger";
-import { fetchJsonFromIpfs } from "@/utils/ipfs";
+import { fetchJsonFromIpfs } from "@/services/ipfs";
 import { getPublicClient, readContract } from "@wagmi/core";
 import { decodeEventLog, getAbiItem, type Address } from "viem";
-import { type IProviderVotingActivity } from "../../services/members/domain";
+import { type IProviderVotingActivity } from "@/server/client/types/domain";
 
 export const getDelegatesList = async function (chain: number, contractAddress: Address): Promise<Address[]> {
   return (await readContract(config, {

@@ -11,5 +11,5 @@ export const getSnapshotVotingPower: IProposalVotingPowerProvider = async functi
   providerId?: string;
   voter: string;
 }) {
-  return getSnapshotVotingPowerData(params).then((res) => res.vp);
+  return getSnapshotVotingPowerData(params).then((res) => res);
 };

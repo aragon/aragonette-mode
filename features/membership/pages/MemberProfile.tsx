@@ -12,7 +12,7 @@ import { DelegationStatement } from "../components/delegationStatement/delegatio
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
-import { councilMemberList } from "../services/members/query-options";
+import { councilMemberList } from "../services/query-options";
 import { ProposalStages } from "@/features/proposals";
 
 export const MemberProfile = () => {

@@ -58,7 +58,7 @@ export const getSnapshotVotingPowerData = async function (params: {
     `Fetching Snapshot voting power for delegate (${params.voter}) ${params.providerId ? " for proposalId (" + params.providerId + ")" : ""}...`
   );
   return requestProposalData(snapshotVotingPowerQuery(params.space, params.voter, params.providerId)).then(
-    (res) => res.data.vp as SnapshotVotingPowerData
+    (res) => (res.data.vp as SnapshotVotingPowerData)?.vp ?? 0
   );
 };
 
