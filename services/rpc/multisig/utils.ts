@@ -1,6 +1,5 @@
 import { PUB_CHAIN } from "@/constants";
 import { type ProposalStage, type Vote, type VotingData } from "@/server/models/proposals/types";
-import { type VotesData } from "@/services/rpc/multisig/types2";
 import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/proposal/domain";
 import { logger } from "@/services/logger";
 import { fetchJsonFromIpfs } from "@/services/ipfs";
@@ -10,7 +9,8 @@ import {
   type MultisigProposal,
   type PrimaryMetadata,
   type SecondaryMetadata,
-} from "./types2";
+  type VotesData,
+} from "./types";
 import {
   getApproveLogs,
   getBlockTimestamp,

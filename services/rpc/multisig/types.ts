@@ -18,6 +18,23 @@ export type ProposalCreatedLogResponse = {
   proposalId: bigint;
 };
 
+export type PrimaryMetadata = {
+  title: string;
+  description: string;
+  summary: string;
+  resources: Array<{
+    name: string;
+    url: string;
+  }>;
+};
+
+export type SecondaryMetadata = {
+  resources: Array<{
+    name: string;
+    url: string;
+  }>;
+};
+
 export type ProposalBindings = {
   githubId: string | undefined;
   snapshotId: string | undefined;
@@ -51,12 +68,40 @@ export type ProposalData = {
   actions: Array<Action>;
   allowFailureMap: bigint;
   executed: boolean;
-
-  // new multisig data
   primaryMetadata: string;
   secondaryMetadata: string | undefined;
   firstDelayStartTimestamp: bigint | null;
   confirmations: number;
+};
+
+export type MultiSigProposalVotingData = {
+  providerId: string;
+  startDate: string;
+  endDate: string;
+  approvals: number;
+  quorum: number;
+  snapshotBlock: string;
+  status: StageStatus;
+  overallStatus: ProposalStatus;
+};
+
+export type MultisigProposal = {
+  stageType: ProposalStages;
+  title: string;
+  summary: string;
+  description: string;
+  creator: string;
+  createdAt: string;
+  resources: IProposalResource[];
+  link: string;
+  status: StageStatus;
+  overallStatus: ProposalStatus;
+  voting?: MultiSigProposalVotingData;
+  actions: Action[];
+  isEmergency: boolean;
+  githubId?: string;
+  transparencyReportId?: string;
+  snapshotId?: string;
 };
 
 export type ApprovedLogResponse = {
