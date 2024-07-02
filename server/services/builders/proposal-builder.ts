@@ -495,12 +495,14 @@ function buildProposalStageResponse(proposalStages: ProposalStage[]): IProposalS
  * @returns an array of fully constructed proposal objects.
  */
 export async function buildProposalsResponse(): Promise<IProposal[]> {
-  logger.info(`Fetching all proposals...`);
-
+  logger.info(`Fetching all proposal stages...`);
   const proposalStages = await getAllProposalsStages();
-  const allMatchedProposalStages = await matchProposalStages(proposalStages);
+  logger.info(`All proposal stages fetched successfully.`);
 
-  logger.info(`Proposals fetched successfully.`);
+  logger.info(`Matching proposal stages...`);
+  const allMatchedProposalStages = await matchProposalStages(proposalStages);
+  logger.info(`Proposal stages matched successfully.`);
+
   return allMatchedProposalStages.map(buildProposalResponse);
 }
 
@@ -626,7 +628,7 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
   // return the stored proposal if it is inactive or not onchain
   if (!onchainProposalId || !activeProposal) {
     logger.info(`Proposal inactive or offchain, returning stored proposal ${proposal.id}`);
-    return proposal;
+    return null;
   }
 
   // get stages, build proposal and add voting responses
