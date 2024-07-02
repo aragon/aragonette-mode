@@ -2,7 +2,13 @@ import { type IProposalVotesProvider, type IProposalVotingPowerProvider } from "
 import { getSnapshotVotesData, getSnapshotVotingPowerData } from "@/services/snapshot/fetch";
 import { parseSnapshotVoteData } from "./utils";
 
-export const getSnapshotVotes: IProposalVotesProvider = async function (params: { providerId: string }) {
+type GetSnapshotVotesParams = {
+  space?: string;
+  providerId?: string;
+  voter?: string;
+};
+
+export const getSnapshotVotes: IProposalVotesProvider = async function (params: GetSnapshotVotesParams) {
   return getSnapshotVotesData(params).then(parseSnapshotVoteData);
 };
 

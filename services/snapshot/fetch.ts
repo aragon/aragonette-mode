@@ -12,41 +12,78 @@ import {
   type SnapshotProposalData,
   SnapshotVotingActivityQueryResponse,
 } from "./types";
-import { IFetchSnapshotVotingActivity } from "./params";
 import { logger } from "../logger";
 
-const requestProposalData = async function (query: string) {
+const requestSnapshotData = async function <T>(
+  func: string,
+  query: string,
+  variables?: Record<string, any>
+): Promise<T> {
   try {
     return fetch(SNAPSHOT_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
-    }).then((response) => response.json());
+      body: JSON.stringify({ query, variables }),
+    })
+      .then((response) => response.json())
+      .then((res) => res.data[func] as T);
   } catch (err) {
-    logger.error(`Failed to fetch Snapshot. URL: ${SNAPSHOT_API_URL}, Query: ${query}, Err:`, err);
+    logger.error(
+      `Failed to fetch Snapshot. URL: ${SNAPSHOT_API_URL}, Query: ${query}, Vars: ${JSON.stringify(variables)} Err:`,
+      JSON.stringify(err)
+    );
     throw new Error(`Failed to fetch Snapshot`);
   }
 };
 
+const requestPaginatedSnapshotData = async function <T>(
+  func: string,
+  query: string,
+  variables?: Record<string, any>
+): Promise<T[]> {
+  const data: T[][] = [];
+  let skip = 0;
+  const pageSize = 1000;
+
+  do {
+    const variablesWithPagination = { ...variables, skip, first: pageSize };
+
+    const pageData = await requestSnapshotData<T[]>(func, query, variablesWithPagination);
+
+    skip += pageSize;
+    data.push(pageData);
+  } while (data.length % pageSize === 0);
+
+  return data.flat();
+};
+
 export const getSnapshotProposalStagesData = async function (params: { space: string }) {
   logger.info(`Fetching Snapshot proposal list for space (${params.space})...`);
-  return requestProposalData(snapshotProposalsQuery(params.space)).then(
-    (res) => res.data.proposals as SnapshotProposalData[]
-  );
+  return requestPaginatedSnapshotData<SnapshotProposalData>("proposals", snapshotProposalsQuery, {
+    space: params.space,
+  });
 };
 
 export const getSnapshotProposalStageData = async function (params: { providerId: string }) {
   logger.info(`Fetching Snapshot proposal for proposalId (${params.providerId})...`);
-  return requestProposalData(snapshotProposalQuery(params.providerId)).then(
-    (res) => res.data.proposal as SnapshotProposalData | null
-  );
+  return requestSnapshotData<SnapshotProposalData | null>("proposal", snapshotProposalQuery, { id: params.providerId });
 };
 
-export const getSnapshotVotesData = async function (params: { providerId: string }) {
+type IGetSnapshotVotesDataParams = {
+  space?: string;
+  providerId?: string;
+  voter?: string;
+};
+
+export const getSnapshotVotesData = async function (params: IGetSnapshotVotesDataParams) {
   logger.info(`Fetching Snapshot votes for proposalId (${params.providerId})...`);
-  return requestProposalData(snapshotVotesQuery(params.providerId)).then((res) => res.data.votes as SnapshotVoteData[]);
+  return requestPaginatedSnapshotData<SnapshotVoteData>("votes", snapshotVotesQuery, {
+    space: params.space,
+    proposal: params.providerId,
+    voter: params.voter,
+  });
 };
 
 export const getSnapshotVotingPowerData = async function (params: {
@@ -57,14 +94,24 @@ export const getSnapshotVotingPowerData = async function (params: {
   logger.info(
     `Fetching Snapshot voting power for delegate (${params.voter}) ${params.providerId ? " for proposalId (" + params.providerId + ")" : ""}...`
   );
-  return requestProposalData(snapshotVotingPowerQuery(params.space, params.voter, params.providerId)).then(
-    (res) => (res.data.vp as SnapshotVotingPowerData)?.vp ?? 0
-  );
+  return requestSnapshotData<SnapshotVotingPowerData>("vp", snapshotVotingPowerQuery, {
+    space: params.space,
+    voter: params.voter,
+    proposal: params.providerId,
+  }).then((res) => res?.vp ?? 0);
 };
 
-export async function getSnapshotVotingActivityData(params: IFetchSnapshotVotingActivity) {
+export interface IGetSnapshotVotingActivityDataParams {
+  space?: string;
+  providerId?: string;
+  voter?: string;
+}
+
+export async function getSnapshotVotingActivityData(params: IGetSnapshotVotingActivityDataParams) {
   logger.info(`Fetching Snapshot voting activity for delegate (${params.voter})...`);
-  return requestProposalData(/*<SnapshotVotingActivityQueryResponse>*/ snapshotVotingActivityQuery(params)).then(
-    (res) => res.data.votes as SnapshotVotingActivityQueryResponse
-  );
+  return requestPaginatedSnapshotData<SnapshotVotingActivityQueryResponse>("votes", snapshotVotingActivityQuery, {
+    space: params.space,
+    proposal: params.providerId,
+    voter: params.voter,
+  });
 }

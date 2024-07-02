@@ -1,8 +1,14 @@
-import { type IFetchSnapshotVotingActivity } from "./params";
-
-export const snapshotProposalsQuery = (space: string) => `
-  query Proposals {
-    proposals(first: 20, skip: 0, where: {space: "${space}"}, orderBy: "created", orderDirection: desc) {
+export const snapshotProposalsQuery = `
+  query Proposals($space: String!, $first: Int = 1000, $skip: Int = 0) {
+    proposals(
+      first: $first,
+      skip: $skip,
+      where: {
+        space: $space
+      },
+      orderBy: "created",
+      orderDirection: desc
+    ) {
       id
       title
       body
@@ -26,9 +32,9 @@ export const snapshotProposalsQuery = (space: string) => `
   }
 `;
 
-export const snapshotProposalQuery = (id: string) => `
-  query Proposal {
-    proposal(id: "${id}") {
+export const snapshotProposalQuery = `
+  query Proposal($id: String!) {
+    proposal(id: $id) {
       id
       title
       body
@@ -52,10 +58,24 @@ export const snapshotProposalQuery = (id: string) => `
   }
 `;
 
-export const snapshotVotesQuery = (proposal: string) => `
-  query Votes {
-    votes(first: 1000, where: {proposal: "${proposal}"}) {
+export const snapshotVotesQuery = `
+  query Votes($space: String!, $proposal: String, $voter: String, $first: Int = 1000, $skip: Int = 0) {
+    votes(
+      first: $first,
+      skip: $skip,
+      where: {
+        space: $space,
+        proposal: $proposal,
+        voter: "$voter
+      }),
+      orderBy: "created",
+      orderDirection: desc
+    {
       id
+      proposal {
+        id
+        choices
+      }
       voter
       created
       choice
@@ -66,38 +86,32 @@ export const snapshotVotesQuery = (proposal: string) => `
   }
 `;
 
-export const snapshotVotingPowerQuery = (space: string, voter: string, proposal?: string) =>
-  proposal
-    ? `
-    query VotingPower {
-      vp(space: "${space}", proposal: "${proposal}", voter: "${voter}") {
-        vp
-      }
-    }`
-    : `query VotingPower {
-      vp(space: "${space}", voter: "${voter}") {
-        vp
-      }
-    }`;
-
-export const snapshotVotingActivityQuery = (params: IFetchSnapshotVotingActivity) => `
-    query Votes {
-      votes(
-        first: 1000,
-        where: {
-          space: "${params.space}",
-          voter: "${params.voter}"
-        },
-        orderBy: "created",
-        orderDirection: desc
-      ) {
-        id
-        proposal {
-          id
-          choices
-        }
-        choice
-        created
-      }
+export const snapshotVotingPowerQuery = `
+  query VotingPower($space: String!, $voter: String!, $proposal: String) {
+    vp(space: $space, voter: $voter, proposal: $proposal) {
+      vp
     }
-    `;
+  }`;
+
+export const snapshotVotingActivityQuery = `
+  query Votes($space: String!, $voter: String!, $first: Int = 1000, $skip: Int = 0) {
+    votes(
+      first: $first,
+      skip: $skip,
+      where: {
+        space: $space,
+        voter: $voter
+      },
+      orderBy: "created",
+      orderDirection: desc
+    ) {
+      id
+      proposal {
+        id
+        choices
+      }
+      choice
+      created
+    }
+  }
+  `;
