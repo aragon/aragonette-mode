@@ -40,6 +40,20 @@ export interface IFetchPaginatedParams {
   limit?: number;
 }
 
+export interface IInfiniteDataResponse<T> {
+  data: T[];
+  pagination: {
+    hasNextPage: boolean;
+    total?: number;
+    cursor?: string;
+  };
+}
+
+export interface IFetchInfinitePaginatedParams {
+  limit?: number;
+  cursor?: string;
+}
+
 export interface IError {
   error: {
     message: string;
