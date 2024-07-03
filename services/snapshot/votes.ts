@@ -3,7 +3,7 @@ import { type IProposalVotesProvider, type IProposalVotingPowerProvider } from "
 import { parseSnapshotVoteData } from "./utils";
 
 type GetSnapshotVotesParams = {
-  space?: string;
+  space: string;
   providerId?: string;
   voter?: string;
 };

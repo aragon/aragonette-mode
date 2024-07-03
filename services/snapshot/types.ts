@@ -24,6 +24,10 @@ export type SnapshotVoteData = {
   id: string;
   voter: string;
   created: number;
+  proposal: {
+    id: string;
+    choices: string[];
+  };
   choice: number;
   vp: string;
   vp_state: string;
@@ -32,18 +36,6 @@ export type SnapshotVoteData = {
 
 export type SnapshotVotingPowerData = {
   vp: number;
-};
-
-export type SnapshotVotingActivityQueryResponse = {
-  votes: Array<{
-    id: string;
-    proposal: {
-      id: string;
-      choices: string[];
-    };
-    choice: string;
-    created: string;
-  }>;
 };
 
 export type SnapshotVotingActivity = {

@@ -92,26 +92,3 @@ export const snapshotVotingPowerQuery = `
       vp
     }
   }`;
-
-export const snapshotVotingActivityQuery = `
-  query Votes($space: String!, $voter: String!, $first: Int = 1000, $skip: Int = 0) {
-    votes(
-      first: $first,
-      skip: $skip,
-      where: {
-        space: $space,
-        voter: $voter
-      },
-      orderBy: "created",
-      orderDirection: desc
-    ) {
-      id
-      proposal {
-        id
-        choices
-      }
-      choice
-      created
-    }
-  }
-  `;
