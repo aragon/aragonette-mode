@@ -1,17 +1,6 @@
-import { SNAPSHOT_API_URL } from "@/constants";
-import {
-  snapshotVotesQuery,
-  snapshotVotingPowerQuery,
-  snapshotProposalsQuery,
-  snapshotProposalQuery,
-  snapshotVotingActivityQuery,
-} from "./gql";
-import {
-  type SnapshotVoteData,
-  type SnapshotVotingPowerData,
-  type SnapshotProposalData,
-  SnapshotVotingActivityQueryResponse,
-} from "./types";
+import { SNAPSHOT_API_URL, SNAPSHOT_API_KEY } from "@/constants";
+import { snapshotVotesQuery, snapshotVotingPowerQuery, snapshotProposalsQuery, snapshotProposalQuery } from "./gql";
+import { type SnapshotVoteData, type SnapshotVotingPowerData, type SnapshotProposalData } from "./types";
 import { logger } from "../logger";
 
 const requestSnapshotData = async function <T>(
@@ -24,6 +13,7 @@ const requestSnapshotData = async function <T>(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": SNAPSHOT_API_KEY,
       },
       body: JSON.stringify({ query, variables }),
     })
@@ -72,12 +62,34 @@ export const getSnapshotProposalStageData = async function (params: { providerId
 };
 
 type IGetSnapshotVotesDataParams = {
-  space?: string;
+  space: string;
+  providerId?: string;
+  voter?: string;
+  limit?: number;
+  page?: number;
+};
+
+export const getSnapshotVotesData = async function (params: IGetSnapshotVotesDataParams) {
+  logger.info(`Fetching Snapshot votes for proposalId (${params.providerId})...`);
+
+  const limit = params.limit ?? 10;
+  const page = params.page ?? 1;
+  return requestSnapshotData<SnapshotVoteData[]>("votes", snapshotVotesQuery, {
+    space: params.space,
+    proposal: params.providerId,
+    voter: params.voter,
+    first: limit,
+    skip: (page - 1) * limit,
+  });
+};
+
+type IGetAllSnapshotVotesDataParams = {
+  space: string;
   providerId?: string;
   voter?: string;
 };
 
-export const getSnapshotVotesData = async function (params: IGetSnapshotVotesDataParams) {
+export const getAllSnapshotVotesData = async function (params: IGetAllSnapshotVotesDataParams) {
   logger.info(`Fetching Snapshot votes for proposalId (${params.providerId})...`);
   return requestPaginatedSnapshotData<SnapshotVoteData>("votes", snapshotVotesQuery, {
     space: params.space,
@@ -102,16 +114,7 @@ export const getSnapshotVotingPowerData = async function (params: {
 };
 
 export interface IGetSnapshotVotingActivityDataParams {
-  space?: string;
+  space: string;
   providerId?: string;
   voter?: string;
-}
-
-export async function getSnapshotVotingActivityData(params: IGetSnapshotVotingActivityDataParams) {
-  logger.info(`Fetching Snapshot voting activity for delegate (${params.voter})...`);
-  return requestPaginatedSnapshotData<SnapshotVotingActivityQueryResponse>("votes", snapshotVotingActivityQuery, {
-    space: params.space,
-    proposal: params.providerId,
-    voter: params.voter,
-  });
 }
