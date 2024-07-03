@@ -7,6 +7,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "euc.li",
       },
+      { protocol: "https", hostname: "storage.googleapis.com" },
     ],
   },
   webpack: (config) => {
