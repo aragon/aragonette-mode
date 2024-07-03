@@ -65,7 +65,7 @@ export const getVotingActivity = async function (
 };
 
 // TODO: Store in the DB or replace with delegates from App
-export const getFeaturedDelegates = async function (
+export const getDelegates = async function (
   page: number,
   limit: number,
   sortBy: IDelegatesSortBy = IDelegatesSortBy.FEATURED,

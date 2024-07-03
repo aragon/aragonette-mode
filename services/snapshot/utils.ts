@@ -121,9 +121,9 @@ export function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
     return {
       id: vote.id,
       voter: vote.voter,
-      choice: vote.choice.toString(), // TODO: Pick from proposal choices in storage -> proposal.choices[vote.choice]
+      choice: vote.proposal.choices[Number(vote.choice) - 1],
       amount: vote.vp,
-      timestamp: vote.created.toString(),
+      timestamp: new Date(Number(vote.created) * 1000).toISOString(),
     };
   });
 }

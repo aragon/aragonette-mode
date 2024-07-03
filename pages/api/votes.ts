@@ -34,7 +34,8 @@ export default async function handler(
       return res.status(404).json({ error: { message: "Voting not found" } });
     }
 
-    const votes = await buildVotesResponse(proposalStage.voting.providerId, stageEnum);
+    const votes = await buildVotesResponse(proposalStage.voting, stageEnum);
+
     res.status(200).json({ data: votes, pagination: { page: 1, limit: 100, total: votes.length, pages: 1 } });
   } catch (error: any) {
     // TODO: Handle error cases

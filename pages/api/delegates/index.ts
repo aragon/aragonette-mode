@@ -1,4 +1,4 @@
-import { getFeaturedDelegates } from "@/server/services/builders/delegates-builder";
+import { getDelegates } from "@/server/services/builders/delegates-builder";
 import { parseDelegatesSortBy, parseDelegatesSortDir, type IMemberDataListItem } from "@/server/client/types/domain";
 import { logger } from "@/services/logger";
 import { checkNullableParam } from "@/server/utils";
@@ -23,7 +23,7 @@ export default async function handler(
 
     const { page: pageInt, limit: limitInt } = parsePaginationParams(parsedPage, parsedLimit);
 
-    const paginatedDelegates = await getFeaturedDelegates(pageInt, limitInt, typedSortBy, typedSortDir);
+    const paginatedDelegates = await getDelegates(pageInt, limitInt, typedSortBy, typedSortDir);
 
     res.status(200).json(paginatedDelegates);
   } catch (error) {

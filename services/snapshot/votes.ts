@@ -3,7 +3,7 @@ import { getSnapshotVotesData, getSnapshotVotingPowerData } from "@/services/sna
 import { parseSnapshotVoteData } from "./utils";
 
 type GetSnapshotVotesParams = {
-  space?: string;
+  space: string;
   providerId?: string;
   voter?: string;
 };
