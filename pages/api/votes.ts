@@ -1,6 +1,6 @@
 import { type IProposalVote } from "@/features/proposals";
 import { buildVotesResponse } from "@/server/services/builders/votes-builder";
-import { checkParam, parseStageParam } from "@/server/utils";
+import { checkParam, checkNullableParam, parseStageParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger } from "@/services/logger";
@@ -10,12 +10,25 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IPaginatedResponse<IProposalVote> | IError>
 ) {
-  const { proposalId, stage } = req.query;
-
   try {
+    const { proposalId, stage, page, limit } = req.query;
+
+    const parsedPage = checkNullableParam(page, "page");
+    const parsedLimit = checkNullableParam(limit, "limit");
     const parsedProposalId = checkParam(proposalId, "proposalId");
     const parsedStage = checkParam(stage, "stage");
     const stageEnum = parseStageParam(parsedStage);
+
+    let pageInt = parseInt(parsedPage ?? "1", 10);
+    let limitInt = parseInt(parsedLimit ?? "10", 10);
+
+    if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
+      limitInt = 10;
+    }
+
+    if (isNaN(pageInt) || pageInt < 1) {
+      pageInt = 1;
+    }
 
     const proposal = await proposalRepository.getProposalById(parsedProposalId);
 
@@ -34,9 +47,9 @@ export default async function handler(
       return res.status(404).json({ error: { message: "Voting not found" } });
     }
 
-    const votes = await buildVotesResponse(proposalStage.voting, stageEnum);
+    const votes = await buildVotesResponse(proposalStage.voting, stageEnum, pageInt, limitInt);
 
-    res.status(200).json({ data: votes, pagination: { page: 1, limit: 100, total: votes.length, pages: 1 } });
+    res.status(200).json(votes);
   } catch (error: any) {
     // TODO: Handle error cases
     logger.error(error.message);

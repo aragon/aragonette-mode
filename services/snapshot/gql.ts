@@ -66,11 +66,11 @@ export const snapshotVotesQuery = `
       where: {
         space: $space,
         proposal: $proposal,
-        voter: "$voter
-      }),
+        voter: $voter
+      },
       orderBy: "created",
       orderDirection: desc
-    {
+    ) {
       id
       proposal {
         id
