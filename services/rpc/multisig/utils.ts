@@ -25,6 +25,8 @@ import {
 import { ProposalData } from "@/services/rpc/multisig/types";
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
+  if (!metadata.resources) throw new Error("No resources found in proposal metadata");
+
   const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
   const transparencyReportLink =
     secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "transparency_report") ??
