@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
                   src="/logo-polygon.svg"
                   width="164"
                   height="32"
-                  className="hidden shrink-0 sm:-ml-1 sm:block"
+                  className="hidden shrink-0 sm:block"
                   alt="Polygon"
                   priority={true}
                 />
@@ -64,7 +64,7 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
           {/* Tab wrapper */}
-          <ul className="hidden items-center gap-x-10 md:flex lg:pl-10">
+          <ul className="hidden items-center gap-x-10 md:flex">
             {navLinks.map(({ id, name, path }) => (
               <NavLink name={name} path={path} id={id} key={id} />
             ))}
