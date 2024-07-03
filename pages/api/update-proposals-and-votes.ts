@@ -2,6 +2,7 @@ import { buildProposalsResponse } from "@/server/services/builders/proposal-buil
 import proposalRepository from "@/server/models/proposals";
 import { logger } from "@/services/logger";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { IProposal } from "@/features/proposals";
 
 // This function can run for a maximum of 5 min
 export const config = {
@@ -22,8 +23,27 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
 
   try {
     const proposals = await buildProposalsResponse();
+
+    const uniqueProposals: IProposal[] = [];
+    const duplicatedProposals: IProposal[] = [];
+
+    // Filter duplicated proposals
+    for (const proposal of proposals) {
+      const existingProposal = uniqueProposals.find((p) => p.id === proposal.id);
+      if (existingProposal) {
+        duplicatedProposals.push(proposal);
+      } else {
+        uniqueProposals.push(proposal);
+      }
+    }
+
+    logger.info(`Upserting ${uniqueProposals.length} proposals...`);
+    logger.error(
+      `Duplicated proposals: ${duplicatedProposals.length}. Ids: ${duplicatedProposals.map((p) => p.id).join(", ")}`
+    );
+
     await Promise.all(
-      proposals.map(async (proposal) => {
+      uniqueProposals.map(async (proposal) => {
         logger.info(`Upserting proposal ${proposal.id}...`);
         return await proposalRepository.upsertProposal({ ...proposal });
       })
