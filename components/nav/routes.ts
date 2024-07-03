@@ -26,3 +26,10 @@ export const MemberProfile = {
 };
 
 export const Learn = { name: "Learn", id: "learn", path: "/learn", icon: IconType.APP_EXPLORE };
+
+export const PostDetail = {
+  name: "Post",
+  id: "Post",
+  path: "/learn/:slug",
+  getPath: (slug: string) => `/learn/${slug}`,
+};
