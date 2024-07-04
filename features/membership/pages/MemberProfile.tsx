@@ -1,3 +1,4 @@
+import { ProposalStages } from "@/features/proposals";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
@@ -13,7 +14,6 @@ import { HeaderMember } from "../components/headerMember/headerMember";
 import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 import { councilMemberList } from "../services/query-options";
-import { ProposalStages } from "@/features/proposals";
 
 export const MemberProfile = () => {
   const { query, asPath } = useRouter();
