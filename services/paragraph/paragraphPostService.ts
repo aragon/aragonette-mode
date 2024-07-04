@@ -14,6 +14,7 @@ import {
   type Post,
   type IFetchParagraphPostIdQueryParams,
 } from "./types";
+import { PUB_ARWEAVE_API_URL, PUB_PARAGRAPH_PUBLICATION_SLUG } from "@/constants";
 
 /**
  * Service for managing paragraph posts.
@@ -106,11 +107,11 @@ class ParagraphPostService {
     const latestPostsMap = new Map<string, Post>();
 
     posts.forEach((post) => {
-      const existingPost = latestPostsMap.get(post.id);
+      const existingPost = latestPostsMap.get(post.slug);
 
       // If there's no post with the same id, or if the current post is more recent, update the map
-      if (!existingPost || post.updatedAt > existingPost.updatedAt) {
-        latestPostsMap.set(post.id, post);
+      if (!existingPost || (post.updatedAt > existingPost.updatedAt && !post.isUnlisted)) {
+        latestPostsMap.set(post.slug, post);
       }
     });
 
@@ -184,4 +185,4 @@ class ParagraphPostService {
   };
 }
 
-export const postService = new ParagraphPostService("https://arweave.net/graphql", "@thehubtest");
+export const postService = new ParagraphPostService(PUB_ARWEAVE_API_URL, PUB_PARAGRAPH_PUBLICATION_SLUG);

@@ -11,7 +11,7 @@ const DEFAULT_PAGE_SIZE = 6;
 
 export const PostDatList = () => {
   const {
-    data: posts,
+    data,
     isError,
     isLoading,
     isRefetching,
@@ -20,7 +20,7 @@ export const PostDatList = () => {
     isFetchNextPageError,
     refetch,
     fetchNextPage,
-  } = useInfiniteQuery(postListQueryOptions({ category: "daos" }));
+  } = useInfiniteQuery(postListQueryOptions());
 
   const loading = isLoading || (isError && isRefetching);
   const error = isError && !isRefetchError && !isFetchNextPageError;
@@ -32,7 +32,8 @@ export const PostDatList = () => {
     setDataListState(generateDataListState(loading, isError, isFetchingNextPage));
   }, [isError, isFetchingNextPage, loading]);
 
-  const entityLabel = posts?.length === 1 ? "Post" : "Posts";
+  const total = data?.pagination.total ?? 0;
+  const entityLabel = total === 1 ? "Post" : "Posts";
 
   const emptyFilteredState = {
     heading: "No posts found",
@@ -62,7 +63,7 @@ export const PostDatList = () => {
       entityLabel={entityLabel}
       pageSize={DEFAULT_PAGE_SIZE}
       state={dataListState}
-      itemsCount={100}
+      itemsCount={total}
       onLoadMore={fetchNextPage}
     >
       <DataList.Container
@@ -73,11 +74,11 @@ export const PostDatList = () => {
         // className="grid grid-cols-[repeat(auto-fill,_minmax(376px,_1fr))] gap-6"
         className="grid grid-cols-1 gap-3 lg:grid-cols-3"
       >
-        {posts?.map(({ id, ...otherProps }) => (
+        {data?.posts?.map(({ id, ...otherProps }) => (
           <PostDataListItemStructure {...otherProps} key={id} href={PostDetail.getPath(otherProps.slug)} />
         ))}
       </DataList.Container>
-      {(posts?.length ?? 0) > 0 && <DataList.Pagination />}
+      {total > DEFAULT_PAGE_SIZE && <DataList.Pagination />}
     </DataList.Root>
   );
 };

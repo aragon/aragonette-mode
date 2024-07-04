@@ -14,7 +14,7 @@ export function postListQueryOptions(params: IFetchParagraphPostsParams = {}) {
     queryFn: async (ctx) => postService.getPosts({ ...params, cursor: ctx.pageParam }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage?.pagination?.cursor,
-    select: (data) => data.pages.flatMap((p) => p.data),
+    select: (data) => ({ posts: data.pages.flatMap((p) => p.data), pagination: data.pages[0].pagination }),
   });
 }
 
