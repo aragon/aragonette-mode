@@ -1,15 +1,22 @@
 import { PostDetail } from "@/components/nav/routes";
 import { VotesDataListItemSkeleton } from "@/features/proposals/components/proposalVoting/votesDataList/votesDataListItemSkeleton";
 import { generateDataListState } from "@/utils/query";
-import { DataList, IconType, type DataListState } from "@aragon/ods";
+import { DataList, type DataListState, IconType } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import classNames from "classnames";
+import React, { useEffect, useState } from "react";
 import { postListQueryOptions } from "../../services/posts/query-options";
-import { PostDataListItemStructure } from "./postDataListItemStructure/postDataListItemStructure";
+import { PostDataListItemStructure } from "./postDataListIemStructure/postDataListItemStructure";
 
-const DEFAULT_PAGE_SIZE = 6;
+const DEFAULT_PAGE_SIZE = 3;
 
-export const PostDatList = () => {
+export type PostCategory = "pg" | "sscg" | "ctg";
+
+interface IPostDataListProps {
+  category: PostCategory;
+}
+
+export const PostDatList: React.FC<IPostDataListProps> = ({ category }) => {
   const {
     data,
     isError,
@@ -20,7 +27,7 @@ export const PostDatList = () => {
     isFetchNextPageError,
     refetch,
     fetchNextPage,
-  } = useInfiniteQuery(postListQueryOptions());
+  } = useInfiniteQuery(postListQueryOptions({ category }));
 
   const loading = isLoading || (isError && isRefetching);
   const error = isError && !isRefetchError && !isFetchNextPageError;
@@ -71,11 +78,18 @@ export const PostDatList = () => {
         errorState={errorState}
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
-        // className="grid grid-cols-[repeat(auto-fill,_minmax(376px,_1fr))] gap-6"
-        className="grid grid-cols-1 gap-3 lg:grid-cols-3"
+        className={classNames({ "grid grid-cols-[repeat(auto-fill,_minmax(328px,_1fr))] gap-3": total !== 0 })}
       >
-        {data?.posts?.map(({ id, ...otherProps }) => (
-          <PostDataListItemStructure {...otherProps} key={id} href={PostDetail.getPath(otherProps.slug)} />
+        {data?.posts?.map((post) => (
+          <PostDataListItemStructure
+            key={post.id}
+            href={PostDetail.getPath(post.slug)}
+            title={post.title}
+            subtitle={post.subtitle}
+            createdAt={post.createdAt}
+            cover_img={post.cover_img}
+            categories={post.categories}
+          />
         ))}
       </DataList.Container>
       {total > DEFAULT_PAGE_SIZE && <DataList.Pagination />}
