@@ -7,7 +7,7 @@ import React from "react";
 import { generateBreadcrumbs } from "../../../../utils/nav";
 import { postDetailQueryOptions } from "../../services/posts/query-options";
 
-export const HeaderLearn: React.FC = () => {
+export const HeaderPost: React.FC = () => {
   const {
     query: { slug },
     asPath,
