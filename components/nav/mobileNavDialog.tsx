@@ -21,7 +21,10 @@ export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
       <Dialog.Content className="flex flex-col gap-y-6 px-3 py-7">
         <div className="flex flex-col gap-y-3 px-4">
           <div className="flex items-center justify-between">
-            <Image src="/logo-polygon-icon.svg" width="32" height="32" className="shrink-0" alt="Polygon" />
+            <div className="flex gap-2">
+              <Image src="/logo-polygon-icon.svg" width="32" height="32" className="shrink-0" alt="Polygon" />
+              <BrandingSubline />
+            </div>
             <Button
               iconLeft={IconType.COPY}
               size="sm"
@@ -40,7 +43,6 @@ export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
             <NavLink key={navLink.id} {...navLink} onClick={() => dialogRootProps.onOpenChange?.(false)} />
           ))}
         </ul>
-        <BrandingSubline />
       </Dialog.Content>
     </Dialog.Root>
   );
