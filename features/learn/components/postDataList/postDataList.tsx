@@ -1,12 +1,12 @@
 import { PostDetail } from "@/components/nav/routes";
-import { VotesDataListItemSkeleton } from "@/features/proposals/components/proposalVoting/votesDataList/votesDataListItemSkeleton";
 import { generateDataListState } from "@/utils/query";
 import { DataList, type DataListState, IconType } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { postListQueryOptions } from "../../services/posts/query-options";
-import { PostDataListItemStructure } from "./postDataListIemStructure/postDataListItemStructure";
+import { PostDataListItemSkeleton } from "./postDataListItemSkeleton/postDataListItemSkeleton";
+import { PostDataListItemStructure } from "./postDataListItemStructure/postDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -74,11 +74,14 @@ export const PostDatList: React.FC<IPostDataListProps> = ({ category }) => {
       onLoadMore={fetchNextPage}
     >
       <DataList.Container
-        SkeletonElement={VotesDataListItemSkeleton}
+        SkeletonElement={PostDataListItemSkeleton}
         errorState={errorState}
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
-        className={classNames({ "grid grid-cols-[repeat(auto-fill,_minmax(328px,_1fr))] gap-3": total !== 0 })}
+        className={classNames({
+          "grid grid-cols-[repeat(auto-fill,_minmax(328px,_1fr))] gap-3":
+            total !== 0 || dataListState === "initialLoading",
+        })}
       >
         {data?.posts?.map((post) => (
           <PostDataListItemStructure
