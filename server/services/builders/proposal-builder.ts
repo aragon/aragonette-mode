@@ -597,13 +597,13 @@ export async function buildVotingResponse(
 ): Promise<[IVotingData, StageStatus, ProposalStatus] | undefined> {
   logger.info(`Building voting response for stage ${stage.id}...`);
 
-  if (!stage.voting) {
-    logger.info(`No voting data found for stage ${stage.id}.`);
+  if (!isActiveStage(stage)) {
+    logger.info(`Stage ${stage.id} is not active.`);
     return undefined;
   }
 
   logger.info(`Getting voting data for stage ${stage.id}...`);
-  const voting = await getVotingData(stage.type, stage.voting.providerId);
+  const voting = await getVotingData(stage.type, stage.voting!.providerId);
 
   if (!voting) {
     logger.info(`No voting data found for stage ${stage.id}.`);
@@ -644,4 +644,13 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
 
   logger.info(`Returning live proposal ${proposal.id}`);
   return updatedProposal;
+}
+
+export function isActiveStage(stage: IProposalStage) {
+  return (
+    stage.voting &&
+    new Date(stage.voting.endDate) < new Date() &&
+    new Date(stage.voting.startDate) >= new Date() &&
+    stage.status === StageStatus.ACTIVE
+  );
 }
