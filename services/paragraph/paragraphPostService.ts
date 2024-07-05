@@ -107,11 +107,11 @@ class ParagraphPostService {
     const latestPostsMap = new Map<string, Post>();
 
     posts.forEach((post) => {
-      const existingPost = latestPostsMap.get(post.slug);
+      const existingPost = latestPostsMap.get(post.id);
 
       // If there's no post with the same id, or if the current post is more recent, update the map
       if (!existingPost || (post.updatedAt > existingPost.updatedAt && !post.isUnlisted)) {
-        latestPostsMap.set(post.slug, post);
+        latestPostsMap.set(post.id, post);
       }
     });
 
@@ -127,6 +127,7 @@ class ParagraphPostService {
   getPosts = async (params?: IFetchParagraphPostsParams): Promise<IInfiniteDataResponse<Post>> => {
     const { data: postIds, pagination } = await this.getPostIds({
       ...params,
+      categories: params?.category ? [params.category] : [],
       publicationSlug: this.publicationSlug,
     });
 
