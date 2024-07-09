@@ -79,8 +79,7 @@ export const PostDatList: React.FC<IPostDataListProps> = ({ category }) => {
         emptyState={emptyState}
         emptyFilteredState={emptyFilteredState}
         className={classNames({
-          "grid grid-cols-[repeat(auto-fill,_minmax(328px,_1fr))] gap-3":
-            total !== 0 || dataListState === "initialLoading",
+          "grid grid-cols-1 !gap-4 md:grid-cols-2 lg:grid-cols-3": total !== 0 || dataListState === "initialLoading",
         })}
       >
         {data?.posts?.map((post) => (
