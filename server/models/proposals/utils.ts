@@ -1,17 +1,17 @@
 import {
-  type Proposal,
   ProposalStatus as ProposalStatusDb,
-  type Stage,
   StageStatus as StageStatusDb,
   StageType,
+  type Proposal,
+  type Stage,
 } from "@prisma/client";
 
 import { type IProposal } from "../../../features/proposals";
 import {
-  type IProposalStage,
   ProposalStages,
   ProposalStatus,
   StageStatus,
+  type IProposalStage,
 } from "../../../features/proposals/services/domain";
 
 const serializeType = (type: ProposalStages): StageType => {

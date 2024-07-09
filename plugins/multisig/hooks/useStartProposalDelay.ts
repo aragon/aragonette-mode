@@ -1,9 +1,9 @@
 import { MultisigAbi } from "@/artifacts/Multisig.sol";
 import { PUB_MULTISIG_ADDRESS } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
-import { type SecondaryMetadata } from "@/services/rpc/multisig/types";
-import { logger } from "@/services/logger";
 import { uploadToPinata } from "@/services/ipfs";
+import { logger } from "@/services/logger";
+import { type SecondaryMetadata } from "@/services/rpc/multisig/types";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toHex } from "viem";

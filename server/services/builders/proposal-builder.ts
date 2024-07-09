@@ -9,29 +9,29 @@ import {
 } from "@/constants";
 import {
   ProposalStages,
+  ProposalStatus,
   StageOrder,
+  StageStatus,
   type IProposal,
   type IProposalResource,
   type IProposalStage,
   type IVotingData,
-  StageStatus,
-  ProposalStatus,
 } from "@/features/proposals/services/domain";
+import { logger } from "@/services/logger";
 import { type IPublisher } from "@aragon/ods";
 import {
-  getGitHubProposalStagesData,
-  getGithubTransparencyReports,
   getGitHubProposalStageData,
+  getGitHubProposalStagesData,
   getGithubTransparencyReport,
+  getGithubTransparencyReports,
 } from "../../../services/github/proposalStages";
 import {
-  getMultisigProposalsData,
   getMultisigProposalData,
+  getMultisigProposalsData,
   getMultisigVotingData,
 } from "../../../services/rpc/multisig/proposalStages";
-import { getSnapshotProposalStages, getSnapshotProposalStage } from "../../../services/snapshot/proposalStages";
+import { getSnapshotProposalStage, getSnapshotProposalStages } from "../../../services/snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals/types";
-import { logger } from "@/services/logger";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through

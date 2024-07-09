@@ -5,6 +5,7 @@ import { useAdvanceToNextStage } from "@/plugins/multisig/hooks/useStartProposal
 import { useUserCanApprove } from "@/plugins/multisig/hooks/useUserCanApprove";
 import { useUserCanConfirm } from "@/plugins/multisig/hooks/useUserCanConfirm";
 import { useCastSnapshotVote } from "@/plugins/snapshot/hooks/useCastSnapshotVote";
+import { type SecondaryMetadata } from "@/services/rpc/multisig/types";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -21,7 +22,6 @@ import {
   TransparencyReport,
   type IBreakdownApprovalThresholdResult,
 } from "../components";
-import { type SecondaryMetadata } from "../../../services/rpc/multisig/types";
 import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,

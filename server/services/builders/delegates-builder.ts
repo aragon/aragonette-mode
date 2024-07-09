@@ -10,18 +10,6 @@ import {
   SNAPSHOT_SPACE,
 } from "@/constants";
 import { ProposalStages } from "@/features/proposals";
-import { type Address } from "viem";
-import { getSnapshotVotingPower } from "@/services/snapshot";
-import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
-import {
-  getDelegateMessage,
-  getDelegatesList,
-  getDelegations,
-  getMultisigVotingActivity,
-} from "@/services/rpc/delegationWall";
-import { paginateArray } from "@/utils/pagination";
-import { logger } from "@/services/logger";
-import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
 import {
   IDelegatesSortBy,
   IDelegatesSortDir,
@@ -29,6 +17,18 @@ import {
   type IMemberDataListItem,
   type IProviderVotingActivity,
 } from "@/server/client/types/domain";
+import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
+import { logger } from "@/services/logger";
+import {
+  getDelegateMessage,
+  getDelegatesList,
+  getDelegations,
+  getMultisigVotingActivity,
+} from "@/services/rpc/delegationWall";
+import { getSnapshotVotingPower } from "@/services/snapshot";
+import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
+import { paginateArray } from "@/utils/pagination";
+import { type Address } from "viem";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   logger.info(`Fetching delegators for address: ${address} (page: ${page}, limit: ${limit})...`);

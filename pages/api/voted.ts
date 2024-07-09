@@ -1,10 +1,10 @@
 import { type IVoted } from "@/features/proposals";
+import proposalRepository from "@/server/models/proposals";
+import { buildVotesResponse } from "@/server/services/builders/votes-builder";
 import { checkParam, parseStageParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
-import { buildVotesResponse } from "@/server/services/builders/votes-builder";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { isAddress } from "viem";
-import proposalRepository from "@/server/models/proposals";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IVoted | IError>) {
   const { proposalId, stage, address } = req.query;

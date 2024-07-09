@@ -1,4 +1,4 @@
-import { ICouncilMember, IMemberDataListItem } from "../../client/types/domain";
+import { type ICouncilMember, type IMemberDataListItem } from "../../client/types/domain";
 
 export interface ICouncilMembersProvider {
   (params?: any): Promise<ICouncilMember[]>;

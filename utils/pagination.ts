@@ -1,5 +1,5 @@
 import { checkNullableParam } from "../server/utils";
-import { IPaginatedResponse } from "./types";
+import { type IPaginatedResponse } from "./types";
 
 const DEFAULT_MAX_LIMIT = 100;
 

@@ -1,19 +1,19 @@
 import { SNAPSHOT_API_URL } from "@/constants";
-import {
-  snapshotVotesQuery,
-  snapshotVotingPowerQuery,
-  snapshotProposalsQuery,
-  snapshotProposalQuery,
-  snapshotVotingActivityQuery,
-} from "./gql";
-import {
-  type SnapshotVoteData,
-  type SnapshotVotingPowerData,
-  type SnapshotProposalData,
-  SnapshotVotingActivityQueryResponse,
-} from "./types";
-import { IFetchSnapshotVotingActivity } from "./params";
 import { logger } from "../logger";
+import {
+  snapshotProposalQuery,
+  snapshotProposalsQuery,
+  snapshotVotesQuery,
+  snapshotVotingActivityQuery,
+  snapshotVotingPowerQuery,
+} from "./gql";
+import { type IFetchSnapshotVotingActivity } from "./params";
+import {
+  type SnapshotProposalData,
+  type SnapshotVoteData,
+  type SnapshotVotingActivityQueryResponse,
+  type SnapshotVotingPowerData,
+} from "./types";
 
 const requestProposalData = async function (query: string) {
   try {
@@ -54,9 +54,14 @@ export const getSnapshotVotingPowerData = async function (params: {
   providerId?: string;
   voter: string;
 }) {
-  logger.info(
-    `Fetching Snapshot voting power for delegate (${params.voter}) ${params.providerId ? " for proposalId (" + params.providerId + ")" : ""}...`
-  );
+  if (params.providerId) {
+    logger.info(
+      `Fetching Snapshot voting power for delegate (${params.voter}) for proposalId (${params.providerId})...`
+    );
+  } else {
+    logger.info(`Fetching Snapshot voting power for delegate (${params.voter})...`);
+  }
+
   return requestProposalData(snapshotVotingPowerQuery(params.space, params.voter, params.providerId)).then(
     (res) => (res.data.vp as SnapshotVotingPowerData)?.vp ?? 0
   );
@@ -64,7 +69,7 @@ export const getSnapshotVotingPowerData = async function (params: {
 
 export async function getSnapshotVotingActivityData(params: IFetchSnapshotVotingActivity) {
   logger.info(`Fetching Snapshot voting activity for delegate (${params.voter})...`);
-  return requestProposalData(/*<SnapshotVotingActivityQueryResponse>*/ snapshotVotingActivityQuery(params)).then(
+  return requestProposalData(snapshotVotingActivityQuery(params)).then(
     (res) => res.data.votes as SnapshotVotingActivityQueryResponse
   );
 }

@@ -1,7 +1,8 @@
 import { PUB_API_BASE_URL } from "@/constants";
+import { printStageParam, type IVotingPower } from "@/features/proposals";
+import { type ICouncilMember, type IMemberDataListItem, type IVoterVotingActivity } from "@/server/client/types/domain";
 import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
-import { type IVoterVotingActivity, type ICouncilMember, type IMemberDataListItem } from "@/server/client/types/domain";
 import type {
   IFetchCouncilMembersParams,
   IFetchDelegatesParams,
@@ -9,7 +10,6 @@ import type {
   IFetchVotingActivityParams,
   IFetchVotingPowerParams,
 } from "./params";
-import { type IVotingPower, printStageParam } from "@/features/proposals";
 
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
