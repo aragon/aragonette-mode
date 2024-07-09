@@ -15,7 +15,7 @@ export const PostDetailPage = () => {
   return (
     <div className="flex flex-col items-center">
       <HeaderPost />
-      <div className="flex w-full max-w-screen-lg flex-col gap-x-16 gap-y-12 px-4 pb-6 md:px-16 md:pb-20">
+      <div className="flex w-full max-w-screen-lg flex-col gap-x-16 gap-y-12 px-4 pb-6 md:pb-20">
         {post?.markdown && <DocumentParser document={post?.markdown} className={proseClasses} />}
         <div className="flex gap-x-2">
           {post?.categories.map((c) => <Tag key={c} variant="primary" label={`#${c}`} />)}

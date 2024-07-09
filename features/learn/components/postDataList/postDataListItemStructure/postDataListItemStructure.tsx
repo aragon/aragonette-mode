@@ -20,7 +20,7 @@ export const PostDataListItemStructure: React.FC<IPostDataListItemStructure> = (
 
   const actionItemClasses = classNames(
     "shadow-neutral-sm overflow-hidden !px-3 py-3 !flex flex-col gap-y-3 transition-all", // Default
-    "md:scale-[.94] transform transition-transform duration-300 hover:scale-100"
+    "md:scale-[.97] transform transition-transform duration-300 hover:scale-100"
   );
 
   return (
