@@ -1,4 +1,4 @@
-import { IDelegatesSortBy, IDelegatesSortDir } from "@/server/client/types/domain";
+import { IDelegatesSortBy } from "@/server/client/types/domain";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { membersService } from "./member-service";
 import {
@@ -28,13 +28,13 @@ export function councilMemberList(params: IFetchCouncilMembersParams = {}) {
 
 // list of delegates
 export function delegatesList(params: IFetchDelegatesParams = {}) {
+  const queryParams = { sortBy: IDelegatesSortBy.FEATURED, ...params };
+
   return infiniteQueryOptions({
-    queryKey: memberKeys.delegates(params),
+    queryKey: memberKeys.delegates(queryParams),
     queryFn: async (ctx) =>
       membersService.fetchDelegates({
-        ...params,
-        sortBy: params.sortBy ?? IDelegatesSortBy.FEATURED,
-        sortDir: params.sortDir ?? IDelegatesSortDir.ASC,
+        ...queryParams,
         page: ctx.pageParam,
       }),
     initialPageParam: 1,

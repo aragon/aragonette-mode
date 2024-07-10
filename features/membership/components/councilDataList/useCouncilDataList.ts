@@ -8,18 +8,15 @@ import { useEffect, useState } from "react";
 const DEFAULT_COUNCIL_MEMBERS_PAGE_SIZE = 12;
 
 export const useCouncilDataList = () => {
-  const { data, isError, isLoading, isFetching, isRefetching, isRefetchError, refetch } = useQuery({
+  const { data, isError, isLoading, isFetching, isRefetching, refetch } = useQuery({
     ...councilMemberList(),
   });
 
   const loading = isLoading || (isError && isRefetching);
-  const error = isError && !isRefetchError;
-  const [dataListState, setDataListState] = useState<DataListState>(() =>
-    generateDataListState(loading, error, false, isFetching && !isRefetching)
-  );
+  const [dataListState, setDataListState] = useState<DataListState>("initialLoading");
 
   useEffect(() => {
-    setDataListState(generateDataListState(loading, isError, false, isFetching && !isRefetching));
+    setDataListState(generateDataListState(loading, isError, false));
   }, [isError, isFetching, loading, isRefetching]);
 
   const errorState = {
