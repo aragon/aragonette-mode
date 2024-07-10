@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
 import { CouncilDataList } from "../components/councilDataList/councilDataList";
-import { DelegateMemberList } from "../components/memberDataList/delegateMemberList/delegateMemberList";
+import { DelegateDataList } from "../components/delegateDataList/delegateDataList";
 import { councilMemberList, delegatesList } from "../services/query-options";
 import { useMetadata } from "@/hooks/useMetadata";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
@@ -65,7 +65,7 @@ export default function MembersList() {
           </div>
           {governanceBody === "council" && <CouncilDataList />}
           {governanceBody === "delegates" && (
-            <DelegateMemberList onAnnounceDelegation={() => setShowProfileCreationDialog(true)} />
+            <DelegateDataList onAnnounceDelegation={() => setShowProfileCreationDialog(true)} />
           )}
         </div>
         <aside className="flex w-full flex-col gap-y-4 md:max-w-[320px] md:gap-y-6">

@@ -1,6 +1,6 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { DataList, MemberDataListItem } from "@aragon/ods";
-import { MemberDataListItemStructure } from "../memberDataList/memberDataListItemStructure/memberDataListItemStructure";
+import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 import { useCouncilDataList } from "./useCouncilDataList";
 
 export const CouncilDataList: React.FC = () => {
