@@ -2,12 +2,10 @@ import { type SnapshotVoteData } from "@/services/snapshot/types";
 import { getSnapshotVotesData } from "@/services/snapshot/fetch";
 import { type IProviderVotingActivity } from "@/server/client/types/domain";
 
-export type IFetchSnapshotVotingActivity = {
+export interface IFetchSnapshotVotingActivity {
   space: string;
   voter: string;
-  page?: number;
-  limit?: number;
-};
+}
 
 export async function getSnapshotVotingActivity(params: IFetchSnapshotVotingActivity) {
   const response = await getSnapshotVotesData(params);

@@ -56,15 +56,15 @@ export const emptyPagination = {
   },
 };
 
-export const paginateArray = <T>(delegates: T[], page: number, limit: number): IPaginatedResponse<T> => {
-  const total = delegates.length;
+export const paginateArray = <T>(values: T[], page: number, limit: number): IPaginatedResponse<T> => {
+  const total = values.length;
   if (total === 0) {
     return emptyPagination;
   }
 
   const { page: newPage, limit: newLimit, pages } = checkPaginationParams(page, limit, total);
 
-  const data = delegates.slice((newPage - 1) * newLimit, newPage * newLimit);
+  const data = values.slice((newPage - 1) * newLimit, newPage * newLimit);
 
   return {
     pagination: {
