@@ -1,19 +1,10 @@
 import { PUB_IPFS_API_KEY, PUB_IPFS_ENDPOINT } from "@/constants";
-import Cache from "../cache/VercelCache";
 import { fromHex, type Hex } from "viem";
 import { logger } from "../logger";
 
 export async function fetchJsonFromIpfs(ipfsUri: string) {
-  const cache = new Cache();
-  const cachedResponse = await cache.get(ipfsUri);
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-
   const res = await fetchFromIPFS(ipfsUri);
-  const data = res.json();
-  await cache.set(ipfsUri, data);
-
+  const data = await res.json();
   return data;
 }
 

@@ -13,8 +13,8 @@ import { ProposalStages } from "@/features/proposals";
 import {
   IDelegatesSortBy,
   IDelegatesSortDir,
-  type IDelegator,
   type IDelegateDataListItem,
+  type IDelegator,
   type IProviderVotingActivity,
 } from "@/server/client/types/domain";
 import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
