@@ -101,9 +101,12 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
   const itemsCount = data?.pagination?.total;
   const entityLabel = itemsCount === 1 ? "Delegate" : "Delegates";
   const showPagination = (itemsCount ?? 0) > DEFAULT_PAGE_SIZE;
-  const showGrid = !(dataListState === "error" || (itemsCount != null && itemsCount === 0));
+
   const containerClasses = classNames({
-    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": showGrid,
+    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !(
+      dataListState === "error" ||
+      ((dataListState === "idle" || dataListState === "filtered") && itemsCount === 0)
+    ),
   });
 
   return {

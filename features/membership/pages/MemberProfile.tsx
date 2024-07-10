@@ -9,9 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
+import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
-import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 import { councilMemberList } from "../services/query-options";
 
@@ -20,13 +20,21 @@ export const MemberProfile = () => {
   const profileAddress = query.address as Address;
   const breadcrumbs = generateBreadcrumbs(asPath);
 
-  const { data: councilMember, isFetched: councilMemberFetched } = useQuery({
+  const {
+    data: councilMember,
+    isLoading: councilMemberLoading,
+    isFetched: councilMemberFetched,
+  } = useQuery({
     ...councilMemberList(),
     select: (data) => data.find((member) => isAddressEqual(member.address, profileAddress)),
   });
 
-  const { data: announcementData } = useAnnouncement(profileAddress);
-  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementData?.[0]);
+  const { data: announcementData, isLoading: announcementCidLoading } = useAnnouncement(profileAddress);
+  const { data: announcement, isLoading: announcementLoading } = useMetadata<IDelegationWallMetadata>(
+    announcementData?.[0]
+  );
+
+  const isLoading = councilMemberLoading || announcementCidLoading || announcementLoading;
 
   const isCouncilMember = councilMemberFetched && !!councilMember;
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
@@ -35,6 +43,7 @@ export const MemberProfile = () => {
   return (
     <div className="flex flex-col items-center">
       <HeaderMember
+        isLoading={isLoading}
         address={profileAddress}
         bio={bio}
         breadcrumbs={breadcrumbs}

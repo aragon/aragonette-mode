@@ -1,16 +1,16 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { PUB_TOKEN_SYMBOL } from "@/constants";
+import { useMetadata } from "@/hooks/useMetadata";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
+import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { Button, Heading, StateSkeletonBar, Toggle, ToggleGroup } from "@aragon/ods";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
 import { CouncilDataList } from "../components/councilDataList/councilDataList";
+import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
 import { DelegateDataList } from "../components/delegateDataList/delegateDataList";
 import { councilMemberList, delegatesList } from "../services/query-options";
-import { useMetadata } from "@/hooks/useMetadata";
-import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -78,26 +78,39 @@ export default function MembersList() {
             </p>
           </div>
           <dl className="divide-y divide-neutral-100">
-            <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
-              <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
-                Protocol council
-              </dt>
-              {councilMemberListData && (
+            {councilMembersLoading && (
+              <div className="flex flex-col gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <StateSkeletonBar width={"40%"} className="h-6 !bg-neutral-100" />
+                <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />{" "}
+              </div>
+            )}
+
+            {councilMemberListData && (
+              <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
+                  Protocol council
+                </dt>
                 <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData.length} Multisig members`}</dd>
-              )}
-              {councilMembersLoading && <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />}
-            </div>
-            <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
-              <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
-                Delegates
-              </dt>
-              {delegatesListData && (
+              </div>
+            )}
+
+            {delegatesLoading && (
+              <div className="flex flex-col gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <StateSkeletonBar width={"40%"} className="h-6 !bg-neutral-100" />
+                <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />{" "}
+              </div>
+            )}
+
+            {delegatesListData && (
+              <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
+                  Delegates
+                </dt>
                 <dd className="size-full text-base leading-tight text-neutral-500">
                   {`${delegatesListData.pagination.total} delegates`}
                 </dd>
-              )}
-              {delegatesLoading && <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />}
-            </div>
+              </div>
+            )}
           </dl>
           <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)} disabled={!isConnected}>
             {getButtonLabel()}

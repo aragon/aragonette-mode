@@ -1,5 +1,5 @@
 import { PUB_CHAIN } from "@/constants";
-import { erc20Abi, type Address } from "viem";
+import { erc20Abi, zeroAddress, type Address } from "viem";
 import { useReadContracts } from "wagmi";
 
 interface ITokenBalanceParams {
@@ -12,17 +12,12 @@ export const useTokenInfo = (params: ITokenBalanceParams, options = {}) => {
     allowFailure: false,
     contracts: [
       {
-        ...(params.account
-          ? {
-              chainId: PUB_CHAIN.id,
-              address: params.token,
-              abi: erc20Abi,
-              functionName: "balanceOf",
-              args: [params.account],
-            }
-          : {}),
+        chainId: PUB_CHAIN.id,
+        address: params.token,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [params.account ?? zeroAddress],
       },
-
       {
         chainId: PUB_CHAIN.id,
         address: params.token,

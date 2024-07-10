@@ -45,7 +45,7 @@ export const DelegateDataList: React.FC<IDelegateDataListProps> = ({ onAnnounceD
         sortItems={sortItems}
         activeSort={activeSort}
         searchValue={searchValue}
-        placeholder="Search by name or address"
+        placeholder="Filter by identifier or address"
         onSortChange={handleSortChange}
         onSearchValueChange={handleSearchValueChange}
       />
