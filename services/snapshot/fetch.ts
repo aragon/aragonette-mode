@@ -1,18 +1,7 @@
 import { SNAPSHOT_API_KEY, SNAPSHOT_API_URL } from "@/constants";
 import { logger } from "../logger";
-import {
-  snapshotProposalQuery,
-  snapshotProposalsQuery,
-  snapshotVotesQuery,
-  snapshotVotingActivityQuery,
-  snapshotVotingPowerQuery,
-} from "./gql";
-import {
-  type SnapshotProposalData,
-  type SnapshotVoteData,
-  type SnapshotVotingActivityQueryResponse,
-  type SnapshotVotingPowerData,
-} from "./types";
+import { snapshotProposalQuery, snapshotProposalsQuery, snapshotVotesQuery, snapshotVotingPowerQuery } from "./gql";
+import { type SnapshotProposalData, type SnapshotVoteData, type SnapshotVotingPowerData } from "./types";
 
 const requestSnapshotData = async function <T>(
   func: string,
@@ -128,19 +117,3 @@ export const getSnapshotVotingPowerData = async function (params: {
     proposal: params.providerId,
   }).then((res) => res?.vp ?? 0);
 };
-
-export interface IGetSnapshotVotingActivityDataParams {
-  space: string;
-  providerId?: string;
-  voter?: string;
-}
-
-export async function getSnapshotVotingActivityData(params: IGetSnapshotVotingActivityDataParams) {
-  logger.info(`Fetching Snapshot voting activity for delegate (${params.voter})...`);
-
-  return requestPaginatedSnapshotData<SnapshotVotingActivityQueryResponse>("votes", snapshotVotingActivityQuery, {
-    space: params.space,
-    proposal: params.providerId,
-    voter: params.voter,
-  });
-}
