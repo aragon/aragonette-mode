@@ -14,8 +14,10 @@ import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/
 
 const DEFAULT_PAGE_SIZE = 12;
 
+type GovernanceBody = "council" | "delegates";
+
 export default function MembersList() {
-  const [toggleValue, setToggleValue] = useState<string>("council");
+  const [toggleValue, setToggleValue] = useState<GovernanceBody>("council");
   const [showProfileCreationDialog, setShowProfileCreationDialog] = useState(false);
 
   const { address, isConnected } = useAccount();
@@ -35,7 +37,7 @@ export default function MembersList() {
 
   const onToggleChange = (value: string | undefined) => {
     if (value) {
-      setToggleValue(value);
+      setToggleValue(value as GovernanceBody);
     }
   };
 
@@ -92,10 +94,22 @@ export default function MembersList() {
           <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)} disabled={!isConnected}>
             {getButtonLabel()}
           </Button>
-          <DelegateAnnouncementDialog
-            onClose={() => setShowProfileCreationDialog(false)}
-            open={showProfileCreationDialog}
-          />
+          {showProfileCreationDialog && (
+            <DelegateAnnouncementDialog
+              onClose={() => setShowProfileCreationDialog(false)}
+              open={showProfileCreationDialog}
+              {...(announcement
+                ? {
+                    defaultValues: {
+                      identifier: announcement?.identifier,
+                      bio: announcement?.bio,
+                      message: announcement?.message,
+                      resources: announcement?.resources,
+                    },
+                  }
+                : {})}
+            />
+          )}
         </aside>
       </div>
     </MainSection>

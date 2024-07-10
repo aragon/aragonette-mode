@@ -1,7 +1,12 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { useAnnounceDelegation } from "@/plugins/delegateAnnouncer/hooks/useAnnounceDelegation";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
-import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
+import {
+  EMAIL_PATTERN,
+  EMPTY_HTML_PARAGRAPH_PATTERN,
+  URL_PATTERN,
+  URL_WITH_PROTOCOL_PATTERN,
+} from "@/utils/input-values";
 import {
   Button,
   DialogContent,
@@ -27,7 +32,7 @@ const DELEGATE_RESOURCES = "resources";
 const UrlRegex = new RegExp(URL_PATTERN);
 const EmailRegex = new RegExp(EMAIL_PATTERN);
 const UrlWithProtocolRegex = new RegExp(URL_WITH_PROTOCOL_PATTERN);
-const EmptyParagraphRegex = new RegExp(/^(?!<p><\/p>$).*/i);
+const EmptyParagraphRegex = new RegExp(EMPTY_HTML_PARAGRAPH_PATTERN);
 
 const ResourceSchema = z
   .object({
@@ -40,7 +45,7 @@ const ResourceSchema = z
       }),
   })
   .refine(
-    (data) => (data.name && data.link) || (!data.name && !data.link),
+    (data) => !!(data.name && data.link) || !!(!data.name && !data.link),
     (data) => ({
       message: `A ${data.name ? "Link" : "Name"} is required`,
       path: data.name ? ["link"] : ["name"],
@@ -56,10 +61,11 @@ const MetadataSchema = z.object({
 
 interface IDelegateAnnouncementDialogProps extends IDialogRootProps {
   onClose: () => void;
+  defaultValues?: z.infer<typeof MetadataSchema>;
 }
 
 export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogProps> = (props) => {
-  const { onClose, ...otherProps } = props;
+  const { onClose, defaultValues, ...otherProps } = props;
 
   const router = useRouter();
   const { address } = useAccount();
@@ -75,7 +81,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
   } = useForm<z.infer<typeof MetadataSchema>>({
     resolver: zodResolver(MetadataSchema),
     mode: "onTouched",
-    defaultValues: { bio: "", message: "<p></p>", resources: [{ name: "", link: "" }] },
+    defaultValues: defaultValues ?? { bio: "", message: "<p></p>", resources: [{ name: "", link: "" }] },
   });
 
   const { fields, append, remove } = useFieldArray({ name: DELEGATE_RESOURCES, control });
@@ -109,11 +115,13 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
 
   const { isConfirming, status, announceDelegation } = useAnnounceDelegation(onSuccessfulAnnouncement);
 
-  const ctaLabel = isConfirming
-    ? "Creating profile"
-    : status === "pending"
-      ? "Waiting for confirmation"
-      : "Create profile";
+  const getCtaLabel = () => {
+    if (isConfirming) {
+      return "Submitting profile";
+    } else if (status === "pending") {
+      return "Waiting for confirmation";
+    } else return defaultValues ? "Update profile" : "Create profile";
+  };
 
   return (
     <DialogRoot {...otherProps} containerClassName="!max-w-[520px]">
@@ -123,6 +131,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
           label="Identifier"
           readOnly={isConfirming}
           placeholder="Name, ENS name, Privado ID, etc."
+          aria-invalid={errors.identifier ? "true" : "false"}
           {...register("identifier")}
           {...(errors.identifier?.message
             ? { alert: { variant: "critical", message: errors.identifier.message } }
@@ -134,6 +143,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
           {...register("bio")}
           maxLength={400}
           readOnly={isConfirming}
+          aria-invalid={errors.bio ? "true" : "false"}
           alert={errors.bio?.message ? { variant: "critical", message: errors.bio.message } : undefined}
         />
         <Controller
@@ -146,6 +156,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
               onChange={field.onChange}
               value={field.value}
               onBlur={field.onBlur}
+              aria-invalid={errors.message ? "true" : "false"}
               alert={errors.message?.message ? { variant: "critical", message: errors.message.message } : undefined}
             />
           )}
@@ -174,6 +185,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
                         label="Name / Description"
                         readOnly={isConfirming}
                         placeholder="GitHub, Twitter, etc."
+                        aria-invalid={nameError ? "true" : "false"}
                         {...register(`${DELEGATE_RESOURCES}.${index}.name` as const)}
                         {...(nameError?.message ? { alert: { variant: "critical", message: nameError.message } } : {})}
                       />
@@ -201,6 +213,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
                         register(`${DELEGATE_RESOURCES}.${index}.link` as const).onBlur(e);
                         addProtocolToLink(index);
                       }}
+                      aria-invalid={linkError ? "true" : "false"}
                       {...(linkError?.message ? { alert: { variant: "critical", message: linkError.message } } : {})}
                     />
                   </div>
@@ -230,7 +243,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             isLoading={isConfirming || status === "pending"}
             onClick={handleSubmit(handleAnnouncement)}
           >
-            {ctaLabel}
+            {getCtaLabel()}
           </Button>
           <Button
             variant="secondary"
