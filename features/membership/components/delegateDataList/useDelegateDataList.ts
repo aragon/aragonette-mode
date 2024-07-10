@@ -76,7 +76,7 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
   const sortItems = [
     {
       value: `${IDelegatesSortBy.FEATURED}`,
-      label: "Featured delegates",
+      label: "Featured",
       type: "DESC" as const,
     },
     {
@@ -103,7 +103,7 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
   const showPagination = (itemsCount ?? 0) > DEFAULT_PAGE_SIZE;
   const showGrid = !(dataListState === "error" || (itemsCount != null && itemsCount === 0));
   const containerClasses = classNames({
-    "grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3": showGrid,
+    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": showGrid,
   });
 
   return {

@@ -37,7 +37,9 @@ export const useCouncilDataList = () => {
   const entityLabel = itemsCount === 1 ? "Protocol council member" : "Protocol council members";
   const showPagination = (itemsCount ?? 0) > DEFAULT_COUNCIL_MEMBERS_PAGE_SIZE;
   const showGrid = !(dataListState === "error" || (itemsCount != null && itemsCount === 0));
-  const containerClasses = classNames({ "grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3": showGrid });
+  const containerClasses = classNames({
+    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": showGrid,
+  });
 
   return {
     entityLabel,
