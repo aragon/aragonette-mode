@@ -23,7 +23,8 @@ const persister = createAsyncStoragePersister({
 createWeb3Modal({
   wagmiConfig: config,
   projectId: PUB_WALLET_CONNECT_PROJECT_ID,
-  enableAnalytics: false, // Optional - defaults to your Cloud configuration
+  enableOnramp: false,
+  enableAnalytics: false,
 });
 
 const OdsCoreProviderValues = { Link: Link, Img: Image };
