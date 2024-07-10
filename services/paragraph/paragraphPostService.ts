@@ -1,6 +1,6 @@
 import { logger } from "@/services/logger";
 import { type IInfiniteDataResponse } from "@/utils/types";
-import arweave from "./arweave";
+import { ArweaveService } from "@/services/arweave";
 import {
   type ParagraphPostIdBySlugQueryResponse,
   getParagraphPostIdBySlugQuery,
@@ -134,7 +134,7 @@ class ParagraphPostService {
     try {
       const posts: Post[] = await Promise.all(
         postIds.map(async (id) => {
-          const data = await arweave.transactions.getData(id, { decode: true, string: true });
+          const data = await ArweaveService.transactions.getData(id, { decode: true, string: true });
           return JSON.parse(data as string);
         })
       );
@@ -156,7 +156,7 @@ class ParagraphPostService {
    */
   getPostById = async (id: string): Promise<Post> => {
     try {
-      const data = await arweave.transactions.getData(id, { decode: true, string: true });
+      const data = await ArweaveService.transactions.getData(id, { decode: true, string: true });
       const parsed: Post = JSON.parse(data as string);
       return parsed;
     } catch (error) {
@@ -177,7 +177,7 @@ class ParagraphPostService {
         postSlug: params.slug,
         publicationSlug: this.publicationSlug,
       });
-      const data = await arweave.transactions.getData(postId, { decode: true, string: true });
+      const data = await ArweaveService.transactions.getData(postId, { decode: true, string: true });
       return JSON.parse(data as string);
     } catch (error) {
       logger.error(`Failed to get post with slug ${params.slug}`, error);
