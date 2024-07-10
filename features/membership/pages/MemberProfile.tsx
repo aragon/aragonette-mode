@@ -11,7 +11,7 @@ import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
-import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
+import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 import { councilMemberList } from "../services/query-options";
 
@@ -51,7 +51,7 @@ export const MemberProfile = () => {
               {/* Delegations Received */}
               <div className="flex flex-col gap-y-3">
                 <Heading size="h3">Delegations received</Heading>
-                <DelegationsReceivedDataList address={profileAddress} />
+                <DelegationsDataList delegate={profileAddress} />
               </div>
             </div>
           )}

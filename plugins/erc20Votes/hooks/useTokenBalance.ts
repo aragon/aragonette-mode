@@ -4,7 +4,7 @@ import { useReadContracts } from "wagmi";
 
 interface ITokenBalanceParams {
   token: Address;
-  account: Address;
+  account?: Address;
 }
 
 export const useTokenInfo = (params: ITokenBalanceParams, options = {}) => {
@@ -12,12 +12,17 @@ export const useTokenInfo = (params: ITokenBalanceParams, options = {}) => {
     allowFailure: false,
     contracts: [
       {
-        chainId: PUB_CHAIN.id,
-        address: params.token,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [params.account],
+        ...(params.account
+          ? {
+              chainId: PUB_CHAIN.id,
+              address: params.token,
+              abi: erc20Abi,
+              functionName: "balanceOf",
+              args: [params.account],
+            }
+          : {}),
       },
+
       {
         chainId: PUB_CHAIN.id,
         address: params.token,
