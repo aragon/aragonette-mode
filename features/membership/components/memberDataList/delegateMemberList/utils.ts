@@ -1,4 +1,4 @@
-import { IDelegatesSortBy, IDelegatesSortDir } from "@/features/membership/services/members/domain";
+import { IDelegatesSortBy, IDelegatesSortDir } from "@/server/client/types/domain";
 
 export const generateSortOptions = (sort: string) => {
   if (!sort) return {};

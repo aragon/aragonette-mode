@@ -1,8 +1,9 @@
-import { getDelegators } from "@/features/membership/services/members/delegates-builder";
-import { checkParam, checkNullableParam } from "@/utils/api-utils";
+import { getDelegators } from "@/server/services/builders/delegates-builder";
+import { checkParam, checkNullableParam } from "@/server/utils";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import { type NextApiRequest, type NextApiResponse } from "next/types";
-import { type IDelegator } from "@/features/membership/services/members/domain";
+import { type IDelegator } from "@/server/client/types/domain";
+import { parsePaginationParams } from "@/utils/pagination";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,16 +15,7 @@ export default async function handler(
   const parsedPage = checkNullableParam(page, "page");
   const parsedLimit = checkNullableParam(limit, "limit");
 
-  let pageInt = parseInt(parsedPage ?? "1", 10);
-  let limitInt = parseInt(parsedLimit ?? "10", 10);
-
-  if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
-    limitInt = 10;
-  }
-
-  if (isNaN(pageInt) || pageInt < 1) {
-    pageInt = 1;
-  }
+  const { page: pageInt, limit: limitInt } = parsePaginationParams(parsedPage, parsedLimit);
 
   try {
     const delegators = await getDelegators(delegate, pageInt, limitInt);

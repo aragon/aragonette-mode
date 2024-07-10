@@ -22,11 +22,7 @@ import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import { useAccount, useEnsName } from "wagmi";
-import {
-  delegatesList,
-  delegationsList,
-  votingPower as votingPowerQueryOptions,
-} from "../../services/members/query-options";
+import { delegatesList, delegationsList, votingPower as votingPowerQueryOptions } from "../../services/query-options";
 import classNames from "classnames";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 

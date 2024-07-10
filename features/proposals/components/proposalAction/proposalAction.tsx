@@ -9,7 +9,7 @@ import {
   IconType,
 } from "@aragon/ods";
 import Link from "next/link";
-import { type DetailedAction } from "../../services/proposal/selectors";
+import { type DetailedAction } from "../../services/selectors";
 import { CallParamField } from "./callParamField";
 import { EncodedView } from "./encodedView";
 

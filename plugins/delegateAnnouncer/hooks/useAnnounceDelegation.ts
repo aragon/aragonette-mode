@@ -2,7 +2,7 @@ import { DelegationWallAbi } from "@/artifacts/DelegationWall.sol";
 import { PUB_DELEGATION_CONTRACT_ADDRESS } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
 import { logger } from "@/services/logger";
-import { uploadToPinata } from "@/utils/ipfs";
+import { uploadToPinata } from "@/services/ipfs";
 import { useCallback, useEffect } from "react";
 import { toHex } from "viem";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";

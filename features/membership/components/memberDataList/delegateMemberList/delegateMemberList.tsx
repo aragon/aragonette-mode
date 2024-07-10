@@ -7,7 +7,7 @@ import { DataList, IconType, MemberDataListItem, type DataListState } from "@ara
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { delegatesList } from "../../../services/members/query-options";
+import { delegatesList } from "../../../services/query-options";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 import { generateSortOptions, sortItems } from "./utils";
 

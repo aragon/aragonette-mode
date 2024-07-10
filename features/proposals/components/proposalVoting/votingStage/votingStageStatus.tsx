@@ -1,5 +1,5 @@
 import { AvatarIcon, IconType, Spinner, StatePingAnimation } from "@aragon/ods";
-import { StageStatus } from "@/features/proposals/services/proposal/domain";
+import { StageStatus } from "@/features/proposals/services/domain";
 
 interface IVotingStageStatus {
   endDate: string;

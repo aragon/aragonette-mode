@@ -3,7 +3,7 @@ import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, MemberDataListItem, type DataListState } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { councilMemberList } from "../../../services/members/query-options";
+import { councilMemberList } from "../../../services/query-options";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 
 const DEFAULT_PAGE_SIZE = 12;

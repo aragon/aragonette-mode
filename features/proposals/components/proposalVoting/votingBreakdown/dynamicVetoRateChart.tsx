@@ -1,6 +1,6 @@
 import { PUB_TOKEN_SYMBOL } from "@/constants";
 import { ProposalStages } from "@/features/proposals/services";
-import { proposalVotes } from "@/features/proposals/services/proposal/query-options";
+import { proposalVotes } from "@/features/proposals/services/query-options";
 import { AvatarIcon, IconType, NumberFormat, formatterUtils } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";

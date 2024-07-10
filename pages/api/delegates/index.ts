@@ -1,17 +1,14 @@
-import { getFeaturedDelegates } from "@/features/membership/services/members/delegates-builder";
-import {
-  parseDelegatesSortBy,
-  parseDelegatesSortDir,
-  type IMemberDataListItem,
-} from "@/features/membership/services/members/domain";
+import { getFeaturedDelegates } from "@/server/services/builders/delegates-builder";
+import { parseDelegatesSortBy, parseDelegatesSortDir, type IDelegateDataListItem } from "@/server/client/types/domain";
 import { logger } from "@/services/logger";
-import { checkNullableParam } from "@/utils/api-utils";
+import { checkNullableParam } from "@/server/utils";
+import { parsePaginationParams } from "@/utils/pagination";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IPaginatedResponse<IMemberDataListItem> | IError>
+  res: NextApiResponse<IPaginatedResponse<IDelegateDataListItem> | IError>
 ) {
   try {
     const { page, limit, sortBy, sortDir } = req.query;
@@ -24,22 +21,12 @@ export default async function handler(
     const typedSortBy = parseDelegatesSortBy(parsedSortBy);
     const typedSortDir = parseDelegatesSortDir(parsedSortDir);
 
-    let pageInt = parseInt(parsedPage ?? "1", 10);
-    let limitInt = parseInt(parsedLimit ?? "10", 10);
-
-    if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
-      limitInt = 10;
-    }
-
-    if (isNaN(pageInt) || pageInt < 1) {
-      pageInt = 1;
-    }
+    const { page: pageInt, limit: limitInt } = parsePaginationParams(parsedPage, parsedLimit);
 
     const paginatedDelegates = await getFeaturedDelegates(pageInt, limitInt, typedSortBy, typedSortDir);
 
     res.status(200).json(paginatedDelegates);
   } catch (error) {
-    // TODO: Add error handling
     logger.error("Error fetching delegates:", error);
     res.status(500).json({ error: { message: "Error fetching delegates" } });
   }

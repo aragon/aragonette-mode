@@ -11,7 +11,7 @@ import {
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { ProposalStages, StageOrder, proposalList, voted } from "../../services/proposal";
+import { ProposalStages, StageOrder, proposalList, voted } from "../../services";
 import { generateSortOptions, sortItems } from "./utils";
 
 const DEFAULT_PAGE_SIZE = 6;

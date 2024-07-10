@@ -1,7 +1,7 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { AvatarIcon, Breadcrumbs, Heading, IconType, Tag, type IBreadcrumbsLink, type TagVariant } from "@aragon/ods";
-import { ProposalStatus } from "../../services/proposal/domain";
-import { type ProposalDetail } from "../../services/proposal/selectors";
+import { ProposalStatus } from "../../services/domain";
+import { type ProposalDetail } from "../../services/selectors";
 import { Publisher } from "./publisher";
 
 interface IHeaderProposalProps {
