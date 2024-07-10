@@ -1,6 +1,10 @@
 import { PUB_API_BASE_URL } from "@/constants";
 import { printStageParam, type IVotingPower } from "@/features/proposals";
-import { type ICouncilMember, type IMemberDataListItem, type IVoterVotingActivity } from "@/server/client/types/domain";
+import {
+  type ICouncilMemberDataListItem,
+  type IDelegateDataListItem,
+  type IVoterVotingActivity,
+} from "@/server/client/types/domain";
 import { encodeSearchParams } from "@/utils/query";
 import { type IPaginatedResponse } from "@/utils/types";
 import type {
@@ -14,17 +18,17 @@ import type {
 class MemberService {
   private endpoint = `${PUB_API_BASE_URL}/delegates`;
 
-  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<ICouncilMember[]> {
+  async fetchCouncilMembers(params: IFetchCouncilMembersParams): Promise<ICouncilMemberDataListItem[]> {
     const url = encodeSearchParams(`${PUB_API_BASE_URL}/councilMembers`, params);
     const response = await fetch(url);
-    const parsed: ICouncilMember[] = await response.json();
+    const parsed: ICouncilMemberDataListItem[] = await response.json();
     return parsed;
   }
 
-  async fetchDelegates(params: IFetchDelegatesParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
+  async fetchDelegates(params: IFetchDelegatesParams): Promise<IPaginatedResponse<IDelegateDataListItem>> {
     const url = encodeSearchParams(this.endpoint, params);
     const response = await fetch(url);
-    const parsed: IPaginatedResponse<IMemberDataListItem> = await response.json();
+    const parsed: IPaginatedResponse<IDelegateDataListItem> = await response.json();
     return parsed;
   }
 
@@ -48,11 +52,11 @@ class MemberService {
     };
   }
 
-  async fetchDelegationsReceived(params: IFetchDelegationsParams): Promise<IPaginatedResponse<IMemberDataListItem>> {
+  async fetchDelegationsReceived(params: IFetchDelegationsParams): Promise<IPaginatedResponse<IDelegateDataListItem>> {
     const url = encodeSearchParams(`${this.endpoint}/delegators`, params);
     const response = await fetch(url);
 
-    const parsed: IPaginatedResponse<IMemberDataListItem> = await response.json();
+    const parsed: IPaginatedResponse<IDelegateDataListItem> = await response.json();
     return parsed;
   }
 

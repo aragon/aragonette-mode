@@ -1,4 +1,4 @@
-export interface IMemberDataListItem {
+export interface IDelegateDataListItem {
   address: string;
   name?: string; // name or ensName
   votingPower?: number;
@@ -11,7 +11,7 @@ export type IDelegator = {
   votingPower: string;
 };
 
-export type ICouncilMember = {
+export type ICouncilMemberDataListItem = {
   name?: string;
   address: string;
   bio?: string;

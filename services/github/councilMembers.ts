@@ -2,7 +2,7 @@ import { GITHUB_API_URL } from "@/constants";
 import { downloadGitHubFile } from "@/services/github/fetch";
 import { type ICouncilMembersProvider } from "../../server/models/members/types";
 
-interface IGetGitHubCouncilDataParams {
+export interface IGetGitHubCouncilDataParams {
   user: string;
   repo: string;
   council_filename: string;

@@ -1,9 +1,8 @@
-import { type ICouncilMember, type IMemberDataListItem } from "../../client/types/domain";
+import { type IGetGitHubFeaturedDelegatesDataParams, type IGetGitHubCouncilDataParams } from "@/services/github";
+import { type ICouncilMemberDataListItem, type IDelegateDataListItem } from "../../client/types/domain";
 
-export interface ICouncilMembersProvider {
-  (params?: any): Promise<ICouncilMember[]>;
-}
+export type ICouncilMembersProvider = (params: IGetGitHubCouncilDataParams) => Promise<ICouncilMemberDataListItem[]>;
 
-export interface IFeatureDelegateProvider {
-  (params?: any): Promise<IMemberDataListItem[]>;
-}
+export type IFeaturedDelegateProvider = (
+  params: IGetGitHubFeaturedDelegatesDataParams
+) => Promise<IDelegateDataListItem[]>;
