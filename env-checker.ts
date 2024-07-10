@@ -38,6 +38,7 @@ const checkEnvVar = {
   NEXT_PUBLIC_SNAPSHOT_SPACE: str(),
   EMERGENCY_PREFIX: str({ devDefault: "SOS" }),
   SNAPSHOT_API_URL: url({ devDefault: "https://testnet.hub.snapshot.org/graphql" }),
+  SNAPSHOT_API_KEY: str({ devDefault: "" }), //TODO: Optional while we don't have an API key
   SNAPSHOT_URL: url({ devDefault: "https://testnet.snapshot.org/" }),
   SNAPSHOT_TEST_HUB: url({ devDefault: "https://testnet.hub.snapshot.org" }), //TODO: Needed??
   DISCORD_URL: str({ devDefault: "https://discord.com" }),

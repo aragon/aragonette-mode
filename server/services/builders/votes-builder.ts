@@ -1,15 +1,86 @@
 import { PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
-import { type IProposalVote } from "@/features/proposals";
+import { type IProposalVote, type IVoted } from "@/features/proposals";
+import { ProposalStages, type IVotingData } from "@/features/proposals/services";
 import { type Vote } from "@/server/models/proposals/types";
 import { logger } from "@/services/logger";
+import { getMultisigVotingPower } from "@/services/rpc/multisig/utils";
+import { getMultisigApprovalData, getMultisigConfirmationData } from "@/services/rpc/multisig/votes";
+import { getSnapshotVotes, getSnapshotVotingPower } from "@/services/snapshot/votes";
+import { emptyPagination, paginateArray } from "@/utils/pagination";
+import { type IPaginatedResponse } from "@/utils/types";
 import { type Address } from "viem";
-import { ProposalStages } from "@/features/proposals/services";
-import { getMultisigVotingPower } from "../../../services/rpc/multisig/utils";
-import { getMultisigApprovalData, getMultisigConfirmationData } from "../../../services/rpc/multisig/votes";
-import { getSnapshotProposalStage } from "../../../services/snapshot/proposalStages";
-import { getSnapshotVotes, getSnapshotVotingPower } from "../../../services/snapshot/votes";
 
-export async function getVotes(providerId: string, stage: ProposalStages): Promise<Vote[]> {
+export async function getProposalVotes(
+  providerId: string,
+  choices: string[],
+  stage: ProposalStages,
+  page: number,
+  limit: number
+): Promise<IPaginatedResponse<Vote>> {
+  logger.info(`Fetching votes for proposalId (${providerId}-${stage})...`);
+  switch (stage) {
+    case ProposalStages.DRAFT:
+    case ProposalStages.TRANSPARENCY_REPORT: {
+      return emptyPagination;
+    }
+    case ProposalStages.COUNCIL_APPROVAL: {
+      const multisigVotes = await getMultisigApprovalData({
+        chain: PUB_CHAIN.id,
+        contractAddress: PUB_MULTISIG_ADDRESS,
+        providerId: BigInt(providerId),
+      });
+
+      return paginateArray<Vote>(multisigVotes, page, limit);
+    }
+    case ProposalStages.COMMUNITY_VOTING: {
+      const votes = await getSnapshotVotes({
+        space: SNAPSHOT_SPACE,
+        providerId,
+        page,
+        limit,
+      });
+
+      const parsedVotes = votes.map((vote) => {
+        const currChoices = choices || ["approve", "reject"];
+        const choiceIndex = parseInt(vote.choice);
+        const choice = isNaN(choiceIndex) ? vote.choice : currChoices[choiceIndex - 1];
+        return {
+          ...vote,
+          choice: choice,
+        };
+      });
+
+      return {
+        data: parsedVotes,
+        pagination: {
+          page,
+          pages: 0, // Infinite scroll. No need to calculate pages.
+          limit,
+          total: 0, // Infinite scroll. No need to calculate total.
+        },
+      };
+    }
+    case ProposalStages.COUNCIL_CONFIRMATION: {
+      const multisigVotes = await getMultisigConfirmationData({
+        chain: PUB_CHAIN.id,
+        contractAddress: PUB_MULTISIG_ADDRESS,
+        providerId: BigInt(providerId),
+      });
+
+      return paginateArray<Vote>(multisigVotes, page, limit);
+    }
+    default: {
+      throw new Error(`Invalid stage: ${stage}`);
+    }
+  }
+}
+
+export async function getVoterVotes(
+  providerId: string,
+  choices: string[],
+  stage: ProposalStages,
+  voter: Address
+): Promise<Vote[]> {
   logger.info(`Fetching votes for proposalId (${providerId}-${stage})...`);
   switch (stage) {
     case ProposalStages.DRAFT:
@@ -23,16 +94,19 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
         providerId: BigInt(providerId),
       });
 
-      return multisigVotes;
+      return multisigVotes.filter((vote) => vote.voter === voter);
     }
     case ProposalStages.COMMUNITY_VOTING: {
-      const snapshotVotes = await getSnapshotVotes({ providerId });
-      const snapshotProposal = await getSnapshotProposalStage({ proposalId: providerId });
+      const votes = await getSnapshotVotes({
+        space: SNAPSHOT_SPACE,
+        providerId,
+        voter,
+      });
 
-      return snapshotVotes.map((vote) => {
-        const choices = snapshotProposal?.voting?.choices || ["approve", "reject"];
+      return votes.map((vote) => {
+        const currChoices = choices || ["approve", "reject"];
         const choiceIndex = parseInt(vote.choice);
-        const choice = isNaN(choiceIndex) ? vote.choice : choices[choiceIndex - 1];
+        const choice = isNaN(choiceIndex) ? vote.choice : currChoices[choiceIndex - 1];
         return {
           ...vote,
           choice: choice,
@@ -46,7 +120,7 @@ export async function getVotes(providerId: string, stage: ProposalStages): Promi
         providerId: BigInt(providerId),
       });
 
-      return multisigVotes;
+      return multisigVotes.filter((vote) => vote.voter === voter);
     }
     default: {
       throw new Error(`Invalid stage: ${stage}`);
@@ -89,11 +163,33 @@ const parseVotesData = (data: Vote[]): IProposalVote[] => {
   });
 };
 
-export async function buildVotesResponse(providerId: string, proposalStage: ProposalStages): Promise<IProposalVote[]> {
-  logger.info(`Fetching votes for proposalId (${providerId}-${proposalStage})...`);
-  const proposalVotes = await getVotes(providerId, proposalStage);
+export async function buildVotesResponse(
+  votingData: IVotingData,
+  proposalStage: ProposalStages,
+  page: number,
+  limit: number
+): Promise<IPaginatedResponse<IProposalVote>> {
+  logger.info(`Fetching votes for proposalId (${votingData.providerId}-${proposalStage})...`);
+  const proposalVotes = await getProposalVotes(votingData.providerId, votingData.choices, proposalStage, page, limit);
 
-  return parseVotesData(proposalVotes);
+  return {
+    data: parseVotesData(proposalVotes.data),
+    pagination: proposalVotes.pagination,
+  };
+}
+
+export async function buildVotedResponse(
+  votingData: IVotingData,
+  proposalStage: ProposalStages,
+  voter: Address
+): Promise<IVoted> {
+  logger.info(`Fetching votes for proposalId (${votingData.providerId}-${proposalStage})...`);
+  const voterVotes = await getVoterVotes(votingData.providerId, votingData.choices, proposalStage, voter);
+
+  return {
+    address: voter,
+    hasVoted: voterVotes.length > 0,
+  };
 }
 
 export async function buildVotingPowerResponse(

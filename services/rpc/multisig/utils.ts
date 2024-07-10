@@ -25,6 +25,8 @@ import {
 import { ProposalData } from "@/services/rpc/multisig/types";
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
+  if (!metadata.resources) throw new Error("No resources found in proposal metadata");
+
   const githubLink = metadata.resources.find((resource) => resource.name.toLowerCase() === "github");
   const transparencyReportLink =
     secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "transparency_report") ??
@@ -337,15 +339,24 @@ export const requestProposalsData = async function (
 
   let proposals: MultisigProposal[] = [];
 
+  const getPromises = [];
   for (let i = 0; i < numProposals; i++) {
-    const proposalData = await getProposalData(chain, contractAddress, BigInt(i));
+    getPromises.push(getProposalData(chain, contractAddress, BigInt(i)));
+  }
+
+  const proposalDataList = await Promise.all(getPromises);
+
+  const processPromises = [];
+  for (let i = 0; i < numProposals; i++) {
+    const proposalData = proposalDataList[i];
 
     // skip proposal if no proposal data can be fetched
     if (!proposalData) continue;
 
-    const multisigProposalStages = await processProposalData(proposalData, contractAddress, i);
-    proposals = proposals.concat(multisigProposalStages);
+    processPromises.push(processProposalData(proposalData, contractAddress, i));
   }
+  const processedProposals = await Promise.all(processPromises);
+  proposals = proposals = proposals.concat(processedProposals.flat());
 
   return proposals;
 };

@@ -261,25 +261,31 @@ class ProposalRepository {
       });
 
       if (proposal) {
+        const promises = [];
         for (const stage of stagesData) {
           if (proposal.Stages.find((s) => s.id === stage.id)) {
-            await PrismaDatabase.stage.update({
-              where: { id: stage.id },
-              data: stage,
-            });
+            promises.push(
+              PrismaDatabase.stage.update({
+                where: { id: stage.id },
+                data: stage,
+              })
+            );
           } else {
-            await PrismaDatabase.stage.create({
-              data: {
-                ...stage,
-                proposal: {
-                  connect: {
-                    id: proposalData.id,
+            promises.push(
+              PrismaDatabase.stage.create({
+                data: {
+                  ...stage,
+                  proposal: {
+                    connect: {
+                      id: proposalData.id,
+                    },
                   },
                 },
-              },
-            });
+              })
+            );
           }
         }
+        await Promise.all(promises);
         proposal = await PrismaDatabase.proposal.update({
           where: { id: proposalData.id },
           data: {

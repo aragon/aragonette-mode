@@ -41,6 +41,7 @@ export const GITHUB_FEATURED_DELEGATES_FILENAME = process.env.GITHUB_FEATURED_DE
 
 // Snapshot
 export const SNAPSHOT_API_URL = process.env.SNAPSHOT_API_URL ?? "https://hub.snapshot.org/graphql";
+export const SNAPSHOT_API_KEY = process.env.SNAPSHOT_API_KEY ?? "";
 export const SNAPSHOT_SPACE = process.env.NEXT_PUBLIC_SNAPSHOT_SPACE ?? "test-ens.eth";
 export const SNAPSHOT_URL = "https://testnet.snapshot.org/";
 export const SNAPSHOT_TEST_HUB = "https://testnet.hub.snapshot.org";

@@ -1,7 +1,7 @@
-import { getFeaturedDelegates } from "@/server/services/builders/delegates-builder";
 import { parseDelegatesSortBy, parseDelegatesSortDir, type IDelegateDataListItem } from "@/server/client/types/domain";
-import { logger } from "@/services/logger";
+import { getDelegates } from "@/server/services/builders/delegates-builder";
 import { checkNullableParam } from "@/server/utils";
+import { logger } from "@/services/logger";
 import { parsePaginationParams } from "@/utils/pagination";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -23,7 +23,7 @@ export default async function handler(
 
     const { page: pageInt, limit: limitInt } = parsePaginationParams(parsedPage, parsedLimit);
 
-    const paginatedDelegates = await getFeaturedDelegates(pageInt, limitInt, typedSortBy, typedSortDir);
+    const paginatedDelegates = await getDelegates(pageInt, limitInt, typedSortBy, typedSortDir);
 
     res.status(200).json(paginatedDelegates);
   } catch (error) {
