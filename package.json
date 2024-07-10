@@ -52,7 +52,7 @@
     "recharts": "^2.12.7",
     "tailwindcss-fluid-type": "^2.0.6",
     "viem": "^2.9.2",
-    "wagmi": "^2.5.12",
+    "wagmi": "^2.10.10",
     "zod": "^3.23.8"
   },
   "devDependencies": {
