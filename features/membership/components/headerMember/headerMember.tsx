@@ -196,7 +196,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
               {isTokenVoting && (
                 <div className="flex flex-row justify-between gap-y-3 py-4 md:justify-normal md:gap-x-16">
                   {/* Voting power */}
-                  {votingPower && (
+                  {votingPower != null && (
                     <div className="flex flex-col gap-y-1 leading-tight">
                       <div className="flex items-baseline gap-x-1">
                         <span className="text-2xl text-neutral-800">
@@ -215,7 +215,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                   )}
 
                   {/* Token Balance */}
-                  {tokenBalance && (
+                  {tokenBalance != null && (
                     <div className="flex flex-col gap-y-1 leading-tight">
                       <div className="flex items-baseline gap-x-1">
                         <span className="text-2xl text-neutral-800">
@@ -236,7 +236,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                   )}
 
                   {/* Delegations */}
-                  {delegationCount && (
+                  {delegationCount != null && (
                     <div className="flex flex-col gap-y-1 leading-tight">
                       <span className="text-2xl text-neutral-800">
                         {formatterUtils.formatNumber(delegationCount, { format: NumberFormat.GENERIC_SHORT })}

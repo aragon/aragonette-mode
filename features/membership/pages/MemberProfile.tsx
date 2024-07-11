@@ -1,18 +1,14 @@
-import { ProposalStages } from "@/features/proposals";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { isAddressEqual } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
-import { Heading } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
-import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
-import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 import { councilMemberList } from "../services/query-options";
 
 export const MemberProfile = () => {
@@ -58,21 +54,22 @@ export const MemberProfile = () => {
             <div className="flex w-full flex-col gap-y-6 overflow-auto">
               <DelegationStatement message={announcement?.message} />
               {/* Delegations Received */}
-              <div className="flex flex-col gap-y-3">
+              {/* <div className="flex flex-col gap-y-3">
                 <Heading size="h3">Delegations received</Heading>
                 <DelegationsDataList delegate={profileAddress} />
-              </div>
+              </div> */}
             </div>
           )}
 
-          <div className="flex w-full flex-col gap-y-6">
-            {/* Voting activity */}
+          {/* TODO enable for launch */}
+          {/* Voting activity */}
+          {/* <div className="flex w-full flex-col gap-y-6">
             <Heading size="h2">Voting activity</Heading>
             <MemberVotesDataList
               address={profileAddress}
               stage={isCouncilMember ? ProposalStages.COUNCIL_APPROVAL : ProposalStages.COMMUNITY_VOTING}
             />
-          </div>
+          </div> */}
         </div>
         {/* Aside */}
         <aside className="flex w-full flex-1 flex-col gap-y-12 md:max-w-[320px] md:gap-y-20">
