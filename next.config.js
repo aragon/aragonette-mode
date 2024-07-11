@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@aragon/ods"],
   trailingSlash: true,
   images: {
     remotePatterns: [
