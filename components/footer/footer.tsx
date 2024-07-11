@@ -35,9 +35,9 @@ interface ILinkItem {
 
 const LinkItem: React.FC<ILinkItem> = ({ path, name }) => {
   return (
-    <li className="py-4 md:py-0">
+    <li className="group py-4 md:py-0">
       <Link href={path} className="overflow-hidden">
-        <span className="line-clamp-1 leading-tight text-neutral-500">{name}</span>
+        <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">{name}</span>
       </Link>
     </li>
   );
