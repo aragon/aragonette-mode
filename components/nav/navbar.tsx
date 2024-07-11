@@ -1,13 +1,13 @@
-import WalletContainer from "@/components/WalletContainer";
+import { WalletContainer } from "@/components/walletContainer/walletContainer";
 import { AvatarIcon, IconType } from "@aragon/ods";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
 import { Dashboard, Learn, Members, Proposals } from "./routes";
-import { BrandingSubline } from "../brandingSubline/brandingSubline";
 
 export const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);

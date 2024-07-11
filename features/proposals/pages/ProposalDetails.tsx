@@ -327,7 +327,7 @@ export default function ProposalDetails() {
     const breadcrumbs = generateBreadcrumbs(router.asPath);
     const isParentProposal = proposal.includedPips.length > 0;
     const showActions = proposal.actions.length > 0;
-    const showVoting = true; // isParentProposal;
+    const showVoting = isParentProposal;
     const showIncludedPIPS = isParentProposal;
 
     // calculate whether proposal can advance with next approval
