@@ -46,6 +46,10 @@ export const SNAPSHOT_SPACE = process.env.NEXT_PUBLIC_SNAPSHOT_SPACE ?? "test-en
 export const SNAPSHOT_URL = "https://testnet.snapshot.org/";
 export const SNAPSHOT_TEST_HUB = "https://testnet.hub.snapshot.org";
 
+// Arweave and Paragraph
+export const PUB_PARAGRAPH_PUBLICATION_SLUG = process.env.NEXT_PUBLIC_PARAGRAPH_PUBLICATION_SLUG ?? "";
+export const PUB_ARWEAVE_API_URL = process.env.NEXT_PUBLIC_ARWEAVE_API_URL ?? "";
+
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";
 export const PUB_APP_DESCRIPTION = "Streamlined user interface for Polygon governance";

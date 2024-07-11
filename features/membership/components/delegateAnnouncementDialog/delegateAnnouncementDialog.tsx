@@ -71,6 +71,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
     formState: { errors },
     handleSubmit,
     register,
+    reset,
   } = useForm<z.infer<typeof MetadataSchema>>({
     resolver: zodResolver(MetadataSchema),
     mode: "onTouched",
@@ -95,6 +96,11 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
     });
   };
 
+  const handleOnClose = () => {
+    reset();
+    onClose();
+  };
+
   const onSuccessfulAnnouncement = () => {
     setTimeout(() => {
       router.push(MemberProfile.getPath(address!));
@@ -111,7 +117,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
 
   return (
     <DialogRoot {...otherProps} containerClassName="!max-w-[520px]">
-      <DialogHeader title="Create your delegation profile" onCloseClick={onClose} onBackClick={onClose} />
+      <DialogHeader title="Create your delegation profile" onCloseClick={handleOnClose} onBackClick={handleOnClose} />
       <DialogContent className="flex flex-col gap-y-4 md:gap-y-6">
         <InputText
           label="Identifier"
@@ -230,7 +236,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             variant="secondary"
             size="lg"
             className="!rounded-full"
-            onClick={onClose}
+            onClick={handleOnClose}
             disabled={isConfirming || status === "pending"}
           >
             Cancel
