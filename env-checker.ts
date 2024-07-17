@@ -36,6 +36,7 @@ const checkEnvVar = {
   GITHUB_COUNCIL_FILENAME: str(),
   GITHUB_FEATURED_DELEGATES_FILENAME: str(),
   NEXT_PUBLIC_SNAPSHOT_SPACE: str(),
+  PROPOSAL_PREFIX: str({ devDefault: "AIP" }),
   EMERGENCY_PREFIX: str({ devDefault: "SOS" }),
   SNAPSHOT_API_URL: url({ devDefault: "https://testnet.hub.snapshot.org/graphql" }),
   SNAPSHOT_API_KEY: str({ devDefault: "" }), //TODO: Optional while we don't have an API key
