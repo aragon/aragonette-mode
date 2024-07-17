@@ -52,4 +52,5 @@ export const PUB_PROJECT_URL = "https://polygon.technology/";
 export const PUB_WALLET_ICON = "https://avatars.githubusercontent.com/u/30753617";
 
 export const PUB_DISCORD_URL = "https://discord.com/";
+export const PROPOSAL_PREFIX = process.env.PROPOSAL_PREFIX ?? "PIP";
 export const EMERGENCY_PREFIX = process.env.EMERGENCY_PREFIX ?? "SOS";

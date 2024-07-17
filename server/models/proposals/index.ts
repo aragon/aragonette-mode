@@ -1,3 +1,4 @@
+import { PROPOSAL_PREFIX } from "@/constants";
 import PrismaDatabase from "@/services/database/PrismaDatabase";
 import { type IPaginatedResponse } from "@/utils/types";
 import {
@@ -113,6 +114,18 @@ export const serializeStageType = (stage: ProposalStages): StageType => {
   }
 };
 
+const getImprovedSearch = (search?: string) => {
+  if (!search) {
+    return null;
+  }
+  const parsedSearch = search.trim();
+  const intSearch = parseInt(parsedSearch);
+  if (Number.isNaN(intSearch)) {
+    return search;
+  }
+  return intSearch > 9 ? `${PROPOSAL_PREFIX}-${intSearch}` : `${PROPOSAL_PREFIX}-0${intSearch}`;
+};
+
 class ProposalRepository {
   async getProposals(
     page: number,
@@ -124,16 +137,20 @@ class ProposalRepository {
   ): Promise<IPaginatedResponse<IProposal>> {
     try {
       let where = {};
-      if (search) {
+      const improvedSearch = getImprovedSearch(search);
+      if (improvedSearch) {
         where = {
+          id: {
+            search: improvedSearch,
+          },
           title: {
-            search: search,
+            search: improvedSearch,
           },
           description: {
-            search: search,
+            search: improvedSearch,
           },
           body: {
-            search: search,
+            search: improvedSearch,
           },
         };
       }
@@ -160,15 +177,26 @@ class ProposalRepository {
         };
       }
 
-      let orderBy = {};
-      if (sortBy === ProposalSortBy.Title) {
-        orderBy = { title: sortDir };
-      } else if (sortBy === ProposalSortBy.Status) {
-        orderBy = { status: sortDir };
-      } else if (sortBy === ProposalSortBy.IsEmergency) {
-        orderBy = { isEmergency: sortDir };
-      } else if (sortBy === ProposalSortBy.CreatedAt) {
-        orderBy = { createdAt: sortDir };
+      let orderBy: any = {};
+      if (search) {
+        orderBy = {
+          _relevance: {
+            fields: ["id", "title", "description", "body"],
+            search: improvedSearch,
+            sort: "desc",
+          },
+          createdAt: "desc",
+        };
+      } else {
+        if (sortBy === ProposalSortBy.Title) {
+          orderBy = { title: sortDir };
+        } else if (sortBy === ProposalSortBy.Status) {
+          orderBy = { status: sortDir };
+        } else if (sortBy === ProposalSortBy.IsEmergency) {
+          orderBy = { isEmergency: sortDir };
+        } else if (sortBy === ProposalSortBy.CreatedAt) {
+          orderBy = { createdAt: sortDir };
+        }
       }
 
       const { page: pageV, limit: limitV, pages: pagesV } = checkPaginationParams(page, limit, totalProposals);
