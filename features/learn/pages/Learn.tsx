@@ -8,7 +8,7 @@ export const LearnPage = () => {
         <div className="mx-auto flex max-w-screen-lg flex-col gap-y-10 px-4 md:gap-y-12">
           <header className="flex flex-col gap-y-3">
             <Heading size="h1">Learn</Heading>
-            <p className=" text-neutral-500 md:text-lg">
+            <p className="text-neutral-500 md:text-lg">
               Find everything you need to understand Polygon’s governance. Discover the basics, dive into advanced
               topics, and stay updated with the latest developments and best practices in the blockchain world.
             </p>
@@ -55,34 +55,34 @@ export const LearnPage = () => {
               <Heading size="h2">Glossary & FAQs</Heading>
             </div>
             <AccordionItem value="item-1">
-              <AccordionItemHeader className="!items-start text-left text-neutral-500  md:text-lg">
+              <AccordionItemHeader className="!items-start text-left text-neutral-500 md:text-lg">
                 What is a PIP?
               </AccordionItemHeader>
-              <AccordionItemContent className=" text-neutral-500 md:text-lg">
+              <AccordionItemContent className="text-neutral-500 md:text-lg">
                 Polygon Improvement Proposals (PIPs) describe community standards for the Polygon ecosystem, including
                 core protocol specifications such as Heimdall and Bor, client APIs, and contract standards, etc.
               </AccordionItemContent>
             </AccordionItem>
             <AccordionItem value="item-2">
-              <AccordionItemHeader className="!items-start text-left text-neutral-500  md:text-lg">
+              <AccordionItemHeader className="!items-start text-left text-neutral-500 md:text-lg">
                 Who can submit a PIP?
               </AccordionItemHeader>
               <AccordionItemContent className="text-neutral-500 md:text-lg">Item 2 content</AccordionItemContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionItemHeader className="!items-start text-left text-neutral-500  md:text-lg">
+              <AccordionItemHeader className="!items-start text-left text-neutral-500 md:text-lg">
                 What is the difference between the PPGC and the PC?
               </AccordionItemHeader>
               <AccordionItemContent className="text-neutral-500 md:text-lg">Item 3 content</AccordionItemContent>
             </AccordionItem>
             <AccordionItem value="item-4">
-              <AccordionItemHeader className="!items-start text-left text-neutral-500  md:text-lg">
+              <AccordionItemHeader className="!items-start text-left text-neutral-500 md:text-lg">
                 How do proposals advance from one stage to the next?
               </AccordionItemHeader>
               <AccordionItemContent className="text-neutral-500 md:text-lg">Item 4 content</AccordionItemContent>
             </AccordionItem>
             <AccordionItem value="item-5">
-              <AccordionItemHeader className="!items-start text-left text-neutral-500  md:text-lg">
+              <AccordionItemHeader className="!items-start text-left text-neutral-500 md:text-lg">
                 How do I claim rewards?
               </AccordionItemHeader>
               <AccordionItemContent className="text-neutral-500 md:text-lg">Item 5 content</AccordionItemContent>
