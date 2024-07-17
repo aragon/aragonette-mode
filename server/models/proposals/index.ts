@@ -177,25 +177,29 @@ class ProposalRepository {
         };
       }
 
-      let orderBy: any = {};
+      const orderBy: any[] = [];
       if (search) {
-        orderBy = {
-          _relevance: {
-            fields: ["id", "title", "description", "body"],
-            search: improvedSearch,
-            sort: "desc",
+        orderBy.concat([
+          {
+            _relevance: {
+              fields: ["id", "title", "description", "body"],
+              search: improvedSearch,
+              sort: "desc",
+            },
           },
-          createdAt: "desc",
-        };
+          {
+            createdAt: "desc",
+          },
+        ]);
       } else {
         if (sortBy === ProposalSortBy.Title) {
-          orderBy = { title: sortDir };
+          orderBy.concat([{ title: sortDir }]);
         } else if (sortBy === ProposalSortBy.Status) {
-          orderBy = { status: sortDir };
+          orderBy.concat([{ status: sortDir }]);
         } else if (sortBy === ProposalSortBy.IsEmergency) {
-          orderBy = { isEmergency: sortDir };
+          orderBy.concat([{ isEmergency: sortDir }]);
         } else if (sortBy === ProposalSortBy.CreatedAt) {
-          orderBy = { createdAt: sortDir };
+          orderBy.concat([{ createdAt: sortDir }]);
         }
       }
 
