@@ -1,5 +1,6 @@
 import { type Address, getAddress } from "viem";
 import { cleanEnv, str, url, makeValidator } from "envalid";
+import { logger } from "./services/logger";
 
 const address = makeValidator<Address>((input: string) => {
   try {
@@ -9,7 +10,7 @@ const address = makeValidator<Address>((input: string) => {
   }
 });
 
-console.log("Checking environment variables...");
+logger.info("Checking environment variables...");
 
 const checkEnvVar = {
   NEXT_PUBLIC_DAO_ADDRESS: address(),
@@ -50,4 +51,4 @@ const checkEnvVar = {
 // Validate environment variables
 cleanEnv(process.env, checkEnvVar);
 
-console.log("Environment variables are correct!");
+logger.info("Environment variables are correct!");

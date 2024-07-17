@@ -1,12 +1,12 @@
 import { type IProposal } from "@/features/proposals";
-import { buildVotingResponse } from "@/server/services/builders/proposal-builder";
 import proposalRepository, {
   parseProposalSortBy,
   parseProposalSortDir,
   parsedProposalStatus,
 } from "@/server/models/proposals";
-import { logger } from "@/services/logger";
+import { buildVotingResponse } from "@/server/services/builders/proposal-builder";
 import { checkNullableParam } from "@/server/utils";
+import { logger } from "@/services/logger";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 

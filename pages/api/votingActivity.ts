@@ -1,10 +1,10 @@
-import { getVotingActivity } from "@/server/services/builders/delegates-builder";
-import { type IVoterVotingActivity } from "@/server/client/types/domain";
 import { ProposalStages } from "@/features/proposals";
-import { parseSnapshotChoice } from "@/services/snapshot/utils";
+import { type IVoterVotingActivity } from "@/server/client/types/domain";
 import proposalRepository from "@/server/models/proposals";
-import { logger } from "@/services/logger";
+import { getVotingActivity } from "@/server/services/builders/delegates-builder";
 import { checkParam, parseStageParam } from "@/server/utils";
+import { logger } from "@/services/logger";
+import { parseSnapshotChoice } from "@/services/snapshot/utils";
 import { type IError } from "@/utils/types";
 import { type NextApiRequest, type NextApiResponse } from "next/types";
 import { getAddress } from "viem";

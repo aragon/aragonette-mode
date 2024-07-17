@@ -1,5 +1,6 @@
-import { buildProposalsResponse } from "@/server/services/builders/proposal-builder";
+import { type IProposal } from "@/features/proposals";
 import proposalRepository from "@/server/models/proposals";
+import { buildProposalsResponse } from "@/server/services/builders/proposal-builder";
 import { logger } from "@/services/logger";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { IProposal } from "@/features/proposals";

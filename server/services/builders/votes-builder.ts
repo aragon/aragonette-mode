@@ -1,14 +1,14 @@
 import { PUB_CHAIN, PUB_MULTISIG_ADDRESS, SNAPSHOT_SPACE } from "@/constants";
 import { type IProposalVote, type IVoted } from "@/features/proposals";
+import { ProposalStages, type IVotingData } from "@/features/proposals/services";
 import { type Vote } from "@/server/models/proposals/types";
-import { type Address } from "viem";
-import { IVotingData, ProposalStages } from "../../../features/proposals/services";
-import { getMultisigVotingPower } from "../../../services/rpc/multisig/utils";
-import { getMultisigApprovalData, getMultisigConfirmationData } from "../../../services/rpc/multisig/votes";
-import { getSnapshotVotes, getSnapshotVotingPower } from "../../../services/snapshot/votes";
 import { logger } from "@/services/logger";
-import { paginateArray, emptyPagination } from "@/utils/pagination";
-import { IPaginatedResponse } from "@/utils/types";
+import { getMultisigVotingPower } from "@/services/rpc/multisig/utils";
+import { getMultisigApprovalData, getMultisigConfirmationData } from "@/services/rpc/multisig/votes";
+import { getSnapshotVotes, getSnapshotVotingPower } from "@/services/snapshot/votes";
+import { emptyPagination, paginateArray } from "@/utils/pagination";
+import { type IPaginatedResponse } from "@/utils/types";
+import { type Address } from "viem";
 
 export async function getProposalVotes(
   providerId: string,

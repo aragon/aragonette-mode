@@ -1,20 +1,27 @@
-import WalletContainer from "@/components/WalletContainer";
+import { WalletContainer } from "@/components/walletContainer/walletContainer";
 import { AvatarIcon, IconType } from "@aragon/ods";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { BrandingSubline } from "../brandingSubline/brandingSubline";
+import { Layer3Banner } from "./layer3Banner";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
 import { Dashboard, Learn, Members, Proposals } from "./routes";
-import { BrandingSubline } from "../brandingSubline/brandingSubline";
 
 export const Navbar: React.FC = () => {
+  const { pathname } = useRouter();
+
   const [open, setOpen] = useState(false);
   const navLinks: INavLink[] = [Dashboard, Proposals, Members, Learn];
 
+  const showLayer3Banner = pathname === Learn.path;
+
   return (
     <>
+      <Layer3Banner show={showLayer3Banner} />
       <nav className="h-30 sticky top-0 z-[var(--hub-navbar-z-index)] flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
         <div className="flex w-full max-w-[1280px] flex-col gap-x-2 gap-y-3 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-x-3">
           <div className="flex w-full items-center justify-between">
@@ -30,7 +37,7 @@ export const Navbar: React.FC = () => {
                   src="/logo-polygon.svg"
                   width="164"
                   height="32"
-                  className="hidden shrink-0 sm:-ml-1 sm:block"
+                  className="hidden shrink-0 sm:block"
                   alt="Polygon"
                   priority={true}
                 />
@@ -64,7 +71,7 @@ export const Navbar: React.FC = () => {
             </div>
           </div>
           {/* Tab wrapper */}
-          <ul className="hidden items-center gap-x-10 md:flex lg:pl-10">
+          <ul className="hidden items-center gap-x-10 md:flex">
             {navLinks.map(({ id, name, path }) => (
               <NavLink name={name} path={path} id={id} key={id} />
             ))}

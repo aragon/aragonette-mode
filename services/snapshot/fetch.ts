@@ -1,7 +1,7 @@
-import { SNAPSHOT_API_URL, SNAPSHOT_API_KEY } from "@/constants";
-import { snapshotVotesQuery, snapshotVotingPowerQuery, snapshotProposalsQuery, snapshotProposalQuery } from "./gql";
-import { type SnapshotVoteData, type SnapshotVotingPowerData, type SnapshotProposalData } from "./types";
+import { SNAPSHOT_API_KEY, SNAPSHOT_API_URL } from "@/constants";
 import { logger } from "../logger";
+import { snapshotProposalQuery, snapshotProposalsQuery, snapshotVotesQuery, snapshotVotingPowerQuery } from "./gql";
+import { type SnapshotProposalData, type SnapshotVoteData, type SnapshotVotingPowerData } from "./types";
 
 const requestSnapshotData = async function <T>(
   func: string,
@@ -103,18 +103,17 @@ export const getSnapshotVotingPowerData = async function (params: {
   providerId?: string;
   voter: string;
 }) {
-  logger.info(
-    `Fetching Snapshot voting power for delegate (${params.voter}) ${params.providerId ? " for proposalId (" + params.providerId + ")" : ""}...`
-  );
+  if (params.providerId) {
+    logger.info(
+      `Fetching Snapshot voting power for delegate (${params.voter}) for proposalId (${params.providerId})...`
+    );
+  } else {
+    logger.info(`Fetching Snapshot voting power for delegate (${params.voter})...`);
+  }
+
   return requestSnapshotData<SnapshotVotingPowerData>("vp", snapshotVotingPowerQuery, {
     space: params.space,
     voter: params.voter,
     proposal: params.providerId,
   }).then((res) => res?.vp ?? 0);
 };
-
-export interface IGetSnapshotVotingActivityDataParams {
-  space: string;
-  providerId?: string;
-  voter?: string;
-}

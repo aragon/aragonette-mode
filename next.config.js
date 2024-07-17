@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@aragon/ods"],
   trailingSlash: true,
   images: {
     remotePatterns: [
@@ -7,6 +8,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "euc.li",
       },
+      { protocol: "https", hostname: "storage.googleapis.com" },
     ],
   },
   webpack: (config) => {

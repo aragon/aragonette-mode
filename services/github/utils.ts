@@ -1,15 +1,14 @@
 import { ProposalDetails } from "@/components/nav/routes";
-import { EMERGENCY_PREFIX, GITHUB_TOKEN, PUB_BASE_URL } from "@/constants";
-import Cache from "@/services/cache/VercelCache";
-import { type ProposalStage } from "../../server/models/proposals/types";
+import { EMERGENCY_PREFIX, PUB_BASE_URL } from "@/constants";
+import yaml from "js-yaml";
 import {
   ProposalStages,
-  type ICreator,
-  type IProposalResource,
   ProposalStatus,
   StageStatus,
+  type ICreator,
+  type IProposalResource,
 } from "../../features/proposals/services/domain";
-import yaml from "js-yaml";
+import { type ProposalStage } from "../../server/models/proposals/types";
 
 type MarkdownLink = {
   link?: string;

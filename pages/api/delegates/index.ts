@@ -1,14 +1,14 @@
+import { parseDelegatesSortBy, parseDelegatesSortDir, type IDelegateDataListItem } from "@/server/client/types/domain";
 import { getDelegates } from "@/server/services/builders/delegates-builder";
-import { parseDelegatesSortBy, parseDelegatesSortDir, type IMemberDataListItem } from "@/server/client/types/domain";
-import { logger } from "@/services/logger";
 import { checkNullableParam } from "@/server/utils";
+import { logger } from "@/services/logger";
 import { parsePaginationParams } from "@/utils/pagination";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<IPaginatedResponse<IMemberDataListItem> | IError>
+  res: NextApiResponse<IPaginatedResponse<IDelegateDataListItem> | IError>
 ) {
   try {
     const { page, limit, sortBy, sortDir } = req.query;
@@ -27,7 +27,6 @@ export default async function handler(
 
     res.status(200).json(paginatedDelegates);
   } catch (error) {
-    // TODO: Add error handling
     logger.error("Error fetching delegates:", error);
     res.status(500).json({ error: { message: "Error fetching delegates" } });
   }

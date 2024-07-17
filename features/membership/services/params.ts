@@ -1,6 +1,6 @@
 import { type ProposalStages } from "@/features/proposals";
+import { type IDelegatesSortBy, type IDelegatesSortDir } from "@/server/client/types/domain";
 import { type IFetchPaginatedParams } from "@/utils/types";
-import { type IDelegatesSortBy, type IDelegatesSortDir } from "../../../server/client/types/domain";
 
 export interface IFetchCouncilMembersParams extends IFetchPaginatedParams {}
 

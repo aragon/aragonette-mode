@@ -11,6 +11,8 @@ export const PUB_DELEGATION_CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_DELEGATI
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "sepolia") as ChainName;
 export const PUB_CHAIN = getChain(PUB_CHAIN_NAME);
+export const PUB_ENS_CHAIN_NAME = (process.env.NEXT_PUBLIC_ENS_CHAIN_NAME ?? "sepolia") as ChainName;
+export const PUB_ENS_CHAIN = getChain(PUB_ENS_CHAIN_NAME);
 
 // Network and services
 export const PUB_ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY ?? "";
@@ -43,6 +45,10 @@ export const SNAPSHOT_API_KEY = process.env.SNAPSHOT_API_KEY ?? "";
 export const SNAPSHOT_SPACE = process.env.NEXT_PUBLIC_SNAPSHOT_SPACE ?? "test-ens.eth";
 export const SNAPSHOT_URL = "https://testnet.snapshot.org/";
 export const SNAPSHOT_TEST_HUB = "https://testnet.hub.snapshot.org";
+
+// Arweave and Paragraph
+export const PUB_PARAGRAPH_PUBLICATION_SLUG = process.env.NEXT_PUBLIC_PARAGRAPH_PUBLICATION_SLUG ?? "";
+export const PUB_ARWEAVE_API_URL = process.env.NEXT_PUBLIC_ARWEAVE_API_URL ?? "";
 
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";

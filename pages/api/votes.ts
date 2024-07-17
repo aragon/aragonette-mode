@@ -1,10 +1,10 @@
 import { type IProposalVote } from "@/features/proposals";
+import proposalRepository from "@/server/models/proposals";
 import { buildVotesResponse } from "@/server/services/builders/votes-builder";
-import { checkParam, checkNullableParam, parseStageParam } from "@/server/utils";
+import { checkNullableParam, checkParam, parseStageParam } from "@/server/utils";
+import { logger } from "@/services/logger";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { logger } from "@/services/logger";
-import proposalRepository from "@/server/models/proposals";
 
 export default async function handler(
   req: NextApiRequest,
@@ -51,7 +51,6 @@ export default async function handler(
 
     res.status(200).json(votes);
   } catch (error: any) {
-    // TODO: Handle error cases
     logger.error(error.message);
     res.status(500).json({ error: { message: "Internal server error" } });
   }

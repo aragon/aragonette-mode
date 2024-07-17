@@ -5,8 +5,6 @@ import type {
   IProposalDataListItemStructureProps,
   ProposalType,
 } from "@aragon/ods";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { ProposalStages, ProposalTracks, StageOrder, type IProposal, ProposalStatus } from "../domain";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
@@ -39,7 +37,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_CONFIRMATION)?.voting?.endDate ??
       proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
 
-    const date = computeRelativeDate(status, activeStage.voting?.startDate, endDate);
+    const date = getRelativeDate(status, activeStage.voting?.startDate, endDate);
     const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
 
     // only community voting is mjv; draft has no voting data
@@ -85,16 +83,14 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
   }) as Array<ProposalListItem>;
 }
 
-function computeRelativeDate(status: ProposalStatus, startDate?: string, endDate?: string): string | undefined {
-  dayjs.extend(relativeTime);
-
+function getRelativeDate(status: ProposalStatus, startDate?: string, endDate?: string): string | undefined {
   switch (status) {
     case ProposalStatus.PENDING:
-      return startDate ? dayjs(startDate).toNow() : undefined;
+      return startDate;
     case ProposalStatus.REJECTED:
     case ProposalStatus.EXECUTED:
     case ProposalStatus.EXPIRED:
-      return endDate ? dayjs(endDate).fromNow() : undefined;
+      return endDate;
     default:
       return;
   }

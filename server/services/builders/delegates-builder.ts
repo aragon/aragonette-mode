@@ -10,25 +10,25 @@ import {
   SNAPSHOT_SPACE,
 } from "@/constants";
 import { ProposalStages } from "@/features/proposals";
-import { type Address } from "viem";
-import { getSnapshotVotingPower } from "@/services/snapshot";
+import {
+  IDelegatesSortBy,
+  IDelegatesSortDir,
+  type IDelegateDataListItem,
+  type IDelegator,
+  type IProviderVotingActivity,
+} from "@/server/client/types/domain";
 import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
+import { logger } from "@/services/logger";
 import {
   getDelegateMessage,
   getDelegatesList,
   getDelegations,
   getMultisigVotingActivity,
 } from "@/services/rpc/delegationWall";
-import { paginateArray } from "@/utils/pagination";
-import { logger } from "@/services/logger";
+import { getSnapshotVotingPower } from "@/services/snapshot";
 import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
-import {
-  IDelegatesSortBy,
-  IDelegatesSortDir,
-  type IDelegator,
-  type IMemberDataListItem,
-  type IProviderVotingActivity,
-} from "@/server/client/types/domain";
+import { paginateArray } from "@/utils/pagination";
+import { type Address } from "viem";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   logger.info(`Fetching delegators for address: ${address} (page: ${page}, limit: ${limit})...`);
@@ -82,7 +82,7 @@ export const getDelegates = async function (
   const contractDelegates = contractDelegatesRes.map((delegate) => {
     return {
       address: delegate,
-    } as IMemberDataListItem;
+    } as IDelegateDataListItem;
   });
 
   logger.info(`Fetching voting power for contract delegates...`);
@@ -132,12 +132,12 @@ export const getDelegates = async function (
 
 // Order delegates by sortBy following this order: featuredDelegates, then votingPower and delegationCount
 const sortDelegates = (
-  delegates: IMemberDataListItem[],
+  delegates: IDelegateDataListItem[],
   featured: string[],
   sortBy: IDelegatesSortBy,
   sortDir: IDelegatesSortDir
 ) => {
-  const sortedDelegates = delegates.sort((a, b) => {
+  delegates.sort((a, b) => {
     if (sortBy === IDelegatesSortBy.FEATURED) {
       const res = sortByFeatured(featured, a, b);
       if (res !== 0) {
@@ -169,13 +169,13 @@ const sortDelegates = (
   });
 
   if (sortDir === IDelegatesSortDir.ASC) {
-    sortedDelegates.reverse();
+    delegates.reverse();
   }
 
-  return sortedDelegates;
+  return delegates;
 };
 
-const sortByFeatured = (featuredDelegatesAddresses: string[], a: IMemberDataListItem, b: IMemberDataListItem) => {
+const sortByFeatured = (featuredDelegatesAddresses: string[], a: IDelegateDataListItem, b: IDelegateDataListItem) => {
   const aFeatured = featuredDelegatesAddresses.includes(a.address);
   const bFeatured = featuredDelegatesAddresses.includes(b.address);
 
@@ -189,7 +189,7 @@ const sortByFeatured = (featuredDelegatesAddresses: string[], a: IMemberDataList
   return 0;
 };
 
-const sortByVotingPower = (a: IMemberDataListItem, b: IMemberDataListItem) => {
+const sortByVotingPower = (a: IDelegateDataListItem, b: IDelegateDataListItem) => {
   const aVp = a.votingPower ?? 0;
   const bVp = b.votingPower ?? 0;
 
@@ -203,7 +203,7 @@ const sortByVotingPower = (a: IMemberDataListItem, b: IMemberDataListItem) => {
   return 0;
 };
 
-const sortByDelegationCount = (a: IMemberDataListItem, b: IMemberDataListItem) => {
+const sortByDelegationCount = (a: IDelegateDataListItem, b: IDelegateDataListItem) => {
   const aDelegationCount = a.delegationCount ?? 0;
   const bDelegationCount = b.delegationCount ?? 0;
 

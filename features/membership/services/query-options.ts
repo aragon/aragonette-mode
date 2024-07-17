@@ -1,13 +1,13 @@
+import { IDelegatesSortBy, IDelegatesSortDir } from "@/server/client/types/domain";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { membersService } from "./member-service";
 import {
-  type IFetchDelegatesParams,
   type IFetchCouncilMembersParams,
-  type IFetchVotingActivityParams,
+  type IFetchDelegatesParams,
   type IFetchDelegationsParams,
+  type IFetchVotingActivityParams,
   type IFetchVotingPowerParams,
 } from "./params";
-import { IDelegatesSortBy, IDelegatesSortDir } from "../../../server/client/types/domain";
 
 export const memberKeys = {
   all: ["members"] as const,

@@ -37,10 +37,3 @@ export type SnapshotVoteData = {
 export type SnapshotVotingPowerData = {
   vp: number;
 };
-
-export type SnapshotVotingActivity = {
-  id: string;
-  choice: string;
-  createdAt: string;
-  proposalId: string;
-};

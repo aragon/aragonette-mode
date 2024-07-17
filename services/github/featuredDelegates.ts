@@ -1,16 +1,16 @@
 import { GITHUB_API_URL } from "@/constants";
 import { downloadGitHubFile } from "@/services/github/fetch";
 import { logger } from "@/services/logger";
-import { type IFeatureDelegateProvider } from "../../server/models/members/types";
+import { type IFeaturedDelegateProvider } from "../../server/models/members/types";
 
-interface IGetGitHubFeatureDataParams {
+export interface IGetGitHubFeaturedDelegatesDataParams {
   user: string;
   repo: string;
   featured_delegates_filename: string;
 }
 
-export const getGitHubFeaturedDelegatesData: IFeatureDelegateProvider = async function (
-  params: IGetGitHubFeatureDataParams
+export const getGitHubFeaturedDelegatesData: IFeaturedDelegateProvider = async function (
+  params: IGetGitHubFeaturedDelegatesDataParams
 ) {
   const url = `${GITHUB_API_URL}/repos/${params.user}/${params.repo}/contents`;
   const featuredDelegatesUrl = `${url}/${params.featured_delegates_filename}`;

@@ -1,15 +1,15 @@
 import PrismaDatabase from "@/services/database/PrismaDatabase";
-import { type IPaginatedResponse } from "@/utils/types";
-import {
-  type IProposal,
-  StageOrder,
-  ProposalStatus,
-  ProposalStages,
-} from "../../../features/proposals/services/domain";
-import { parseProposal, serializeProposals, serializeStages, parseStage } from "./utils";
 import { logger } from "@/services/logger";
-import { type StageType } from "@prisma/client";
 import { checkPaginationParams } from "@/utils/pagination";
+import { type IPaginatedResponse } from "@/utils/types";
+import { type StageType } from "@prisma/client";
+import {
+  ProposalStages,
+  ProposalStatus,
+  StageOrder,
+  type IProposal,
+} from "../../../features/proposals/services/domain";
+import { parseProposal, parseStage, serializeProposals, serializeStages } from "./utils";
 
 export enum ProposalSortBy {
   Title = "title",
