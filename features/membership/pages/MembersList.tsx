@@ -52,8 +52,8 @@ export default function MembersList() {
   };
 
   return (
-    <MainSection className="md:px-16 md:pb-20 xl:pt-12">
-      <div className="flex w-full max-w-[1280] flex-col gap-x-20 gap-y-8 lg:flex-row">
+    <MainSection className="md:!px-6 md:pb-20 xl:pt-12">
+      <div className="flex w-full max-w-[1280px] flex-col gap-x-20 gap-y-8 lg:flex-row">
         <div className="flex flex-1 flex-col gap-y-6">
           <div className="flex flex-col items-start gap-y-6 sm:flex-row sm:items-center sm:justify-between">
             <Heading size="h1">Members</Heading>

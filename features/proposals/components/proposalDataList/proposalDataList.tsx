@@ -135,6 +135,7 @@ export const ProposalDataList: React.FC = () => {
             voted={votedData[index]?.data}
             href={ProposalDetails.getPath(proposal.id)}
             key={proposal.id}
+            className="!py-4 md:!py-6"
           />
         ))}
       </DataList.Container>
