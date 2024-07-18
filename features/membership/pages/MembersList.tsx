@@ -43,11 +43,11 @@ export default function MembersList() {
 
   const getButtonLabel = () => {
     if (!isConnected) {
-      return "Connect to create delegation profile";
+      return "Connect to create delegate profile";
     } else if (announcement) {
-      return "Update delegation profile";
+      return "Update delegate profile";
     } else {
-      return "Create delegation profile";
+      return "Create delegate profile";
     }
   };
 
@@ -56,10 +56,10 @@ export default function MembersList() {
       <div className="flex w-full max-w-[1280px] flex-col gap-x-20 gap-y-8 lg:flex-row">
         <div className="flex flex-1 flex-col gap-y-6">
           <div className="flex flex-col items-start gap-y-6 sm:flex-row sm:items-center sm:justify-between">
-            <Heading size="h1">Members</Heading>
+            <Heading size="h1">Member Profiles</Heading>
 
             <ToggleGroup isMultiSelect={false} onChange={handleGovernanceBodyChange} value={governanceBody}>
-              <Toggle value="council" label="Protocol council" />
+              <Toggle value="council" label="Protocol Council" />
               <Toggle value="delegates" label="Delegates" />
             </ToggleGroup>
           </div>
@@ -73,7 +73,7 @@ export default function MembersList() {
             <Heading size="h3">Details</Heading>
             <p className="text-neutral-500">
               {`The Polygon Governance Hub is an organisation consisting of two different governance bodies. This consists
-              of an Protocol Council, which is a Multisig, and the ${PUB_TOKEN_SYMBOL} token holders, who can also delegate their
+              of an Protocol Council and the ${PUB_TOKEN_SYMBOL} token holders, who can also delegate their
               voting power.`}
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function MembersList() {
                 <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
                   Protocol council
                 </dt>
-                <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData.length} Multisig members`}</dd>
+                <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData.length} council members`}</dd>
               </div>
             )}
 

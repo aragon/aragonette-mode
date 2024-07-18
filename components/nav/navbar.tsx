@@ -9,13 +9,13 @@ import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { Layer3Banner } from "./layer3Banner";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
-import { Dashboard, Learn, Members, Proposals } from "./routes";
+import { Learn, Members } from "./routes";
 
 export const Navbar: React.FC = () => {
   const { pathname } = useRouter();
 
   const [open, setOpen] = useState(false);
-  const navLinks: INavLink[] = [Dashboard, Proposals, Members, Learn];
+  const navLinks: INavLink[] = [Members, Learn];
 
   const showLayer3Banner = pathname === Learn.path;
 

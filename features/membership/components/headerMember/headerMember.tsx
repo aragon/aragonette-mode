@@ -255,7 +255,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
             </div>
             <span>
               {/* TODO: Should be size 2xl */}
-              <MemberAvatar address={profileAddress} size="lg" responsiveSize={{}} />
+              <MemberAvatar address={profileAddress} size="lg" responsiveSize={{ lg: "2xl" }} />
             </span>
           </div>
           <div>
