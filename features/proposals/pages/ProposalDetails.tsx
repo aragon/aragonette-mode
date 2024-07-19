@@ -352,7 +352,7 @@ export default function ProposalDetails() {
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
               {proposal.body && <BodySection body={proposal.body} />}
-              {showVoting && <ProposalVoting stages={augmentedStages} isEmergency={!!proposal.isEmergency} />}
+              {true && <ProposalVoting stages={augmentedStages} isEmergency={!!proposal.isEmergency} />}
               {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
               {showActions && <ProposalAction actions={proposal.actions} />}
             </div>

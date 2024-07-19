@@ -22,7 +22,7 @@ import {
   getProposalCreationData,
   getProposalData,
 } from "@/services/rpc/multisig";
-import { ProposalData } from "@/services/rpc/multisig/types";
+import { type ProposalData } from "@/services/rpc/multisig/types";
 
 const getProposalBindings = async function (metadata: PrimaryMetadata, secondaryMetadata?: SecondaryMetadata) {
   if (!metadata.resources) throw new Error("No resources found in proposal metadata");
@@ -33,9 +33,9 @@ const getProposalBindings = async function (metadata: PrimaryMetadata, secondary
     metadata.resources.find((resource) => resource.name.toLowerCase() === "transparency_report");
   const snapshotLink = secondaryMetadata?.resources?.find((resource) => resource.name.toLowerCase() === "snapshot");
 
-  const githubId = githubLink?.url.split("/").pop()?.split(".")?.shift();
-  const transparencyReportId = transparencyReportLink?.url.split("/").pop()?.split(".").shift();
-  const snapshotId = snapshotLink?.url.split("/").pop();
+  const githubId = githubLink?.url?.split("/").pop()?.split(".")?.shift();
+  const transparencyReportId = transparencyReportLink?.url?.split("/").pop()?.split(".").shift();
+  const snapshotId = snapshotLink?.url?.split("/").pop();
 
   return {
     githubId,

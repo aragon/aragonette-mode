@@ -1,0 +1,66 @@
+import React, { useEffect, useState } from "react";
+import { AlertInline } from "@aragon/ods";
+import { useFormContext, type FieldError, useWatch } from "react-hook-form";
+
+type DateTimeErrorsProps = {
+  mode: "start" | "end";
+};
+
+export function DateTimeErrors({ mode }: DateTimeErrorsProps) {
+  const { control, formState } = useFormContext();
+  const [warning] = useWatch({ control, name: [`${mode}TimeWarning`] });
+
+  const [requiredErrors, setRequiredErrors] = useState<string[]>([]);
+  const [validatedErrors, setValidatedErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    const reqErrors: string[] = [];
+    const valErrors: string[] = [];
+
+    // filter for errors that target the current mode
+    const fieldErrors = Object.values(formState.errors).filter((v) => v != null) as FieldError[];
+    const modeSpecificErrors = fieldErrors.filter((e) => e.ref?.name.includes(mode));
+    // categorize them by error type
+    modeSpecificErrors.forEach((e) => {
+      if (!e.message) return;
+
+      switch (e.type) {
+        case "required":
+          reqErrors.push(e.message);
+          break;
+        case "validate":
+          valErrors.push(e.message);
+          break;
+        default:
+          break;
+      }
+    });
+
+    setRequiredErrors(reqErrors);
+    setValidatedErrors(valErrors);
+  }, [formState]); //eslint-disable-line
+
+  if (requiredErrors.length > 0) {
+    return (
+      <div>
+        {requiredErrors.map((msg, i) => (
+          <AlertInline key={i} message={msg} variant="critical" />
+        ))}
+      </div>
+    );
+  }
+
+  if (validatedErrors.length > 0) {
+    return (
+      <div>
+        <AlertInline message={validatedErrors[0]} variant="critical" />
+      </div>
+    );
+  }
+
+  if (warning && warning !== "") {
+    return <AlertInline message={warning} variant="critical" />;
+  }
+
+  return null;
+}

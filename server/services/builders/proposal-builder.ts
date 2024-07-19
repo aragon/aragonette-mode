@@ -32,6 +32,7 @@ import {
 } from "../../../services/rpc/multisig/proposalStages";
 import { getSnapshotProposalStage, getSnapshotProposalStages } from "../../../services/snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals/types";
+import dayjs from "dayjs";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -646,10 +647,8 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
 }
 
 export function isActiveStage(stage: IProposalStage) {
-  return (
-    stage.voting &&
-    new Date(stage.voting.endDate) < new Date() &&
-    new Date(stage.voting.startDate) >= new Date() &&
-    stage.status === StageStatus.ACTIVE
-  );
+  return stage.voting;
+  // dayjs(stage.voting.endDate).isAfter(dayjs()) &&
+  // dayjs(stage.voting.startDate).isBefore(dayjs()) &&
+  // stage.status === StageStatus.ACTIVE
 }

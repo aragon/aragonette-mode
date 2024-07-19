@@ -60,7 +60,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
           {startDate && (
             <div className="flex items-center gap-x-2">
               <AvatarIcon icon={IconType.CALENDAR} size="sm" variant="primary" />
-              <div className="flex gap-x-1 text-base leading-tight ">
+              <div className="flex gap-x-1 text-base leading-tight">
                 <span className="text-neutral-500">Published at</span>
                 <span className="text-neutral-800">{startDate}</span>
               </div>
@@ -73,7 +73,7 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
           {showExpirationDate && (
             <div className="flex items-center gap-x-2">
               <AvatarIcon icon={IconType.APP_MEMBERS} size="sm" variant="primary" />
-              <div className="flex gap-x-1 text-base leading-tight ">
+              <div className="flex gap-x-1 text-base leading-tight">
                 <span className="text-neutral-800">{endDate}</span>
                 <span className="text-neutral-500">left until expiration</span>
               </div>
