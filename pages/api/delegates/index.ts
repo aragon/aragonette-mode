@@ -11,19 +11,20 @@ export default async function handler(
   res: NextApiResponse<IPaginatedResponse<IDelegateDataListItem> | IError>
 ) {
   try {
-    const { page, limit, sortBy, sortDir } = req.query;
+    const { page, limit, search, sortBy, sortDir } = req.query;
 
     const parsedPage = checkNullableParam(page, "page");
     const parsedLimit = checkNullableParam(limit, "limit");
     const parsedSortBy = checkNullableParam(sortBy, "sortBy");
     const parsedSortDir = checkNullableParam(sortDir, "sortDir");
+    const parsedSearch = checkNullableParam(search, "search");
 
     const typedSortBy = parseDelegatesSortBy(parsedSortBy);
     const typedSortDir = parseDelegatesSortDir(parsedSortDir);
 
     const { page: pageInt, limit: limitInt } = parsePaginationParams(parsedPage, parsedLimit);
 
-    const paginatedDelegates = await getDelegates(pageInt, limitInt, typedSortBy, typedSortDir);
+    const paginatedDelegates = await getDelegates(pageInt, limitInt, parsedSearch, typedSortBy, typedSortDir);
 
     res.status(200).json(paginatedDelegates);
   } catch (error) {

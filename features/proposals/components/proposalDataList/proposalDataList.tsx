@@ -35,9 +35,7 @@ export const ProposalDataList: React.FC = () => {
     isLoading,
     isFetching,
     isRefetching,
-    isRefetchError,
     isFetchingNextPage,
-    isFetchNextPageError,
     refetch,
     fetchNextPage,
   } = useInfiniteQuery({
@@ -62,23 +60,13 @@ export const ProposalDataList: React.FC = () => {
   });
 
   const isFiltered = searchValue != null && searchValue.trim().length > 0;
-  const loading = isLoading || (isError && isRefetching);
-  const error = isError && !isRefetchError && !isFetchNextPageError;
-  const [dataListState, setDataListState] = useState<DataListState>(() =>
-    generateDataListState(loading, error, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
-  );
+  const loading = (!isFiltered && activeSort == null && isLoading) || (isError && isRefetching);
+  const [dataListState, setDataListState] = useState<DataListState>("initialLoading");
 
   useEffect(() => {
-    setDataListState(
-      generateDataListState(loading, isError, isFetchingNextPage, isFetching && !isRefetching, isFiltered)
-    );
-  }, [isError, isFetching, isFetchingNextPage, isFiltered, loading, isRefetching]);
-
-  useEffect(() => {
-    if (!!debouncedQuery || !!activeSort) {
-      setDataListState("loading");
-    }
-  }, [debouncedQuery, activeSort]);
+    const filtering = (!!debouncedQuery || !!activeSort) && isFetching && !isRefetching;
+    setDataListState(generateDataListState(loading, isError, isFetchingNextPage, filtering, isFiltered));
+  }, [isError, isFetching, isFetchingNextPage, loading, isRefetching, isFiltered, debouncedQuery, activeSort]);
 
   const resetFilters = () => {
     setSearchValue("");
@@ -147,6 +135,7 @@ export const ProposalDataList: React.FC = () => {
             voted={votedData[index]?.data}
             href={ProposalDetails.getPath(proposal.id)}
             key={proposal.id}
+            className="!py-4 md:!py-6"
           />
         ))}
       </DataList.Container>

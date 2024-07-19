@@ -1,18 +1,14 @@
-import { ProposalStages } from "@/features/proposals";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { isAddressEqual } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
-import { Heading } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
-import { DelegationsReceivedDataList } from "../components/memberDataList/delegationsReceivedDataList/delegationsReceivedDataList";
-import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 import { councilMemberList } from "../services/query-options";
 
 export const MemberProfile = () => {
@@ -20,13 +16,21 @@ export const MemberProfile = () => {
   const profileAddress = query.address as Address;
   const breadcrumbs = generateBreadcrumbs(asPath);
 
-  const { data: councilMember, isFetched: councilMemberFetched } = useQuery({
+  const {
+    data: councilMember,
+    isLoading: councilMemberLoading,
+    isFetched: councilMemberFetched,
+  } = useQuery({
     ...councilMemberList(),
     select: (data) => data.find((member) => isAddressEqual(member.address, profileAddress)),
   });
 
-  const { data: announcementData } = useAnnouncement(profileAddress);
-  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementData?.[0]);
+  const { data: announcementData, isLoading: announcementCidLoading } = useAnnouncement(profileAddress);
+  const { data: announcement, isLoading: announcementLoading } = useMetadata<IDelegationWallMetadata>(
+    announcementData?.[0]
+  );
+
+  const isLoading = councilMemberLoading || announcementCidLoading || announcementLoading;
 
   const isCouncilMember = councilMemberFetched && !!councilMember;
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
@@ -35,6 +39,7 @@ export const MemberProfile = () => {
   return (
     <div className="flex flex-col items-center">
       <HeaderMember
+        isLoading={isLoading}
         address={profileAddress}
         bio={bio}
         breadcrumbs={breadcrumbs}
@@ -49,21 +54,22 @@ export const MemberProfile = () => {
             <div className="flex w-full flex-col gap-y-6 overflow-auto">
               <DelegationStatement message={announcement?.message} />
               {/* Delegations Received */}
-              <div className="flex flex-col gap-y-3">
+              {/* <div className="flex flex-col gap-y-3">
                 <Heading size="h3">Delegations received</Heading>
-                <DelegationsReceivedDataList address={profileAddress} />
-              </div>
+                <DelegationsDataList delegate={profileAddress} />
+              </div> */}
             </div>
           )}
 
-          <div className="flex w-full flex-col gap-y-6">
-            {/* Voting activity */}
+          {/* TODO enable for launch */}
+          {/* Voting activity */}
+          {/* <div className="flex w-full flex-col gap-y-6">
             <Heading size="h2">Voting activity</Heading>
             <MemberVotesDataList
               address={profileAddress}
               stage={isCouncilMember ? ProposalStages.COUNCIL_APPROVAL : ProposalStages.COMMUNITY_VOTING}
             />
-          </div>
+          </div> */}
         </div>
         {/* Aside */}
         <aside className="flex w-full flex-1 flex-col gap-y-12 md:max-w-[320px] md:gap-y-20">

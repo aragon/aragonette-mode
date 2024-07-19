@@ -10,6 +10,8 @@ export const URL_WITH_PROTOCOL_PATTERN =
 
 export const EMAIL_PATTERN = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]+(?:\.[a-z]+)?)$/i;
 
+export const EMPTY_HTML_PARAGRAPH_PATTERN = /^(?!<p><\/p>$).*/i;
+
 export function isValidStringValue(value: string, paramType: string): boolean {
   if (!value || !paramType) return false;
 
