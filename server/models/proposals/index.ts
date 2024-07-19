@@ -123,7 +123,7 @@ const getImprovedSearch = (search?: string) => {
   if (Number.isNaN(intSearch)) {
     return search;
   }
-  return intSearch > 9 ? `${PROPOSAL_PREFIX}-${intSearch}` : `${PROPOSAL_PREFIX}-0${intSearch}`;
+  return `${PROPOSAL_PREFIX}-${intSearch.toString().padStart(2, "0")}`;
 };
 
 class ProposalRepository {
@@ -179,7 +179,7 @@ class ProposalRepository {
 
       const orderBy: any[] = [];
       if (search) {
-        orderBy.concat([
+        orderBy.push(
           {
             _relevance: {
               fields: ["id", "title", "description", "body"],
@@ -188,18 +188,18 @@ class ProposalRepository {
             },
           },
           {
-            createdAt: "desc",
-          },
-        ]);
+            createdAt: { sort: "desc", nulls: "last" },
+          }
+        );
       } else {
         if (sortBy === ProposalSortBy.Title) {
-          orderBy.concat([{ title: sortDir }]);
+          orderBy.push({ title: sortDir });
         } else if (sortBy === ProposalSortBy.Status) {
-          orderBy.concat([{ status: sortDir }]);
+          orderBy.push({ status: sortDir });
         } else if (sortBy === ProposalSortBy.IsEmergency) {
-          orderBy.concat([{ isEmergency: sortDir }]);
+          orderBy.push({ isEmergency: sortDir });
         } else if (sortBy === ProposalSortBy.CreatedAt) {
-          orderBy.concat([{ createdAt: sortDir }]);
+          orderBy.push({ createdAt: { sort: sortDir, nulls: "last" } });
         }
       }
 
