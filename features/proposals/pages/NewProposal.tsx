@@ -1,20 +1,14 @@
 import { DateTimeErrors } from "@/components/dateTimeSelector/dateTimeErrors";
 import DateTimeSelector from "@/components/dateTimeSelector/dateTimeSelector";
 import Duration from "@/components/dateTimeSelector/duration";
+import { Proposals } from "@/components/nav/routes";
 import { useCreateProposal } from "@/plugins/multisig/hooks/useCreateProposal";
-import {
-  AlertInline,
-  Button,
-  Heading,
-  InputText,
-  RadioCard,
-  RadioGroup,
-  Switch,
-  TextArea,
-  TextAreaRichText,
-} from "@aragon/ods";
+import { AlertInline, Button, Heading, InputText, RadioCard, RadioGroup, Switch, TextArea } from "@aragon/ods";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
 import { HeaderProposalCreate } from "../components/headerNewProposal/headerNewProposal";
 import { DraftProposalSelection } from "../components/newProposalForm/draftProposalSelection";
 import { EmergencyContent } from "../components/newProposalForm/emergencyContent";
@@ -30,8 +24,12 @@ import {
   startSwitchValues,
 } from "../components/newProposalForm/types";
 import { getProposalDates } from "../components/newProposalForm/utils";
+import { proposalService } from "../services";
 
 export default function NewProposal() {
+  const router = useRouter();
+  const { isConnected } = useAccount();
+
   const formValues = useForm<ProposalCreationFormData>({
     resolver: zodResolver(ProposalCreationSchema),
     mode: "onTouched",
@@ -45,7 +43,19 @@ export default function NewProposal() {
     name: ["actionType", "emergency", "pipSelected", "resources", "startSwitch", "durationSwitch"],
   });
 
-  const { submitProposal } = useCreateProposal();
+  const [indexingStatus, setIndexingStatus] = useState<"idle" | "pending" | "success">("idle");
+
+  const onProposalSubmitted = useCallback(async () => {
+    setIndexingStatus("pending");
+    const response = await proposalService.invalidateProposals();
+    setIndexingStatus("success");
+
+    if (response) {
+      router.push(Proposals.path);
+    }
+  }, [router]);
+
+  const { submitProposal, isConfirming, isAwaitingConfirmation } = useCreateProposal(onProposalSubmitted);
 
   const handleCreateProposal = async (values: ProposalCreationFormData) => {
     const { title, summary, description, emergency, type, resources } = values;
@@ -72,6 +82,20 @@ export default function NewProposal() {
     setValue("resources", pip.resources);
     setValue("type", pip.type);
     setValue("pipSelected", true);
+  };
+
+  const getButtonLabel = () => {
+    if (!isConnected) {
+      return "Connect to submit proposal";
+    } else if (isAwaitingConfirmation) {
+      return "Awaiting confirmation...";
+    } else if (isConfirming) {
+      return "Submitting proposal...";
+    } else if (indexingStatus === "pending") {
+      return "Indexing proposal...";
+    } else {
+      return "Submit proposal";
+    }
   };
 
   const isAutoFill = !isEmergency && pipSelected;
@@ -102,23 +126,6 @@ export default function NewProposal() {
 
           {!isEmergency && <DraftProposalSelection onPIPSelected={handlePipSelected} />}
           {isEmergency && <EmergencyContent control={control} />}
-          {!isEmergency && (
-            <Controller
-              name="transparencyReport"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <TextAreaRichText
-                  helpText="Add the full transparency report for this PIP."
-                  placeholder="Full council transparency report"
-                  label="Council transparency report"
-                  onChange={field.onChange}
-                  value={field.value}
-                  onBlur={field.onBlur}
-                  alert={error?.message ? { variant: "critical", message: error.message } : undefined}
-                />
-              )}
-            />
-          )}
         </div>
         <div className="flex flex-col gap-y-6">
           {/* Category */}
@@ -173,10 +180,10 @@ export default function NewProposal() {
                   </RadioGroup>
                 )}
               />
-              <AlertInline message="The minimum duration for each PIP is 4 weeks." variant="info" />
             </FormItem>
 
             {durationSwitch === "duration" && <Duration />}
+            <AlertInline message="The minimum duration for each PIP is 4 weeks." variant="info" />
           </div>
         </div>
 
@@ -196,7 +203,7 @@ export default function NewProposal() {
                     : "Add the forum link, so everybody can view the discussion."
                 }
                 disabled={isAutoFill && !!resources?.forum?.link}
-                addon="https://"
+                // addon="https://"
                 {...field}
                 {...(error?.message
                   ? { alert: { variant: "critical", message: error.message }, variant: "critical" }
@@ -204,16 +211,39 @@ export default function NewProposal() {
               />
             )}
           />
+          {isEmergency && (
+            <Controller
+              name="resources.transparencyReport.link"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <InputText
+                  label="Council transparency report"
+                  isOptional={true}
+                  helpText={
+                    isAutoFill && !!resources?.transparencyReport?.link
+                      ? "This link is automatically added based on your Github proposal selection."
+                      : "Add the transparency report link for this proposal."
+                  }
+                  disabled={isAutoFill && !!resources?.transparencyReport?.link}
+                  // addon="https://"
+                  {...field}
+                  {...(error?.message
+                    ? { alert: { variant: "critical", message: error.message }, variant: "critical" }
+                    : {})}
+                />
+              )}
+            />
+          )}
           {isAutoFill && (
             <Controller
-              name="resources.forum.link"
+              name="resources.github.link"
               control={control}
               render={({ field }) => (
                 <InputText
                   label="Github PIP"
                   helpText="This link is automatically added based on your Github proposal selection."
                   disabled={true}
-                  addon="https://"
+                  // addon="https://"
                   {...field}
                 />
               )}
@@ -270,8 +300,13 @@ export default function NewProposal() {
           )}
         </div>
         <span>
-          <Button onClick={handleSubmit(handleCreateProposal)} className="!rounded-full">
-            Submit proposal
+          <Button
+            onClick={handleSubmit(handleCreateProposal)}
+            className="!rounded-full"
+            isLoading={isConfirming || isAwaitingConfirmation || indexingStatus === "pending"}
+            disabled={!isConnected}
+          >
+            {getButtonLabel()}
           </Button>
         </span>
       </main>

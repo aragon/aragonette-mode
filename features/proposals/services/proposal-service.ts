@@ -18,6 +18,12 @@ class ProposalService {
     return parsed;
   }
 
+  async invalidateProposals() {
+    const response = await fetch(`${PUB_API_BASE_URL}/update-proposals-and-votes`);
+    const parsed: boolean = await response.json();
+    return parsed;
+  }
+
   async fetchProposal(params: IFetchProposalParams): Promise<IProposal> {
     const url = `${PUB_API_BASE_URL}/proposals/${params.proposalId}`;
     const response = await fetch(url);

@@ -1,6 +1,5 @@
-import { URL_PATTERN, EMAIL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
+import { URL_PATTERN } from "@/utils/input-values";
 import { z } from "zod";
-import { type IProposalResource } from "../../services";
 
 const UrlRegex = new RegExp(URL_PATTERN);
 
@@ -17,6 +16,7 @@ const ResourceSchema = z.object({
 const ResourcesSchema = z.object({
   forum: ResourceSchema.optional(),
   github: ResourceSchema.optional(),
+  transparencyReport: ResourceSchema.optional(),
 });
 
 export const ProposalCreationSchema = z.object({
@@ -89,7 +89,6 @@ export const ProposalCreationFormDefaultValues = {
   title: "",
   summary: "",
   description: "",
-  transparencyReport: "",
   type: "",
   resources: {
     forum: { url: "", name: "" },

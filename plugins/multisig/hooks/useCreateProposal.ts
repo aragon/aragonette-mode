@@ -10,9 +10,9 @@ import { useEffect } from "react";
 import { toHex } from "viem";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 
-export const useCreateProposal = () => {
+export const useCreateProposal = (onSuccess?: () => Promise<void>) => {
   const { addAlert } = useAlerts();
-  const { writeContract: createProposalWrite, data: createTxHash, status, error } = useWriteContract();
+  const { writeContract: createProposalWrite, data: createTxHash, status, error, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: createTxHash });
 
   useEffect(() => {
@@ -45,10 +45,8 @@ export const useCreateProposal = () => {
       txHash: createTxHash,
     });
 
-    // setTimeout(() => {
-    //   push("#/");
-    // }, 1000 * 2);
-  }, [status, createTxHash, isConfirming, isConfirmed]);
+    onSuccess?.();
+  }, [status, createTxHash, isConfirming, isConfirmed, onSuccess]);
 
   interface ICreateProposalParams {
     metadata: {
@@ -109,5 +107,5 @@ export const useCreateProposal = () => {
     });
   };
 
-  return { submitProposal };
+  return { submitProposal, isConfirming: isConfirming, isAwaitingConfirmation: isPending, isConfirmed };
 };

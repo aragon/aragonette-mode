@@ -12,7 +12,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
   try {
     const proposal = await proposalRepository.getProposalById(parsedId);
-    console.log(proposal);
 
     if (!proposal) {
       return res.status(404).json({ error: { message: "Proposal not found" } });

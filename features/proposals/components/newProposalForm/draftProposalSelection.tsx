@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { proposalList } from "../../services";
 import { FormItem } from "./formItem";
 import { type ICreateProposalMetadataFormData } from "./types";
+import { ProposalSortDir } from "@/server/models/proposals";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -19,7 +20,7 @@ export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPI
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    ...proposalList({ limit: DEFAULT_PAGE_SIZE, status: "pending" }),
+    ...proposalList({ limit: DEFAULT_PAGE_SIZE, sortDir: ProposalSortDir.Asc, status: "pending" }),
     select: (data) => ({
       proposals: data.pages.flatMap((p) => p.data),
       pagination: { total: data.pages[0]?.pagination?.total ?? 0 },

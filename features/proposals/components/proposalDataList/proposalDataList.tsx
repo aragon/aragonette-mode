@@ -1,13 +1,8 @@
 import { ProposalDetails } from "@/components/nav/routes";
+import { ProposalDataListItemStructure } from "@/components/odsModified/proposalDataListItem";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { generateDataListState } from "@/utils/query";
-import {
-  DataList,
-  IconType,
-  ProposalDataListItem,
-  ProposalDataListItemSkeleton,
-  type DataListState,
-} from "@aragon/ods";
+import { DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
@@ -130,7 +125,7 @@ export const ProposalDataList: React.FC = () => {
         emptyFilteredState={emptyFilteredState}
       >
         {proposalsQueryData?.proposals?.map((proposal, index) => (
-          <ProposalDataListItem.Structure
+          <ProposalDataListItemStructure
             {...proposal}
             voted={votedData[index]?.data}
             href={ProposalDetails.getPath(proposal.id)}
