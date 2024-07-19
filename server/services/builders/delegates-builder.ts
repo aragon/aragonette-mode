@@ -68,6 +68,7 @@ export const getVotingActivity = async function (
 export const getDelegates = async function (
   page: number,
   limit: number,
+  search: string | undefined,
   sortBy: IDelegatesSortBy = IDelegatesSortBy.FEATURED,
   sortDir: IDelegatesSortDir = IDelegatesSortDir.DESC
 ) {
@@ -127,7 +128,13 @@ export const getDelegates = async function (
     name: d.name ?? identifiers[index].identifier,
   }));
 
-  return paginateArray(delegatesWithIdentifiers, page, limit);
+  const filteredDelegates = search
+    ? delegatesWithIdentifiers.filter(
+        (d) => d.name?.toLowerCase()?.includes(search) || d.address?.toLowerCase()?.includes(search)
+      )
+    : delegatesWithIdentifiers;
+
+  return paginateArray(filteredDelegates, page, limit);
 };
 
 // Order delegates by sortBy following this order: featuredDelegates, then votingPower and delegationCount

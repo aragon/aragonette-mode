@@ -9,13 +9,13 @@ import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { Layer3Banner } from "./layer3Banner";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
-import { Dashboard, Learn, Members, Proposals } from "./routes";
+import { Learn, Members } from "./routes";
 
 export const Navbar: React.FC = () => {
   const { pathname } = useRouter();
 
   const [open, setOpen] = useState(false);
-  const navLinks: INavLink[] = [Dashboard, Proposals, Members, Learn];
+  const navLinks: INavLink[] = [Members, Learn];
 
   const showLayer3Banner = pathname === Learn.path;
 
@@ -23,7 +23,7 @@ export const Navbar: React.FC = () => {
     <>
       <Layer3Banner show={showLayer3Banner} />
       <nav className="h-30 sticky top-0 z-[var(--hub-navbar-z-index)] flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
-        <div className="flex w-full max-w-[1280px] flex-col gap-x-2 gap-y-3 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-x-3">
+        <div className="flex w-full max-w-screen-xl flex-col gap-x-2 gap-y-3 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-x-3">
           <div className="flex w-full items-center justify-between">
             <div className="flex gap-2 sm:flex-col">
               <Link

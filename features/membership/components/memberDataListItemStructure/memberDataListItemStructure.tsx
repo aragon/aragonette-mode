@@ -2,11 +2,11 @@ import { formatHexString, isAddressEqual } from "@/utils/evm";
 import {
   type IDataListItemProps,
   DataList,
-  MemberAvatar,
-  Tag,
-  Heading,
   formatterUtils,
+  Heading,
+  MemberAvatar,
   NumberFormat,
+  Tag,
 } from "@aragon/ods";
 import { useAccount } from "wagmi";
 
@@ -49,15 +49,17 @@ export const MemberDataListItemStructure: React.FC<IMemberDataListItemProps> = (
   const hasDelegationOrVotingPower = delegationCount != null || votingPower != null;
 
   return (
-    <DataList.Item className="min-w-fit !py-0 px-4 md:px-6" {...otherProps}>
-      <div className="flex flex-col items-start justify-center gap-y-3 py-4 md:min-w-44 md:py-6">
+    <DataList.Item className="min-w-0 !py-0 px-4 md:px-6" {...otherProps}>
+      <div className="flex flex-col gap-y-3 overflow-hidden  whitespace-nowrap py-4 md:py-6">
         <div className="flex w-full items-center justify-between">
           <MemberAvatar address={address} avatarSrc={avatarSrc} responsiveSize={{ md: "md" }} />
           {isDelegate && !isCurrentUser && <Tag variant="info" label="Your Delegate" />}
           {isCurrentUser && <Tag variant="neutral" label="You" />}
         </div>
 
-        <p className="inline-block w-full truncate text-lg text-neutral-800 md:text-xl">{resolvedUserHandle}</p>
+        <Heading className="overflow-hidden text-ellipsis text-lg text-neutral-800 md:text-xl">
+          {resolvedUserHandle}
+        </Heading>
 
         {hasDelegationOrVotingPower && (
           <div className="flex h-12 flex-col gap-y-2">
