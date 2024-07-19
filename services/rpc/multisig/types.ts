@@ -86,6 +86,7 @@ export type MultiSigProposalVotingData = {
 };
 
 export type MultisigProposal = {
+  pip: string;
   stageType: ProposalStages;
   title: string;
   summary: string;

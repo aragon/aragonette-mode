@@ -317,7 +317,7 @@ export async function getProposalStages(onchainProposalId: string): Promise<Prop
       stage: ProposalStages.COMMUNITY_VOTING,
       id: multisigData[0].bindings?.find((binding) => binding.id === ProposalStages.COMMUNITY_VOTING)?.link,
     },
-  ];
+  ].filter((stage) => stage.id != null);
 
   const stages = await Promise.all(
     stageIds.map(({ stage, id }) => {
@@ -507,9 +507,9 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
 }
 
 export function buildProposalResponse(proposalStages: ProposalStage[]): IProposal {
-  logger.info(
-    `Building proposal ${proposalStages.find((stage) => stage.pip)?.pip} with ${proposalStages.length} stages...`
-  );
+  const id = computeProposalId(proposalStages);
+
+  logger.info(`Building proposal ${id} with ${proposalStages.length} stages...`);
 
   const title = computeTitle(proposalStages);
   const type = computeProposalType(proposalStages);
@@ -530,8 +530,6 @@ export function buildProposalResponse(proposalStages: ProposalStage[]): IProposa
   const status = computeProposalStatus(proposalStages);
   const statusMessage = proposalStages.find((stage) => stage.stageType === currentStage)?.statusMessage;
   const createdAt = computeProposalCreatedAt(proposalStages)?.toISOString();
-
-  const id = computeProposalId(proposalStages);
 
   const actions =
     proposalStages
@@ -634,12 +632,13 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
   // get stages, build proposal and add voting responses
   const stages = await getProposalStages(onchainProposalId);
   const updatedProposal = buildProposalResponse(stages);
+  updatedProposal.id = proposal.id;
 
   const votingResponses = await Promise.all(updatedProposal.stages.map((stage) => buildVotingResponse(stage)));
   votingResponses.forEach((response, index) => {
     updatedProposal.stages[index].voting = response?.[0];
     updatedProposal.stages[index].status = response?.[1] as StageStatus;
-    updatedProposal.status = response?.[2] as ProposalStatus;
+    updatedProposal.status = (response?.[2] as ProposalStatus) ?? updatedProposal.status;
   });
 
   logger.info(`Returning live proposal ${proposal.id}`);

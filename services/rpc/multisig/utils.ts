@@ -1,4 +1,4 @@
-import { PUB_CHAIN } from "@/constants";
+import { EMERGENCY_PREFIX, PUB_CHAIN } from "@/constants";
 import { type ProposalStage, type Vote, type VotingData } from "@/server/models/proposals/types";
 import { ProposalStages, ProposalStatus, StageStatus } from "@/features/proposals/services/domain";
 import { logger } from "@/services/logger";
@@ -110,6 +110,7 @@ export function parseMultisigData(proposals?: MultisigProposal[]): ProposalStage
     const createdAt = new Date(parseInt(proposal.createdAt) * 1000);
 
     return {
+      pip: proposal.pip,
       stageType: proposal.stageType,
       title: proposal.title,
       description: proposal.summary,
@@ -198,7 +199,12 @@ export const requestVotingData = async function (
   }
 };
 
-const processProposalData = async function (proposalData: ProposalData, contractAddress: Address, proposalId: number) {
+const processProposalData = async function (
+  proposalData: ProposalData,
+  contractAddress: Address,
+  proposalId: number,
+  emergencyId?: string
+) {
   logger.info(`Processing data for multisig proposal:${proposalId}`);
 
   const proposals: MultisigProposal[] = [];
@@ -226,7 +232,7 @@ const processProposalData = async function (proposalData: ProposalData, contract
 
   const { githubId, snapshotId, transparencyReportId } = await getProposalBindings(primaryMetadata, secondaryMetadata);
 
-  const pip = githubId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
+  const pip = githubId ?? emergencyId ?? primaryMetadata.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 
   // get resources
   const resources = primaryMetadata.resources.concat(secondaryMetadata?.resources ?? []).flatMap((resource) => {
@@ -347,16 +353,23 @@ export const requestProposalsData = async function (
   const proposalDataList = await Promise.all(getPromises);
 
   const processPromises = [];
+  let numEmergencyProposals = 0;
   for (let i = 0; i < numProposals; i++) {
     const proposalData = proposalDataList[i];
 
     // skip proposal if no proposal data can be fetched
     if (!proposalData) continue;
 
-    processPromises.push(processProposalData(proposalData, contractAddress, i));
+    if (proposalData.parameters.emergency) {
+      numEmergencyProposals++;
+      const emergencyId = `${EMERGENCY_PREFIX}-${numEmergencyProposals.toString().padStart(2, "0")}`;
+      processPromises.push(processProposalData(proposalData, contractAddress, i, emergencyId));
+    } else {
+      processPromises.push(processProposalData(proposalData, contractAddress, i));
+    }
   }
   const processedProposals = await Promise.all(processPromises);
-  proposals = proposals = proposals.concat(processedProposals.flat());
+  proposals = processedProposals.flat();
 
   return proposals;
 };
@@ -372,7 +385,7 @@ export const requestProposalData = async function (
   // skip proposal if no proposal data can be fetched
   if (proposalData) {
     const multisigProposalStages = await processProposalData(proposalData, contractAddress, proposalId);
-    proposals = proposals.concat(multisigProposalStages);
+    proposals = multisigProposalStages;
   }
 
   return proposals;
