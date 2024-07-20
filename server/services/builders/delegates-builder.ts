@@ -6,7 +6,6 @@ import {
   PUB_CHAIN,
   PUB_DELEGATION_CONTRACT_ADDRESS,
   PUB_MULTISIG_ADDRESS,
-  PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
 import { ProposalStages } from "@/features/proposals";
@@ -19,14 +18,8 @@ import {
 } from "@/server/client/types/domain";
 import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
 import { logger } from "@/services/logger";
-import {
-  getDelegateMessage,
-  getDelegatesList,
-  getDelegations,
-  getMultisigVotingActivity,
-} from "@/services/rpc/delegationWall";
+import { getDelegateMessage, getDelegatesList, getMultisigVotingActivity } from "@/services/rpc/delegationWall";
 import { getSnapshotDelegators } from "@/services/rpc/snapshotDelegation";
-import { getSnapshotVotingPower } from "@/services/snapshot";
 import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
 import { paginateArray } from "@/utils/pagination";
 import { type Address } from "viem";
@@ -85,18 +78,18 @@ export const getDelegates = async function (
     } as IDelegateDataListItem;
   });
 
-  logger.info(`Fetching voting power for contract delegates...`);
-  const delegatesWithVp = await Promise.all(
-    contractDelegates.map(async (delegate) => {
-      delegate.votingPower = await getSnapshotVotingPower({
-        space: SNAPSHOT_SPACE,
-        voter: delegate.address,
-      });
-      delegate.delegators = await getSnapshotDelegators(delegate.address as Address);
-      delegate.delegationCount = delegate.delegators.length;
-      return delegate;
-    })
-  );
+  // logger.info(`Fetching voting power for contract delegates...`);
+  // const delegatesWithVp = await Promise.all(
+  //   contractDelegates.map(async (delegate) => {
+  //     delegate.votingPower = await getSnapshotVotingPower({
+  //       space: SNAPSHOT_SPACE,
+  //       voter: delegate.address,
+  //     });
+  //     delegate.delegators = await getSnapshotDelegators(delegate.address as Address);
+  //     delegate.delegationCount = delegate.delegators.length;
+  //     return delegate;
+  //   })
+  // );
 
   logger.info(`Fetching featured delegates data...`);
   const featuredDelegates = await getGitHubFeaturedDelegatesData({
@@ -107,7 +100,7 @@ export const getDelegates = async function (
 
   const featuredDelegatesAddresses = featuredDelegates.map((delegate) => delegate.address);
 
-  const sortedDelegates = sortDelegates(delegatesWithVp, featuredDelegatesAddresses, sortBy, sortDir);
+  const sortedDelegates = sortDelegates(contractDelegates, featuredDelegatesAddresses, sortBy, sortDir);
 
   const delegates = sortedDelegates.map((delegate) => {
     const featuredData = featuredDelegates.find((d) => d.address === delegate.address);
