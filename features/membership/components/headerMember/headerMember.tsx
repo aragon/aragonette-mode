@@ -1,5 +1,4 @@
 import { PUB_ENS_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
-import { ProposalStages } from "@/features/proposals";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
 import { useDelegateVotingPower } from "@/plugins/snapshotDelegation/hooks/useDelegateVotingPower";
@@ -25,6 +24,7 @@ import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { useAccount, useEnsName } from "wagmi";
 import { delegatesList, delegationsList, votingPower as votingPowerQueryOptions } from "../../services/query-options";
+import { ProposalStages } from "@/server/models/proposals/types";
 
 export type MemberType = "majorityVoting" | "approvalThreshold";
 

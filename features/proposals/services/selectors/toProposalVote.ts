@@ -1,4 +1,4 @@
-import { type IVotesDataListVariant } from "@/features/proposals/components/proposalVoting/votesDataList/votesDataListItemStructure";
+import { type IVotesDataListVariant } from "@/components/votesDataList/votesDataListItemStructure";
 import { ProposalStages, type IProposalVote } from "../domain";
 import { PUB_TOKEN_SYMBOL } from "@/constants";
 
