@@ -125,7 +125,11 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
 
   return (
     <DialogRoot {...otherProps} containerClassName="!max-w-[520px]">
-      <DialogHeader title="Create your delegate profile" onCloseClick={handleOnClose} onBackClick={handleOnClose} />
+      <DialogHeader
+        title={defaultValues ? "Update your delegate profile" : "Create your delegate profile"}
+        onCloseClick={handleOnClose}
+        onBackClick={handleOnClose}
+      />
       <DialogContent className="flex flex-col gap-y-4 md:gap-y-6">
         <InputText
           label="Identifier"

@@ -124,7 +124,7 @@ export const getDelegates = async function (
 
   const delegatesWithIdentifiers = delegates.map((d, index) => ({
     ...d,
-    name: d.name ?? identifiers[index].identifier,
+    name: identifiers[index].identifier ?? d.name,
   }));
 
   const filteredDelegates = search
