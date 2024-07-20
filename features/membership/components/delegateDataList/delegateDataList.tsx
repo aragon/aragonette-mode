@@ -5,6 +5,7 @@ import { DataList, MemberDataListItem } from "@aragon/ods";
 import { useAccount } from "wagmi";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 import { useDelegateDataList } from "./useDelegateDataList";
+import { PUB_CHAIN } from "@/constants";
 
 interface IDelegateDataListProps {
   onAnnounceDelegation: () => void;
@@ -62,9 +63,11 @@ export const DelegateDataList: React.FC<IDelegateDataListProps> = ({ onAnnounceD
             isDelegate={isAddressEqual(yourDelegate, delegate.address)}
             delegationCount={delegate.delegationCount}
             key={delegate.address}
-            href={MemberProfile.getPath(delegate.address)}
+            href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${delegate.address}`}
             name={delegate.name}
             address={delegate.address}
+            target="_blank"
+            rel="noopener"
           />
         ))}
       </DataList.Container>
