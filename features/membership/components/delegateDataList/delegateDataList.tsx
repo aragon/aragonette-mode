@@ -1,11 +1,10 @@
-import { MemberProfile } from "@/components/nav/routes";
+import { PUB_CHAIN } from "@/constants";
 import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
 import { isAddressEqual } from "@/utils/evm";
 import { DataList, MemberDataListItem } from "@aragon/ods";
 import { useAccount } from "wagmi";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 import { useDelegateDataList } from "./useDelegateDataList";
-import { PUB_CHAIN } from "@/constants";
 
 interface IDelegateDataListProps {
   onAnnounceDelegation: () => void;
@@ -15,10 +14,8 @@ export const DelegateDataList: React.FC<IDelegateDataListProps> = ({ onAnnounceD
   const {
     state,
     pageSize,
-    sortItems,
     delegates,
     itemsCount,
-    activeSort,
     emptyState,
     errorState,
     entityLabel,
@@ -26,7 +23,6 @@ export const DelegateDataList: React.FC<IDelegateDataListProps> = ({ onAnnounceD
     showPagination,
     handleLoadMore,
     containerClasses,
-    handleSortChange,
     emptyFilteredState,
     handleSearchValueChange,
   } = useDelegateDataList(onAnnounceDelegation);
@@ -43,11 +39,8 @@ export const DelegateDataList: React.FC<IDelegateDataListProps> = ({ onAnnounceD
       entityLabel={entityLabel}
     >
       <DataList.Filter
-        sortItems={sortItems}
-        activeSort={activeSort}
         searchValue={searchValue}
         placeholder="Filter by identifier or address"
-        onSortChange={handleSortChange}
         onSearchValueChange={handleSearchValueChange}
       />
       <DataList.Container

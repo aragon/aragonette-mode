@@ -69,7 +69,7 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
     heading: "No delegates found",
     description: "Create your delegate profile",
     primaryButton: {
-      label: "Announce delegation",
+      label: "Create delegate profile",
       onClick: emptyStateCta,
     },
   };
