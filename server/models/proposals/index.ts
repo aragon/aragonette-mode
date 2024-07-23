@@ -80,6 +80,23 @@ export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
   }
 };
 
+export const serializeProposalStatus = (value: ProposalStatus): string => {
+  switch (value) {
+    case ProposalStatus.ACTIVE:
+      return "active";
+    case ProposalStatus.REJECTED:
+      return "rejected";
+    case ProposalStatus.EXECUTED:
+      return "executed";
+    case ProposalStatus.PENDING:
+      return "pending";
+    case ProposalStatus.EXPIRED:
+      return "expired";
+    default:
+      throw new Error(`Invalid status value: ${value}`);
+  }
+};
+
 export const parseStageType = (stage: StageType): ProposalStages => {
   switch (stage) {
     case "DRAFT":
