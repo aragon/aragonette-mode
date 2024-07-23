@@ -13,6 +13,7 @@ export type Vote = {
   voter: string;
   amount: string;
   timestamp: string;
+  reason?: string;
 };
 
 export type VotingScores = {
