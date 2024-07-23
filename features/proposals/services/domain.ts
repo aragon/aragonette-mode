@@ -7,7 +7,7 @@ export enum ProposalStages {
   DRAFT = "Draft",
   TRANSPARENCY_REPORT = "Transparency Report",
   COUNCIL_APPROVAL = "Protocol Council Approval",
-  COMMUNITY_VOTING = "gPOL Community Voting",
+  COMMUNITY_VOTING = "Community Voting",
   COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
 }
 
@@ -121,6 +121,7 @@ export interface IProposalVote {
   vote: string;
   amount: number;
   timestamp: string;
+  reason?: string;
 }
 
 export interface IVoted {
