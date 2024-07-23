@@ -11,6 +11,7 @@ export function toProposalVotes(data: IProposalVote[], stageId: ProposalStages) 
       choice: (stageId === ProposalStages.COMMUNITY_VOTING
         ? mapCommunityVoteChoice(vote.vote)
         : vote.vote.toLowerCase()) as IVotesDataListVariant,
+      justification: vote.reason,
     };
   });
 }
@@ -18,10 +19,12 @@ export function toProposalVotes(data: IProposalVote[], stageId: ProposalStages) 
 function mapCommunityVoteChoice(choice: string) {
   switch (choice.toLowerCase()) {
     case "accept":
+    case "yes":
     case "approve":
       return "yes";
     case "reject":
     case "veto":
+    case "no":
       return "no";
     default:
       return choice;

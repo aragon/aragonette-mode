@@ -1,5 +1,5 @@
 import { capitalizeFirstLetter } from "@/utils/case";
-import { Button, Heading, Progress, RadioCard, RadioGroup } from "@aragon/ods";
+import { Button, Heading, Progress, RadioCard, RadioGroup, TextArea } from "@aragon/ods";
 import classNames from "classnames";
 import { useState } from "react";
 import { DynamicVetoRateChart } from "./dynamicVetoRateChart";
@@ -30,10 +30,11 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
 
   const [showOptions, setShowOptions] = useState(false);
   const [option, setOption] = useState<string>();
+  const [justification, setJustification] = useState<string>("");
 
   const handleVoteClick = () => {
     if (showOptions) {
-      cta?.onClick?.(parseInt(option ?? "0"));
+      cta?.onClick?.(parseInt(option ?? "0"), justification.trim());
       setShowOptions(false);
     } else {
       setShowOptions(true);
@@ -48,26 +49,37 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
       {/* Options */}
       {showOptions && (
         <div className="flex flex-col gap-y-3 pt-3">
-          <div className="flex flex-col gap-y-2">
-            <Heading size="h3">Choose your option</Heading>
-            <p className="text-neutral-500">
-              To vote, you must select one of the following options and confirm in your wallet. Once the transaction is
-              completed, your vote will be counted and displayed.
-            </p>
+          <div className="flex flex-col gap-y-6">
+            <div className="flex flex-col gap-y-2">
+              <Heading size="h3">Choose your option</Heading>
+              <p className="text-neutral-500">
+                To vote, you must select one of the following options and confirm in your wallet. Once the transaction
+                is completed, your vote will be counted and displayed.
+              </p>
+            </div>
+            <RadioGroup value={option} onValueChange={(value) => setOption(value)}>
+              {votingScores?.map((choice, index) => {
+                const parsedChoice = capitalizeFirstLetter(choice.option);
+                return (
+                  <RadioCard
+                    key={choice.option}
+                    label={parsedChoice}
+                    description={`Your choice will be counted for "${parsedChoice}"`}
+                    value={(index + 1).toString()}
+                  />
+                );
+              })}
+            </RadioGroup>
+            <TextArea
+              label="Add your justification"
+              helpText="Add a brief statement supporting your choice"
+              isOptional={true}
+              value={justification}
+              onChange={(e) => {
+                setJustification(e.target.value);
+              }}
+            />
           </div>
-          <RadioGroup value={option} onValueChange={(value) => setOption(value)}>
-            {votingScores?.map((choice, index) => {
-              const parsedChoice = capitalizeFirstLetter(choice.option);
-              return (
-                <RadioCard
-                  key={choice.option}
-                  label={parsedChoice}
-                  description={`Your choice will be counted for "${parsedChoice}"`}
-                  value={(index + 1).toString()}
-                />
-              );
-            })}
-          </RadioGroup>
         </div>
       )}
       {/* Button group */}
