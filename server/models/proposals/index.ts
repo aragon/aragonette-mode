@@ -21,6 +21,11 @@ export enum ProposalSortBy {
   //EndsAt = 'endsAt',
 }
 
+export enum ProposalType {
+  Child = "child",
+  Parent = "Parent",
+}
+
 export const parseProposalSortBy = (value?: string): ProposalSortBy => {
   if (!value) {
     return ProposalSortBy.CreatedAt;
@@ -59,7 +64,7 @@ export const parseProposalSortDir = (value?: string): ProposalSortDir => {
   }
 };
 
-export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
+export const parseProposalStatus = (value?: string): ProposalStatus[] => {
   if (!value) {
     return [];
   }
@@ -114,6 +119,16 @@ export const parseStageType = (stage: StageType): ProposalStages => {
   }
 };
 
+export const parseProposalType = (value?: string): ProposalType | undefined => {
+  if (!value) return;
+
+  if (value === ProposalType.Child || value === ProposalType.Parent) {
+    return value;
+  } else {
+    throw new Error(`Invalid proposal type value: ${value}`);
+  }
+};
+
 export const serializeStageType = (stage: ProposalStages): StageType => {
   switch (stage) {
     case ProposalStages.DRAFT:
@@ -150,7 +165,8 @@ class ProposalRepository {
     sortBy: ProposalSortBy,
     sortDir: ProposalSortDir,
     search?: string,
-    status?: ProposalStatus[]
+    status?: ProposalStatus[],
+    type?: ProposalType
   ): Promise<IPaginatedResponse<IProposal>> {
     try {
       let where = {};
@@ -177,6 +193,15 @@ class ProposalRepository {
           ...where,
           status: {
             in: status,
+          },
+        };
+      }
+
+      if (type) {
+        where = {
+          ...where,
+          includedPips: {
+            isEmpty: type === ProposalType.Child,
           },
         };
       }

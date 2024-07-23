@@ -26,6 +26,7 @@ import {
 import { getProposalDates } from "../components/newProposalForm/utils";
 import { proposalService } from "../services";
 
+// todo: get dynamic settings
 export default function NewProposal() {
   const router = useRouter();
   const { isConnected } = useAccount();
