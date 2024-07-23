@@ -1,9 +1,9 @@
-import { Button, Card, EmptyState, Icon, IconType, RadioCard, RadioGroup, StateSkeletonBar } from "@aragon/ods";
+import { ProposalSortDir, ProposalType } from "@/server/models/proposals";
+import { Button, CardEmptyState, Icon, IconType, RadioCard, RadioGroup, StateSkeletonBar } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { proposalList, ProposalStatus } from "../../services";
 import { FormItem } from "./formItem";
 import { type ICreateProposalMetadataFormData } from "./types";
-import { ProposalSortDir, ProposalType } from "@/server/models/proposals";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -66,34 +66,30 @@ export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPI
         helpText="Define which proposal should be published onchain and ready to vote on."
       >
         {noPendingProposals && (
-          <Card className="border border-neutral-100 shadow-neutral-sm">
-            <EmptyState
-              heading="No draft PIPs have been found on Github. "
-              description="Start by creating a PIP on Github"
-              secondaryButton={{
-                label: "Submit new PIP on Github",
-                iconRight: IconType.LINK_EXTERNAL,
-                className: "!rounded-full",
-              }}
-              objectIllustration={{ object: "MAGNIFYING_GLASS" }}
-            />
-          </Card>
+          <CardEmptyState
+            heading="No draft PIPs have been found on Github. "
+            description="Start by creating a PIP on Github"
+            secondaryButton={{
+              label: "Submit new PIP on Github",
+              iconRight: IconType.LINK_EXTERNAL,
+              className: "!rounded-full",
+            }}
+            objectIllustration={{ object: "MAGNIFYING_GLASS" }}
+          />
         )}
         {isError && (
-          <Card className="border border-neutral-100 shadow-neutral-sm">
-            <EmptyState
-              heading="Error loading proposals"
-              description="There was an error loading the proposals. Please try again!"
-              secondaryButton={{
-                label: "Reload proposals",
-                iconLeft: IconType.RELOAD,
-                onClick: () => {
-                  refetch();
-                },
-              }}
-              objectIllustration={{ object: "ERROR" }}
-            />
-          </Card>
+          <CardEmptyState
+            heading="Error loading proposals"
+            description="There was an error loading the proposals. Please try again!"
+            secondaryButton={{
+              label: "Reload proposals",
+              iconLeft: IconType.RELOAD,
+              onClick: () => {
+                refetch();
+              },
+            }}
+            objectIllustration={{ object: "ERROR" }}
+          />
         )}
         {isLoading && (
           <div className="flex flex-col gap-y-3">
