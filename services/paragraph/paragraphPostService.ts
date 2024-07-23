@@ -110,13 +110,13 @@ class ParagraphPostService {
       const existingPost = latestPostsMap.get(post.id);
 
       // If there's no post with the same id, or if the current post is more recent, update the map
-      if (!existingPost || (post.updatedAt > existingPost.updatedAt && !post.isUnlisted)) {
+      if (!existingPost || post.updatedAt > existingPost.updatedAt) {
         latestPostsMap.set(post.id, post);
       }
     });
 
     // Convert the map values to an array
-    return Array.from(latestPostsMap.values());
+    return Array.from(latestPostsMap.values()).filter((p) => p.isUnlisted === false && p.archived === false);
   };
 
   /**

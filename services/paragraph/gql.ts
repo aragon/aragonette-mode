@@ -24,7 +24,7 @@ export const getParagraphPostIdsQuery = ({
 }: IFetchParagraphPostIdsQueryParams) => `
 query GetParagraphPosts {
   transactions(tags:[
-     {
+      {
       name:"AppName",
       values:["Paragraph"],
     },
