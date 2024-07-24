@@ -74,6 +74,7 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
               label="Add your justification"
               helpText="Add a brief statement supporting your choice"
               isOptional={true}
+              maxLength={1000}
               value={justification}
               onChange={(e) => {
                 setJustification(e.target.value);
