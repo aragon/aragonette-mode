@@ -1,8 +1,8 @@
 import { PUB_ENS_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
 import { ProposalStages } from "@/features/proposals";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
-import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
-import { useDelegateVotingPower } from "@/plugins/erc20Votes/hooks/useDelegateVotingPower";
+import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
+import { useDelegateVotingPower } from "@/plugins/snapshotDelegation/hooks/useDelegateVotingPower";
 import { useTokenInfo } from "@/plugins/erc20Votes/hooks/useTokenBalance";
 import { formatHexString, isAddressEqual } from "@/utils/evm";
 import { queryClient } from "@/utils/query-client";

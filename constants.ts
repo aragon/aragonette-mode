@@ -7,6 +7,7 @@ export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ?? "") a
 export const PUB_TOKEN_SYMBOL = process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? "";
 export const PUB_MULTISIG_ADDRESS = (process.env.NEXT_PUBLIC_MULTISIG_ADDRESS ?? "") as Address;
 export const PUB_DELEGATION_CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_DELEGATION_CONTRACT_ADDRESS ?? "") as Address;
+export const PUB_SNAPSHOT_DELEGATION_ADDRESS = (process.env.NEXT_PUBLIC_SNAPSHOT_DELEGATION_ADDRESS ?? "") as Address;
 
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "sepolia") as ChainName;

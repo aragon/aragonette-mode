@@ -25,6 +25,7 @@ import {
   getDelegations,
   getMultisigVotingActivity,
 } from "@/services/rpc/delegationWall";
+import { getSnapshotDelegators } from "@/services/rpc/snapshotDelegation";
 import { getSnapshotVotingPower } from "@/services/snapshot";
 import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
 import { paginateArray } from "@/utils/pagination";
@@ -32,7 +33,7 @@ import { type Address } from "viem";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   logger.info(`Fetching delegators for address: ${address} (page: ${page}, limit: ${limit})...`);
-  const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
+  const delegations = await getSnapshotDelegators(address as Address);
 
   return paginateArray<IDelegator>(delegations, page, limit);
 };

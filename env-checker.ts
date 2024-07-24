@@ -18,6 +18,7 @@ const checkEnvVar = {
   NEXT_PUBLIC_TOKEN_SYMBOL: str({ devDefault: "POL" }),
   NEXT_PUBLIC_MULTISIG_ADDRESS: address(),
   NEXT_PUBLIC_DELEGATION_CONTRACT_ADDRESS: address(),
+  NEXT_PUBLIC_SNAPSHOT_DELEGATION_ADDRESS: address(),
   NEXT_PUBLIC_CHAIN_NAME: str({ devDefault: "sepolia" }), // Default to sepolia chain
   NEXT_PUBLIC_WEB3_URL_PREFIX: str(),
   NEXT_PUBLIC_ALCHEMY_API_KEY: str(),

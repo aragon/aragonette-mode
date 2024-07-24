@@ -1,5 +1,5 @@
 import { MemberProfile } from "@/components/nav/routes";
-import { useDelegate } from "@/plugins/erc20Votes/hooks/useDelegate";
+import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
 import { isAddressEqual } from "@/utils/evm";
 import { DataList, MemberDataListItem } from "@aragon/ods";
 import { useAccount } from "wagmi";
