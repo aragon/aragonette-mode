@@ -36,6 +36,7 @@
     "@tanstack/react-query-persist-client": "^5.28.8",
     "@typescript-eslint/eslint-plugin": "latest",
     "@vercel/kv": "^1.0.1",
+    "@vercel/og": "^0.6.2",
     "@web3modal/wagmi": "^5.0.3",
     "ajv": "^8.14.0",
     "arweave": "^1.15.1",
