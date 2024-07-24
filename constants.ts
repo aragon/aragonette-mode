@@ -56,7 +56,7 @@ export const EMERGENCY_PREFIX = process.env.EMERGENCY_PREFIX ?? "SOS";
 
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";
-export const PUB_APP_DESCRIPTION = "Streamlined user interface for Polygon governance";
+export const PUB_APP_DESCRIPTION = "The place for all things Polygon Governance.";
 
 export const PUB_PROJECT_URL = "https://polygon.technology/";
 export const PUB_WALLET_ICON = "https://avatars.githubusercontent.com/u/30753617";
