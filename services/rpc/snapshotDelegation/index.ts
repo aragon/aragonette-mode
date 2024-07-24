@@ -80,7 +80,11 @@ export const getSnapshotDelegators = async function (address: Address) {
       };
     }) ?? [];
 
-  const parsedLogs = [...parsedSetLogs, ...parsedClearLogs];
+  const parsedLogs = [...parsedSetLogs, ...parsedClearLogs].filter(
+    (log) =>
+      log.event.args.id === toHex(stringToBytes(SNAPSHOT_SPACE, { size: 32 })) ||
+      log.event.args.id === toHex(stringToBytes("", { size: 32 }))
+  );
   parsedLogs.sort((a, b) => a.blockNumber - b.blockNumber);
 
   const delegators: Address[] =
