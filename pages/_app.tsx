@@ -45,10 +45,11 @@ export default function AragonetteApp({ Component, pageProps }: any) {
         <meta property="og:image:alt" content="Polygon Governance Hub logo" />
         <meta property="og:type" content="website" />
 
-        <meta name="twitter:card" content={`${PUB_API_BASE_URL}/og`} />
-        <meta name="twitter:site" content={PUB_X_HANDLE} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={PUB_APP_NAME} />
         <meta name="twitter:description" content={PUB_APP_DESCRIPTION} />
+        <meta name="twitter:image" content={`${PUB_API_BASE_URL}/og`} />
+        <meta name="twitter:site" content={PUB_X_HANDLE} />
       </Head>
       <RootContextProvider>
         <Layout>
