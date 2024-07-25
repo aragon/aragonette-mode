@@ -35,7 +35,7 @@ export const useCastSnapshotVote = (proposal = "", onSuccess?: () => void) => {
     }
   }, [isConfirming, isConfirmed]);
 
-  const castVote = async (choice: number) => {
+  const castVote = async (choice: number, reason?: string) => {
     if (!proposal || !choice || !address) {
       setError(new Error('"Missing required parameters."'));
       return;
@@ -53,6 +53,7 @@ export const useCastSnapshotVote = (proposal = "", onSuccess?: () => void) => {
         proposal,
         type: "single-choice",
         choice,
+        reason,
         app: PUB_APP_NAME,
       });
 

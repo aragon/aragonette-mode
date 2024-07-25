@@ -24,5 +24,5 @@ export const WalletContainer = () => {
     address: address,
   });
 
-  return <Wallet user={address ? { address: address, name: ensName ?? "" } : undefined} onClick={() => open()} />;
+  return <Wallet user={address ? { address, name: ensName ?? undefined } : undefined} onClick={() => open()} />;
 };

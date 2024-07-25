@@ -1,8 +1,9 @@
 import { type IProposal } from "@/features/proposals";
 import proposalRepository, {
+  parseProposalStatus,
   parseProposalSortBy,
   parseProposalSortDir,
-  parsedProposalStatus,
+  parseProposalType,
 } from "@/server/models/proposals";
 import { buildVotingResponse } from "@/server/services/builders/proposal-builder";
 import { checkNullableParam } from "@/server/utils";
@@ -15,7 +16,7 @@ export default async function handler(
   res: NextApiResponse<IPaginatedResponse<IProposal> | IError>
 ) {
   try {
-    const { page, limit, sortBy, sortDir, search, status } = req.query;
+    const { page, limit, sortBy, sortDir, search, status, type } = req.query;
 
     const parsedPage = checkNullableParam(page, "page");
     const parsedLimit = checkNullableParam(limit, "limit");
@@ -23,13 +24,14 @@ export default async function handler(
     const parsedSortDir = checkNullableParam(sortDir, "sortDir");
     const parsedSearch = checkNullableParam(search, "search");
     const parsedStatus = checkNullableParam(status, "status");
+    const parsedType = checkNullableParam(type, "type");
 
     let pageInt = parseInt(parsedPage ?? "1", 10);
     let limitInt = parseInt(parsedLimit ?? "10", 10);
 
     const typedSortBy = parseProposalSortBy(parsedSortBy);
     const typedSortDir = parseProposalSortDir(parsedSortDir);
-    const typedStatus = parsedProposalStatus(parsedStatus);
+    const typedStatus = parseProposalStatus(parsedStatus);
 
     if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
       limitInt = 10;
@@ -45,7 +47,8 @@ export default async function handler(
       typedSortBy,
       typedSortDir,
       parsedSearch,
-      typedStatus
+      typedStatus,
+      parseProposalType(parsedType)
     );
 
     for (const proposal of paginatedProposals.data) {

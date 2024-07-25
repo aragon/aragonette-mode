@@ -21,6 +21,11 @@ export enum ProposalSortBy {
   //EndsAt = 'endsAt',
 }
 
+export enum ProposalType {
+  Child = "child",
+  Parent = "Parent",
+}
+
 export const parseProposalSortBy = (value?: string): ProposalSortBy => {
   if (!value) {
     return ProposalSortBy.CreatedAt;
@@ -59,7 +64,7 @@ export const parseProposalSortDir = (value?: string): ProposalSortDir => {
   }
 };
 
-export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
+export const parseProposalStatus = (value?: string): ProposalStatus[] => {
   if (!value) {
     return [];
   }
@@ -80,6 +85,23 @@ export const parsedProposalStatus = (value?: string): ProposalStatus[] => {
   }
 };
 
+export const serializeProposalStatus = (value: ProposalStatus): string => {
+  switch (value) {
+    case ProposalStatus.ACTIVE:
+      return "active";
+    case ProposalStatus.REJECTED:
+      return "rejected";
+    case ProposalStatus.EXECUTED:
+      return "executed";
+    case ProposalStatus.PENDING:
+      return "pending";
+    case ProposalStatus.EXPIRED:
+      return "expired";
+    default:
+      throw new Error(`Invalid status value: ${value}`);
+  }
+};
+
 export const parseStageType = (stage: StageType): ProposalStages => {
   switch (stage) {
     case "DRAFT":
@@ -94,6 +116,16 @@ export const parseStageType = (stage: StageType): ProposalStages => {
       return ProposalStages.COUNCIL_CONFIRMATION;
     default:
       throw new Error(`Invalid stage value: ${stage}`);
+  }
+};
+
+export const parseProposalType = (value?: string): ProposalType | undefined => {
+  if (!value) return;
+
+  if (value === ProposalType.Child || value === ProposalType.Parent) {
+    return value;
+  } else {
+    throw new Error(`Invalid proposal type value: ${value}`);
   }
 };
 
@@ -133,7 +165,8 @@ class ProposalRepository {
     sortBy: ProposalSortBy,
     sortDir: ProposalSortDir,
     search?: string,
-    status?: ProposalStatus[]
+    status?: ProposalStatus[],
+    type?: ProposalType
   ): Promise<IPaginatedResponse<IProposal>> {
     try {
       let where = {};
@@ -160,6 +193,15 @@ class ProposalRepository {
           ...where,
           status: {
             in: status,
+          },
+        };
+      }
+
+      if (type) {
+        where = {
+          ...where,
+          includedPips: {
+            isEmpty: type === ProposalType.Child,
           },
         };
       }

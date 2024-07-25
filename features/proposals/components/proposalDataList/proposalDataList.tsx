@@ -1,24 +1,21 @@
-import { ProposalDetails } from "@/components/nav/routes";
+import { NewProposal, ProposalDetails } from "@/components/nav/routes";
+import { ProposalDataListItemStructure } from "@/components/odsModified/proposalDataListItem";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { generateDataListState } from "@/utils/query";
-import {
-  DataList,
-  IconType,
-  ProposalDataListItem,
-  ProposalDataListItemSkeleton,
-  type DataListState,
-} from "@aragon/ods";
+import { DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted } from "../../services";
 import { generateSortOptions, sortItems } from "./utils";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;
 
 export const ProposalDataList: React.FC = () => {
   const { address } = useAccount();
+  const router = useRouter();
 
   const [activeSort, setActiveSort] = useState<string>();
   const [searchValue, setSearchValue] = useState<string>();
@@ -83,7 +80,7 @@ export const ProposalDataList: React.FC = () => {
     secondaryButton: {
       label: "Reset all filters",
       iconLeft: IconType.RELOAD,
-      onclick: () => resetFilters(),
+      onClick: () => resetFilters(),
     },
   };
 
@@ -93,7 +90,9 @@ export const ProposalDataList: React.FC = () => {
     primaryButton: {
       label: "Create onchain PIP",
       iconLeft: IconType.PLUS,
-      onClick: () => alert("create proposal"),
+      onClick: () => {
+        router.push(NewProposal.path);
+      },
     },
   };
 
@@ -130,7 +129,7 @@ export const ProposalDataList: React.FC = () => {
         emptyFilteredState={emptyFilteredState}
       >
         {proposalsQueryData?.proposals?.map((proposal, index) => (
-          <ProposalDataListItem.Structure
+          <ProposalDataListItemStructure
             {...proposal}
             voted={votedData[index]?.data}
             href={ProposalDetails.getPath(proposal.id)}

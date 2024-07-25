@@ -1,17 +1,18 @@
-import { type FC, useState } from "react";
-import { type Address, type Hex } from "viem";
-import { AlertInline, InputText } from "@aragon/ods";
+import { Else, ElseIf, If, Then } from "@/components/if";
 import { PleaseWaitSpinner } from "@/components/please-wait";
+import { useAbi } from "@/hooks/useAbi";
 import { isAddress } from "@/utils/evm";
 import { type Action } from "@/utils/types";
-import { Else, ElseIf, If, Then } from "@/components/if";
-import { useAbi } from "@/hooks/useAbi";
-import { FunctionSelector } from "./function-selector";
+import { AddressInput, AlertInline } from "@aragon/ods";
+import { useState, type FC } from "react";
+import { type Address, type Hex } from "viem";
 import { AddressText } from "../text/address";
+import { FunctionSelector } from "./function-selector";
 
 interface FunctionCallFormProps {
   onAddAction: (action: Action) => any;
 }
+
 export const FunctionCallForm: FC<FunctionCallFormProps> = ({ onAddAction }) => {
   const [targetContract, setTargetContract] = useState<string>("");
   const { abi, isLoading: loadingAbi, isProxy, implementation } = useAbi(targetContract as Address);
@@ -28,12 +29,13 @@ export const FunctionCallForm: FC<FunctionCallFormProps> = ({ onAddAction }) => 
   return (
     <div className="my-6">
       <div className="mb-3">
-        <InputText
+        <AddressInput
           label="Contract address"
-          placeholder="0x1234..."
+          helpText="Paste in the needed contract address to select any method of it."
+          placeholder="ENS or 0x …"
           variant={!targetContract || isAddress(targetContract) ? "default" : "critical"}
           value={targetContract}
-          onChange={(e) => setTargetContract(e.target.value || "")}
+          onChange={(value) => setTargetContract(value ?? "")}
         />
       </div>
       <If condition={loadingAbi}>
@@ -42,9 +44,7 @@ export const FunctionCallForm: FC<FunctionCallFormProps> = ({ onAddAction }) => 
             <PleaseWaitSpinner />
           </div>
         </Then>
-        <ElseIf not={targetContract}>
-          <p>Enter the address of the contract to call in a new action</p>
-        </ElseIf>
+        <ElseIf not={targetContract}>{/* <p>Enter the address of the contract to call in a new action</p> */}</ElseIf>
         <ElseIf not={isAddress(targetContract)}>
           <AlertInline message="The address of the contract is not valid" variant="critical" />
         </ElseIf>

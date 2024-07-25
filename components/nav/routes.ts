@@ -9,6 +9,13 @@ export const Proposals = {
   icon: IconType.APP_PROPOSALS,
 };
 
+export const NewProposal = {
+  name: "New Proposal",
+  id: "new-proposal",
+  path: "/proposals/new",
+  icon: IconType.APP_PROPOSALS,
+};
+
 export const ProposalDetails = {
   name: "Proposal Details",
   id: "proposals-details",

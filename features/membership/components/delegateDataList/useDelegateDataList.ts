@@ -50,7 +50,7 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
     secondaryButton: {
       label: "Reset all filters",
       iconLeft: IconType.RELOAD,
-      onclick: () => resetFilters(),
+      onClick: () => resetFilters(),
     },
   };
 

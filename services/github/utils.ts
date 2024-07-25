@@ -18,7 +18,7 @@ type MarkdownLink = {
 //TODO: [RD-296] Use regex to extract the header and body of the proposal
 export function extractHeader(proposalBody: string) {
   const header = proposalBody
-    .split("\n")
+    ?.split("\n")
     .slice(0, 3)
     .map((line) => line.trim());
   if (!(header[0].startsWith("|") && header[1].startsWith("|") && header[2].startsWith("|"))) {
@@ -112,7 +112,7 @@ function parseIncludedPIPs(includedPips: string[]): IProposalResource[] {
 export function parseHeader(header: string, body: string, link: string): ProposalStage {
   const parts = header.split("\n");
   const values = parts[2]
-    .split("|")
+    ?.split("|")
     .slice(1)
     .map((v) => v.trim());
 
@@ -163,7 +163,7 @@ export function parseYamlHeader(header: string) {
 
 export function parseCreators(value: string): ICreator[] {
   return value
-    .split(",")
+    ?.split(",")
     .map((v) => v.trim())
     .map((c) => {
       return {

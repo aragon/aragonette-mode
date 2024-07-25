@@ -10,6 +10,10 @@ import { ProfileAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { councilMemberList } from "../services/query-options";
+import { Heading } from "@aragon/ods";
+import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
+import { ProposalStages } from "@/features/proposals";
+import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 
 export const MemberProfile = () => {
   const { query, asPath } = useRouter();
@@ -54,22 +58,21 @@ export const MemberProfile = () => {
             <div className="flex w-full flex-col gap-y-6 overflow-auto">
               <DelegationStatement message={announcement?.message} />
               {/* Delegations Received */}
-              {/* <div className="flex flex-col gap-y-3">
+              <div className="flex flex-col gap-y-3">
                 <Heading size="h3">Delegations received</Heading>
                 <DelegationsDataList delegate={profileAddress} />
-              </div> */}
+              </div>
             </div>
           )}
 
-          {/* TODO enable for launch */}
           {/* Voting activity */}
-          {/* <div className="flex w-full flex-col gap-y-6">
+          <div className="flex w-full flex-col gap-y-6">
             <Heading size="h2">Voting activity</Heading>
             <MemberVotesDataList
               address={profileAddress}
               stage={isCouncilMember ? ProposalStages.COUNCIL_APPROVAL : ProposalStages.COMMUNITY_VOTING}
             />
-          </div> */}
+          </div>
         </div>
         {/* Aside */}
         <aside className="flex w-full flex-1 flex-col gap-y-12 md:max-w-[320px] md:gap-y-20">

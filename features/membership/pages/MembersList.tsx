@@ -43,11 +43,11 @@ export default function MembersList() {
 
   const getButtonLabel = () => {
     if (!isConnected) {
-      return "Connect to create delegate profile";
+      return "Connect to create a delegate profile";
     } else if (announcement) {
-      return "Update delegate profile";
+      return "Edit your delegate profile";
     } else {
-      return "Create delegate profile";
+      return "Create a delegate profile";
     }
   };
 
@@ -73,7 +73,7 @@ export default function MembersList() {
             <Heading size="h3">Details</Heading>
             <p className="text-neutral-500">
               {`The Polygon Governance Hub is an organisation consisting of two different governance bodies. This consists
-              of an Protocol Council and the ${PUB_TOKEN_SYMBOL} token holders, who can also delegate their
+              of a Protocol Council and the ${PUB_TOKEN_SYMBOL} token holders, who can also delegate their
               voting power.`}
             </p>
           </div>

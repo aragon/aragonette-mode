@@ -32,6 +32,7 @@ import {
 } from "../../../services/rpc/multisig/proposalStages";
 import { getSnapshotProposalStage, getSnapshotProposalStages } from "../../../services/snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals/types";
+import dayjs from "dayjs";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -503,11 +504,11 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
   logger.info(`Proposal stages matched successfully.`);
 
-  return allMatchedProposalStages.map(buildProposalResponse);
+  return allMatchedProposalStages.map((matchedStages) => buildProposalResponse(matchedStages));
 }
 
-export function buildProposalResponse(proposalStages: ProposalStage[]): IProposal {
-  const id = computeProposalId(proposalStages);
+export function buildProposalResponse(proposalStages: ProposalStage[], overwriteId?: string): IProposal {
+  const id = overwriteId ?? computeProposalId(proposalStages);
 
   logger.info(`Building proposal ${id} with ${proposalStages.length} stages...`);
 
@@ -631,14 +632,15 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
 
   // get stages, build proposal and add voting responses
   const stages = await getProposalStages(onchainProposalId);
-  const updatedProposal = buildProposalResponse(stages);
-  updatedProposal.id = proposal.id;
+  const updatedProposal = buildProposalResponse(stages, proposal.id);
 
   const votingResponses = await Promise.all(updatedProposal.stages.map((stage) => buildVotingResponse(stage)));
   votingResponses.forEach((response, index) => {
-    updatedProposal.stages[index].voting = response?.[0];
-    updatedProposal.stages[index].status = response?.[1] as StageStatus;
-    updatedProposal.status = (response?.[2] as ProposalStatus) ?? updatedProposal.status;
+    if (response) {
+      updatedProposal.stages[index].voting = response?.[0];
+      updatedProposal.stages[index].status = response?.[1];
+      updatedProposal.status = response?.[2];
+    }
   });
 
   logger.info(`Returning live proposal ${proposal.id}`);
@@ -648,8 +650,8 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
 export function isActiveStage(stage: IProposalStage) {
   return (
     stage.voting &&
-    new Date(stage.voting.endDate) < new Date() &&
-    new Date(stage.voting.startDate) >= new Date() &&
+    dayjs(stage.voting.endDate).isAfter(dayjs()) &&
+    dayjs(stage.voting.startDate).isBefore(dayjs()) &&
     stage.status === StageStatus.ACTIVE
   );
 }

@@ -58,7 +58,9 @@ export const getSnapshotProposalStagesData = async function (params: { space: st
 
 export const getSnapshotProposalStageData = async function (params: { providerId: string }) {
   logger.info(`Fetching Snapshot proposal for proposalId (${params.providerId})...`);
-  return requestSnapshotData<SnapshotProposalData | null>("proposal", snapshotProposalQuery, { id: params.providerId });
+  return requestSnapshotData<SnapshotProposalData | null>("proposal", snapshotProposalQuery, {
+    id: params.providerId ?? "",
+  });
 };
 
 type IGetSnapshotVotesDataParams = {

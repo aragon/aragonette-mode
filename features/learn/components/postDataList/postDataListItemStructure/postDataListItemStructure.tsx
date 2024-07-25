@@ -9,14 +9,7 @@ type IPostDataListItemStructure = IDataListItemProps &
   Pick<Post, "categories" | "cover_img" | "createdAt" | "subtitle" | "title">;
 
 export const PostDataListItemStructure: React.FC<IPostDataListItemStructure> = (props) => {
-  const {
-    categories,
-    cover_img: { img },
-    subtitle,
-    title,
-    createdAt,
-    ...otherProps
-  } = props;
+  const { categories, cover_img, subtitle, title, createdAt, ...otherProps } = props;
 
   const actionItemClasses = classNames(
     "shadow-neutral-sm overflow-hidden !px-3 py-3 !flex flex-col gap-y-3 transition-all", // Default
@@ -25,7 +18,15 @@ export const PostDataListItemStructure: React.FC<IPostDataListItemStructure> = (
 
   return (
     <DataList.Item className={actionItemClasses} {...otherProps}>
-      <Image alt={title} src={img.src} height={img.height} width={img.width} className="h-full w-full" />
+      {cover_img && (
+        <Image
+          alt={title}
+          src={cover_img.img.src}
+          height={cover_img.img.height}
+          width={cover_img.img.width}
+          className="h-full w-full"
+        />
+      )}
       <div className="flex min-w-0 flex-col gap-y-1.5">
         <Heading size="h3" className="line-clamp-2">
           {title}

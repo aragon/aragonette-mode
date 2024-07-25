@@ -1,8 +1,12 @@
 import { MainSection } from "@/components/layout/mainSection";
+import { NewProposal } from "@/components/nav/routes";
 import { ProposalDataList } from "@/features/proposals";
 import { Button, Heading, IconType } from "@aragon/ods";
+import { useRouter } from "next/navigation";
 
 export default function Proposals() {
+  const router = useRouter();
+
   return (
     <MainSection className="md:px-6 md:pb-20 xl:pt-10">
       <div className="mx-auto flex w-full max-w-[768px] flex-col items-center gap-y-6 md:px-6">
@@ -10,7 +14,14 @@ export default function Proposals() {
           <Heading as="h1" className="line-clamp-1 flex flex-1 shrink-0">
             Polygon Improvement Proposals
           </Heading>
-          <Button iconLeft={IconType.PLUS} size="lg" className="!rounded-full">
+          <Button
+            iconLeft={IconType.PLUS}
+            size="lg"
+            className="!rounded-full"
+            onClick={() => {
+              router.push(NewProposal.path);
+            }}
+          >
             Onchain PIP
           </Button>
         </div>

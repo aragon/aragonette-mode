@@ -124,6 +124,7 @@ export function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
       choice: vote.proposal.choices[Number(vote.choice) - 1],
       amount: vote.vp,
       timestamp: new Date(Number(vote.created) * 1000).toISOString(),
+      reason: vote.reason,
     };
   });
 }
