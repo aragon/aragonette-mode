@@ -11,7 +11,6 @@ interface IDraftProposalSelection {
   onPIPSelected: (pipMetadata: ICreateProposalMetadataFormData) => void;
 }
 
-// TODO: Add loading state and status
 export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPIPSelected }) => {
   const {
     data: draftProposalsData,
