@@ -1,12 +1,12 @@
-import { RootContextProvider } from "@/context";
-import { Layout } from "@/components/layout/layout";
 import AlertContainer from "@/components/alert/alert-container";
+import { Layout } from "@/components/layout/layout";
+import { PUB_API_BASE_URL, PUB_APP_DESCRIPTION, PUB_APP_NAME, PUB_BASE_URL, PUB_X_HANDLE } from "@/constants";
+import { RootContextProvider } from "@/context";
+import { HydrationBoundary } from "@tanstack/react-query";
 import localFont from "next/font/local";
+import Head from "next/head";
 import "@aragon/ods/index.css";
 import "@/pages/globals.css";
-import { PUB_API_BASE_URL, PUB_APP_DESCRIPTION, PUB_APP_NAME, PUB_BASE_URL, PUB_X_HANDLE } from "@/constants";
-import Head from "next/head";
-import { HydrationBoundary } from "@tanstack/react-query";
 
 const generalSans = localFont({
   src: [
