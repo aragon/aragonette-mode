@@ -5,6 +5,7 @@ import { Proposals } from "@/components/nav/routes";
 import { useCreateProposal } from "@/plugins/multisig/hooks/useCreateProposal";
 import { AlertInline, Button, Heading, InputText, RadioCard, RadioGroup, Switch, TextArea } from "@aragon/ods";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
@@ -24,11 +25,12 @@ import {
   startSwitchValues,
 } from "../components/newProposalForm/types";
 import { getProposalDates } from "../components/newProposalForm/utils";
-import { proposalService } from "../services";
+import { proposalList, proposalService } from "../services";
 
 // todo: get dynamic settings
 export default function NewProposal() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { isConnected } = useAccount();
 
   const formValues = useForm<ProposalCreationFormData>({
@@ -49,12 +51,13 @@ export default function NewProposal() {
   const onProposalSubmitted = useCallback(async () => {
     setIndexingStatus("pending");
     const response = await proposalService.invalidateProposals();
-    setIndexingStatus("success");
 
     if (response) {
+      setIndexingStatus("success");
       router.push(Proposals.path);
+      queryClient.invalidateQueries({ queryKey: proposalList().queryKey, refetchType: "all", type: "all" });
     }
-  }, [router]);
+  }, [queryClient, router]);
 
   const { submitProposal, isConfirming, isAwaitingConfirmation } = useCreateProposal(onProposalSubmitted);
 
@@ -67,7 +70,7 @@ export default function NewProposal() {
         summary,
         description,
         type,
-        resources: Object.values(resources).flatMap((r) => (!r.link || !r.name ? [] : { name: r.name, url: r.link })),
+        resources: Object.values(resources).flatMap((r) => (!r?.link || !r?.name ? [] : { name: r.name, url: r.link })),
       },
       emergency,
       ...getProposalDates(getValues()),
