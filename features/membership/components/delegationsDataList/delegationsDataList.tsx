@@ -26,6 +26,7 @@ export const DelegationsDataList: React.FC<IDelegationsDataListProps> = (props) 
     containerClasses,
   } = useDelegationsDataList(delegate);
 
+  // TODO: check decimals for staked balance value
   const { data: token } = useTokenInfo({ token: PUB_TOKEN_ADDRESS });
   const tokenDecimals = token?.[1] ?? 18;
 

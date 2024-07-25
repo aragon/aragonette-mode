@@ -73,9 +73,7 @@ export const getDelegates = async function (
   sortBy: IDelegatesSortBy = IDelegatesSortBy.FEATURED,
   sortDir: IDelegatesSortDir = IDelegatesSortDir.DESC
 ) {
-  logger.info(
-    `Fetching featured delegates (page: ${page}, limit: ${limit}, sortBy: ${sortBy}, sortDir: ${sortDir})...`
-  );
+  logger.info(`Fetching delegates (page: ${page}, limit: ${limit}, sortBy: ${sortBy}, sortDir: ${sortDir})...`);
 
   logger.info(`Fetching contract delegates data...`);
   const contractDelegatesRes = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
@@ -94,7 +92,7 @@ export const getDelegates = async function (
         space: SNAPSHOT_SPACE,
         voter: delegate.address,
       });
-      delegate.delegators = await getDelegations(PUB_CHAIN.id, delegate.address as Address, PUB_TOKEN_ADDRESS);
+      delegate.delegators = await getSnapshotDelegators(delegate.address as Address);
       delegate.delegationCount = delegate.delegators.length;
       return delegate;
     })

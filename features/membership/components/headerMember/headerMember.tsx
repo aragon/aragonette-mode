@@ -58,6 +58,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
     enabled: !!connectedAccount && isTokenVoting,
   });
 
+  // TODO: replace with stakers balance
   const { data: tokenData, isLoading: tokenBalanceLoading } = useTokenInfo(
     { account: profileAddress, token: PUB_TOKEN_ADDRESS },
     { enabled: !!profileAddress && !!PUB_TOKEN_ADDRESS && !!isTokenVoting }
