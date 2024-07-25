@@ -638,8 +638,8 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
   votingResponses.forEach((response, index) => {
     if (response) {
       updatedProposal.stages[index].voting = response?.[0];
-      updatedProposal.stages[index].status = response?.[1] as StageStatus;
-      updatedProposal.status = response?.[2] as ProposalStatus;
+      updatedProposal.stages[index].status = response?.[1];
+      updatedProposal.status = response?.[2];
     }
   });
 

@@ -25,6 +25,7 @@ import {
 import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
   canVote as canVoteQueryOptions,
+  proposalList,
   proposal as proposalQueryOptions,
   voted as votedQueryOptions,
 } from "../services/query-options";
@@ -85,6 +86,11 @@ export default function ProposalDetails() {
     queryClient.invalidateQueries({
       queryKey: proposalKeys?.proposal({ proposalId }),
       refetchType: "active",
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: proposalList().queryKey,
+      refetchType: "all",
     });
   }, [proposalId, queryClient]);
 
