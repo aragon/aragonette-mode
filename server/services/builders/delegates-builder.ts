@@ -25,6 +25,7 @@ import {
   getDelegations,
   getMultisigVotingActivity,
 } from "@/services/rpc/delegationWall";
+import { getSnapshotDelegators } from "@/services/rpc/snapshotDelegation";
 import { getSnapshotVotingPower } from "@/services/snapshot";
 import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
 import { paginateArray } from "@/utils/pagination";
@@ -32,7 +33,7 @@ import { type Address } from "viem";
 
 export const getDelegators = async function (address: string, page: number, limit: number) {
   logger.info(`Fetching delegators for address: ${address} (page: ${page}, limit: ${limit})...`);
-  const delegations = await getDelegations(PUB_CHAIN.id, address as Address, PUB_TOKEN_ADDRESS);
+  const delegations = await getSnapshotDelegators(address as Address);
 
   return paginateArray<IDelegator>(delegations, page, limit);
 };
@@ -72,9 +73,7 @@ export const getDelegates = async function (
   sortBy: IDelegatesSortBy = IDelegatesSortBy.FEATURED,
   sortDir: IDelegatesSortDir = IDelegatesSortDir.DESC
 ) {
-  logger.info(
-    `Fetching featured delegates (page: ${page}, limit: ${limit}, sortBy: ${sortBy}, sortDir: ${sortDir})...`
-  );
+  logger.info(`Fetching delegates (page: ${page}, limit: ${limit}, sortBy: ${sortBy}, sortDir: ${sortDir})...`);
 
   logger.info(`Fetching contract delegates data...`);
   const contractDelegatesRes = await getDelegatesList(PUB_CHAIN.id, PUB_DELEGATION_CONTRACT_ADDRESS);
@@ -93,7 +92,7 @@ export const getDelegates = async function (
         space: SNAPSHOT_SPACE,
         voter: delegate.address,
       });
-      delegate.delegators = await getDelegations(PUB_CHAIN.id, delegate.address as Address, PUB_TOKEN_ADDRESS);
+      delegate.delegators = await getSnapshotDelegators(delegate.address as Address);
       delegate.delegationCount = delegate.delegators.length;
       return delegate;
     })
