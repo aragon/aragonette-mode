@@ -159,6 +159,7 @@ const parseVotesData = (data: Vote[]): IProposalVote[] => {
       vote: vote.choice,
       amount: Number(vote.amount),
       timestamp: vote.timestamp,
+      reason: vote?.reason,
     };
   });
 };
