@@ -80,7 +80,7 @@ export const ProposalDataList: React.FC = () => {
     secondaryButton: {
       label: "Reset all filters",
       iconLeft: IconType.RELOAD,
-      onclick: () => resetFilters(),
+      onClick: () => resetFilters(),
     },
   };
 
