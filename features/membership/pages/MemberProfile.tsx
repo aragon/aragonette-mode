@@ -53,7 +53,11 @@ export const MemberProfile = () => {
     <div className="flex flex-col items-center">
       <Head>
         <title>{identifier ?? name.data ?? profileAddress}</title>
-        <meta property="description" content={bio} key="description" />
+        <meta
+          property="description"
+          content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
+          key="description"
+        />
         <meta property="og:title" content={identifier ?? name.data ?? profileAddress} key="og:title" />
         <meta
           property="og:description"
