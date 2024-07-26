@@ -1,4 +1,4 @@
-import { PUB_CHAIN } from "@/constants";
+import { MemberProfile } from "@/components/nav/routes";
 import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
 import { isAddressEqual } from "@/utils/evm";
 import { DataList, MemberDataListItem } from "@aragon/ods";
@@ -56,11 +56,9 @@ export const DelegateDataList: React.FC<IDelegateDataListProps> = ({ onAnnounceD
             isDelegate={isAddressEqual(yourDelegate, delegate.address)}
             delegationCount={delegate.delegationCount}
             key={delegate.address}
-            href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${delegate.address}`}
+            href={MemberProfile.getPath(delegate.address)}
             name={delegate.name}
             address={delegate.address}
-            target="_blank"
-            rel="noopener"
           />
         ))}
       </DataList.Container>

@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { useEffect, useState } from "react";
 import { delegatesList } from "@/features/membership/services/query-options";
 
-const DEFAULT_PAGE_SIZE = 12;
+const DEFAULT_PAGE_SIZE = 9;
 const SEARCH_DEBOUNCE_MILLS = 500;
 const DEFAULT_SORT = IDelegatesSortBy.FEATURED;
 
@@ -113,12 +113,12 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
   const entityLabel = itemsCount === 1 ? "Delegate" : "Delegates";
   const showPagination = (itemsCount ?? 0) > DEFAULT_PAGE_SIZE;
 
+  const showFullWidth =
+    dataListState === "error" ||
+    ((dataListState === "idle" || dataListState === "filtered") && (!itemsCount || itemsCount === 0));
+
   const containerClasses = classNames({
-    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !(
-      dataListState === "error" ||
-      ((dataListState === "idle" || dataListState === "filtered") && itemsCount === 0) ||
-      itemsCount === 0
-    ),
+    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !showFullWidth,
   });
 
   return {

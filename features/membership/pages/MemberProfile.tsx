@@ -3,17 +3,15 @@ import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnounceme
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { isAddressEqual } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
+import { Heading } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
+import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { councilMemberList } from "../services/query-options";
-import { Heading } from "@aragon/ods";
-import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
-import { ProposalStages } from "@/features/proposals";
-import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
 
 export const MemberProfile = () => {
   const { query, asPath } = useRouter();
@@ -64,15 +62,6 @@ export const MemberProfile = () => {
               </div>
             </div>
           )}
-
-          {/* Voting activity */}
-          <div className="flex w-full flex-col gap-y-6">
-            <Heading size="h2">Voting activity</Heading>
-            <MemberVotesDataList
-              address={profileAddress}
-              stage={isCouncilMember ? ProposalStages.COUNCIL_APPROVAL : ProposalStages.COMMUNITY_VOTING}
-            />
-          </div>
         </div>
         {/* Aside */}
         <aside className="flex w-full flex-1 flex-col gap-y-12 md:max-w-[320px] md:gap-y-20">

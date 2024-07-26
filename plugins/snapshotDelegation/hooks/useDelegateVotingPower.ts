@@ -65,7 +65,7 @@ export const useDelegateVotingPower = (mode: "delegate" | "claim" = "delegate", 
         });
       }
     },
-    [writeContract]
+    [mode, writeContract]
   );
 
   return {
