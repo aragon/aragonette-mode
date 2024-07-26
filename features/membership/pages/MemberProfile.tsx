@@ -67,7 +67,7 @@ export const MemberProfile = () => {
         <meta property="og:image:alt" content="Polygon Governance Hub logo" key="og:image:alt" />
         <meta property="og:type" content="website" key="og:type" />
 
-        <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+        <meta name="twitter:card" content="summary" key="twitter:card" />
         <meta name="twitter:title" content={identifier ?? name.data ?? profileAddress} key="twitter:title" />
         <meta
           name="twitter:description"
