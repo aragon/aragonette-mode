@@ -7,7 +7,7 @@ import { PUB_API_BASE_URL, PUB_APP_NAME, PUB_BASE_URL, PUB_X_HANDLE } from "@/co
 import { useQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { type Address } from "viem";
+import { zeroAddress, type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
@@ -44,7 +44,10 @@ export const MemberProfile = async () => {
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
   const identifier = isCouncilMember ? councilMember?.name : announcement?.identifier;
 
-  const name = profileAddress ? await getEnsName(config, { address: profileAddress }) : undefined;
+  const name =
+    profileAddress && profileAddress !== zeroAddress
+      ? await getEnsName(config, { address: profileAddress })
+      : undefined;
   const image = name ? await getEnsAvatar(config, { name: name! }) : undefined;
 
   return (
