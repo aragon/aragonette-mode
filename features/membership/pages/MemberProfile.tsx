@@ -3,7 +3,9 @@ import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnounceme
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import { isAddressEqual } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
+import { PUB_API_BASE_URL, PUB_APP_NAME, PUB_BASE_URL, PUB_X_HANDLE } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
@@ -42,6 +44,24 @@ export const MemberProfile = () => {
 
   return (
     <div className="flex flex-col items-center">
+      <Head>
+        <title>{identifier ?? profileAddress}</title>
+        <meta property="description" content={bio} key="description" />
+        <meta property="og:title" content={identifier ?? profileAddress} key="og:title" />
+        <meta property="og:description" content={bio} key="og:description" />
+        <meta property="og:url" content={PUB_BASE_URL} key="og:url" />
+        <meta property="og:site_name" content={PUB_APP_NAME} key="og:site_name" />
+        <meta property="og:locale" content="en_US" key="og:locale" />
+        <meta property="og:image" content={`${PUB_API_BASE_URL}/og`} key="og:image" />
+        <meta property="og:image:alt" content="Polygon Governance Hub logo" key="og:image:alt" />
+        <meta property="og:type" content="website" key="og:type" />
+
+        <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+        <meta name="twitter:title" content={identifier ?? profileAddress} key="twitter:title" />
+        <meta name="twitter:description" content={bio} key="twitter:description" />
+        <meta name="twitter:image" content={`${PUB_API_BASE_URL}/og`} key="twitter:image" />
+        <meta name="twitter:site" content={PUB_X_HANDLE} key="twitter:site" />
+      </Head>
       <HeaderMember
         isLoading={isLoading}
         address={profileAddress}
