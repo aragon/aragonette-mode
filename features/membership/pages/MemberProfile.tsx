@@ -43,12 +43,9 @@ export const MemberProfile = async () => {
   const isCouncilMember = councilMemberFetched && !!councilMember;
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
   const identifier = isCouncilMember ? councilMember?.name : announcement?.identifier;
-  const name = await getEnsName(config, { address: profileAddress });
-  const image = await getEnsAvatar(config, { name: name! });
 
-  console.log("profileAddress:", profileAddress);
-  console.log("name:", name);
-  console.log("image:", image);
+  const name = profileAddress ? await getEnsName(config, { address: profileAddress }) : undefined;
+  const image = name ? await getEnsAvatar(config, { name: name! }) : undefined;
 
   return (
     <div className="flex flex-col items-center">
