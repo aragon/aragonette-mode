@@ -16,9 +16,10 @@ import { Heading } from "@aragon/ods";
 import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { ProposalStages } from "@/features/proposals";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
-import { useEnsAvatar, useEnsName } from "wagmi";
+import { getEnsAvatar, getEnsName } from "wagmi/actions";
+import { config } from "@/context/Web3Modal";
 
-export const MemberProfile = () => {
+export const MemberProfile = async () => {
   const { query, asPath } = useRouter();
   const profileAddress = query.address as Address;
   const breadcrumbs = generateBreadcrumbs(asPath);
@@ -42,23 +43,23 @@ export const MemberProfile = () => {
   const isCouncilMember = councilMemberFetched && !!councilMember;
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
   const identifier = isCouncilMember ? councilMember?.name : announcement?.identifier;
-  const name = useEnsName({ address: profileAddress });
-  const image = useEnsAvatar({ name: name.data! });
+  const name = await getEnsName(config, { address: profileAddress });
+  const image = await getEnsAvatar(config, { name: name! });
 
   console.log("profileAddress:", profileAddress);
-  console.log("name:", name.data);
-  console.log("image:", image.data);
+  console.log("name:", name);
+  console.log("image:", image);
 
   return (
     <div className="flex flex-col items-center">
       <Head>
-        <title>{identifier ?? name.data ?? profileAddress}</title>
+        <title>{identifier ?? name ?? profileAddress ?? PUB_APP_NAME}</title>
         <meta
           property="description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
           key="description"
         />
-        <meta property="og:title" content={identifier ?? name.data ?? profileAddress} key="og:title" />
+        <meta property="og:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
         <meta
           property="og:description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
@@ -67,16 +68,12 @@ export const MemberProfile = () => {
         <meta property="og:url" content={PUB_BASE_URL} key="og:url" />
         <meta property="og:site_name" content={PUB_APP_NAME} key="og:site_name" />
         <meta property="og:locale" content="en_US" key="og:locale" />
-        <meta
-          property="og:image"
-          content={image.data ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`}
-          key="og:image"
-        />
+        <meta property="og:image" content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`} key="og:image" />
         <meta property="og:image:alt" content="Polygon Governance Hub logo" key="og:image:alt" />
         <meta property="og:type" content="website" key="og:type" />
 
         <meta name="twitter:card" content="summary" key="twitter:card" />
-        <meta name="twitter:title" content={identifier ?? name.data ?? profileAddress} key="twitter:title" />
+        <meta name="twitter:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="twitter:title" />
         <meta
           name="twitter:description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
@@ -84,7 +81,7 @@ export const MemberProfile = () => {
         />
         <meta
           name="twitter:image"
-          content={image.data ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`}
+          content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`}
           key="twitter:image"
         />
         <meta name="twitter:site" content={PUB_X_HANDLE} key="twitter:site" />
