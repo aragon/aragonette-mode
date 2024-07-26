@@ -35,6 +35,10 @@ export default async function handler() {
           </svg>
         </div>
       </div>
-    )
+    ),
+    {
+      width: 600,
+      height: 600,
+    }
   );
 }
