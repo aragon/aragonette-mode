@@ -41,14 +41,14 @@ export default function AragonetteApp({ Component, pageProps }: any) {
         <meta property="og:url" content={PUB_BASE_URL} key="og:url" />
         <meta property="og:site_name" content={PUB_APP_NAME} key="og:site_name" />
         <meta property="og:locale" content="en_US" key="og:locale" />
-        <meta property="og:image" content={`${PUB_API_BASE_URL}/og`} key="og:image" />
+        <meta property="og:image" content={`${PUB_BASE_URL}/${PUB_API_BASE_URL}/og`} key="og:image" />
         <meta property="og:image:alt" content="Polygon Governance Hub logo" key="og:image:alt" />
         <meta property="og:type" content="website" key="og:type" />
 
         <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
         <meta name="twitter:title" content={PUB_APP_NAME} key="twitter:title" />
         <meta name="twitter:description" content={PUB_APP_DESCRIPTION} key="twitter:description" />
-        <meta name="twitter:image" content={`${PUB_API_BASE_URL}/og`} key="twitter:image" />
+        <meta name="twitter:image" content={`${PUB_BASE_URL}/${PUB_API_BASE_URL}/og`} key="twitter:image" />
         <meta name="twitter:site" content={PUB_X_HANDLE} key="twitter:site" />
       </Head>
       <RootContextProvider>
