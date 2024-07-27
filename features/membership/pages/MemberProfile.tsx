@@ -16,10 +16,9 @@ import { Heading } from "@aragon/ods";
 import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { ProposalStages } from "@/features/proposals";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
-import { getEnsAvatar, getEnsName } from "wagmi/actions";
-import { config } from "@/context/Web3Modal";
+import { useEnsAvatar, useEnsName } from "wagmi";
 
-export const MemberProfile = async () => {
+export const MemberProfile = () => {
   const { query, asPath } = useRouter();
   const profileAddress = query.address as Address;
   const breadcrumbs = generateBreadcrumbs(asPath);
@@ -44,22 +43,24 @@ export const MemberProfile = async () => {
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
   const identifier = isCouncilMember ? councilMember?.name : announcement?.identifier;
 
-  const name =
-    profileAddress && profileAddress !== zeroAddress
-      ? await getEnsName(config, { address: profileAddress })
-      : undefined;
-  const image = name ? await getEnsAvatar(config, { name: name! }) : undefined;
+  const name = useEnsName({
+    address: profileAddress,
+    query: {
+      enabled: !!profileAddress,
+    },
+  });
+  const imageData = useEnsAvatar({
+    name: name.data!,
+    query: {
+      enabled: !!name.data,
+    },
+  });
+  const image = imageData.data;
 
   return (
     <div className="flex flex-col items-center">
       <Head>
-        <title>{identifier ?? name ?? profileAddress ?? PUB_APP_NAME}</title>
-        <meta
-          property="description"
-          content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
-          key="description"
-        />
-        <meta property="og:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
+        <meta property="og:title" content={identifier ?? name.data ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
         <meta
           property="og:description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
@@ -73,7 +74,11 @@ export const MemberProfile = async () => {
         <meta property="og:type" content="website" key="og:type" />
 
         <meta name="twitter:card" content="summary" key="twitter:card" />
-        <meta name="twitter:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="twitter:title" />
+        <meta
+          name="twitter:title"
+          content={identifier ?? name.data ?? profileAddress ?? PUB_APP_NAME}
+          key="twitter:title"
+        />
         <meta
           name="twitter:description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
