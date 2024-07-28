@@ -1,10 +1,22 @@
-const DEFAULT_MESSAGE = "The link you followed refers to a resource that doesn't exist";
+import { EmptyState } from "@aragon/ods";
+import router from "next/router";
+import { Dashboard } from "./nav/routes";
 
 export function NotFound({ message }: { message?: string }) {
   return (
-    <section className="w-screen min-w-full max-w-full">
-      <h3 className="pr-4 text-3xl font-semibold text-neutral-700">Not found</h3>
-      <p>{message ?? DEFAULT_MESSAGE}</p>
-    </section>
+    <main className="flex h-full flex-1 justify-center py-24">
+      <EmptyState
+        heading="Page not found"
+        objectIllustration={{ object: "NOT_FOUND" }}
+        description="We couldn't find the page that you're looking for."
+        primaryButton={{
+          label: "Go home",
+          className: "!rounded-full",
+          onClick: () => {
+            router.push(Dashboard.path);
+          },
+        }}
+      />
+    </main>
   );
 }
