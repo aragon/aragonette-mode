@@ -12,11 +12,10 @@ import { DelegationsDataList } from "../components/delegationsDataList/delegatio
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { councilMemberList } from "../services/query-options";
-import { useEffect } from "react";
 import { NotFound } from "@/components/not-found";
 
 export const MemberProfile = () => {
-  const { query, asPath, push } = useRouter();
+  const { query, asPath } = useRouter();
   const profileAddress = query.address as Address;
   const breadcrumbs = generateBreadcrumbs(asPath);
 
