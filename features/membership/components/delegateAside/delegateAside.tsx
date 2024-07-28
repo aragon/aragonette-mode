@@ -1,10 +1,15 @@
-import { PUB_CHAIN } from "@/constants";
-import { formatHexString } from "@/utils/evm";
+import { PUB_CHAIN, PUB_ENS_CHAIN } from "@/constants";
+import { useMetadata } from "@/hooks/useMetadata";
+import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
+import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
+import { formatHexString, isAddressEqual } from "@/utils/evm";
 import { type IResource } from "@/utils/types";
-import { Heading, IconType, Link } from "@aragon/ods";
-import React from "react";
-import { type Address } from "viem";
-import { useEnsName } from "wagmi";
+import { Button, Heading, IconType, Link } from "@aragon/ods";
+import React, { useState } from "react";
+import { zeroAddress, type Address } from "viem";
+import { useAccount, useEnsName } from "wagmi";
+import { DelegateAnnouncementDialog } from "../delegateAnnouncementDialog/delegateAnnouncementDialog";
+import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
 
 interface IProfileAsideProps {
   address: string;
@@ -12,14 +17,29 @@ interface IProfileAsideProps {
 }
 
 export const ProfileAside: React.FC<IProfileAsideProps> = (props) => {
-  const { address, resources } = props;
+  const { address: profileAddress, resources } = props;
 
-  const { data: ensName } = useEnsName({ chainId: PUB_CHAIN.id, address: address as Address });
+  const [showProfileCreationDialog, setShowProfileCreationDialog] = useState(false);
 
-  const formattedAddress = formatHexString(address);
+  const { address: connectedAccount } = useAccount();
+  const memberIsConnectedAccount = isAddressEqual(connectedAccount, profileAddress);
+  const { data: ensName } = useEnsName({ chainId: PUB_ENS_CHAIN.id, address: profileAddress as Address });
 
-  const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${address}`;
+  const { data: connectedAccountDelegate } = useDelegate(connectedAccount, {
+    enabled: memberIsConnectedAccount,
+  });
+
+  const { data: announcementData } = useAnnouncement(profileAddress as Address);
+  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementData?.[0]);
+  const hasDelegationProfile = !!announcementData?.[0];
+
+  const formattedAddress = formatHexString(profileAddress);
+  const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${profileAddress}`;
+
+  // profile is for the connected account
   const showResources = !!resources && resources.length > 0;
+  const showEditProfile = hasDelegationProfile && memberIsConnectedAccount;
+  const memberHasPrimaryCta = !isAddressEqual(connectedAccountDelegate, zeroAddress);
 
   return (
     <>
@@ -66,6 +86,31 @@ export const ProfileAside: React.FC<IProfileAsideProps> = (props) => {
             </Link>
           ))}
         </div>
+      )}
+      {showEditProfile && (
+        <Button
+          className="!rounded-full"
+          onClick={() => setShowProfileCreationDialog(true)}
+          variant={hasDelegationProfile && memberHasPrimaryCta ? "secondary" : "primary"}
+        >
+          Edit your delegate profile
+        </Button>
+      )}
+      {showProfileCreationDialog && (
+        <DelegateAnnouncementDialog
+          onClose={() => setShowProfileCreationDialog(false)}
+          open={showProfileCreationDialog}
+          {...(announcement
+            ? {
+                defaultValues: {
+                  identifier: announcement?.identifier,
+                  bio: announcement?.bio,
+                  message: announcement?.message,
+                  resources: announcement?.resources,
+                },
+              }
+            : {})}
+        />
       )}
     </>
   );

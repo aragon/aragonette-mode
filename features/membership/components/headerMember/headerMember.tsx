@@ -1,8 +1,10 @@
-import { PUB_ENS_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
+import { PUB_CHAIN, PUB_ENS_CHAIN, PUB_TOKEN_ADDRESS, PUB_TOKEN_SYMBOL } from "@/constants";
+import { useFireTransaction } from "@/hooks/useFireTransaction";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
+import { useTokenInfo } from "@/plugins/erc20Votes/hooks/useTokenBalance";
 import { useDelegate } from "@/plugins/snapshotDelegation/hooks/useDelegate";
 import { useDelegateVotingPower } from "@/plugins/snapshotDelegation/hooks/useDelegateVotingPower";
-import { useTokenInfo } from "@/plugins/erc20Votes/hooks/useTokenBalance";
+import { ProposalStages } from "@/server/models/proposals/types";
 import { formatHexString, isAddressEqual } from "@/utils/evm";
 import { queryClient } from "@/utils/query-client";
 import {
@@ -18,13 +20,13 @@ import {
   formatterUtils,
   type IBreadcrumbsLink,
 } from "@aragon/ods";
+
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import React from "react";
 import { formatUnits, zeroAddress, type Address } from "viem";
 import { useAccount, useEnsName } from "wagmi";
 import { delegatesList, delegationsList, votingPower as votingPowerQueryOptions } from "../../services/query-options";
-import { ProposalStages } from "@/server/models/proposals/types";
 
 export type MemberType = "majorityVoting" | "approvalThreshold";
 
@@ -39,13 +41,15 @@ interface IHeaderMemberProps {
 
 export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const { breadcrumbs, address: profileAddress, bio, identifier, type = "approvalThreshold", isLoading } = props;
-
   const { address: connectedAccount, isConnected } = useAccount();
   const { data: ensName } = useEnsName({ chainId: PUB_ENS_CHAIN.id, address: profileAddress });
 
   // delegate hooks
   const isTokenVoting = type === "majorityVoting";
-  const { data: announcementData } = useAnnouncement(profileAddress, { enabled: isTokenVoting && !!profileAddress });
+  const { data: announcementData } = useAnnouncement(profileAddress, {
+    enabled: isTokenVoting && !!profileAddress,
+  });
+
   const hasDelegationProfile = !!announcementData?.[0];
 
   const { data: delegationCount, isLoading: delegationCountLoading } = useInfiniteQuery({
@@ -76,15 +80,15 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const connectedMemberIsSelfDelegated =
     memberIsConnectedAccount && isAddressEqual(connectedAccount, connectedAccountDelegate);
 
-  // profile is the connected account, but delegation is inactive
-  const connectedMemberDelegationInactive =
-    memberIsConnectedAccount && isAddressEqual(connectedAccountDelegate, zeroAddress);
-
   // profile is the delegate of the connected account but not the connected account
   const memberIsconnectedAccountDelegate =
     !memberIsConnectedAccount && isAddressEqual(profileAddress, connectedAccountDelegate);
 
-  const mode = memberIsconnectedAccountDelegate || connectedMemberDelegationInactive ? "claim" : "delegate";
+  // profile is the connected account and is delegating
+  const memberIsConnectedAccountAndDelegating =
+    memberIsConnectedAccount && !isAddressEqual(connectedAccountDelegate, zeroAddress);
+
+  const mode = memberIsconnectedAccountDelegate || memberIsConnectedAccountAndDelegating ? "claim" : "delegate";
   const { delegateVotingPower, isConfirming } = useDelegateVotingPower(mode, invalidateQueries);
 
   // stats
@@ -144,8 +148,6 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
   const getCtaLabel = () => {
     if (!isConnected) {
       return "Connect to delegate";
-    } else if (connectedMemberIsSelfDelegated || connectedMemberDelegationInactive) {
-      return isConfirming ? "Claiming voting power" : "Claim voting power";
     } else if (memberIsconnectedAccountDelegate || memberIsConnectedAccount) {
       return isConfirming ? "Reclaiming voting power" : "Reclaim voting power";
     } else {
@@ -153,16 +155,27 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
     }
   };
 
+  const delegate = () => {
+    delegateVotingPower(profileAddress);
+  };
+
+  const { fireTransaction } = useFireTransaction({ onSuccess: delegate });
+
   const handleCtaClick = () => {
-    if (memberIsconnectedAccountDelegate || connectedMemberDelegationInactive) {
-      delegateVotingPower(connectedAccount);
-    } else {
-      delegateVotingPower(profileAddress);
-    }
+    fireTransaction(delegate, PUB_CHAIN.id);
   };
 
   const isNeitherCouncilNorDelegate = isTokenVoting && !hasDelegationProfile;
   const showTag = !isNeitherCouncilNorDelegate;
+
+  // show cta when the connected account is delegating to the member profile or
+  // the connected account is the member profile and has a delegate
+  const showDelegateCta =
+    hasDelegationProfile &&
+    isTokenVoting &&
+    (!memberIsConnectedAccount || // to delegate
+      memberIsconnectedAccountDelegate || // to reclaim vp on your delegate's profile
+      memberIsConnectedAccountAndDelegating); // to reclaim on your own profile
 
   return (
     <div className="flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
@@ -255,13 +268,12 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
               )}
             </div>
             <span>
-              {/* TODO: Should be size 2xl */}
               <MemberAvatar address={profileAddress} size="lg" responsiveSize={{ lg: "2xl" }} />
             </span>
           </div>
           <div>
             <span className="flex w-full flex-col gap-x-4 gap-y-3 md:flex-row">
-              {hasDelegationProfile && isTokenVoting && (
+              {showDelegateCta && (
                 <Button
                   className="!rounded-full"
                   isLoading={isConfirming}
@@ -271,6 +283,7 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
                   {getCtaLabel()}
                 </Button>
               )}
+
               {(ensName ?? formattedAddress) && (
                 <Dropdown.Container
                   customTrigger={
