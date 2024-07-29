@@ -48,24 +48,22 @@ export const MemberProfile: React.FC<{ ensData: { name: string; image: string } 
   return (
     <div className="flex flex-col items-center">
       <Head>
-        <meta property="og:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
+        <meta property="og:title" content={name ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
         <meta
           property="og:description"
-          content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
+          content={"Check my delegate profile on the Polygon Governance Hub!"}
           key="og:description"
         />
         <meta property="og:url" content={PUB_BASE_URL} key="og:url" />
-        <meta property="og:site_name" content={PUB_APP_NAME} key="og:site_name" />
-        <meta property="og:locale" content="en_US" key="og:locale" />
         <meta property="og:image" content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`} key="og:image" />
         <meta property="og:image:alt" content="Polygon Governance Hub logo" key="og:image:alt" />
         <meta property="og:type" content="website" key="og:type" />
 
         <meta name="twitter:card" content="summary" key="twitter:card" />
-        <meta name="twitter:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="twitter:title" />
+        <meta name="twitter:title" content={name ?? profileAddress ?? PUB_APP_NAME} key="twitter:title" />
         <meta
           name="twitter:description"
-          content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
+          content={"Check my delegate profile on the Polygon Governance Hub!"}
           key="twitter:description"
         />
         <meta
