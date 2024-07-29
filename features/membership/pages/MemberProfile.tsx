@@ -55,7 +55,7 @@ export const MemberProfile: React.FC<{ ensData: { name: string; image: string } 
           key="og:description"
         />
         <meta property="og:url" content={PUB_BASE_URL} key="og:url" />
-        <meta property="og:image" content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`} key="og:image" />
+        <meta property="og:image" content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/og-logo`} key="og:image" />
         <meta property="og:image:alt" content="Polygon Governance Hub logo" key="og:image:alt" />
         <meta property="og:type" content="website" key="og:type" />
 
@@ -68,7 +68,7 @@ export const MemberProfile: React.FC<{ ensData: { name: string; image: string } 
         />
         <meta
           name="twitter:image"
-          content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/delegate-og`}
+          content={image ?? `${PUB_BASE_URL}/${PUB_API_BASE_URL}/og-logo`}
           key="twitter:image"
         />
         <meta name="twitter:site" content={PUB_X_HANDLE} key="twitter:site" />
