@@ -33,6 +33,7 @@ export interface IPaginatedResponse<T> {
 export interface IResource {
   name: string;
   link: string;
+  description?: string;
 }
 
 export interface IFetchPaginatedParams {
