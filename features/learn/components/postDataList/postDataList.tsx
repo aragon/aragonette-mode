@@ -1,6 +1,6 @@
 import { PostDetail } from "@/components/nav/routes";
 import { generateDataListState } from "@/utils/query";
-import { DataList, type DataListState, IconType } from "@aragon/ods";
+import { Button, DataList, type DataListState, IconType } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
@@ -10,13 +10,19 @@ import { PostDataListItemStructure } from "./postDataListItemStructure/postDataL
 
 const DEFAULT_PAGE_SIZE = 3;
 
-export type PostCategory = "pg" | "sscg" | "ctg";
+export type PostCategory = "pg" | "sscg" | "ctg" | "featured";
 
 interface IPostDataListProps {
   category: PostCategory;
+  pageSize?: number;
+  hideCategory?: boolean;
 }
 
-export const PostDatList: React.FC<IPostDataListProps> = ({ category }) => {
+export const PostDatList: React.FC<IPostDataListProps> = ({
+  category,
+  hideCategory = false,
+  pageSize = DEFAULT_PAGE_SIZE,
+}) => {
   const {
     data,
     isError,
@@ -27,7 +33,7 @@ export const PostDatList: React.FC<IPostDataListProps> = ({ category }) => {
     isFetchNextPageError,
     refetch,
     fetchNextPage,
-  } = useInfiniteQuery(postListQueryOptions({ category }));
+  } = useInfiniteQuery(postListQueryOptions({ category, limit: pageSize }));
 
   const loading = isLoading || (isError && isRefetching);
   const error = isError && !isRefetchError && !isFetchNextPageError;
@@ -65,36 +71,46 @@ export const PostDatList: React.FC<IPostDataListProps> = ({ category }) => {
     },
   };
 
+  const showViewAll = (data?.pagination.total ?? 0) > pageSize;
+
   return (
-    <DataList.Root
-      entityLabel={entityLabel}
-      pageSize={DEFAULT_PAGE_SIZE}
-      state={dataListState}
-      itemsCount={total}
-      onLoadMore={fetchNextPage}
-    >
-      <DataList.Container
-        SkeletonElement={PostDataListItemSkeleton}
-        errorState={errorState}
-        emptyState={emptyState}
-        emptyFilteredState={emptyFilteredState}
-        className={classNames({
-          "grid grid-cols-1 !gap-4 md:grid-cols-2 lg:grid-cols-3": total !== 0 || dataListState === "initialLoading",
-        })}
+    <div className="flex flex-col gap-y-6">
+      <DataList.Root
+        entityLabel={entityLabel}
+        pageSize={pageSize}
+        state={dataListState}
+        itemsCount={total}
+        onLoadMore={fetchNextPage}
       >
-        {data?.posts?.map((post) => (
-          <PostDataListItemStructure
-            key={post.id}
-            href={PostDetail.getPath(post.slug)}
-            title={post.title}
-            subtitle={post.subtitle}
-            createdAt={post.createdAt}
-            cover_img={post.cover_img}
-            categories={post.categories}
-          />
-        ))}
-      </DataList.Container>
-      {total > DEFAULT_PAGE_SIZE && <DataList.Pagination />}
-    </DataList.Root>
+        <DataList.Container
+          SkeletonElement={PostDataListItemSkeleton}
+          errorState={errorState}
+          emptyState={emptyState}
+          emptyFilteredState={emptyFilteredState}
+          className={classNames({
+            "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3": total !== 0 || dataListState === "initialLoading",
+          })}
+        >
+          {data?.posts?.map((post) => (
+            <PostDataListItemStructure
+              key={post.id}
+              href={PostDetail.getPath(post.slug)}
+              title={post.title}
+              subtitle={post.subtitle}
+              createdAt={post.createdAt}
+              cover_img={post.cover_img}
+              categories={hideCategory ? post.categories.filter((c) => c !== category) : post.categories}
+            />
+          ))}
+        </DataList.Container>
+      </DataList.Root>
+      {showViewAll && (
+        <span>
+          <Button className="!rounded-full" variant="secondary" size="md" iconRight={IconType.CHEVRON_RIGHT}>
+            View all
+          </Button>
+        </span>
+      )}
+    </div>
   );
 };

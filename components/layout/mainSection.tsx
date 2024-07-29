@@ -9,5 +9,5 @@ interface IMainSectionProps {
 export const MainSection: React.FC<IMainSectionProps> = (props) => {
   const { children, className } = props;
 
-  return <div className={classNames("mx-auto w-full max-w-screen-xl px-4 py-6", className)}>{children}</div>;
+  return <main className={classNames("mx-auto w-full max-w-screen-xl px-4 py-6", className)}>{children}</main>;
 };
