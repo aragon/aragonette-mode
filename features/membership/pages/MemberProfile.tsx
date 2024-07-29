@@ -7,7 +7,7 @@ import { PUB_API_BASE_URL, PUB_APP_NAME, PUB_BASE_URL, PUB_X_HANDLE } from "@/co
 import { useQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { zeroAddress, type Address } from "viem";
+import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
@@ -16,9 +16,8 @@ import { Heading } from "@aragon/ods";
 import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { ProposalStages } from "@/features/proposals";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
-import { useEnsAvatar, useEnsName } from "wagmi";
 
-export const MemberProfile = () => {
+export const MemberProfile: React.FC<{ ensData: { name: string; image: string } }> = ({ ensData }) => {
   const { query, asPath } = useRouter();
   const profileAddress = query.address as Address;
   const breadcrumbs = generateBreadcrumbs(asPath);
@@ -43,24 +42,13 @@ export const MemberProfile = () => {
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
   const identifier = isCouncilMember ? councilMember?.name : announcement?.identifier;
 
-  const name = useEnsName({
-    address: profileAddress,
-    query: {
-      enabled: !!profileAddress,
-    },
-  });
-  const imageData = useEnsAvatar({
-    name: name.data!,
-    query: {
-      enabled: !!name.data,
-    },
-  });
-  const image = imageData.data;
+  const name = ensData?.name;
+  const image = ensData?.image;
 
   return (
     <div className="flex flex-col items-center">
       <Head>
-        <meta property="og:title" content={identifier ?? name.data ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
+        <meta property="og:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="og:title" />
         <meta
           property="og:description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
@@ -74,11 +62,7 @@ export const MemberProfile = () => {
         <meta property="og:type" content="website" key="og:type" />
 
         <meta name="twitter:card" content="summary" key="twitter:card" />
-        <meta
-          name="twitter:title"
-          content={identifier ?? name.data ?? profileAddress ?? PUB_APP_NAME}
-          key="twitter:title"
-        />
+        <meta name="twitter:title" content={identifier ?? name ?? profileAddress ?? PUB_APP_NAME} key="twitter:title" />
         <meta
           name="twitter:description"
           content={bio ?? "I am a delegate on the Polygon Governance Hub!"}
