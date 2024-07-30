@@ -14,6 +14,7 @@ export const HeaderDao = () => {
     data: totalProposals,
     isLoading: totalProposalsLoading,
     isFetched: totalProposalsFetched,
+    error: totalProposalsError,
   } = useInfiniteQuery({
     ...proposalList({ limit: 6, sortBy: ProposalSortBy.CreatedAt, sortDir: ProposalSortDir.Asc }),
     select: (data) => data.pages[0].pagination.total,
@@ -23,12 +24,14 @@ export const HeaderDao = () => {
     data: totalCouncilMembers,
     isLoading: totalCouncilMembersLoading,
     isFetched: totalCouncilMembersFetched,
+    error: totalCouncilMembersError,
   } = useQuery({ ...councilMemberList(), select: (data) => data.length });
 
   const {
     data: totalDelegates,
     isLoading: totalDelegatesLoading,
     isFetched: totalDelegatesFetched,
+    error: totalDelegatesError,
   } = useInfiniteQuery({
     ...delegatesList({ limit: 12, sortBy: IDelegatesSortBy.FEATURED }),
     select: (data) => data.pages[0].pagination.total,
@@ -37,6 +40,7 @@ export const HeaderDao = () => {
   const membersLoading = totalCouncilMembersLoading || totalDelegatesLoading;
   const membersFetched = totalCouncilMembersFetched && totalDelegatesFetched && !membersLoading;
   const totalMembers = (totalCouncilMembers ?? 0) + (totalDelegates ?? 0);
+  const totalMembersError = !!totalCouncilMembersError || !!totalDelegatesError;
 
   const totalProposalCountFetched = totalProposalsFetched && !totalProposalsLoading;
 
@@ -54,7 +58,7 @@ export const HeaderDao = () => {
         </div>
         <div className="flex gap-x-20 md:w-4/5">
           {/* Proposal count */}
-          {totalProposalCountFetched && (
+          {totalProposalCountFetched && !totalProposalsError && (
             <div className="flex flex-col gap-y-1.5">
               <span className="text-4xl text-neutral-800">
                 {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
@@ -70,7 +74,7 @@ export const HeaderDao = () => {
           )}
 
           {/* Member count */}
-          {membersFetched && (
+          {membersFetched && !totalMembersError && (
             <div className="flex flex-col gap-y-1.5">
               <span className="text-4xl text-neutral-800">
                 {formatterUtils.formatNumber(totalMembers, { format: NumberFormat.GENERIC_SHORT })}
