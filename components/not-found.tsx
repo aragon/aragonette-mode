@@ -8,9 +8,9 @@ export function NotFound({ message }: { message?: string }) {
       <EmptyState
         heading="Page not found"
         objectIllustration={{ object: "NOT_FOUND" }}
-        description="We couldn't find the page that you're looking for."
+        description={message ?? "We couldn't find the page that you're looking for."}
         primaryButton={{
-          label: "Go home",
+          label: "Go to your Dashboard",
           className: "!rounded-full",
           onClick: () => {
             router.push(Dashboard.path);
