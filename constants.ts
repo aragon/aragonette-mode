@@ -56,7 +56,7 @@ export const PROPOSAL_PREFIX = process.env.PROPOSAL_PREFIX ?? "PIP";
 export const EMERGENCY_PREFIX = process.env.EMERGENCY_PREFIX ?? "SOS";
 
 // Google Calendar
-export const GOOGLE_CALENDAR_CALENDAR_ID = process.env.GOOGLE_CALENDAR_CALENDAR_ID ?? "";
+export const PUB_GOOGLE_CALENDAR_CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_CALENDAR_ID ?? "";
 export const GOOGLE_CALENDAR_API_KEY = process.env.GOOGLE_CALENDAR_API_KEY ?? "";
 
 // General

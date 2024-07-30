@@ -1,4 +1,4 @@
-import { GOOGLE_CALENDAR_API_KEY, GOOGLE_CALENDAR_CALENDAR_ID } from "@/constants";
+import { GOOGLE_CALENDAR_API_KEY, PUB_GOOGLE_CALENDAR_CALENDAR_ID } from "@/constants";
 import { type IFetchPaginatedParams } from "@/utils/types";
 import { auth, calendar_v3, type GaxiosPromise } from "@googleapis/calendar";
 
@@ -13,7 +13,7 @@ class GoogleCalendarService {
   private calendar: calendar_v3.Calendar;
   private primaryCalendarId: string;
 
-  constructor(primaryCalendarId: string = GOOGLE_CALENDAR_CALENDAR_ID) {
+  constructor(primaryCalendarId: string = PUB_GOOGLE_CALENDAR_CALENDAR_ID) {
     this.calendar = new calendar_v3.Calendar({ auth: auth.fromAPIKey(GOOGLE_CALENDAR_API_KEY) });
     this.primaryCalendarId = primaryCalendarId;
   }

@@ -1,30 +1,23 @@
-import { eventList } from "@/features/events/services/query-options";
+import { EventDataList } from "@/features/events/components/eventDataList/eventDataList";
 import { type IResource } from "@/utils/types";
-import { Heading, Card, IconType, Link } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { Card, Heading, IconType, Link } from "@aragon/ods";
 
 const resources: IResource[] = [
-  { name: "Governance Forum", link: "", description: "Short description" },
-  { name: "Twitter", link: "", description: "Short description" },
-  { name: "Farcaster", link: "", description: "Short description" },
-  { name: "PPGC Repo", link: "", description: "Short description" },
-  { name: "Layer 3", link: "", description: "Short description" },
-  { name: "Github", link: "", description: "Short description" },
+  { name: "Governance Forum", link: "0", description: "Short description" },
+  { name: "Twitter", link: "1", description: "Short description" },
+  { name: "Farcaster", link: "2", description: "Short description" },
+  { name: "PPGC Repo", link: "3", description: "Short description" },
+  { name: "Layer 3", link: "4", description: "Short description" },
+  { name: "Github", link: "5", description: "Short description" },
 ];
 
 export const UpcomingEvents = () => {
-  const { data } = useInfiniteQuery(eventList());
-
   return (
-    <section className="flex max-w-[464px] flex-col gap-y-10 md:gap-y-16">
+    <section className="flex max-w-[464px] flex-col gap-y-10 md:gap-y-14 lg:w-full">
       <div className="flex w-full flex-col gap-y-4">
-        <div className="flex flex-col gap-y-3">
+        <div className="flex w-full flex-col gap-y-3">
           <Heading size="h2">Upcoming events</Heading>
-          <p className="text-base text-neutral-500">
-            In the Polygon governance community, events happen regularly, so you can stay up to date. See the latest
-            ones and start participating.
-          </p>
-          {data?.events?.map((e) => <div key={e.id}>{`${e.summary}`}</div>)}
+          <EventDataList />
         </div>
       </div>
       <div className="flex flex-col gap-y-4">
