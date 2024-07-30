@@ -1,5 +1,7 @@
+import { eventList } from "@/features/events/services/query-options";
 import { type IResource } from "@/utils/types";
 import { Heading, Card, IconType, Link } from "@aragon/ods";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const resources: IResource[] = [
   { name: "Governance Forum", link: "", description: "Short description" },
@@ -11,6 +13,8 @@ const resources: IResource[] = [
 ];
 
 export const UpcomingEvents = () => {
+  const { data } = useInfiniteQuery(eventList());
+
   return (
     <section className="flex max-w-[464px] flex-col gap-y-10 md:gap-y-16">
       <div className="flex w-full flex-col gap-y-4">
@@ -20,6 +24,7 @@ export const UpcomingEvents = () => {
             In the Polygon governance community, events happen regularly, so you can stay up to date. See the latest
             ones and start participating.
           </p>
+          {data?.events?.map((e) => <div key={e.id}>{`${e.summary}`}</div>)}
         </div>
       </div>
       <div className="flex flex-col gap-y-4">
