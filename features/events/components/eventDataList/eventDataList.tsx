@@ -1,13 +1,12 @@
-import { PostDataListItemSkeleton } from "@/features/learn/components/postDataList/postDataListItemSkeleton/postDataListItemSkeleton";
+import { PUB_GOOGLE_CALENDAR_CALENDAR_ID } from "@/constants";
 import { generateDataListState } from "@/utils/query";
 import { Button, DataList, type DataListState, IconType } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { eventList } from "../../services/query-options";
 import { EventDataListItem } from "./eventDataListItem/eventDataListItem";
 import { getSharedGoogleCalendarLink } from "./eventDataListItem/utils";
-import { PUB_GOOGLE_CALENDAR_CALENDAR_ID } from "@/constants";
+import { EventDataListItemSkeleton } from "./eventDataListItemSkeleton/eventDataListItemSkeleton";
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -74,14 +73,7 @@ export const EventDataList: React.FC = () => {
       itemsCount={total}
       onLoadMore={fetchNextPage}
     >
-      <DataList.Container
-        SkeletonElement={PostDataListItemSkeleton}
-        errorState={errorState}
-        emptyState={emptyState}
-        className={classNames({
-          "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3": total !== 0 || dataListState === "initialLoading",
-        })}
-      >
+      <DataList.Container SkeletonElement={EventDataListItemSkeleton} errorState={errorState} emptyState={emptyState}>
         {data?.events?.map((e) => (
           <EventDataListItem
             href={e.link}
