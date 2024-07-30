@@ -29,9 +29,9 @@ export const ProfileAside: React.FC<IProfileAsideProps> = (props) => {
     enabled: memberIsConnectedAccount,
   });
 
-  const { data: announcementData } = useAnnouncement(profileAddress as Address);
-  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementData?.[0]);
-  const hasDelegationProfile = !!announcementData?.[0];
+  const { data: announcementCid } = useAnnouncement(profileAddress as Address);
+  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementCid);
+  const hasDelegationProfile = !!announcementCid;
 
   const formattedAddress = formatHexString(profileAddress);
   const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${profileAddress}`;

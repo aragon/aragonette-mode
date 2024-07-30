@@ -10,6 +10,12 @@ export const useAnnouncement = (address: Address | undefined, options = {}) => {
     address: PUB_DELEGATION_CONTRACT_ADDRESS,
     functionName: "candidates",
     args: [address!],
-    query: { enabled: !!address, refetchOnMount: true, staleTime: 0, ...options },
+    query: {
+      enabled: !!address,
+      refetchOnMount: true,
+      staleTime: 0,
+      ...options,
+      select: (data) => (!data[0] || data[0] === "0x" ? undefined : data[0]),
+    },
   });
 };

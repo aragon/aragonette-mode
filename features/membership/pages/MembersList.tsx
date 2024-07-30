@@ -21,8 +21,8 @@ export default function MembersList() {
 
   const { address, isConnected } = useAccount();
 
-  const { data: announcementData } = useAnnouncement(address);
-  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementData?.[0]);
+  const { data: announcementCid } = useAnnouncement(address);
+  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementCid);
 
   const { data: councilMemberListData, isLoading: councilMembersLoading } = useQuery({
     ...councilMemberList(),

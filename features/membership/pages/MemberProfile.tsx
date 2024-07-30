@@ -31,13 +31,11 @@ export const MemberProfile = () => {
   });
 
   const {
-    data: announcementData,
+    data: announcementCid,
     isLoading: announcementCidLoading,
     isFetched: announcementFetched,
   } = useAnnouncement(profileAddress);
-  const { data: announcement, isLoading: announcementLoading } = useMetadata<IDelegationWallMetadata>(
-    announcementData?.[0]
-  );
+  const { data: announcement, isLoading: announcementLoading } = useMetadata<IDelegationWallMetadata>(announcementCid);
 
   const isLoading = councilMemberLoading || announcementCidLoading || announcementLoading;
 
@@ -47,7 +45,7 @@ export const MemberProfile = () => {
 
   if (
     (profileAddress != null && !isAddress(profileAddress)) ||
-    (councilMemberFetched && !isCouncilMember && announcementFetched && announcementData == null)
+    (councilMemberFetched && !isCouncilMember && announcementFetched && announcementCid == null)
   ) {
     return <NotFound />;
   }

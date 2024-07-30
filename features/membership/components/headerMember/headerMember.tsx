@@ -46,11 +46,11 @@ export const HeaderMember: React.FC<IHeaderMemberProps> = (props) => {
 
   // delegate hooks
   const isTokenVoting = type === "majorityVoting";
-  const { data: announcementData } = useAnnouncement(profileAddress, {
+  const { data: announcementCid } = useAnnouncement(profileAddress, {
     enabled: isTokenVoting && !!profileAddress,
   });
 
-  const hasDelegationProfile = !!announcementData?.[0];
+  const hasDelegationProfile = !!announcementCid;
 
   const { data: delegationCount, isLoading: delegationCountLoading } = useInfiniteQuery({
     ...delegationsList({ address: profileAddress }),
