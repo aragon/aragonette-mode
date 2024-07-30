@@ -44,7 +44,7 @@ export const HeaderDao = () => {
   } = useQuery({ ...councilMemberList(), select: (data) => data.length });
 
   const { data: announcementCid, isFetched: isDelegateFetched } = useAnnouncement(address, { enabled: !!address });
-  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementCid?.[0]);
+  const { data: announcement } = useMetadata<IDelegationWallMetadata>(announcementCid);
   const isDelegate = !!announcementCid;
 
   const {
