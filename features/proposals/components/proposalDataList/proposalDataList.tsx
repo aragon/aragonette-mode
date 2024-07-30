@@ -1,23 +1,43 @@
-import { NewProposal, ProposalDetails } from "@/components/nav/routes";
-import { ProposalDataListItemStructure } from "@/components/odsModified/proposalDataListItem";
+import { NewProposal, ProposalDetails, Proposals } from "@/components/nav/routes";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { generateDataListState } from "@/utils/query";
-import { DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
+import {
+  Button,
+  DataList,
+  IconType,
+  ProposalDataListItemSkeleton,
+  ProposalDataListItemStructure,
+  type DataListState,
+} from "@aragon/ods";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { ProposalStages, StageOrder, proposalList, voted } from "../../services";
+import { type IFetchProposalListParams, ProposalStages, StageOrder, proposalList, voted } from "../../services";
 import { generateSortOptions, sortItems } from "./utils";
 import { useRouter } from "next/navigation";
+import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;
 
-export const ProposalDataList: React.FC = () => {
+interface IProposalDataListProps extends IFetchProposalListParams {
+  display?: "overview" | "list";
+  pageSize?: number;
+}
+
+export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
+  const {
+    display = "list",
+    pageSize = DEFAULT_PAGE_SIZE,
+    sortBy = ProposalSortBy.CreatedAt,
+    sortDir = ProposalSortDir.Asc,
+    status,
+  } = props;
+
   const { address } = useAccount();
   const router = useRouter();
 
-  const [activeSort, setActiveSort] = useState<string>();
+  const [activeSort, setActiveSort] = useState<string | undefined>(`${sortBy}-${sortDir}`);
   const [searchValue, setSearchValue] = useState<string>();
   const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
     searchValue?.trim()?.toLowerCase(),
@@ -37,9 +57,10 @@ export const ProposalDataList: React.FC = () => {
     fetchNextPage,
   } = useInfiniteQuery({
     ...proposalList({
-      limit: DEFAULT_PAGE_SIZE,
+      limit: pageSize,
       ...(activeSort ? generateSortOptions(activeSort) : {}),
       ...(debouncedQuery ? { search: debouncedQuery } : {}),
+      ...(status ? { status } : {}),
     }),
   });
 
@@ -110,18 +131,20 @@ export const ProposalDataList: React.FC = () => {
     <DataList.Root
       entityLabel={entityLabel}
       itemsCount={totalProposals}
-      pageSize={DEFAULT_PAGE_SIZE}
+      pageSize={pageSize}
       state={dataListState}
       onLoadMore={fetchNextPage}
     >
-      <DataList.Filter
-        onSearchValueChange={setSearchValue}
-        searchValue={searchValue}
-        placeholder="Search by title, proposal ID or publisher"
-        onSortChange={setActiveSort}
-        activeSort={activeSort}
-        sortItems={sortItems}
-      />
+      {display === "list" && (
+        <DataList.Filter
+          onSearchValueChange={setSearchValue}
+          searchValue={searchValue}
+          placeholder="Search by title, proposal ID or publisher"
+          onSortChange={setActiveSort}
+          activeSort={activeSort}
+          sortItems={sortItems}
+        />
+      )}
       <DataList.Container
         SkeletonElement={ProposalDataListItemSkeleton}
         errorState={errorState}
@@ -138,7 +161,22 @@ export const ProposalDataList: React.FC = () => {
           />
         ))}
       </DataList.Container>
-      {(totalProposals ?? 0) > DEFAULT_PAGE_SIZE && <DataList.Pagination />}
+      {display === "list" && !isLoading && (totalProposals ?? 0) > pageSize && <DataList.Pagination />}
+      {display === "overview" && (
+        <span>
+          <Button
+            className="!rounded-full"
+            variant="secondary"
+            size="md"
+            iconRight={IconType.CHEVRON_RIGHT}
+            onClick={() => {
+              router.push(Proposals.path);
+            }}
+          >
+            View all
+          </Button>
+        </span>
+      )}
     </DataList.Root>
   );
 };

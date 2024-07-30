@@ -1,5 +1,5 @@
 import { type Post } from "@/services/paragraph/types";
-import { DataList, Heading, Tag, type IDataListItemProps } from "@aragon/ods";
+import { DataList, DateFormat, formatterUtils, Heading, Tag, type IDataListItemProps } from "@aragon/ods";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
@@ -13,7 +13,7 @@ export const PostDataListItemStructure: React.FC<IPostDataListItemStructure> = (
 
   const actionItemClasses = classNames(
     "shadow-neutral-sm overflow-hidden !px-3 py-3 !flex flex-col gap-y-3 transition-all", // Default
-    "md:scale-[.97] transform transition-transform duration-300 hover:scale-100"
+    "md:scale-[.98] transform transition-transform duration-300 hover:scale-100"
   );
 
   return (
@@ -35,7 +35,7 @@ export const PostDataListItemStructure: React.FC<IPostDataListItemStructure> = (
       </div>
       <div className="flex gap-x-6">
         <span className="flex-1 text-lg leading-tight text-neutral-800">
-          {dayjs(createdAt).format("MMMM DD, YYYY")}
+          {formatterUtils.formatDate(createdAt, { format: DateFormat.YEAR_MONTH_DAY })}
         </span>
         <Tag label={`#${categories[0]}`} variant="primary" />
       </div>

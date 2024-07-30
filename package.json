@@ -23,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "@aragon/ods": "1.0.37",
+    "@aragon/ods": "1.0.40",
     "@ethersproject/providers": "^5.7.2",
     "@hookform/resolvers": "^3.6.0",
     "@prisma/client": "^5.14.0",
