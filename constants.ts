@@ -55,6 +55,10 @@ export const PUB_ARWEAVE_API_URL = process.env.NEXT_PUBLIC_ARWEAVE_API_URL ?? ""
 export const PROPOSAL_PREFIX = process.env.PROPOSAL_PREFIX ?? "PIP";
 export const EMERGENCY_PREFIX = process.env.EMERGENCY_PREFIX ?? "SOS";
 
+// Google Calendar
+export const GOOGLE_PRIMARY_CALENDAR_ID = process.env.GOOGLE_PRIMARY_CALENDAR_ID ?? "";
+export const BASE64_GOOGLE_SERVICE_CREDENTIALS = process.env.BASE64_GOOGLE_SERVICE_CREDENTIALS ?? "";
+
 // General
 export const PUB_APP_NAME = "Polygon Governance Hub";
 export const PUB_APP_DESCRIPTION = "The place for all things Polygon Governance.";
