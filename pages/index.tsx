@@ -9,7 +9,7 @@ export default function Home() {
       <HeaderDao />
 
       <main className="mx-auto max-w-screen-xl">
-        <div className="flex flex-col gap-y-10 px-4 pb-6 pt-10 md:flex-row md:gap-x-12 md:px-6 md:pb-20">
+        <div className="flex flex-col gap-y-10 px-4 pb-6 pt-10 md:flex-row md:gap-x-12 md:px-6 md:pb-14">
           <LatestPIPs />
           <UpcomingEvents />
         </div>

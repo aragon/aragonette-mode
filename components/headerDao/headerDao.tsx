@@ -1,21 +1,44 @@
-import { Button } from "@aragon/ods";
+import { Button, formatterUtils, NumberFormat, StateSkeletonBar } from "@aragon/ods";
 import { useRouter } from "next/navigation";
 import { Learn } from "../nav/routes";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { proposalList } from "@/features/proposals";
 import { councilMemberList, delegatesList } from "@/features/membership/services/query-options";
+import { IDelegatesSortBy } from "@/server/client/types/domain";
+import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 
 export const HeaderDao = () => {
   const router = useRouter();
 
-  const { data: proposalsQueryData, isLoading } = useInfiniteQuery(proposalList({ limit: 1 }));
-  const { data: councilMemberListData, isLoading: councilMembersLoading } = useQuery(councilMemberList());
-  const { data: delegatesListData, isLoading: delegatesLoading } = useInfiniteQuery(delegatesList({ limit: 1 }));
+  const {
+    data: totalProposals,
+    isLoading: totalProposalsLoading,
+    isFetched: totalProposalsFetched,
+  } = useInfiniteQuery({
+    ...proposalList({ limit: 6, sortBy: ProposalSortBy.CreatedAt, sortDir: ProposalSortDir.Asc }),
+    select: (data) => data.pages[0].pagination.total,
+  });
 
-  const stats = [
-    { value: proposalsQueryData?.pagination.total, label: "Proposals" },
-    { value: (councilMemberListData?.length ?? 0) + (delegatesListData?.pagination.total ?? 0), label: "Members" },
-  ];
+  const {
+    data: totalCouncilMembers,
+    isLoading: totalCouncilMembersLoading,
+    isFetched: totalCouncilMembersFetched,
+  } = useQuery({ ...councilMemberList(), select: (data) => data.length });
+
+  const {
+    data: totalDelegates,
+    isLoading: totalDelegatesLoading,
+    isFetched: totalDelegatesFetched,
+  } = useInfiniteQuery({
+    ...delegatesList({ limit: 12, sortBy: IDelegatesSortBy.FEATURED }),
+    select: (data) => data.pages[0].pagination.total,
+  });
+
+  const membersLoading = totalCouncilMembersLoading || totalDelegatesLoading;
+  const membersFetched = totalCouncilMembersFetched && totalDelegatesFetched && !membersLoading;
+  const totalMembers = (totalCouncilMembers ?? 0) + (totalDelegates ?? 0);
+
+  const totalProposalCountFetched = totalProposalsFetched && !totalProposalsLoading;
 
   return (
     <header className="relative z-[5] flex w-full justify-center">
@@ -30,12 +53,37 @@ export const HeaderDao = () => {
           </div>
         </div>
         <div className="flex gap-x-20 md:w-4/5">
-          {stats.map((s) => (
-            <div key={s.label} className="flex flex-col gap-y-1.5">
-              <span className="text-4xl text-neutral-800">{s.value}</span>
-              <span className="text-xl text-neutral-500">{s.label}</span>
+          {/* Proposal count */}
+          {totalProposalCountFetched && (
+            <div className="flex flex-col gap-y-1.5">
+              <span className="text-4xl text-neutral-800">
+                {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
+              </span>
+              <span className="text-xl text-neutral-500">Proposals</span>
             </div>
-          ))}
+          )}
+          {totalProposalsLoading && (
+            <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
+              <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
+              <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
+            </div>
+          )}
+
+          {/* Member count */}
+          {membersFetched && (
+            <div className="flex flex-col gap-y-1.5">
+              <span className="text-4xl text-neutral-800">
+                {formatterUtils.formatNumber(totalMembers, { format: NumberFormat.GENERIC_SHORT })}
+              </span>
+              <span className="text-xl text-neutral-500">Members</span>
+            </div>
+          )}
+          {membersLoading && (
+            <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
+              <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
+              <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
+            </div>
+          )}
         </div>
         <span className="flex flex-col gap-x-4 gap-y-3 md:flex-row">
           <Button className="!rounded-full" variant="primary" size="lg">
