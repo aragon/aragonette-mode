@@ -83,7 +83,8 @@ export const HeaderDao = () => {
   };
 
   const showPrimaryCta = isDelegate || isCouncilMember;
-  const secondaryCtaVariant = !showPrimaryCta && isCouncilMemberFetched && isDelegateFetched ? "primary" : "secondary";
+  const secondaryCtaVariant =
+    !address || (!showPrimaryCta && isCouncilMemberFetched && isDelegateFetched) ? "primary" : "secondary";
 
   return (
     <>
