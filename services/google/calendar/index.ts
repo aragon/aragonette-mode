@@ -1,7 +1,6 @@
-import { GOOGLE_PRIMARY_CALENDAR_ID, BASE64_GOOGLE_SERVICE_CREDENTIALS } from "@/constants";
+import { GOOGLE_CALENDAR_API_KEY, GOOGLE_CALENDAR_CALENDAR_ID } from "@/constants";
 import { type IFetchPaginatedParams } from "@/utils/types";
-import { calendar_v3, type GaxiosPromise } from "@googleapis/calendar";
-import { JWT } from "google-auth-library";
+import { auth, calendar_v3, type GaxiosPromise } from "@googleapis/calendar";
 
 export interface IListEventsParams extends Omit<IFetchPaginatedParams, "page"> {
   calendarId?: string;
@@ -14,20 +13,9 @@ class GoogleCalendarService {
   private calendar: calendar_v3.Calendar;
   private primaryCalendarId: string;
 
-  constructor() {
-    const decodedCredentials = Buffer.from(BASE64_GOOGLE_SERVICE_CREDENTIALS, "base64").toString("utf-8");
-    const credentials = JSON.parse(decodedCredentials);
-
-    const auth = new JWT({
-      email: credentials.client_email,
-      key: credentials.private_key,
-      keyId: credentials.private_key_id,
-      project_id: credentials.project_id,
-      scopes: ["https://www.googleapis.com/auth/calendar"],
-    });
-
-    this.calendar = new calendar_v3.Calendar({ auth });
-    this.primaryCalendarId = GOOGLE_PRIMARY_CALENDAR_ID;
+  constructor(primaryCalendarId: string = GOOGLE_CALENDAR_CALENDAR_ID) {
+    this.calendar = new calendar_v3.Calendar({ auth: auth.fromAPIKey(GOOGLE_CALENDAR_API_KEY) });
+    this.primaryCalendarId = primaryCalendarId;
   }
 
   async listEvents(params: IListEventsParams = {}): GaxiosPromise<calendar_v3.Schema$Events> {
