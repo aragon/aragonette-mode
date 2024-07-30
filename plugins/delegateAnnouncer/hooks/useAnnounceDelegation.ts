@@ -10,7 +10,7 @@ import { type IDelegationWallMetadata } from "../utils/types";
 
 export function useAnnounceDelegation(onSuccess?: () => void) {
   const { addAlert } = useAlerts();
-  const { writeContract, data: hash, error, status } = useWriteContract();
+  const { writeContract, data: hash, error, status, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
   useEffect(() => {
@@ -70,8 +70,8 @@ export function useAnnounceDelegation(onSuccess?: () => void) {
 
   return {
     announceDelegation,
+    awaitingConfirmation: isPending,
     isConfirmed,
     isConfirming,
-    status,
   };
 }

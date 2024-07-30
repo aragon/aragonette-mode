@@ -7,11 +7,12 @@ import classNames from "classnames";
 import { useEffect, useState } from "react";
 import { delegatesList } from "@/features/membership/services/query-options";
 
-const DEFAULT_PAGE_SIZE = 12;
+const DEFAULT_PAGE_SIZE = 9;
 const SEARCH_DEBOUNCE_MILLS = 500;
+const DEFAULT_SORT = IDelegatesSortBy.FEATURED;
 
 export const useDelegateDataList = (emptyStateCta: () => void) => {
-  const [activeSort, setActiveSort] = useState<string>();
+  const [activeSort, setActiveSort] = useState<string>(DEFAULT_SORT);
   const [searchValue, setSearchValue] = useState<string>();
   const [debouncedQuery, setDebouncedQuery] = useDebouncedValue<string | undefined>(
     searchValue?.trim()?.toLowerCase(),
@@ -24,19 +25,29 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
     useInfiniteQuery({
       ...delegatesList({
         limit: DEFAULT_PAGE_SIZE,
-        ...(activeSort ? generateSortOptions() : {}),
+        ...generateSortOptions(),
         ...(debouncedQuery ? { search: debouncedQuery } : {}),
       }),
     });
 
   const isFiltered = searchValue != null && searchValue.trim().length > 0;
-  const loading = (!isFiltered && activeSort == null && isLoading) || (isError && isRefetching);
+  const filtering = (!!debouncedQuery || !!activeSort) && isFetching && !isRefetching && !isLoading;
+  const loading = isLoading || (isError && isRefetching);
   const [dataListState, setDataListState] = useState<DataListState>("initialLoading");
 
   useEffect(() => {
-    const filtering = (!!debouncedQuery || !!activeSort) && isFetching && !isRefetching;
     setDataListState(generateDataListState(loading, isError, isFetchingNextPage, filtering, isFiltered));
-  }, [isError, isFetching, isFetchingNextPage, loading, isRefetching, isFiltered, debouncedQuery, activeSort]);
+  }, [
+    isError,
+    isFetching,
+    isFetchingNextPage,
+    loading,
+    isRefetching,
+    isFiltered,
+    debouncedQuery,
+    activeSort,
+    filtering,
+  ]);
 
   const resetFilters = () => {
     setSearchValue("");
@@ -58,7 +69,7 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
     heading: "No delegates found",
     description: "Create your delegate profile",
     primaryButton: {
-      label: "Announce delegation",
+      label: "Create delegate profile",
       onClick: emptyStateCta,
     },
   };
@@ -95,18 +106,19 @@ export const useDelegateDataList = (emptyStateCta: () => void) => {
     if (!activeSort) return {};
 
     const [sortBy, sortDir] = activeSort.split("-") as [IDelegatesSortBy, IDelegatesSortDir];
-    return { sortBy: sortBy, sortDir };
+    return { sortBy: sortBy, sortDir: sortDir ?? IDelegatesSortDir.DESC };
   }
 
   const itemsCount = data?.pagination?.total;
   const entityLabel = itemsCount === 1 ? "Delegate" : "Delegates";
   const showPagination = (itemsCount ?? 0) > DEFAULT_PAGE_SIZE;
 
+  const showFullWidth =
+    dataListState === "error" ||
+    ((dataListState === "idle" || dataListState === "filtered") && (!itemsCount || itemsCount === 0));
+
   const containerClasses = classNames({
-    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !(
-      dataListState === "error" ||
-      ((dataListState === "idle" || dataListState === "filtered") && itemsCount === 0)
-    ),
+    "grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-3": !showFullWidth,
   });
 
   return {

@@ -1,5 +1,6 @@
 import { MemberProfile } from "@/components/nav/routes";
 import { useAnnounceDelegation } from "@/plugins/delegateAnnouncer/hooks/useAnnounceDelegation";
+import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
 import {
   EMAIL_PATTERN,
@@ -22,8 +23,10 @@ import {
   type IDialogRootProps,
 } from "@aragon/ods";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { type Address } from "viem";
 import { useAccount } from "wagmi";
 import { z } from "zod";
 
@@ -69,6 +72,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
 
   const router = useRouter();
   const { address } = useAccount();
+  const queryClient = useQueryClient();
 
   const {
     control,
@@ -85,6 +89,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
   });
 
   const { fields, append, remove } = useFieldArray({ name: DELEGATE_RESOURCES, control });
+  const { queryKey } = useAnnouncement(address as Address, { enabled: false });
 
   const addProtocolToLink = (index: number) => {
     const linkName = `${DELEGATE_RESOURCES}.${index}.link` as const;
@@ -108,28 +113,36 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
   };
 
   const onSuccessfulAnnouncement = () => {
+    queryClient.invalidateQueries({ queryKey });
+
     setTimeout(() => {
+      onClose();
       router.push(MemberProfile.getPath(address!));
     }, 2000);
   };
 
-  const { isConfirming, status, announceDelegation } = useAnnounceDelegation(onSuccessfulAnnouncement);
+  const { isConfirming, awaitingConfirmation, announceDelegation } = useAnnounceDelegation(onSuccessfulAnnouncement);
 
   const getCtaLabel = () => {
     if (isConfirming) {
       return "Submitting profile";
-    } else if (status === "pending") {
-      return "Waiting for confirmation";
-    } else return defaultValues ? "Update profile" : "Create profile";
+    } else if (awaitingConfirmation) {
+      return "Awaiting confirmation";
+    } else return defaultValues ? "Submit profile" : "Create profile";
   };
 
   return (
     <DialogRoot {...otherProps} containerClassName="!max-w-[520px]">
-      <DialogHeader title="Create your delegation profile" onCloseClick={handleOnClose} onBackClick={handleOnClose} />
+      <DialogHeader
+        title={defaultValues ? "Edit your delegate profile" : "Create your delegate profile"}
+        onCloseClick={handleOnClose}
+        onBackClick={handleOnClose}
+      />
       <DialogContent className="flex flex-col gap-y-4 md:gap-y-6">
         <InputText
           label="Identifier"
           readOnly={isConfirming}
+          helpText="This will be shown on the delegate profile list."
           placeholder="Name, ENS name, Privado ID, etc."
           aria-invalid={errors.identifier ? "true" : "false"}
           {...register("identifier")}
@@ -138,8 +151,9 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             : {})}
         />
         <TextArea
-          placeholder="Brief description of who you are and your relevant experiences"
           label="Bio"
+          helpText="Brief description of who you are and your relevant experiences"
+          placeholder="2-3 sentences describing who you are and your relevant experiences"
           {...register("bio")}
           maxLength={400}
           readOnly={isConfirming}
@@ -151,7 +165,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
           control={control}
           render={({ field }) => (
             <TextAreaRichText
-              placeholder="A statement detailing what you bring to the DAO and why you should be delegated to"
+              helpText="A statement explaining your motivation for becoming a delegate"
               label="Delegation statement"
               onChange={field.onChange}
               value={field.value}
@@ -240,7 +254,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             variant="primary"
             size="lg"
             className="!rounded-full"
-            isLoading={isConfirming || status === "pending"}
+            isLoading={isConfirming || awaitingConfirmation}
             onClick={handleSubmit(handleAnnouncement)}
           >
             {getCtaLabel()}
@@ -250,7 +264,7 @@ export const DelegateAnnouncementDialog: React.FC<IDelegateAnnouncementDialogPro
             size="lg"
             className="!rounded-full"
             onClick={handleOnClose}
-            disabled={isConfirming || status === "pending"}
+            disabled={isConfirming || awaitingConfirmation}
           >
             Cancel
           </Button>

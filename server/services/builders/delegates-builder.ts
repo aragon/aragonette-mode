@@ -6,7 +6,6 @@ import {
   PUB_CHAIN,
   PUB_DELEGATION_CONTRACT_ADDRESS,
   PUB_MULTISIG_ADDRESS,
-  PUB_TOKEN_ADDRESS,
   SNAPSHOT_SPACE,
 } from "@/constants";
 import { ProposalStages } from "@/features/proposals";
@@ -19,12 +18,7 @@ import {
 } from "@/server/client/types/domain";
 import { getGitHubCouncilMembersData, getGitHubFeaturedDelegatesData } from "@/services/github";
 import { logger } from "@/services/logger";
-import {
-  getDelegateMessage,
-  getDelegatesList,
-  getDelegations,
-  getMultisigVotingActivity,
-} from "@/services/rpc/delegationWall";
+import { getDelegateMessage, getDelegatesList, getMultisigVotingActivity } from "@/services/rpc/delegationWall";
 import { getSnapshotDelegators } from "@/services/rpc/snapshotDelegation";
 import { getSnapshotVotingPower } from "@/services/snapshot";
 import { getSnapshotVotingActivity } from "@/services/snapshot/votingActivity";
@@ -86,7 +80,7 @@ export const getDelegates = async function (
   });
 
   logger.info(`Fetching voting power for contract delegates...`);
-  const delegatesWithVp = await Promise.all(
+  const delegatesWithDelegationCount = await Promise.all(
     contractDelegates.map(async (delegate) => {
       delegate.votingPower = await getSnapshotVotingPower({
         space: SNAPSHOT_SPACE,
@@ -107,7 +101,7 @@ export const getDelegates = async function (
 
   const featuredDelegatesAddresses = featuredDelegates.map((delegate) => delegate.address);
 
-  const sortedDelegates = sortDelegates(delegatesWithVp, featuredDelegatesAddresses, sortBy, sortDir);
+  const sortedDelegates = sortDelegates(delegatesWithDelegationCount, featuredDelegatesAddresses, sortBy, sortDir);
 
   const delegates = sortedDelegates.map((delegate) => {
     const featuredData = featuredDelegates.find((d) => d.address === delegate.address);
@@ -124,7 +118,7 @@ export const getDelegates = async function (
 
   const delegatesWithIdentifiers = delegates.map((d, index) => ({
     ...d,
-    name: d.name ?? identifiers[index].identifier,
+    name: identifiers[index].identifier ?? d.name,
   }));
 
   const filteredDelegates = search

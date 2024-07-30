@@ -1,4 +1,4 @@
-import { proseClasses } from "@/features/proposals";
+import { proseClasses } from "@/components/documentParser/utils";
 import { CardCollapsible, DocumentParser, Heading } from "@aragon/ods";
 import React from "react";
 

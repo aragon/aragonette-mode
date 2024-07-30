@@ -45,7 +45,7 @@ const DateTimeSelector: React.FC<Props> = ({
 
   // const [value] = useWatch({ control, name: [`${mode}Utc`] });
 
-  const currTimezone = useMemo(() => timezones.find((tz) => tz === getFormattedUtcOffset()) || timezones[13], []);
+  const currTimezone = useMemo(() => timezones.find((tz) => tz === getFormattedUtcOffset()) ?? timezones[13], []);
 
   // Validates all fields (date, time and UTC) for both start and end
   // simultaneously. This is necessary, as all the fields are related to one

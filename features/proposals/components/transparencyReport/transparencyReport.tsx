@@ -1,5 +1,5 @@
+import { proseClasses } from "@/components/documentParser/utils";
 import { CardCollapsible, DocumentParser, Heading } from "@aragon/ods";
-import { proseClasses } from "../bodySection/bodySection";
 
 interface ITransparencyReportProps {
   report: string;

@@ -1,7 +1,6 @@
 import {
   type ProposalStatus,
   type ICreator,
-  type ProposalStages,
   type IProposalResource,
   type StageStatus,
 } from "@/features/proposals/services/domain";
@@ -15,6 +14,14 @@ export type Vote = {
   timestamp: string;
   reason?: string;
 };
+
+export enum ProposalStages {
+  DRAFT = "Draft",
+  TRANSPARENCY_REPORT = "Transparency Report",
+  COUNCIL_APPROVAL = "Protocol Council Approval",
+  COMMUNITY_VOTING = "Community Voting",
+  COUNCIL_CONFIRMATION = "Protocol Council Confirmation",
+}
 
 export type VotingScores = {
   choice: string;

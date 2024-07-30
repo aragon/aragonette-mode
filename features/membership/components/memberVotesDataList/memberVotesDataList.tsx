@@ -1,4 +1,4 @@
-import { VotesDataListItemSkeleton } from "@/features/proposals/components/proposalVoting/votesDataList/votesDataListItemSkeleton";
+import { VotesDataListItemSkeleton } from "@/components/votesDataList/votesDataListItemSkeleton";
 import { generateDataListState } from "@/utils/query";
 import { DataList, IconType, type DataListState } from "@aragon/ods";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { votingActivity } from "../../services/query-options";
 import { MemberVotesDataListItemStructure, type VotingOption } from "./memberVotesDataListItemStructure";
 import { ProposalDetails } from "@/components/nav/routes";
-import { type ProposalStages } from "@/features/proposals";
+import { type ProposalStages } from "@/server/models/proposals/types";
 dayjs.extend(relativeTime);
 
 const DEFAULT_PAGE_SIZE = 3;

@@ -1,19 +1,20 @@
 import { useMetadata } from "@/hooks/useMetadata";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
-import { isAddressEqual } from "@/utils/evm";
+import { isAddress, isAddressEqual } from "@/utils/evm";
 import { generateBreadcrumbs } from "@/utils/nav";
+import { Heading } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { type Address } from "viem";
 import { ProfileAside } from "../components/delegateAside/delegateAside";
+import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
 import { DelegationStatement } from "../components/delegationStatement/delegationStatement";
 import { HeaderMember } from "../components/headerMember/headerMember";
 import { councilMemberList } from "../services/query-options";
-import { Heading } from "@aragon/ods";
-import { DelegationsDataList } from "../components/delegationsDataList/delegationsDataList";
-import { ProposalStages } from "@/features/proposals";
+import { NotFound } from "@/components/not-found";
 import { MemberVotesDataList } from "../components/memberVotesDataList/memberVotesDataList";
+import { ProposalStages } from "@/server/models/proposals/types";
 
 export const MemberProfile = () => {
   const { query, asPath } = useRouter();
@@ -29,7 +30,11 @@ export const MemberProfile = () => {
     select: (data) => data.find((member) => isAddressEqual(member.address, profileAddress)),
   });
 
-  const { data: announcementData, isLoading: announcementCidLoading } = useAnnouncement(profileAddress);
+  const {
+    data: announcementData,
+    isLoading: announcementCidLoading,
+    isFetched: announcementFetched,
+  } = useAnnouncement(profileAddress);
   const { data: announcement, isLoading: announcementLoading } = useMetadata<IDelegationWallMetadata>(
     announcementData?.[0]
   );
@@ -39,6 +44,13 @@ export const MemberProfile = () => {
   const isCouncilMember = councilMemberFetched && !!councilMember;
   const bio = isCouncilMember ? councilMember.bio : announcement?.bio;
   const identifier = isCouncilMember ? councilMember?.name : announcement?.identifier;
+
+  if (
+    (profileAddress != null && !isAddress(profileAddress)) ||
+    (councilMemberFetched && !isCouncilMember && announcementFetched && announcementData == null)
+  ) {
+    return <NotFound />;
+  }
 
   return (
     <div className="flex flex-col items-center">

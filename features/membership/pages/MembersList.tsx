@@ -1,5 +1,4 @@
 import { MainSection } from "@/components/layout/mainSection";
-import { PUB_TOKEN_SYMBOL } from "@/constants";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useAnnouncement } from "@/plugins/delegateAnnouncer/hooks/useAnnouncement";
 import { type IDelegationWallMetadata } from "@/plugins/delegateAnnouncer/utils/types";
@@ -7,10 +6,10 @@ import { Button, Heading, StateSkeletonBar, Toggle, ToggleGroup } from "@aragon/
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { CouncilDataList } from "../components/councilDataList/councilDataList";
 import { DelegateAnnouncementDialog } from "../components/delegateAnnouncementDialog/delegateAnnouncementDialog";
 import { DelegateDataList } from "../components/delegateDataList/delegateDataList";
 import { councilMemberList, delegatesList } from "../services/query-options";
+import { CouncilDataList } from "../components/councilDataList/councilDataList";
 
 const DEFAULT_PAGE_SIZE = 12;
 
@@ -29,11 +28,11 @@ export default function MembersList() {
     ...councilMemberList(),
   });
 
-  const { data: delegatesListData, isLoading: delegatesLoading } = useInfiniteQuery({
-    ...delegatesList({
+  const { data: delegatesListData, isLoading: delegatesLoading } = useInfiniteQuery(
+    delegatesList({
       limit: DEFAULT_PAGE_SIZE,
-    }),
-  });
+    })
+  );
 
   const handleGovernanceBodyChange = (value: string | undefined) => {
     if (value) {
@@ -41,7 +40,7 @@ export default function MembersList() {
     }
   };
 
-  const getButtonLabel = () => {
+  const getCtaLabel = () => {
     if (!isConnected) {
       return "Connect to create a delegate profile";
     } else if (announcement) {
@@ -56,8 +55,7 @@ export default function MembersList() {
       <div className="flex w-full max-w-[1280px] flex-col gap-x-20 gap-y-8 lg:flex-row">
         <div className="flex flex-1 flex-col gap-y-6">
           <div className="flex flex-col items-start gap-y-6 sm:flex-row sm:items-center sm:justify-between">
-            <Heading size="h1">Member Profiles</Heading>
-
+            <Heading size="h1">Member profiles</Heading>
             <ToggleGroup isMultiSelect={false} onChange={handleGovernanceBodyChange} value={governanceBody}>
               <Toggle value="council" label="Protocol Council" />
               <Toggle value="delegates" label="Delegates" />
@@ -72,9 +70,9 @@ export default function MembersList() {
           <div className="flex flex-col gap-y-3">
             <Heading size="h3">Details</Heading>
             <p className="text-neutral-500">
-              {`The Polygon Governance Hub is an organisation consisting of two different governance bodies. This consists
-              of a Protocol Council and the ${PUB_TOKEN_SYMBOL} token holders, who can also delegate their
-              voting power.`}
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at hendrerit libero. Aliquam tempus
+              hendrerit urna, nec fermentum nulla consequat vel. Vestibulum vel imperdiet nisi. Interdum et malesuada
+              fames ac ante ipsum primis in faucibus. Aliquam viverra laoreet sapien varius ultrices.
             </p>
           </div>
           <dl className="divide-y divide-neutral-100">
@@ -93,11 +91,10 @@ export default function MembersList() {
                 <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData.length} council members`}</dd>
               </div>
             )}
-
             {delegatesLoading && (
               <div className="flex flex-col gap-y-2 py-3 md:gap-x-6 md:py-4">
                 <StateSkeletonBar width={"40%"} className="h-6 !bg-neutral-100" />
-                <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />{" "}
+                <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />
               </div>
             )}
 
@@ -107,13 +104,13 @@ export default function MembersList() {
                   Delegates
                 </dt>
                 <dd className="size-full text-base leading-tight text-neutral-500">
-                  {`${delegatesListData.pagination.total} delegates`}
+                  {`${delegatesListData.pagination.total} delegate profiles`}
                 </dd>
               </div>
             )}
           </dl>
           <Button className="!rounded-full" onClick={() => setShowProfileCreationDialog(true)} disabled={!isConnected}>
-            {getButtonLabel()}
+            {getCtaLabel()}
           </Button>
           {showProfileCreationDialog && (
             <DelegateAnnouncementDialog
