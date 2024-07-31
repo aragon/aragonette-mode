@@ -83,26 +83,6 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
           </div>
         </div>
       )}
-      {/* Button group */}
-      {cta && (
-        <div className="flex w-full flex-col gap-y-4 md:flex-row md:gap-x-4">
-          <Button
-            size="md"
-            className="!rounded-full"
-            disabled={disabled}
-            onClick={handleVoteClick}
-            isLoading={cta.isLoading}
-          >
-            {label}
-          </Button>
-
-          {showOptions && (
-            <Button size="md" className="!rounded-full" onClick={() => setShowOptions(false)} variant="tertiary">
-              Cancel
-            </Button>
-          )}
-        </div>
-      )}
       <div className="flex flex-col gap-y-3 rounded-xl border border-neutral-100 p-3 shadow-neutral-sm md:flex-row md:gap-x-6 md:p-6">
         {votingScores.map((choice, index) => (
           <div className="flex flex-1 flex-col gap-y-3 md:flex-row md:gap-x-6" key={choice.option}>
@@ -125,6 +105,26 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
           </div>
         ))}
       </div>
+      {/* Button group */}
+      {cta && (
+        <div className="flex w-full flex-col gap-y-4 md:flex-row md:gap-x-4">
+          <Button
+            size="md"
+            className="!rounded-full"
+            disabled={disabled}
+            onClick={handleVoteClick}
+            isLoading={cta.isLoading}
+          >
+            {label}
+          </Button>
+
+          {showOptions && (
+            <Button size="md" className="!rounded-full" onClick={() => setShowOptions(false)} variant="tertiary">
+              Cancel
+            </Button>
+          )}
+        </div>
+      )}
       <DynamicVetoRateChart proposalId={proposalId} />
     </div>
   );

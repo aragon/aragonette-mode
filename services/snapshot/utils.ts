@@ -68,7 +68,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
   const creator = [
     {
       link: `${PUB_CHAIN.blockExplorers?.default.url}/address/${proposal.author}`,
-      address: proposal.author,
+      name: proposal.author,
     },
   ];
 
