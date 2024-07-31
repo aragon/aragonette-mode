@@ -23,8 +23,7 @@ export const ProposalVoting: React.FC<IProposalVotingProps> = ({ isEmergency, st
         <Heading size="h2">Voting</Heading>
         {!isEmergency && (
           <p className="text-lg leading-normal text-neutral-500">
-            The proposal must first pass the Protocol Council Approval, then the community must vote in favour, and then
-            the Protocol Council confirms the onchain actions.
+            The proposal must pass the community voting to be accepted.
           </p>
         )}
         {isEmergency && (
