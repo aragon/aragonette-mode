@@ -33,6 +33,8 @@ import {
 import { getSnapshotProposalStage, getSnapshotProposalStages } from "../../../services/snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals/types";
 import dayjs from "dayjs";
+import { ProposalDetails } from "@/components/nav/routes";
+import { extractIdFromLink } from "@/services/github/utils";
 
 /**
  * Computes the title of a proposal based on its stages. It searches through
@@ -504,7 +506,26 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
   const allMatchedProposalStages = await matchProposalStages(proposalStages);
   logger.info(`Proposal stages matched successfully.`);
 
-  return allMatchedProposalStages.map((matchedStages) => buildProposalResponse(matchedStages));
+  const proposals = allMatchedProposalStages.map((matchedStages) => buildProposalResponse(matchedStages));
+
+  // Set parent proposal for child
+  proposals.forEach((proposal) => {
+    proposal.includedPips.map((includedPip) => {
+      const proposalId = extractIdFromLink(includedPip.link);
+
+      if (proposalId) {
+        const childProposal = proposals.find((p) => p.id === proposalId);
+        if (childProposal) {
+          childProposal.parentPip = {
+            name: proposal.title,
+            link: ProposalDetails.getPath(proposal.id),
+          };
+        }
+      }
+    });
+  });
+
+  return proposals;
 }
 
 export function buildProposalResponse(proposalStages: ProposalStage[], overwriteId?: string): IProposal {
@@ -633,6 +654,9 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
   // get stages, build proposal and add voting responses
   const stages = await getProposalStages(onchainProposalId);
   const updatedProposal = buildProposalResponse(stages, proposal.id);
+
+  updatedProposal.includedPips = proposal.includedPips;
+  updatedProposal.parentPip = proposal.parentPip;
 
   const votingResponses = await Promise.all(updatedProposal.stages.map((stage) => buildVotingResponse(stage)));
   votingResponses.forEach((response, index) => {

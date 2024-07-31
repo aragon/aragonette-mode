@@ -1,5 +1,5 @@
 import { ProposalDetails } from "@/components/nav/routes";
-import { EMERGENCY_PREFIX, PUB_BASE_URL } from "@/constants";
+import { EMERGENCY_PREFIX, GITHUB_PIPS_PATH, GITHUB_REPO, GITHUB_USER, PUB_BASE_URL } from "@/constants";
 import yaml from "js-yaml";
 import {
   ProposalStages,
@@ -96,16 +96,18 @@ function extractIncludedPIPS(body: string): string[] {
   return [];
 }
 
+export function extractIdFromLink(link?: string): string | undefined {
+  return link?.split("/").pop()?.split(".").shift();
+}
+
 function parseIncludedPIPs(includedPips: string[]): IProposalResource[] {
-  const pipPattern = /AIP|PIP-(\d+)/;
-
-  return includedPips.map((pip) => {
+  return includedPips.flatMap((pip) => {
     const resource = parseMarkdownLink(pip);
-    const pipId = `PIP-${resource.name.match(pipPattern)?.[1]}`;
+    if (!resource.link?.startsWith(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/blob/main/${GITHUB_PIPS_PATH}/`))
+      return [];
+    const pipId = extractIdFromLink(resource.link);
 
-    return (
-      pipId ? { ...resource, link: `${PUB_BASE_URL}${ProposalDetails.getPath(pipId)}` } : resource
-    ) as IProposalResource;
+    return (pipId ? { ...resource, link: ProposalDetails.getPath(pipId) } : resource) as IProposalResource;
   });
 }
 
@@ -120,7 +122,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
   const parsedCreators: ICreator[] = values[3].split(",").map(parseMarkdownLink);
   const includedPIPs = parseIncludedPIPs(extractIncludedPIPS(body));
   const isMainProposal = includedPIPs.length > 0;
-  const pip = link.split("/").pop()?.split(".").shift() ?? "undefined";
+  const pip = extractIdFromLink(link) ?? "undefined";
 
   const isDate = !isNaN(Date.parse(values[7]));
   const createdAt = isDate ? new Date(values[7]) : undefined;
@@ -143,7 +145,7 @@ export function parseHeader(header: string, body: string, link: string): Proposa
     bindings: [],
     actions: [],
     includedPips: isMainProposal ? includedPIPs : undefined,
-    parentPip: isMainProposal ? undefined : { name: "tbd", link: "tbd" },
+    parentPip: undefined,
   };
 }
 
