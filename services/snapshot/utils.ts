@@ -73,6 +73,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
   ];
 
   return {
+    mip: proposal.id,
     stageType: ProposalStages.COMMUNITY_VOTING,
     title: proposal.title,
     description: proposal.title,

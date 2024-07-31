@@ -279,96 +279,6 @@ const getProposalBindingId = (stage: ProposalStage) => {
   return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 };
 
-/**
- * Matches proposal stages based on their identifiers and specific linking criteria. This function organizes
- * proposals into coherent groups by linking stages such as DRAFT, COUNCIL_APPROVAL, COMMUNITY_VOTING, and
- * COUNCIL_CONFIRMATION based on bindings and other criteria. It also handles special cases like manually binding
- * specific proposals together.
- *
- * @param  proposalStages - Array of proposal stage objects.
- * @returns An array of arrays, where each inner array contains linked proposal stages.
- */
-export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
-  const draftProposals = proposalStages.filter((stage) => stage.stageType === ProposalStages.DRAFT);
-  const transparencyReports = proposalStages.filter((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT);
-  const councilApprovalProposals = proposalStages.filter(
-    (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
-  );
-
-  const communityVotingProposals = proposalStages.filter(
-    (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING
-  );
-  const councilConfirmationProposals = proposalStages.filter(
-    (stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION
-  );
-
-  const proposals = councilApprovalProposals.map((proposal) => [proposal]);
-
-  proposals.forEach((proposal) => {
-    const draftBindingLink = proposal[0].bindings?.find((binding) => binding.id === ProposalStages.DRAFT)?.link;
-    if (draftBindingLink) {
-      const draftProposal = draftProposals.find((stage) => getProposalBindingId(stage) === draftBindingLink);
-      if (draftProposal) {
-        proposal.push(draftProposal);
-      }
-    }
-
-    const transparencyReportsBindingLink = proposal[0].bindings?.find(
-      (binding) => binding.id === ProposalStages.TRANSPARENCY_REPORT
-    )?.link;
-    if (transparencyReportsBindingLink) {
-      const transparencyReport = transparencyReports.find(
-        (stage) => getProposalBindingId(stage) === transparencyReportsBindingLink
-      );
-      if (transparencyReport) {
-        proposal.push(transparencyReport);
-      }
-    }
-
-    const communityVotingBindingLink = proposal[0].bindings?.find(
-      (binding) => binding.id === ProposalStages.COMMUNITY_VOTING
-    )?.link;
-    if (communityVotingBindingLink) {
-      const communityVotingProposal = communityVotingProposals.find(
-        (stage) => getProposalBindingId(stage) === communityVotingBindingLink
-      );
-      if (communityVotingProposal) {
-        proposal.push(communityVotingProposal);
-      }
-    }
-
-    const councilConfirmationBinding = proposal[0].title;
-    if (councilConfirmationBinding) {
-      const councilConfirmationProposal = councilConfirmationProposals.find(
-        (stage) => stage.title === councilConfirmationBinding
-      );
-      if (councilConfirmationProposal) {
-        proposal.push(councilConfirmationProposal);
-      }
-    }
-  });
-
-  // Remove matched proposals from the draft proposals array
-  proposals.forEach((proposal) => {
-    const draftProposal = proposal.find((stage) => stage.stageType === ProposalStages.DRAFT);
-    if (!draftProposal) return;
-    const proposalIndex = draftProposals.indexOf(draftProposal);
-    draftProposals.splice(proposalIndex, 1);
-  });
-
-  proposals.push(...draftProposals.map((proposal) => [proposal]));
-
-  // Manually bind MIP-4 draft and community voting stages
-  // TODO: Handle with RD-303
-  const mip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.mip === "MIP-04"));
-  if (mip4ProposalStages) {
-    const mip4CommunityVotingProposal = communityVotingProposals.find((stage) => stage.title.startsWith("MIP-4"));
-    if (mip4CommunityVotingProposal) mip4ProposalStages.push(mip4CommunityVotingProposal);
-  }
-
-  return proposals;
-}
-
 function buildVotingData(voting: VotingData): IVotingData {
   return {
     providerId: voting.providerId,
@@ -416,11 +326,7 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
   const proposalStages = await getAllProposalsStages();
   logger.info(`All proposal stages fetched successfully.`);
 
-  logger.info(`Matching proposal stages...`);
-  const allMatchedProposalStages = await matchProposalStages(proposalStages);
-  logger.info(`Proposal stages matched successfully.`);
-
-  return allMatchedProposalStages.map((matchedStages) => buildProposalResponse(matchedStages));
+  return proposalStages.map((stage) => buildProposalResponse([stage]));
 }
 
 export function buildProposalResponse(proposalStages: ProposalStage[], overwriteId?: string): IProposal {

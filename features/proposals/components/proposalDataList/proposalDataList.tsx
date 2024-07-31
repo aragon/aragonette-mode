@@ -155,7 +155,10 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
       >
         {proposalsQueryData?.proposals?.map((proposal, index) => (
           <ProposalDataListItemStructure
-            {...proposal}
+            {...{
+              ...proposal,
+              id: proposal.id.substring(0, 6) + "..." + proposal.id.substring(proposal.id.length - 4),
+            }}
             voted={votedData[index]?.data}
             href={ProposalDetails.getPath(proposal.id)}
             key={proposal.id}
