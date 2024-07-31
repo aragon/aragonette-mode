@@ -4,7 +4,6 @@ import { useTokenInfo } from "@/plugins/erc20/hooks/useTokenInfo";
 import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 import { formatterUtils, NumberFormat, StateSkeletonBar } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { formatUnits } from "viem";
 
 export const HeaderDao = () => {
   const {
@@ -32,19 +31,20 @@ export const HeaderDao = () => {
           <div className="flex flex-col gap-y-6 md:w-4/5">
             <h1 className="text-4xl leading-tight text-neutral-800 md:text-5xl">Welcome to the Mode Community</h1>
             <p className="text-2xl leading-normal text-neutral-600">
-              Welcome to the Mode Governance Hub, responsible for facilitating changes to Mode Protocols. Participate in
-              governance by becoming a delegate and voting on MIPs.
+              The Mode Governance Hub is the home for Mode token holders to create proposals, vote, and participate in
+              Governance. Mode builds infrastructure, assets, and applications with a mission to bring decentralized
+              finance to billions of users globally. Welcome to Mode, governed on Aragon.
             </p>
           </div>
         </div>
         <div className="flex gap-x-20 md:w-4/5">
           {/* Proposal count */}
-          {totalProposalCountFetched && !totalProposalsError && (
+          {totalProposalCountFetched && totalProposals && !totalProposalsError && (
             <div className="flex flex-col gap-y-1.5">
               <span className="text-4xl text-primary-400">
                 {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
               </span>
-              <span className="text-xl text-neutral-500">Proposals</span>
+              <span className="text-xl text-neutral-500">{totalProposals === 1 ? "Proposal" : "Proposals"}</span>
             </div>
           )}
           {totalProposalsLoading && (
@@ -74,14 +74,30 @@ export const HeaderDao = () => {
           {tokenInfo && !tokenInfoError && (
             <div className="flex flex-col gap-y-1.5">
               <div className="flex items-baseline gap-x-1">
+                <span className="text-4xl text-primary-400">$500M</span>
+                {/* <span className="line-clamp-1 text-2xl text-neutral-500">{tokenInfo[1]}</span> */}
+              </div>
+              <span className="text-xl text-neutral-500">TVL</span>
+            </div>
+          )}
+          {tokenInfoLoading && (
+            <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
+              <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
+              <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
+            </div>
+          )}
+          {/* Total supply */}
+          {tokenInfo && !tokenInfoError && (
+            <div className="flex flex-col gap-y-1.5">
+              <div className="flex items-baseline gap-x-1">
                 <span className="text-4xl text-primary-400">
-                  {formatterUtils.formatNumber(formatUnits(tokenInfo[2], tokenInfo[0]), {
-                    format: NumberFormat.TOKEN_AMOUNT_SHORT,
+                  {formatterUtils.formatNumber(2000000, {
+                    format: NumberFormat.GENERIC_SHORT,
                   })}
                 </span>
-                <span className="line-clamp-1 text-2xl text-neutral-500">{tokenInfo[1]}</span>
+                {/* <span className="line-clamp-1 text-2xl text-neutral-500">{tokenInfo[1]}</span> */}
               </div>
-              <span className="text-xl text-neutral-500">Total supply</span>
+              <span className="text-xl text-neutral-500">Token holders</span>
             </div>
           )}
           {tokenInfoLoading && (
