@@ -16,7 +16,7 @@ export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
         <div className="flex flex-col gap-y-3 px-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Image src="/logo-polygon-icon.svg" width="32" height="32" className="shrink-0" alt="Polygon" />
+              <Image src="/mode-logo.svg" width="32" height="32" className="shrink-0" alt="Polygon" />
               <BrandingSubline />
             </div>
           </div>

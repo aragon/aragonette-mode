@@ -42,7 +42,7 @@ export default function AragonetteApp({ Component, pageProps }: any) {
         <meta property="og:site_name" content={PUB_APP_NAME} />
         <meta property="og:locale" content="en_US" />
         <meta property="og:image" content={`${PUB_API_BASE_URL}/og`} />
-        <meta property="og:image:alt" content="Polygon Governance Hub logo" />
+        <meta property="og:image:alt" content="Mode Governance Hub" />
         <meta property="og:type" content="website" />
 
         <meta name="twitter:card" content="summary_large_image" />

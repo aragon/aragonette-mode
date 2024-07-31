@@ -4,7 +4,6 @@ import { type ChainName, getChain } from "./utils/chains";
 // Contract Addresses
 export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ?? "") as Address;
 export const PUB_TOKEN_SYMBOL = process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? "";
-export const PUB_SNAPSHOT_DELEGATION_ADDRESS = (process.env.NEXT_PUBLIC_SNAPSHOT_DELEGATION_ADDRESS ?? "") as Address;
 
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "sepolia") as ChainName;

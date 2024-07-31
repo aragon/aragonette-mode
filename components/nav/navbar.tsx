@@ -27,7 +27,7 @@ export const Navbar: React.FC = () => {
                 )}
               >
                 <Image
-                  src="/logo-polygon.svg"
+                  src="/mode-green.svg"
                   width="164"
                   height="32"
                   className="hidden shrink-0 sm:block"
@@ -35,7 +35,7 @@ export const Navbar: React.FC = () => {
                   priority={true}
                 />
                 <Image
-                  src="/logo-polygon-icon.svg"
+                  src="/mode-green.svg"
                   width="40"
                   height="40"
                   className="shrink-0 sm:hidden"
