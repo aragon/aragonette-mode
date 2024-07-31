@@ -1,4 +1,4 @@
-import { PUB_ENS_CHAIN, PUB_WEB3_ENDPOINT } from "@/constants";
+import { PUB_ENS_CHAIN, PUB_WEB3_ENS_ENDPOINT } from "@/constants";
 import { Wallet } from "@aragon/ods";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { createClient, http } from "viem";
@@ -9,7 +9,7 @@ export const config = createConfig({
   client({ chain }) {
     return createClient({
       chain,
-      transport: http(PUB_WEB3_ENDPOINT, { batch: true }),
+      transport: http(PUB_WEB3_ENS_ENDPOINT, { batch: true }),
     });
   },
 });
