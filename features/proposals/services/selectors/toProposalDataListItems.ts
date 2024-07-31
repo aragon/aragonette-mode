@@ -1,27 +1,19 @@
-import { capitalizeFirstLetter } from "@/utils/case";
-import type {
-  IApprovalThresholdResult,
-  IMajorityVotingResult,
-  IProposalDataListItemStructureProps,
-  ProposalType,
+import { PUB_TOKEN_SYMBOL } from "@/constants";
+import {
+  formatterUtils,
+  NumberFormat,
+  type IApprovalThresholdResult,
+  type IMajorityVotingResult,
+  type IProposalDataListItemStructureProps,
+  type ProposalType,
 } from "@aragon/ods";
-import { ProposalStages, ProposalTracks, StageOrder, type IProposal, ProposalStatus } from "../domain";
+import { ProposalStages, ProposalStatus, type IProposal } from "../domain";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
 export function toProposalDataListItems(proposals: IProposal[]): ProposalListItem[] {
   return proposals.map((proposal) => {
-    const {
-      id,
-      status,
-      type: proposalType,
-      stages,
-      currentStage,
-      description: summary,
-      title,
-      isEmergency,
-      publisher,
-    } = proposal;
+    const { status, stages, currentStage, description: summary, title, publisher } = proposal;
 
     // get active stage
     const stageIndex = stages.findIndex((stage) => stage.type === currentStage) ?? 0;
@@ -38,7 +30,6 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.voting?.endDate;
 
     const date = getRelativeDate(status, activeStage.voting?.startDate, endDate);
-    const tag = isEmergency ? ProposalTracks.EMERGENCY : capitalizeFirstLetter(proposalType);
 
     // only community voting is mjv; draft has no voting data
     const isMajorityVoting = activeStage.type === ProposalStages.COMMUNITY_VOTING;
@@ -52,15 +43,13 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       (activeStage.voting?.total_votes ?? 0) > 0
     ) {
       const winningOption = activeStage.voting?.scores.sort((a, b) => b.votes - a.votes)[0];
-      const id = StageOrder[activeStage.type];
 
       result = {
-        stage: { id, title: activeStage.type },
         ...(isMajorityVoting
           ? ({
               option: winningOption?.choice,
-              voteAmount: winningOption?.votes?.toString() ?? "0",
-              votePercentage: (winningOption?.percentage ?? 0) * 100,
+              voteAmount: `${formatterUtils.formatNumber(winningOption?.votes?.toString() ?? 0, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`,
+              votePercentage: winningOption?.percentage ?? 0,
             } as IMajorityVotingResult)
           : ({
               approvalAmount: activeStage.voting?.total_votes ?? 0,
@@ -71,9 +60,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
 
     return {
       date,
-      id,
       type,
-      tag,
       publisher,
       status: statusLabel,
       summary,
