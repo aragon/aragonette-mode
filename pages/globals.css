@@ -10,14 +10,14 @@
     --ods-color-primary-200: 224 254 0;
     --ods-color-primary-300: 0 0 0;
     --ods-color-primary-400: 224 254 0;
-    --ods-color-primary-500: 224 254 0;
+    --ods-color-primary-500: 255 255 255;
     --ods-color-primary-600: 224 254 0;
     --ods-color-primary-700: 224 254 0;
     --ods-color-primary-800: 224 254 0;
     --ods-color-primary-900: 224 254 0;
 
     /* Neutral */
-    --ods-color-neutral-0: 10 10 10;
+    --ods-color-neutral-0: 20 20 20;
     --ods-color-neutral-50: 0 0 0;
     --ods-color-neutral-100: 50 50 50;
     --ods-color-neutral-200: 50 50 50;
@@ -26,7 +26,7 @@
     --ods-color-neutral-500: 255 255 255;
     --ods-color-neutral-600: 150 150 150;
     --ods-color-neutral-700: 255 255 255;
-    --ods-color-neutral-800: 255 255 255;
+    --ods-color-neutral-800: 224 254 0;
     --ods-color-neutral-900: 255 255 255;
 
     /* Info */
