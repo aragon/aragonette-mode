@@ -13,7 +13,7 @@ type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
 export function toProposalDataListItems(proposals: IProposal[]): ProposalListItem[] {
   return proposals.map((proposal) => {
-    const { status, stages, currentStage, description: summary, title, publisher } = proposal;
+    const { id, status, stages, currentStage, description: summary, title, publisher } = proposal;
 
     // get active stage
     const stageIndex = stages.findIndex((stage) => stage.type === currentStage) ?? 0;
@@ -59,6 +59,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
     }
 
     return {
+      id,
       date,
       type,
       publisher,
