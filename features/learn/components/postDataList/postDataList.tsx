@@ -88,7 +88,7 @@ export const PostDatList: React.FC<IPostDataListProps> = ({
           emptyState={emptyState}
           emptyFilteredState={emptyFilteredState}
           className={classNames({
-            "grid grid-cols-1 !gap-x-6 md:grid-cols-2 lg:grid-cols-3":
+            "grid grid-cols-1 !gap-4 !gap-x-6 md:grid-cols-2 lg:grid-cols-3":
               total !== 0 || dataListState === "initialLoading",
           })}
         >

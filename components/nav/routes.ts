@@ -15,3 +15,10 @@ export const ProposalDetails = {
   path: "/proposals/:id",
   getPath: (id: number | string) => `/proposals/${id}`,
 };
+
+export const PostDetail = {
+  name: "Post",
+  id: "Post",
+  path: "/learn/:slug",
+  getPath: (slug: string) => `/learn/${slug}`,
+};

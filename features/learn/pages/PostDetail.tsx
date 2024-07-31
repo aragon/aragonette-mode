@@ -1,9 +1,9 @@
+import { proseClasses } from "@/components/documentParser/utils";
 import { DocumentParser, StateSkeletonBar, Tag } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { HeaderPost } from "../components/headerPost/headerPost";
 import { postDetailQueryOptions } from "../services/posts/query-options";
-import { proseClasses } from "@/components/documentParser/utils";
 
 export const PostDetailPage = () => {
   const {

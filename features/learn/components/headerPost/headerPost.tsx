@@ -49,9 +49,9 @@ export const HeaderPost: React.FC = () => {
             <Heading size="h1">{post?.title}</Heading>
             <p className="text-lg text-neutral-500 md:text-xl">{post?.subtitle}</p>
             <div className="flex items-center gap-x-2">
-              <Avatar src="/logo-polygon-icon.svg" size="md" />
+              <Avatar src="/mode-logo.png" size="md" />
               <div className="flex flex-col gap-y-0.25">
-                <span className="font-semibold text-neutral-800">Polygon</span>
+                <span className="font-semibold text-neutral-800">Mode</span>
                 <span className="text-neutral-400">{dayjs(post?.createdAt).format("MMMM DD, YYYY")}</span>
               </div>
             </div>
