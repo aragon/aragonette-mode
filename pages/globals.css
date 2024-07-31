@@ -5,50 +5,50 @@
 @layer base {
   :root {
     /* Primary */
-    --ods-color-primary-50: 250 245 255;
-    --ods-color-primary-100: 235 216 253;
-    --ods-color-primary-200: 213 179 252;
-    --ods-color-primary-300: 186 139 246;
-    --ods-color-primary-400: 161 109 238;
-    --ods-color-primary-500: 123 63 288;
-    --ods-color-primary-600: 95 46 196;
-    --ods-color-primary-700: 70 31 164;
-    --ods-color-primary-800: 48 20 132;
-    --ods-color-primary-900: 33 12 109;
+    --ods-color-primary-50: 70 70 70;
+    --ods-color-primary-100: 224 254 0;
+    --ods-color-primary-200: 224 254 0;
+    --ods-color-primary-300: 0 0 0;
+    --ods-color-primary-400: 255 255 255;
+    --ods-color-primary-500: 224 254 0;
+    --ods-color-primary-600: 224 254 0;
+    --ods-color-primary-700: 224 254 0;
+    --ods-color-primary-800: 224 254 0;
+    --ods-color-primary-900: 224 254 0;
 
     /* Neutral */
-    --ods-color-neutral-0: 255 255 255;
-    --ods-color-neutral-50: 245 247 250;
-    --ods-color-neutral-100: 228 231 235;
-    --ods-color-neutral-200: 203 210 217;
-    --ods-color-neutral-300: 145 165 177;
-    --ods-color-neutral-400: 123 135 148;
-    --ods-color-neutral-500: 97 110 124;
-    --ods-color-neutral-600: 82 96 109;
-    --ods-color-neutral-700: 62 76 89;
-    --ods-color-neutral-800: 50 63 75;
-    --ods-color-neutral-900: 31 41 51;
+    --ods-color-neutral-0: 10 10 10;
+    --ods-color-neutral-50: 0 0 0;
+    --ods-color-neutral-100: 50 50 50;
+    --ods-color-neutral-200: 50 50 50;
+    --ods-color-neutral-300: 255 255 255;
+    --ods-color-neutral-400: 224 254 0;
+    --ods-color-neutral-500: 255 255 255;
+    --ods-color-neutral-600: 224 254 0;
+    --ods-color-neutral-700: 224 254 0;
+    --ods-color-neutral-800: 224 254 0;
+    --ods-color-neutral-900: 255 255 255;
 
     /* Info */
     --ods-color-info-100: 206 236 254;
-    --ods-color-info-200: 157 214 254;
+    --ods-color-info-200: 250 1 129;
     --ods-color-info-300: 108 187 253;
     --ods-color-info-400: 71 161 251;
-    --ods-color-info-500: 12 119 249;
+    --ods-color-info-500: 224 254 0;
     --ods-color-info-600: 8 92 214;
     --ods-color-info-700: 6 68 179;
-    --ods-color-info-800: 3 48 144;
+    --ods-color-info-800: 255 255 255;
     --ods-color-info-900: 2 33 229;
 
     /* Success */
-    --ods-color-success-100: 241 253 210;
-    --ods-color-success-200: 223 251 167;
+    --ods-color-success-100: 17 75 247;
+    --ods-color-success-200: 17 75 247;
     --ods-color-success-300: 197 243 121;
     --ods-color-success-400: 170 231 86;
     --ods-color-success-500: 132 216 36;
     --ods-color-success-600: 103 185 26;
     --ods-color-success-700: 78 155 18;
-    --ods-color-success-800: 56 125 11;
+    --ods-color-success-800: 224 232 255;
     --ods-color-success-900: 40 103 6;
 
     /* Warning */
@@ -64,13 +64,13 @@
 
     /* Critical */
     --ods-color-critical-100: 255 229 211;
-    --ods-color-critical-200: 255 196 168;
+    --ods-color-critical-200: 255 0 90;
     --ods-color-critical-300: 255 156 124;
     --ods-color-critical-400: 255 119 92;
     --ods-color-critical-500: 255 56 38;
     --ods-color-critical-600: 219 27 27;
     --ods-color-critical-700: 183 19 32;
-    --ods-color-critical-800: 147 12 34;
+    --ods-color-critical-800: 108 0 62;
     --ods-color-critical-900: 122 7 35;
 
     /* Font */
