@@ -1,11 +1,11 @@
-import { AccordionContainer, Card, Heading } from "@aragon/ods";
+import { Card, Heading } from "@aragon/ods";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import React from "react";
+import { ProposalStages } from "../../services";
 import { type ITransformedStage } from "../../services/selectors";
 import { VotingStage, type IVotingStageProps } from "./votingStage/votingStage";
-import { ProposalStages } from "../../services";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);

@@ -11,7 +11,7 @@ import { logger } from "@/services/logger";
 import { capitalizeFirstLetter } from "@/utils/case";
 import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
 import { type Action } from "@/utils/types";
-import { type ProposalType } from "@aragon/ods";
+import { NumberFormat, type ProposalType, formatterUtils } from "@aragon/ods";
 import { getPublicClient } from "@wagmi/core";
 import dayjs, { type Dayjs } from "dayjs";
 import { type Address, type PublicClient } from "viem";
@@ -160,7 +160,9 @@ function transformStages(
                 scores.length > 0
                   ? scores.map((score) => ({
                       option: score.choice,
-                      voteAmount: score.votes.toString(),
+                      voteAmount: formatterUtils.formatNumber(score.votes.toString(), {
+                        format: NumberFormat.TOKEN_AMOUNT_SHORT,
+                      }),
                       votePercentage: score.percentage,
                       tokenSymbol: PUB_TOKEN_SYMBOL,
                     }))
