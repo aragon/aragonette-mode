@@ -3,25 +3,18 @@ import { AvatarIcon, IconType } from "@aragon/ods";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { BrandingSubline } from "../brandingSubline/brandingSubline";
-import { Layer3Banner } from "./layer3Banner";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
-import { Dashboard, Learn, Members, Proposals } from "./routes";
+import { Dashboard, Proposals } from "./routes";
 
 export const Navbar: React.FC = () => {
-  const { pathname } = useRouter();
-
   const [open, setOpen] = useState(false);
-  const navLinks: INavLink[] = [Dashboard, Proposals, Members, Learn];
-
-  const showLayer3Banner = pathname === Learn.path;
+  const navLinks: INavLink[] = [Dashboard, Proposals];
 
   return (
     <>
-      <Layer3Banner show={showLayer3Banner} />
       <nav className="h-30 sticky top-0 z-[var(--hub-navbar-z-index)] flex w-full items-center justify-center border-b border-b-neutral-100 bg-neutral-0">
         <div className="flex w-full max-w-screen-xl flex-col gap-x-2 gap-y-3 p-3 md:px-6 md:pb-0 md:pt-5 lg:gap-x-3">
           <div className="flex w-full items-center justify-between">
@@ -34,19 +27,19 @@ export const Navbar: React.FC = () => {
                 )}
               >
                 <Image
-                  src="/logo-polygon.svg"
+                  src="/mode-green.svg"
                   width="164"
                   height="32"
                   className="hidden shrink-0 sm:block"
-                  alt="Polygon"
+                  alt="Mode"
                   priority={true}
                 />
                 <Image
-                  src="/logo-polygon-icon.svg"
+                  src="/mode-green.svg"
                   width="40"
                   height="40"
                   className="shrink-0 sm:hidden"
-                  alt="Polygon"
+                  alt="Mode"
                   priority={true}
                 />
               </Link>

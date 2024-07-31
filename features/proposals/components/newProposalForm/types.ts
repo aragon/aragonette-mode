@@ -64,7 +64,7 @@ export const durationSwitchValues = [
 ];
 
 type FormMetadata = {
-  pipSelected: boolean;
+  mipSelected: boolean;
   actionType: ActionType;
   bytecode: string;
 
@@ -97,7 +97,7 @@ export const ProposalCreationFormDefaultValues = {
   emergency: false,
 
   // form metadata
-  pipSelected: false,
+  mipSelected: false,
   actionType: ActionType.Signaling,
   bytecode: "",
   startSwitch: "now" as const,

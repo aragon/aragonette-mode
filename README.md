@@ -1,10 +1,10 @@
-# Polygon Governance Hub
+# Mode Governance Hub
 
-The Polygon Governance Hub serves as a comprehensive platform for the Polygon community. It facilitates the processes of proposal submission and voting and aims to be the definitive resource where users can find all the information needed to make educated decisions within the Polygon ecosystem. The platform priorities a seamless and transparent experience to enhance active and quality participation among community members.
+The Mode Governance Hub serves as a comprehensive platform for the Mode community. It facilitates the processes of proposal submission and voting and aims to be the definitive resource where users can find all the information needed to make educated decisions within the Mode ecosystem. The platform priorities a seamless and transparent experience to enhance active and quality participation among community members.
 
 ## Getting Started
 
-Before setting up the Polygon Governance Hub locally, make sure you have Bun installed on your machine. If not, hop over to [Bun's official documentation](https://bun.sh/) for installation instructions.
+Before setting up the Mode Governance Hub locally, make sure you have Bun installed on your machine. If not, hop over to [Bun's official documentation](https://bun.sh/) for installation instructions.
 
 Once you're set with Bun and have cloned the repo on your local machine, follow these steps to run the application locally:
 
@@ -33,4 +33,4 @@ The user interface is based on the [Aragon Open Design System](https://www.figma
 
 ## License
 
-The Polygon Governance Hub is released under the AGPL v3 License.
+The Mode Governance Hub is released under the AGPL v3 License.

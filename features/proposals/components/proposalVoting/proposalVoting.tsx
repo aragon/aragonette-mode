@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import React from "react";
 import { type ITransformedStage } from "../../services/selectors";
 import { VotingStage, type IVotingStageProps } from "./votingStage/votingStage";
+import { ProposalStages } from "../../services";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -15,8 +16,6 @@ interface IProposalVotingProps {
 }
 
 export const ProposalVoting: React.FC<IProposalVotingProps> = ({ isEmergency, stages }) => {
-  const defaultStage = stages.length === 1 ? ["Stage 1"] : [];
-
   return (
     <Card className="overflow-hidden rounded-xl bg-neutral-0 shadow-neutral">
       {/* Header */}
@@ -36,11 +35,13 @@ export const ProposalVoting: React.FC<IProposalVotingProps> = ({ isEmergency, st
         )}
       </div>
       {/* Stages */}
-      <AccordionContainer isMulti={true} className="border-t border-t-neutral-100" defaultValue={defaultStage}>
-        {stages.map((stage, index) => (
-          <VotingStage key={stage.type} {...({ ...stage, number: index + 1 } as IVotingStageProps)} />
-        ))}
-      </AccordionContainer>
+      <VotingStage
+        key={ProposalStages.COMMUNITY_VOTING}
+        {...({
+          ...stages.find((stage) => stage.type === ProposalStages.COMMUNITY_VOTING),
+          number: 0,
+        } as IVotingStageProps)}
+      />
     </Card>
   );
 };

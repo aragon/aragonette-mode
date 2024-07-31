@@ -120,8 +120,8 @@ export const parseProposal = (proposal: Proposal): IProposal => {
     currentStage: proposal.currentStage as ProposalStages,
     publisher: proposal.creators.map((creator) => JSON.parse(creator)),
     actions: proposal.actions?.map((action) => JSON.parse(action)),
-    includedPips: proposal.includedPips?.map((iPips) => JSON.parse(iPips)),
-    parentPip: proposal.parentPip ? JSON.parse(proposal.parentPip) : null,
+    includedMips: proposal.includedMips?.map((iMips) => JSON.parse(iMips)),
+    parentMip: proposal.parentMip ? JSON.parse(proposal.parentMip) : null,
     stages: [],
   };
 };
@@ -142,8 +142,8 @@ export const serializeProposals = (proposal: IProposal): Proposal => {
     resources: proposal.resources.map((resource) => JSON.stringify(resource)),
     type: proposal.type,
     actions: proposal.actions?.map((action) => JSON.stringify(action)),
-    includedPips: proposal.includedPips?.map((iPips) => JSON.stringify(iPips)),
-    parentPip: proposal.parentPip ? JSON.stringify(proposal.parentPip) : null,
+    includedMips: proposal.includedMips?.map((iMips) => JSON.stringify(iMips)),
+    parentMip: proposal.parentMip ? JSON.stringify(proposal.parentMip) : null,
   };
 };
 

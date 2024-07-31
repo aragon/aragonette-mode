@@ -1,12 +1,4 @@
-import {
-  GITHUB_PIPS_PATH,
-  GITHUB_REPO,
-  GITHUB_TRANSPARENCY_REPORTS_PATH,
-  GITHUB_USER,
-  PUB_CHAIN,
-  PUB_MULTISIG_ADDRESS,
-  SNAPSHOT_SPACE,
-} from "@/constants";
+import { PUB_CHAIN, SNAPSHOT_SPACE } from "@/constants";
 import {
   ProposalStages,
   ProposalStatus,
@@ -19,17 +11,6 @@ import {
 } from "@/features/proposals/services/domain";
 import { logger } from "@/services/logger";
 import { type IPublisher } from "@aragon/ods";
-import {
-  getGitHubProposalStageData,
-  getGitHubProposalStagesData,
-  getGithubTransparencyReport,
-  getGithubTransparencyReports,
-} from "../../../services/github/proposalStages";
-import {
-  getMultisigProposalData,
-  getMultisigProposalsData,
-  getMultisigVotingData,
-} from "../../../services/rpc/multisig/proposalStages";
 import { getSnapshotProposalStage, getSnapshotProposalStages } from "../../../services/snapshot/proposalStages";
 import { type ProposalStage, type VotingData } from "../../models/proposals/types";
 import dayjs from "dayjs";
@@ -258,99 +239,34 @@ function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
 
 function computeProposalId(proposalStages: ProposalStage[]): string {
   const id =
-    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.pip ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.pip ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.pip ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.mip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.mip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.mip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.mip ??
     "unknown";
 
   return id;
 }
 
 export async function getAllProposalsStages() {
-  const promises = [
-    getGitHubProposalStagesData({
-      user: GITHUB_USER,
-      repo: GITHUB_REPO,
-      pips_path: GITHUB_PIPS_PATH,
-    }),
-    getGithubTransparencyReports({
-      user: GITHUB_USER,
-      repo: GITHUB_REPO,
-      transparency_reports_path: GITHUB_TRANSPARENCY_REPORTS_PATH,
-    }),
-    getSnapshotProposalStages({ space: SNAPSHOT_SPACE }),
-    getMultisigProposalsData({
-      chain: PUB_CHAIN.id,
-      contractAddress: PUB_MULTISIG_ADDRESS,
-    }),
-  ];
+  const promises = [getSnapshotProposalStages({ space: SNAPSHOT_SPACE })];
 
   return (await Promise.all(promises)).flat();
 }
 
-export async function getProposalStages(onchainProposalId: string): Promise<ProposalStage[]> {
-  logger.info(`Getting updated stages for multisig proposal: ${onchainProposalId}...`);
+export async function getProposalStages(snapshotProposalId: string): Promise<ProposalStage[]> {
+  logger.info(`Getting updated stages for snapshot proposal: ${snapshotProposalId}...`);
 
-  // update the dynamic stages
-  // fetch the multisig data
-  const multisigData = await getMultisigProposalData({
-    chain: PUB_CHAIN.id,
-    contractAddress: PUB_MULTISIG_ADDRESS,
-    proposalId: parseInt(onchainProposalId),
-  });
+  const stages = await Promise.all([getSnapshotProposalStage({ providerId: snapshotProposalId })]);
 
-  const stageIds = [
-    // update draft
-    {
-      stage: ProposalStages.DRAFT,
-      id: multisigData[0].bindings?.find((binding) => binding.id === ProposalStages.DRAFT)?.link,
-    },
-
-    // update transparency report
-    {
-      stage: ProposalStages.TRANSPARENCY_REPORT,
-      id: multisigData[0].bindings?.find((binding) => binding.id === ProposalStages.TRANSPARENCY_REPORT)?.link,
-    },
-
-    // update community voting
-    {
-      stage: ProposalStages.COMMUNITY_VOTING,
-      id: multisigData[0].bindings?.find((binding) => binding.id === ProposalStages.COMMUNITY_VOTING)?.link,
-    },
-  ].filter((stage) => stage.id != null);
-
-  const stages = await Promise.all(
-    stageIds.map(({ stage, id }) => {
-      switch (stage) {
-        case ProposalStages.DRAFT:
-          return getGitHubProposalStageData({
-            user: GITHUB_USER,
-            repo: GITHUB_REPO,
-            pips_path: GITHUB_PIPS_PATH,
-            pip: id,
-          });
-        case ProposalStages.TRANSPARENCY_REPORT:
-          return getGithubTransparencyReport({
-            user: GITHUB_USER,
-            repo: GITHUB_REPO,
-            pips_path: GITHUB_PIPS_PATH,
-            pip: id,
-          });
-        case ProposalStages.COMMUNITY_VOTING:
-          return getSnapshotProposalStage({ providerId: id });
-      }
-    })
-  );
-
-  return [...multisigData, ...stages.flatMap((stage) => stage ?? [])];
+  return [...stages.flatMap((stage) => stage ?? [])];
 }
 
 const getProposalBindingId = (stage: ProposalStage) => {
-  // For development purposes, we are using the PIP number as the binding ID
+  // For development purposes, we are using the MIP number as the binding ID
   // TODO: Handle with RD-303
   if (stage.stageType === ProposalStages.DRAFT || stage.stageType === ProposalStages.TRANSPARENCY_REPORT) {
-    if (stage.pip) return stage.pip;
+    if (stage.mip) return stage.mip;
     else return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
   }
   if (stage.stageType === ProposalStages.COMMUNITY_VOTING) {
@@ -362,96 +278,6 @@ const getProposalBindingId = (stage: ProposalStage) => {
 
   return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
 };
-
-/**
- * Matches proposal stages based on their identifiers and specific linking criteria. This function organizes
- * proposals into coherent groups by linking stages such as DRAFT, COUNCIL_APPROVAL, COMMUNITY_VOTING, and
- * COUNCIL_CONFIRMATION based on bindings and other criteria. It also handles special cases like manually binding
- * specific proposals together.
- *
- * @param  proposalStages - Array of proposal stage objects.
- * @returns An array of arrays, where each inner array contains linked proposal stages.
- */
-export async function matchProposalStages(proposalStages: ProposalStage[]): Promise<ProposalStage[][]> {
-  const draftProposals = proposalStages.filter((stage) => stage.stageType === ProposalStages.DRAFT);
-  const transparencyReports = proposalStages.filter((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT);
-  const councilApprovalProposals = proposalStages.filter(
-    (stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL
-  );
-
-  const communityVotingProposals = proposalStages.filter(
-    (stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING
-  );
-  const councilConfirmationProposals = proposalStages.filter(
-    (stage) => stage.stageType === ProposalStages.COUNCIL_CONFIRMATION
-  );
-
-  const proposals = councilApprovalProposals.map((proposal) => [proposal]);
-
-  proposals.forEach((proposal) => {
-    const draftBindingLink = proposal[0].bindings?.find((binding) => binding.id === ProposalStages.DRAFT)?.link;
-    if (draftBindingLink) {
-      const draftProposal = draftProposals.find((stage) => getProposalBindingId(stage) === draftBindingLink);
-      if (draftProposal) {
-        proposal.push(draftProposal);
-      }
-    }
-
-    const transparencyReportsBindingLink = proposal[0].bindings?.find(
-      (binding) => binding.id === ProposalStages.TRANSPARENCY_REPORT
-    )?.link;
-    if (transparencyReportsBindingLink) {
-      const transparencyReport = transparencyReports.find(
-        (stage) => getProposalBindingId(stage) === transparencyReportsBindingLink
-      );
-      if (transparencyReport) {
-        proposal.push(transparencyReport);
-      }
-    }
-
-    const communityVotingBindingLink = proposal[0].bindings?.find(
-      (binding) => binding.id === ProposalStages.COMMUNITY_VOTING
-    )?.link;
-    if (communityVotingBindingLink) {
-      const communityVotingProposal = communityVotingProposals.find(
-        (stage) => getProposalBindingId(stage) === communityVotingBindingLink
-      );
-      if (communityVotingProposal) {
-        proposal.push(communityVotingProposal);
-      }
-    }
-
-    const councilConfirmationBinding = proposal[0].title;
-    if (councilConfirmationBinding) {
-      const councilConfirmationProposal = councilConfirmationProposals.find(
-        (stage) => stage.title === councilConfirmationBinding
-      );
-      if (councilConfirmationProposal) {
-        proposal.push(councilConfirmationProposal);
-      }
-    }
-  });
-
-  // Remove matched proposals from the draft proposals array
-  proposals.forEach((proposal) => {
-    const draftProposal = proposal.find((stage) => stage.stageType === ProposalStages.DRAFT);
-    if (!draftProposal) return;
-    const proposalIndex = draftProposals.indexOf(draftProposal);
-    draftProposals.splice(proposalIndex, 1);
-  });
-
-  proposals.push(...draftProposals.map((proposal) => [proposal]));
-
-  // Manually bind PIP-4 draft and community voting stages
-  // TODO: Handle with RD-303
-  const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "PIP-04"));
-  if (pip4ProposalStages) {
-    const pip4CommunityVotingProposal = communityVotingProposals.find((stage) => stage.title.startsWith("PIP-4"));
-    if (pip4CommunityVotingProposal) pip4ProposalStages.push(pip4CommunityVotingProposal);
-  }
-
-  return proposals;
-}
 
 function buildVotingData(voting: VotingData): IVotingData {
   return {
@@ -500,11 +326,7 @@ export async function buildProposalsResponse(): Promise<IProposal[]> {
   const proposalStages = await getAllProposalsStages();
   logger.info(`All proposal stages fetched successfully.`);
 
-  logger.info(`Matching proposal stages...`);
-  const allMatchedProposalStages = await matchProposalStages(proposalStages);
-  logger.info(`Proposal stages matched successfully.`);
-
-  return allMatchedProposalStages.map((matchedStages) => buildProposalResponse(matchedStages));
+  return proposalStages.map((stage) => buildProposalResponse([stage]));
 }
 
 export function buildProposalResponse(proposalStages: ProposalStage[], overwriteId?: string): IProposal {
@@ -522,8 +344,8 @@ export function buildProposalResponse(proposalStages: ProposalStage[], overwrite
   const transparencyReport = proposalStages.find(
     (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
   )?.body;
-  const includedPips = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedPips ?? [];
-  const parentPip = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentPip;
+  const includedMips = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedMips ?? [];
+  const parentMip = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentMip;
 
   // sorted stages
   const stages = buildProposalStageResponse(proposalStages);
@@ -549,8 +371,8 @@ export function buildProposalResponse(proposalStages: ProposalStage[], overwrite
     id,
     title,
     description,
-    includedPips,
-    parentPip,
+    includedMips,
+    parentMip,
     body,
     transparencyReport,
     resources,
@@ -572,20 +394,6 @@ export async function getVotingData(stage: ProposalStages, providerId: string): 
   switch (stage) {
     case ProposalStages.COMMUNITY_VOTING:
       return (await getSnapshotProposalStage({ providerId }))?.voting;
-    case ProposalStages.COUNCIL_APPROVAL:
-      return await getMultisigVotingData({
-        chain: PUB_CHAIN.id,
-        contractAddress: PUB_MULTISIG_ADDRESS,
-        stage: "approval",
-        providerId: BigInt(providerId),
-      });
-    case ProposalStages.COUNCIL_CONFIRMATION:
-      return await getMultisigVotingData({
-        chain: PUB_CHAIN.id,
-        contractAddress: PUB_MULTISIG_ADDRESS,
-        stage: "confirmation",
-        providerId: BigInt(providerId),
-      });
     default:
       return undefined;
   }
@@ -613,10 +421,10 @@ export async function buildVotingResponse(
 }
 
 export async function buildLiveProposalResponse(proposal: IProposal) {
-  logger.info(`Building live multisig proposal ${proposal.id}`);
+  logger.info(`Building live snapshot proposal ${proposal.id}`);
 
   // get onchain provider id
-  const onchainProposalId = proposal.stages.find((stage) => stage.type === ProposalStages.COUNCIL_APPROVAL)?.voting
+  const snapshotProposalId = proposal.stages.find((stage) => stage.type === ProposalStages.COMMUNITY_VOTING)?.voting
     ?.providerId;
 
   const activeProposal =
@@ -625,13 +433,13 @@ export async function buildLiveProposalResponse(proposal: IProposal) {
     (proposal.status === ProposalStatus.ACCEPTED && proposal.actions.length > 0);
 
   // return the stored proposal if it is inactive or not onchain
-  if (!onchainProposalId || !activeProposal) {
-    logger.info(`Proposal inactive or offchain, returning stored proposal ${proposal.id}`);
+  if (!snapshotProposalId || !activeProposal) {
+    logger.info(`Proposal inactive, returning stored proposal ${proposal.id}`);
     return null;
   }
 
   // get stages, build proposal and add voting responses
-  const stages = await getProposalStages(onchainProposalId);
+  const stages = await getProposalStages(snapshotProposalId);
   const updatedProposal = buildProposalResponse(stages, proposal.id);
 
   const votingResponses = await Promise.all(updatedProposal.stages.map((stage) => buildVotingResponse(stage)));

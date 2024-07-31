@@ -200,7 +200,7 @@ class ProposalRepository {
       if (type) {
         where = {
           ...where,
-          includedPips: {
+          includedMips: {
             isEmpty: type === ProposalType.Child,
           },
         };

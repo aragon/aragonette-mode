@@ -37,9 +37,9 @@ export type VotingData = {
 
 export type ProposalStage = {
   stageType: ProposalStages;
-  pip?: string;
-  parentPip?: IProposalResource;
-  includedPips?: IProposalResource[];
+  mip?: string;
+  parentMip?: IProposalResource;
+  includedMips?: IProposalResource[];
   title: string;
   description: string;
   body: string;

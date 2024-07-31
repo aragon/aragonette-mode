@@ -3,10 +3,10 @@ import Link from "next/link";
 import React from "react";
 import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { type INavLink } from "../nav/navLink";
-import { Dashboard, Learn, Members, Proposals } from "../nav/routes";
+import { Dashboard, Proposals } from "../nav/routes";
 
 export const Footer: React.FC = () => {
-  const navLinks: INavLink[] = [Dashboard, Proposals, Members, Learn];
+  const navLinks: INavLink[] = [Dashboard, Proposals];
 
   return (
     <div className="flex w-full flex-row border-t border-t-neutral-100 bg-neutral-0 p-4 md:p-0 xl:h-20">
@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
           ))}
         </ul>
         <div className="items-center pb-3 pt-6 md:order-3 md:flex md:justify-center md:pb-0 md:pt-0 xl:flex-1 xl:justify-end">
-          <span className="text-base leading-tight text-neutral-500">&copy; 2024 Polygon</span>
+          <span className="text-base leading-tight text-neutral-500">&copy; 2024 Mode</span>
         </div>
       </div>
     </div>

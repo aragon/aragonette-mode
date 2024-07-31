@@ -40,8 +40,8 @@ CREATE TABLE "Proposal" (
     "resources" TEXT[],
     "type" TEXT NOT NULL,
     "actions" TEXT[],
-    "includedPips" TEXT[],
-    "parentPip" TEXT,
+    "includedMips" TEXT[],
+    "parentMip" TEXT,
 
     CONSTRAINT "Proposal_pkey" PRIMARY KEY ("id")
 );
