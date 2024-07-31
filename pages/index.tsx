@@ -15,7 +15,7 @@ const resources: IDashboardResource[] = [
     description: "Short description",
     cta: "Join airdrop",
   },
-  { name: "Bridge", link: "https://app.mode.network/", description: "Short description", cta: "Github" },
+  { name: "Bridge", link: "https://app.mode.network/", description: "Short description", cta: "Bridge your assets" },
 ];
 
 export default function Home() {
