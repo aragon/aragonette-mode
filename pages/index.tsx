@@ -9,8 +9,13 @@ type IDashboardResource = IResource & { cta: string; primary?: boolean };
 
 const resources: IDashboardResource[] = [
   { name: "Governance Forum", link: "0", description: "Short description", cta: "Learn more", primary: true },
-  { name: "Airdrop", link: "2", description: "Short description", cta: "Join airdrop" },
-  { name: "Bridge", link: "5", description: "Short description", cta: "Github" },
+  {
+    name: "Airdrop",
+    link: "https://www.mode.network/about-the-airdrop",
+    description: "Short description",
+    cta: "Join airdrop",
+  },
+  { name: "Bridge", link: "https://app.mode.network/", description: "Short description", cta: "Github" },
 ];
 
 export default function Home() {
@@ -29,6 +34,8 @@ export default function Home() {
                     href={resource.link}
                     variant={resource.primary ? "primary" : "secondary"}
                     className="!rounded-full"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     {resource.cta}
                   </Button>
