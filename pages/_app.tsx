@@ -11,12 +11,12 @@ import { HydrationBoundary } from "@tanstack/react-query";
 const generalSans = localFont({
   src: [
     {
-      path: "../public/fonts/GeneralSans-Regular.woff2",
+      path: "../public/fonts/ibm/IBMPlexSans-Light.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/GeneralSans-Medium.woff2",
+      path: "../public/fonts/ibm/IBMPlexSans-Medium.ttf",
       weight: "600",
       style: "normal",
     },
