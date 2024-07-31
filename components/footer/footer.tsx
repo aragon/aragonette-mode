@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
           ))}
         </ul>
         <div className="items-center pb-3 pt-6 md:order-3 md:flex md:justify-center md:pb-0 md:pt-0 xl:flex-1 xl:justify-end">
-          <span className="text-base leading-tight text-neutral-500">&copy; 2024 Polygon</span>
+          <span className="text-base leading-tight text-neutral-500">&copy; 2024 Mode</span>
         </div>
       </div>
     </div>

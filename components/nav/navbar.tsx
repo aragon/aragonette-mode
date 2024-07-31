@@ -31,7 +31,7 @@ export const Navbar: React.FC = () => {
                   width="164"
                   height="32"
                   className="hidden shrink-0 sm:block"
-                  alt="Polygon"
+                  alt="Mode"
                   priority={true}
                 />
                 <Image
@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
                   width="40"
                   height="40"
                   className="shrink-0 sm:hidden"
-                  alt="Polygon"
+                  alt="Mode"
                   priority={true}
                 />
               </Link>

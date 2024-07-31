@@ -239,10 +239,10 @@ function sortProposalStages(proposalStages: ProposalStage[]): ProposalStage[] {
 
 function computeProposalId(proposalStages: ProposalStage[]): string {
   const id =
-    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.pip ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.pip ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.pip ??
-    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.pip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.mip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.mip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.mip ??
+    proposalStages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.mip ??
     "unknown";
 
   return id;
@@ -263,10 +263,10 @@ export async function getProposalStages(snapshotProposalId: string): Promise<Pro
 }
 
 const getProposalBindingId = (stage: ProposalStage) => {
-  // For development purposes, we are using the PIP number as the binding ID
+  // For development purposes, we are using the MIP number as the binding ID
   // TODO: Handle with RD-303
   if (stage.stageType === ProposalStages.DRAFT || stage.stageType === ProposalStages.TRANSPARENCY_REPORT) {
-    if (stage.pip) return stage.pip;
+    if (stage.mip) return stage.mip;
     else return stage.title.match(/[A-Z]+-\d+/)?.[0] ?? "unknown";
   }
   if (stage.stageType === ProposalStages.COMMUNITY_VOTING) {
@@ -358,12 +358,12 @@ export async function matchProposalStages(proposalStages: ProposalStage[]): Prom
 
   proposals.push(...draftProposals.map((proposal) => [proposal]));
 
-  // Manually bind PIP-4 draft and community voting stages
+  // Manually bind MIP-4 draft and community voting stages
   // TODO: Handle with RD-303
-  const pip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.pip === "PIP-04"));
-  if (pip4ProposalStages) {
-    const pip4CommunityVotingProposal = communityVotingProposals.find((stage) => stage.title.startsWith("PIP-4"));
-    if (pip4CommunityVotingProposal) pip4ProposalStages.push(pip4CommunityVotingProposal);
+  const mip4ProposalStages = proposals.find((stage) => stage.find((proposal) => proposal.mip === "MIP-04"));
+  if (mip4ProposalStages) {
+    const mip4CommunityVotingProposal = communityVotingProposals.find((stage) => stage.title.startsWith("MIP-4"));
+    if (mip4CommunityVotingProposal) mip4ProposalStages.push(mip4CommunityVotingProposal);
   }
 
   return proposals;
@@ -438,8 +438,8 @@ export function buildProposalResponse(proposalStages: ProposalStage[], overwrite
   const transparencyReport = proposalStages.find(
     (stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT
   )?.body;
-  const includedPips = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedPips ?? [];
-  const parentPip = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentPip;
+  const includedMips = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.includedMips ?? [];
+  const parentMip = proposalStages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.parentMip;
 
   // sorted stages
   const stages = buildProposalStageResponse(proposalStages);
@@ -465,8 +465,8 @@ export function buildProposalResponse(proposalStages: ProposalStage[], overwrite
     id,
     title,
     description,
-    includedPips,
-    parentPip,
+    includedMips,
+    parentMip,
     body,
     transparencyReport,
     resources,

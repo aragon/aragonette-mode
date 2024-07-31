@@ -15,8 +15,8 @@ export const ProposalCategory: React.FC<IProposalCategoryProps> = (props) => {
   const { control, isAutoFill } = props;
 
   const helpText = isAutoFill
-    ? "Define the PIP category. This is automatically selected based on your Github proposal selection."
-    : "Define the PIP category.";
+    ? "Define the MIP category. This is automatically selected based on your Github proposal selection."
+    : "Define the MIP category.";
 
   return (
     <>

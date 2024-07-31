@@ -1,16 +1,16 @@
 import { ProposalDataList } from "@/features/proposals";
 import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
-import { Heading, IconType, Link } from "@aragon/ods";
+import { Heading } from "@aragon/ods";
 
-export const LatestPIPs = () => {
+export const LatestMIPs = () => {
   return (
     <section className="flex flex-col gap-y-6">
       <div className="flex flex-col gap-y-3">
-        <Heading size="h1">Latest PIPs</Heading>
+        <Heading size="h1">Latest MIPs</Heading>
         <p className="text-base text-neutral-500">
-          <strong>Polygon Improvement Proposals (PIPs)</strong> are documents that describe standards for the Polygon
-          ecosystem and the processes through which the Polygon community introduces, finds consensus on, and implements
-          changes to Polygon Protocols.
+          <strong>Mode Improvement Proposals (MIPs)</strong> are documents that describe standards for the Mode
+          ecosystem and the processes through which the Mode community introduces, finds consensus on, and implements
+          changes to Mode Protocols.
         </p>
       </div>
       <ProposalDataList

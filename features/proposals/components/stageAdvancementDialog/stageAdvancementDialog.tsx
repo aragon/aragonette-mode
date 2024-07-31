@@ -42,7 +42,7 @@ export const StageAdvancementDialog: React.FC<IStageAdvancementDialog> = (props)
       <DialogHeader title="Advance to next stage" onCloseClick={onClose} onBackClick={onClose} showBackButton={true} />
       <DialogContent className="flex flex-col gap-y-6">
         <p className="text-lg leading-normal text-neutral-500">
-          {`To advance the next stage called ${ProposalStages.COMMUNITY_VOTING} you have to create an proposal in the Polygon Snapshot
+          {`To advance the next stage called ${ProposalStages.COMMUNITY_VOTING} you have to create an proposal in the Mode Snapshot
           Space. After creation, add the corresponding snapshot proposal link to advance the next stage.
           `}
         </p>

@@ -6,8 +6,6 @@ const resources: IResource[] = [
   { name: "Governance Forum", link: "0", description: "Short description" },
   { name: "Twitter", link: "1", description: "Short description" },
   { name: "Farcaster", link: "2", description: "Short description" },
-  { name: "PPGC Repo", link: "3", description: "Short description" },
-  { name: "Layer 3", link: "4", description: "Short description" },
   { name: "Github", link: "5", description: "Short description" },
 ];
 

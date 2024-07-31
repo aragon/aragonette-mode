@@ -38,7 +38,7 @@ export const PUB_PARAGRAPH_PUBLICATION_SLUG = process.env.NEXT_PUBLIC_PARAGRAPH_
 export const PUB_ARWEAVE_API_URL = process.env.NEXT_PUBLIC_ARWEAVE_API_URL ?? "";
 
 // Proposals
-export const PROPOSAL_PREFIX = process.env.PROPOSAL_PREFIX ?? "PIP";
+export const PROPOSAL_PREFIX = process.env.PROPOSAL_PREFIX ?? "MIP";
 export const EMERGENCY_PREFIX = process.env.EMERGENCY_PREFIX ?? "SOS";
 
 // Google Calendar
@@ -46,11 +46,11 @@ export const PUB_GOOGLE_CALENDAR_CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CA
 export const GOOGLE_CALENDAR_API_KEY = process.env.GOOGLE_CALENDAR_API_KEY ?? "";
 
 // General
-export const PUB_APP_NAME = "Polygon Governance Hub";
-export const PUB_APP_DESCRIPTION = "The place for all things Polygon Governance.";
+export const PUB_APP_NAME = "Mode Governance Hub";
+export const PUB_APP_DESCRIPTION = "The place for all things Mode Governance.";
 
-export const PUB_PROJECT_URL = "https://polygon.technology/";
+export const PUB_PROJECT_URL = "https://mode.technology/";
 export const PUB_WALLET_ICON = "https://avatars.githubusercontent.com/u/30753617";
 
 export const PUB_DISCORD_URL = "https://discord.com/";
-export const PUB_X_HANDLE = "0xpolygon";
+export const PUB_X_HANDLE = "0xmode";

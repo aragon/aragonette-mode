@@ -30,7 +30,7 @@ export default async function handler() {
             gap: 20,
           }}
         >
-          <Image src="/mode-green.svg" width="800" height="600" alt="Polygon" priority={true} />
+          <Image src="/mode-green.svg" width="800" height="600" alt="Mode" priority={true} />
           <div
             style={{
               display: "flex",

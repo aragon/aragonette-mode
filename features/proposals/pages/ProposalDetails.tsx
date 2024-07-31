@@ -233,10 +233,10 @@ export default function ProposalDetails() {
   if (proposal) {
     // intermediate values
     const breadcrumbs = generateBreadcrumbs(router.asPath);
-    const isParentProposal = proposal.includedPips.length > 0;
+    const isParentProposal = proposal.includedMips.length > 0;
     const showActions = proposal.actions.length > 0;
     const showVoting = isParentProposal;
-    const showIncludedPIPS = isParentProposal;
+    const showIncludedMIPS = isParentProposal;
 
     // calculate whether proposal can advance with next approval
     let canAdvanceWithNextApproval = false;
@@ -268,8 +268,8 @@ export default function ProposalDetails() {
             {/* Additional Information */}
             <div className="flex flex-col gap-y-6 md:w-[33%]">
               <CardResources resources={proposal.resources} title="Resources" />
-              {showIncludedPIPS && (
-                <CardResources resources={proposal.includedPips} title="Included PIPs" displayLink={false} />
+              {showIncludedMIPS && (
+                <CardResources resources={proposal.includedMips} title="Included MIPs" displayLink={false} />
               )}
             </div>
           </div>

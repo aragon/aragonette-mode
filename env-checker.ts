@@ -32,9 +32,9 @@ const checkEnvVar = {
   SNAPSHOT_URL: url({ devDefault: "https://testnet.snapshot.org/" }),
   SNAPSHOT_TEST_HUB: url({ devDefault: "https://testnet.hub.snapshot.org" }), //TODO: Needed??
   DISCORD_URL: str({ devDefault: "https://discord.com" }),
-  NEXT_PUBLIC_APP_NAME: str({ devDefault: "Polygon Governance Hub" }),
-  NEXT_PUBLIC_APP_DESCRIPTION: str({ devDefault: "Streamlined user interface for Polygon governance" }),
-  NEXT_PUBLIC_PROJECT_URL: url({ devDefault: "https://polygon.technology/" }),
+  NEXT_PUBLIC_APP_NAME: str({ devDefault: "Mode Governance Hub" }),
+  NEXT_PUBLIC_APP_DESCRIPTION: str({ devDefault: "Streamlined user interface for Mode governance" }),
+  NEXT_PUBLIC_PROJECT_URL: url({ devDefault: "https://mode.technology/" }),
   NEXT_PUBLIC_WALLET_ICON: url({ devDefault: "https://avatars.githubusercontent.com/u/30753617" }),
 };
 

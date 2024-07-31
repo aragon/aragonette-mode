@@ -16,12 +16,12 @@ export const MobileNavDialog: React.FC<IMobileNavDialogProps> = (props) => {
         <div className="flex flex-col gap-y-3 px-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Image src="/mode-logo.svg" width="32" height="32" className="shrink-0" alt="Polygon" />
+              <Image src="/mode-logo.svg" width="32" height="32" className="shrink-0" alt="Mode" />
               <BrandingSubline />
             </div>
           </div>
           <div className="flex flex-col gap-y-1">
-            <span className="text-lg leading-tight text-neutral-800">Polygon Governance Hub</span>
+            <span className="text-lg leading-tight text-neutral-800">Mode Governance Hub</span>
           </div>
         </div>
         <ul className="flex w-full flex-col gap-y-1">

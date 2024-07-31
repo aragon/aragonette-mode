@@ -8,10 +8,10 @@ import { type ICreateProposalMetadataFormData } from "./types";
 const DEFAULT_PAGE_SIZE = 3;
 
 interface IDraftProposalSelection {
-  onPIPSelected: (pipMetadata: ICreateProposalMetadataFormData) => void;
+  onMIPSelected: (mipMetadata: ICreateProposalMetadataFormData) => void;
 }
 
-export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPIPSelected }) => {
+export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onMIPSelected }) => {
   const {
     data: draftProposalsData,
     isError,
@@ -34,19 +34,19 @@ export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPI
     }),
   });
 
-  const handlePIPSelected = (pipIndex: string) => {
-    const index = Number(pipIndex);
-    const pip = draftProposalsData?.proposals?.[index];
+  const handleMIPSelected = (mipIndex: string) => {
+    const index = Number(mipIndex);
+    const mip = draftProposalsData?.proposals?.[index];
 
-    if (!isNaN(index) && !!pip) {
-      onPIPSelected({
-        title: pip.title,
-        summary: pip.description,
-        description: pip.body,
-        type: pip.type,
+    if (!isNaN(index) && !!mip) {
+      onMIPSelected({
+        title: mip.title,
+        summary: mip.description,
+        description: mip.body,
+        type: mip.type,
         resources: {
-          github: pip.resources.find((r) => r.name.toLowerCase() === "github"),
-          forum: pip.resources.find((r) => r.name.toLowerCase() === "forum"),
+          github: mip.resources.find((r) => r.name.toLowerCase() === "github"),
+          forum: mip.resources.find((r) => r.name.toLowerCase() === "forum"),
         },
       });
     }
@@ -66,10 +66,10 @@ export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPI
       >
         {noPendingProposals && (
           <CardEmptyState
-            heading="No draft PIPs have been found on Github. "
-            description="Start by creating a PIP on Github"
+            heading="No draft MIPs have been found on Github. "
+            description="Start by creating a MIP on Github"
             secondaryButton={{
-              label: "Submit new PIP on Github",
+              label: "Submit new MIP on Github",
               iconRight: IconType.LINK_EXTERNAL,
               className: "!rounded-full",
             }}
@@ -98,7 +98,7 @@ export const DraftProposalSelection: React.FC<IDraftProposalSelection> = ({ onPI
           </div>
         )}
         {proposalsExist && (
-          <RadioGroup id="github-proposal" onValueChange={handlePIPSelected}>
+          <RadioGroup id="github-proposal" onValueChange={handleMIPSelected}>
             {draftProposalsData?.proposals.map((proposal, index) => (
               <RadioCard
                 key={proposal.id}
