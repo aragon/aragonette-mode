@@ -25,6 +25,7 @@
   "dependencies": {
     "@aragon/ods": "1.0.40",
     "@ethersproject/providers": "^5.7.2",
+    "@googleapis/calendar": "^9.7.6",
     "@hookform/resolvers": "^3.6.0",
     "@prisma/client": "^5.14.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
