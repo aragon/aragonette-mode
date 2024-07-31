@@ -76,7 +76,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     mip: proposal.id,
     stageType: ProposalStages.COMMUNITY_VOTING,
     title: proposal.title,
-    description: proposal.title,
+    description: proposal.body.substring(0, 200) + "...",
     body: proposal.body,
     status,
     overallStatus,

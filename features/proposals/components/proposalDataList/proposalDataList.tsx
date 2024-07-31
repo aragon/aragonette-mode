@@ -158,6 +158,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
             {...{
               ...proposal,
               id: "",
+              tag: "Proposal",
             }}
             voted={votedData[index]?.data}
             href={ProposalDetails.getPath(proposal.id)}
