@@ -184,11 +184,21 @@ function computePublisher(stages: ProposalStage[], isEmergency: boolean): IPubli
     ? stages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.creator
     : stages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.creator;
 
-  return (
-    (originalCreators ?? stages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.creator)?.map(
-      (creator) => ({ address: "", ...creator })
-    ) ?? [{ address: "", name: "Unknown" }]
-  );
+  const creators =
+    originalCreators ??
+    stages.find((stage) => stage.stageType === ProposalStages.COUNCIL_APPROVAL)?.creator ??
+    stages.find((stage) => stage.stageType === ProposalStages.DRAFT)?.creator ??
+    stages.find((stage) => stage.stageType === ProposalStages.TRANSPARENCY_REPORT)?.creator ??
+    stages.find((stage) => stage.stageType === ProposalStages.COMMUNITY_VOTING)?.creator;
+
+  const publishers = creators?.map((creator) => {
+    return {
+      address: creator.name ?? "",
+      link: creator.link,
+    };
+  });
+
+  return publishers ?? [];
 }
 
 /**
