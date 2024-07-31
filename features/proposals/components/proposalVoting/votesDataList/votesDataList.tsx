@@ -1,4 +1,3 @@
-import { MemberProfile } from "@/components/nav/routes";
 import { type ProposalStages } from "@/features/proposals";
 import { proposalVotes } from "@/features/proposals/services";
 import { generateDataListState } from "@/utils/query";
@@ -93,7 +92,6 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
             variant={choice}
             connectedAccount={address && isAddressEqual(address, otherProps.address)}
             key={id}
-            href={MemberProfile.getPath(otherProps.address)}
           />
         ))}
       </DataList.Container>

@@ -12,11 +12,6 @@ export const HeaderProposalCreate: React.FC = () => {
             standard, make sure you submit it under the Polygon Request for Comment (PRC) folder
           </p>
         </div>
-        <span>
-          <Button variant="secondary" iconRight={IconType.LINK_EXTERNAL} className="!rounded-full">
-            Learn more
-          </Button>
-        </span>
       </div>
     </div>
   );

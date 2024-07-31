@@ -1,4 +1,3 @@
-import { FeaturedArticles } from "@/components/featuredArticles/featuredArticles";
 import { LatestPIPs } from "@/components/latestPIPs/latestPIPs";
 import { UpcomingEvents } from "@/components/upcomingEvents/upcomingEvents";
 
@@ -11,7 +10,6 @@ export default function Home() {
           <LatestPIPs />
           <UpcomingEvents />
         </div>
-        <FeaturedArticles />
       </main>
     </>
   );

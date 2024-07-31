@@ -12,7 +12,6 @@ export const LatestPIPs = () => {
           ecosystem and the processes through which the Polygon community introduces, finds consensus on, and implements
           changes to Polygon Protocols.
         </p>
-        <Link iconRight={IconType.LINK_EXTERNAL}>Learn more</Link>
       </div>
       <ProposalDataList
         pageSize={4}

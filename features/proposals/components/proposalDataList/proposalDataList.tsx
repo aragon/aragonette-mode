@@ -1,4 +1,4 @@
-import { NewProposal, ProposalDetails, Proposals } from "@/components/nav/routes";
+import { ProposalDetails, Proposals } from "@/components/nav/routes";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { generateDataListState } from "@/utils/query";
 import {
@@ -16,6 +16,7 @@ import { type IFetchProposalListParams, ProposalStages, StageOrder, proposalList
 import { generateSortOptions, sortItems } from "./utils";
 import { useRouter } from "next/navigation";
 import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
+import { SNAPSHOT_SPACE } from "@/constants";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -109,10 +110,11 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
     heading: "No proposals found",
     description: "Start by creating a proposal",
     primaryButton: {
-      label: "Create onchain PIP",
+      label: "Create a proposal",
       iconLeft: IconType.PLUS,
       onClick: () => {
-        router.push(NewProposal.path);
+        // Redirect to Snapshot
+        router.push(`https://snapshot.org/#/${SNAPSHOT_SPACE}/proposal/new`);
       },
     },
   };

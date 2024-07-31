@@ -1,11 +1,5 @@
 import { MainSection } from "@/components/layout/mainSection";
-import { useProposalApproval } from "@/plugins/multisig/hooks/useProposalApproval";
-import { useProposalConfirmation } from "@/plugins/multisig/hooks/useProposalConfirmation";
-import { useAdvanceToNextStage } from "@/plugins/multisig/hooks/useStartProposalDelay";
-import { useUserCanApprove } from "@/plugins/multisig/hooks/useUserCanApprove";
-import { useUserCanConfirm } from "@/plugins/multisig/hooks/useUserCanConfirm";
 import { useCastSnapshotVote } from "@/plugins/snapshot/hooks/useCastSnapshotVote";
-import { type SecondaryMetadata } from "@/services/rpc/multisig/types";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -40,7 +34,6 @@ export default function ProposalDetails() {
 
   // state variables
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
-  const [secondaryMetadata, setSecondaryMetadata] = useState<SecondaryMetadata>();
 
   // fetch proposal details
   const proposalId = router.query.id as string;
@@ -65,8 +58,6 @@ export default function ProposalDetails() {
    *************************************************/
 
   // check if user can vote on the proposal
-  const { userCanApprove, queryKey: canApproveQueryKey } = useUserCanApprove(proposalVoteId);
-  const { userCanConfirm, queryKey: canConfirmQueryKey } = useUserCanConfirm(proposalVoteId);
   const { data: userCanVote } = useQuery({
     ...canVoteQueryOptions({ address: address!, proposalId, stage: ProposalStages.COMMUNITY_VOTING }),
     enabled:
@@ -97,12 +88,6 @@ export default function ProposalDetails() {
   // invalidates the queries checking if connected address can cast a vote
   const inValidateVotingEligibilityQueries = useCallback(() => {
     switch (proposal?.currentStage) {
-      case ProposalStages.COUNCIL_APPROVAL:
-        queryClient.invalidateQueries({ queryKey: canApproveQueryKey, refetchType: "all" });
-        break;
-      case ProposalStages.COUNCIL_CONFIRMATION:
-        queryClient.invalidateQueries({ queryKey: canConfirmQueryKey, refetchType: "all" });
-        break;
       case ProposalStages.COMMUNITY_VOTING:
         queryClient.invalidateQueries({
           queryKey: canVoteQueryOptions({
@@ -114,24 +99,13 @@ export default function ProposalDetails() {
         });
         break;
     }
-  }, [address, canApproveQueryKey, canConfirmQueryKey, proposal?.currentStage, proposalId, queryClient]);
+  }, [address, proposal?.currentStage, proposalId, queryClient]);
 
   /*************************************************
    *         Proposal Details Write Queries        *
    *************************************************/
-  // vote and approve proposal
-  const {
-    advanceToNextStage,
-    isConfirmed: advancementConfirmed,
-    isConfirming: confirmingNextStageAdvancement,
-  } = useAdvanceToNextStage(proposalVoteId, secondaryMetadata, invalidateProposalDetailQueries);
 
-  const { confirmProposal, isConfirming } = useProposalConfirmation(proposalVoteId, invalidateProposalDetailQueries);
   const { castVote, isConfirming: isVoting } = useCastSnapshotVote(proposalVoteId, invalidateProposalDetailQueries);
-  const { approveProposal, isConfirming: isApproving } = useProposalApproval(
-    proposalVoteId,
-    secondaryMetadata ? advanceToNextStage : invalidateProposalDetailQueries
-  );
 
   /*************************************************
    *           Synchronization Effects             *
@@ -214,38 +188,6 @@ export default function ProposalDetails() {
   /**************************************************
    *            Callbacks and Handlers              *
    **************************************************/
-  const isAdvancingToNextStage =
-    confirmingNextStageAdvancement ||
-    // transaction to advance is successful and proposal is being re-fetched
-    (advancementConfirmed && isRefetchingProposal && proposal?.currentStage === ProposalStages.COUNCIL_APPROVAL);
-
-  function getApprovalLabel(canAdvanceWithNextApproval: boolean) {
-    if (isAdvancingToNextStage) {
-      return "Advancing stage…";
-    } else if (!isConnected) {
-      return "Connect to approve";
-    } else if (isApproving) {
-      return "Approving…";
-    } else if (userCanApprove && canAdvanceWithNextApproval) {
-      return "Approve and advance";
-    } else if (userHasVoted) {
-      return "Approved";
-    } else {
-      return "Approve";
-    }
-  }
-
-  function getConfirmationLabel() {
-    if (isConfirming) {
-      return "Confirming…";
-    } else if (userHasVoted) {
-      return "Confirmed";
-    } else if (!isConnected) {
-      return "Connect to confirm";
-    } else {
-      return "Confirm";
-    }
-  }
 
   function getVoteLabel() {
     if (isVoting) {
@@ -259,20 +201,6 @@ export default function ProposalDetails() {
     }
   }
 
-  function handleApproveProposal(canAdvanceWithNextApproval: boolean) {
-    if (canAdvanceWithNextApproval) {
-      setShowAdvanceModal(true);
-    } else {
-      approveProposal();
-    }
-  }
-
-  function handleConfirmSnapshotId(snapshotProposalUrl: string) {
-    setSecondaryMetadata({ resources: [{ name: "Snapshot", url: snapshotProposalUrl }] });
-    setShowAdvanceModal(false);
-    approveProposal();
-  }
-
   function augmentStages(canAdvanceWithNextApproval: boolean) {
     const now = dayjs();
 
@@ -280,19 +208,6 @@ export default function ProposalDetails() {
       const stageNotEnded = !!stage.details?.endDate && dayjs(stage.details.endDate).isAfter(now);
 
       switch (stage.type) {
-        case ProposalStages.COUNCIL_APPROVAL:
-          return {
-            ...stage,
-            cta:
-              proposal.currentStage === ProposalStages.COUNCIL_APPROVAL && stageNotEnded
-                ? {
-                    isLoading: isApproving || isAdvancingToNextStage,
-                    disabled: !isConnected || ((!!userHasVoted || !userCanApprove) && !isAdvancingToNextStage),
-                    onClick: () => handleApproveProposal(canAdvanceWithNextApproval),
-                    label: getApprovalLabel(canAdvanceWithNextApproval),
-                  }
-                : undefined,
-          };
         case ProposalStages.COMMUNITY_VOTING:
           return {
             ...stage,
@@ -303,19 +218,6 @@ export default function ProposalDetails() {
                     disabled: !isConnected || !userCanVote,
                     onClick: castVote,
                     label: getVoteLabel(),
-                  }
-                : undefined,
-          };
-        case ProposalStages.COUNCIL_CONFIRMATION:
-          return {
-            ...stage,
-            cta:
-              proposal.currentStage === ProposalStages.COUNCIL_CONFIRMATION && stageNotEnded
-                ? {
-                    isLoading: isConfirming,
-                    disabled: !isConnected || !!userHasVoted || !userCanConfirm,
-                    onClick: confirmProposal,
-                    label: getConfirmationLabel(),
                   }
                 : undefined,
           };
@@ -372,15 +274,6 @@ export default function ProposalDetails() {
             </div>
           </div>
         </MainSection>
-
-        {/* Advance to community stage modal */}
-        {showAdvanceModal && (
-          <StageAdvancementDialog
-            open={showAdvanceModal}
-            onClose={() => setShowAdvanceModal(false)}
-            onConfirm={handleConfirmSnapshotId}
-          />
-        )}
       </>
     );
   }

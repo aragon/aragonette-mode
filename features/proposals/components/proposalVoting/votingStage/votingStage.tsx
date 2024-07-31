@@ -1,6 +1,6 @@
 import { PUB_CHAIN } from "@/constants";
 import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
-import { AccordionItem, AccordionItemContent, AccordionItemHeader, Heading, Tabs, formatterUtils } from "@aragon/ods";
+import { Tabs, formatterUtils } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -9,7 +9,6 @@ import { VotesDataList } from "../votesDataList";
 import { VotingBreakdown, type IBreakdownMajorityVotingResult, type ProposalType } from "../votingBreakdown";
 import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
 import { VotingDetails } from "../votingDetails";
-import { VotingStageStatus } from "./votingStageStatus";
 import { type VotingCta } from "../votingBreakdown/types";
 import { StageStatus } from "@/features/proposals/services/domain";
 
@@ -86,62 +85,42 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
   }, [details?.endDate]);
 
   const defaultTab = status === StageStatus.ACTIVE ? "breakdown" : "details";
-  const stageKey = `Stage ${number}`;
   const formattedSnapshotBlock = formatterUtils.formatNumber(details?.censusBlock) ?? "";
   const snapshotBlockURL = `${PUB_CHAIN.blockExplorers?.default.url}/block/${details?.censusBlock}`;
 
   return (
-    <AccordionItem
-      key={stageKey}
-      value={stageKey}
-      disabled={disabled}
-      className="border-t border-t-neutral-100 bg-neutral-0"
-    >
-      <AccordionItemHeader className="!items-start !gap-y-5">
-        <div className="flex w-full gap-x-6">
-          <div className="flex flex-1 flex-col items-start gap-y-2">
-            <Heading size="h3" className="line-clamp-1 text-left">
-              {title}
-            </Heading>
-            <VotingStageStatus status={status} endDate={relativeDate} />
+    <div className="!md:pb-0 ml-6 mr-6 border-t border-t-neutral-100 bg-neutral-0 !pb-0">
+      <RadixTabsRoot defaultValue={defaultTab} ref={setRef} className="mt-2">
+        <Tabs.List>
+          <Tabs.Trigger value="breakdown" label="Breakdown" />
+          <Tabs.Trigger value="votes" label="Votes" />
+          <Tabs.Trigger value="details" label="Details" />
+        </Tabs.List>
+        <Tabs.Content value="breakdown">
+          <div className="py-4 pb-8">
+            {result && <VotingBreakdown cta={cta} variant={variant} result={result} proposalId={proposalId} />}
           </div>
-          <span className="hidden leading-tight text-neutral-500 sm:block">{stageKey}</span>
-        </div>
-      </AccordionItemHeader>
-
-      <AccordionItemContent ref={contentRef} className="!md:pb-0 !pb-0">
-        <RadixTabsRoot defaultValue={defaultTab} ref={setRef}>
-          <Tabs.List>
-            <Tabs.Trigger value="breakdown" label="Breakdown" />
-            <Tabs.Trigger value="votes" label="Votes" />
-            <Tabs.Trigger value="details" label="Details" />
-          </Tabs.List>
-          <Tabs.Content value="breakdown">
-            <div className="py-4 pb-8">
-              {result && <VotingBreakdown cta={cta} variant={variant} result={result} proposalId={proposalId} />}
-            </div>
-          </Tabs.Content>
-          <Tabs.Content value="votes">
-            <div className="py-4 pb-8">
-              <VotesDataList proposalId={proposalId} stageTitle={title as ProposalStages} />
-            </div>
-          </Tabs.Content>
-          <Tabs.Content value="details">
-            <div className="py-4 pb-8">
-              {details && (
-                <VotingDetails
-                  snapshotBlock={formattedSnapshotBlock}
-                  startDate={details.startDate}
-                  endDate={details.endDate}
-                  snapshotBlockURL={snapshotBlockURL}
-                  strategy={details.strategy}
-                  options={details.options}
-                />
-              )}
-            </div>
-          </Tabs.Content>
-        </RadixTabsRoot>
-      </AccordionItemContent>
-    </AccordionItem>
+        </Tabs.Content>
+        <Tabs.Content value="votes">
+          <div className="py-4 pb-8">
+            <VotesDataList proposalId={proposalId} stageTitle={title as ProposalStages} />
+          </div>
+        </Tabs.Content>
+        <Tabs.Content value="details">
+          <div className="py-4 pb-8">
+            {details && (
+              <VotingDetails
+                snapshotBlock={formattedSnapshotBlock}
+                startDate={details.startDate}
+                endDate={details.endDate}
+                snapshotBlockURL={snapshotBlockURL}
+                strategy={details.strategy}
+                options={details.options}
+              />
+            )}
+          </div>
+        </Tabs.Content>
+      </RadixTabsRoot>
+    </div>
   );
 };

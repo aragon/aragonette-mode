@@ -3,10 +3,10 @@ import Link from "next/link";
 import React from "react";
 import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { type INavLink } from "../nav/navLink";
-import { Dashboard, Learn, Members, Proposals } from "../nav/routes";
+import { Dashboard, Proposals } from "../nav/routes";
 
 export const Footer: React.FC = () => {
-  const navLinks: INavLink[] = [Dashboard, Proposals, Members, Learn];
+  const navLinks: INavLink[] = [Dashboard, Proposals];
 
   return (
     <div className="flex w-full flex-row border-t border-t-neutral-100 bg-neutral-0 p-4 md:p-0 xl:h-20">
