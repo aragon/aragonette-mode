@@ -1,7 +1,7 @@
 import { PUB_TOKEN_SYMBOL } from "@/constants";
 import { ProposalStages } from "@/features/proposals/services";
 import { proposalVotes } from "@/features/proposals/services/query-options";
-import { AvatarIcon, IconType, NumberFormat, formatterUtils } from "@aragon/ods";
+import { NumberFormat, formatterUtils } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { type ContentType } from "recharts/types/component/Tooltip";
@@ -58,8 +58,8 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
           <AreaChart data={dataPoints} className="" margin={{ left: -12 }}>
             <defs>
               <linearGradient id="colorpercentage" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#7B3FE4" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#7B3FE4" stopOpacity={0} />
+                <stop offset="0%" stopColor="#e0fe00" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#e0fe00" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
