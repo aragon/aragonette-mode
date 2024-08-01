@@ -31,7 +31,7 @@ export const HeaderDao = () => {
           <div className="flex flex-col gap-y-6 md:w-4/5">
             <h1 className="text-4xl leading-tight text-neutral-800 md:text-5xl">Welcome to the Mode Community</h1>
             <p className="text-2xl leading-normal text-neutral-600">
-              The Mode Governance Hub is the home for Mode token holders to create proposals, vote, and participate in
+              The Mode Governance Hub is the home for the Mode community to participate in Mode&apos;s evolving
               Governance. Mode builds infrastructure, assets, and applications with a mission to bring decentralized
               finance to billions of users globally. Welcome to Mode, governed on Aragon.
             </p>

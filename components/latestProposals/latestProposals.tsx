@@ -8,9 +8,9 @@ export const LatestProposals = () => {
       <div className="flex flex-col gap-y-3">
         <Heading size="h1">Latest Proposals</Heading>
         <p className="text-base text-neutral-500">
-          <strong>Mode Improvement Proposals (MIPs)</strong> are documents that describe standards for the Mode
-          ecosystem and the processes through which the Mode community introduces, finds consensus on, and implements
-          changes to Mode Protocols.
+          <strong>Mode Improvement Proposals (MIPs)</strong> are formal proposals that outline specifications and
+          reasoning for protocol improvements. During this current phase, MIPs are created, voted upon and passed by a
+          designated council. Community feedback is welcome in Discord and more formally in the Forums.
         </p>
       </div>
       <ProposalDataList
