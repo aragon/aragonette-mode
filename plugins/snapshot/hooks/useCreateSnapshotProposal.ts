@@ -36,11 +36,11 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
   }, [isConfirming, isConfirmed]);
 
   const createProposal = async (
-    title: string,
-    body: string,
     start: Date,
     end: Date,
-    discussion: string,
+    title: string,
+    body: string = "",
+    discussion: string = "",
     choices: string[] = ["Yes", "No"]
   ) => {
     if (!title || !body || !address) {
@@ -55,6 +55,8 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
       setIsConfirming(true);
       setError(null);
 
+      const latestBlock = await snapshot.utils.getBlockNumber(provider);
+
       const receipt = await snapshotClient.proposal(provider, address, {
         space: SNAPSHOT_SPACE,
         type: "single-choice",
@@ -62,12 +64,11 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
         title,
         body,
         start: Math.floor(start.getTime() / 1000),
-        end: Math.floor(end.getTime() / 1000),
-        timestamp: Math.floor(Date.now() / 1000),
+        end: Math.floor(end.getTime() / 1000) + 60 * 1000,
         discussion,
         choices,
-        snapshot: 0,
-        plugins: "",
+        snapshot: latestBlock,
+        plugins: "{}",
       });
 
       setIsConfirmed(true);
