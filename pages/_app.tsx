@@ -7,6 +7,8 @@ import "@/pages/globals.css";
 import { PUB_API_BASE_URL, PUB_APP_DESCRIPTION, PUB_APP_NAME, PUB_BASE_URL, PUB_X_HANDLE } from "@/constants";
 import Head from "next/head";
 import { HydrationBoundary } from "@tanstack/react-query";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const generalSans = localFont({
   src: [
@@ -59,6 +61,8 @@ export default function AragonetteApp({ Component, pageProps }: any) {
         </Layout>
         <AlertContainer />
       </RootContextProvider>
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }

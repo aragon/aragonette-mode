@@ -5,6 +5,7 @@ import { checkParam } from "@/server/utils";
 import { type IError } from "@/utils/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { logger } from "@/services/logger";
+import { waitUntil } from "@vercel/functions";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<IProposal | IError>) {
   const { id } = req.query;
@@ -21,9 +22,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     if (!freshProposal) {
       return res.status(200).json(proposal);
     }
-    await proposalRepository.upsertProposal(freshProposal);
 
-    res.status(200).json(freshProposal);
+    waitUntil(proposalRepository.upsertProposal(freshProposal));
+
+    return res.status(200).json(freshProposal);
   } catch (error) {
     logger.error(`Failed to fetch proposal. ProposalId: ${parsedId}, Error:`, error);
     res.status(500).json({ error: { message: "Server error" } });
