@@ -18,6 +18,7 @@ export const snapshotProposalsQuery = `
       end
       quorum
       link
+      discussion
       snapshot
       state
       author
@@ -44,6 +45,7 @@ export const snapshotProposalQuery = `
       end
       quorum
       link
+      discussion
       snapshot
       state
       author

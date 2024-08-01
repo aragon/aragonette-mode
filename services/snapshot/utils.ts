@@ -72,6 +72,20 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     },
   ];
 
+  const resources = [
+    {
+      name: "Snapshot",
+      link: proposal.link,
+    },
+  ];
+
+  if (proposal.discussion && proposal.discussion.startsWith("http")) {
+    resources.push({
+      name: "Discussion",
+      link: proposal.discussion,
+    });
+  }
+
   return {
     mip: proposal.id,
     stageType: ProposalStages.COMMUNITY_VOTING,

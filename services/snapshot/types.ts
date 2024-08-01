@@ -8,6 +8,7 @@ export type SnapshotProposalData = {
   end: number;
   quorum: number;
   link: string;
+  discussion: string;
   snapshot: string;
   state: string;
   author: string;
