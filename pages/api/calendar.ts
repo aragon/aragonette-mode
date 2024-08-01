@@ -5,10 +5,6 @@ import { type IError, type IInfiniteDataResponse } from "@/utils/types";
 import { type calendar_v3 } from "@googleapis/calendar";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
-export const config = {
-  runtime: "edge",
-};
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IInfiniteDataResponse<calendar_v3.Schema$Event> | IError>
