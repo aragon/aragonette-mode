@@ -1,40 +1,104 @@
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, InputText, TextAreaRichText } from "@aragon/ods";
-import classNames from "classnames";
+import { Proposals } from "@/components/nav/routes";
 import { useCreateSnapshotProposal } from "@/plugins/snapshot/hooks/useCreateSnapshotProposal";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
+import { Button, InputText, RadioCard, RadioGroup, TextAreaRichText } from "@aragon/ods";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import classNames from "classnames";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { type z } from "zod";
+import { DateTimeSelector } from "../components/dateTimeSelector/dateTimeSelector";
+import { FormItem } from "../components/newProposalForm/formItem";
+import {
+  CHAR_OFFSET,
+  endSwitchValues,
+  MAX_BODY_CHAR_COUNT,
+  ProposalCreationSchema,
+  startSwitchValues,
+} from "../components/newProposalForm/types";
+import { proposalList, proposalService } from "../services";
 
 const UrlRegex = new RegExp(URL_PATTERN);
 const EmailRegex = new RegExp(EMAIL_PATTERN);
 const UrlWithProtocolRegex = new RegExp(URL_WITH_PROTOCOL_PATTERN);
 
-// defined by Snapshot
-const MAX_BODY_CHAR_COUNT = 10000;
-
-// Because output is HTML, 7 chars are taken up by default
-// for paragraph tags
-const CHAR_OFFSET = 7;
-
 export default function NewProposal() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const formValues = useForm<z.infer<typeof ProposalCreationSchema>>({
+    resolver: zodResolver(ProposalCreationSchema),
+    mode: "onTouched",
+    defaultValues: {
+      title: "",
+      body: "",
+      discussion: "",
+      startSwitch: "now",
+      endSwitch: "duration",
+      start: {
+        date: dayjs().format("YYYY-MM-DD"), // Default to today
+        time: dayjs().format("HH:mm"), // Default to current time
+      },
+      end: {
+        date: dayjs().format("YYYY-MM-DD"), // Default to today
+        time: dayjs().add(5, "minute").format("HH:mm"), // Default to current time + 5 mins
+      },
+    },
+  });
+
   const {
     control,
     setValue,
     getValues,
     register,
+    resetField,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof ProposalCreationSchema>>({
-    resolver: zodResolver(ProposalCreationSchema),
-    mode: "onTouched",
-    defaultValues: { title: "", body: "" },
+  } = formValues;
+
+  const [startSwitch, endSwitch] = useWatch({
+    control,
+    name: ["startSwitch", "endSwitch"],
   });
 
-  const { createProposal } = useCreateSnapshotProposal();
+  const [indexingStatus, setIndexingStatus] = useState<"idle" | "pending" | "success">("idle");
+
+  const onProposalSubmitted = useCallback(async () => {
+    setIndexingStatus("pending");
+    const response = await proposalService.invalidateProposals();
+
+    if (response) {
+      setIndexingStatus("success");
+      router.push(Proposals.path);
+      queryClient.invalidateQueries({ queryKey: proposalList().queryKey, refetchType: "all", type: "all" });
+    }
+  }, [queryClient, router]);
+
+  const { createProposal, isConfirming } = useCreateSnapshotProposal(onProposalSubmitted);
 
   const handleCreateProposal = async (values: z.infer<typeof ProposalCreationSchema>) => {
-    createProposal(new Date(), new Date(), values.title, values.body, values.discussion);
+    let startDate;
+    let endDate;
+    const { startSwitch, start, end } = values;
+
+    if (startSwitch === "now") {
+      startDate = new Date();
+    } else if (startSwitch === "date") {
+      startDate = new Date(`${start.date}T${start.time}`);
+    }
+
+    if (endSwitch === "duration" && startDate) {
+      endDate = new Date(startDate.valueOf() + 7 * 24 * 60 * 60 * 1000); // add week as duration: TODO: - TEMP
+    } else if (endSwitch === "date") {
+      endDate = new Date(`${end.date}T${start.date}`);
+    }
+
+    if (startDate && endDate) {
+      createProposal(startDate, endDate, values.title, values.body, values.discussion);
+    }
   };
 
   const addProtocolToLink = () => {
@@ -45,11 +109,31 @@ export default function NewProposal() {
     }
   };
 
+  const resetStartDates = () => {
+    resetField("start.date", { defaultValue: dayjs().format("YYYY-MM-DD") });
+    resetField("start.time", { defaultValue: dayjs().format("HH:mm") });
+  };
+
+  const resetEndDates = () => {
+    resetField("end.date", { defaultValue: dayjs().format("YYYY-MM-DD") });
+    resetField("end.time", { defaultValue: dayjs().add(5, "minute").format("HH:mm") });
+  };
+
+  const getCtaLabel = () => {
+    if (isConfirming) {
+      return "Creating proposal";
+    } else if (indexingStatus === "pending") {
+      return "Indexing proposal";
+    } else {
+      return "Create proposal";
+    }
+  };
+
   return (
     <main className="mx-auto flex max-w-[720px] flex-col gap-y-16 px-4 pb-20 pt-10 md:px-6">
       <InputText
         label="Title"
-        maxLength={50}
+        maxLength={100}
         helpText="Give your proposal a title"
         {...register("title")}
         {...(errors.title?.message
@@ -114,26 +198,83 @@ export default function NewProposal() {
           : {})}
       />
 
+      <FormProvider {...formValues}>
+        {/* Start Time */}
+        <div className="flex flex-col gap-y-4">
+          <FormItem
+            id="startSwitch"
+            label="Start date"
+            helpText="Define when a proposal should be open for voting. If now is selected, the proposal is immediately active after publishing."
+          >
+            <Controller
+              control={control}
+              name="startSwitch"
+              render={({ field: { onChange, ...rest } }) => (
+                <RadioGroup
+                  id="action-group"
+                  className="gap-x-6 sm:!flex-row"
+                  {...rest}
+                  onValueChange={(value) => {
+                    if (value === "date") {
+                      resetStartDates();
+                    }
+                    onChange(value);
+                  }}
+                >
+                  {startSwitchValues.map((v) => (
+                    <RadioCard key={v.label} label={v.label} value={v.value} description="" className="flex-1" />
+                  ))}
+                </RadioGroup>
+              )}
+            />
+          </FormItem>
+
+          {startSwitch === "date" && <DateTimeSelector />}
+        </div>
+
+        {/* End Time */}
+        <div className="flex flex-col gap-y-4">
+          <FormItem
+            id="endSwitch"
+            label="End date"
+            helpText="Define when your proposal should end. After the end date, there is no way to vote on the proposal."
+          >
+            <Controller
+              control={control}
+              name="endSwitch"
+              render={({ field: { onChange, ...rest } }) => (
+                <RadioGroup
+                  id="action-group"
+                  className="gap-x-6 sm:!flex-row"
+                  {...rest}
+                  onValueChange={(value) => {
+                    if (value === "date") {
+                      resetEndDates();
+                    }
+                    onChange(value);
+                  }}
+                >
+                  {endSwitchValues.map((v) => (
+                    <RadioCard key={v.label} label={v.label} value={v.value} description="" className="flex-1" />
+                  ))}
+                </RadioGroup>
+              )}
+            />
+          </FormItem>
+          {endSwitch === "date" && <DateTimeSelector prefix="end" />}
+        </div>
+      </FormProvider>
       <span>
-        <Button variant="primary" size="lg" className="!rounded-full" onClick={handleSubmit(handleCreateProposal)}>
-          Create proposal
+        <Button
+          variant="primary"
+          size="lg"
+          className="!rounded-full"
+          isLoading={isConfirming || indexingStatus === "pending"}
+          onClick={handleSubmit(handleCreateProposal)}
+        >
+          {getCtaLabel()}
         </Button>
       </span>
     </main>
   );
 }
-
-// form title, body, start time, end time
-export const ProposalCreationSchema = z.object({
-  title: z.string().min(1, { message: "Proposal title is required" }),
-  body: z
-    .string()
-    .max(MAX_BODY_CHAR_COUNT + CHAR_OFFSET, { message: "Proposal body should not exceed the 10,000 characters" })
-    .optional(),
-  discussion: z
-    .string()
-    .optional()
-    .refine((val) => !val || UrlRegex.test(val) || z.string().email().safeParse(val).success, {
-      message: "Invalid discussion link",
-    }),
-});
