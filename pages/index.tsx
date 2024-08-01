@@ -8,14 +8,27 @@ import { Button, Card, Heading } from "@aragon/ods";
 type IDashboardResource = IResource & { cta: string; primary?: boolean };
 
 const resources: IDashboardResource[] = [
-  { name: "Governance Forum", link: "0", description: "Short description", cta: "Learn more", primary: true },
   {
-    name: "Airdrop",
-    link: "https://www.mode.network/about-the-airdrop",
-    description: "Short description",
-    cta: "Join airdrop",
+    name: "Governance Forum",
+    link: "0",
+    description: "View and formally comment on proposals.",
+    cta: "Visit",
+    primary: true,
   },
-  { name: "Bridge", link: "https://app.mode.network/", description: "Short description", cta: "Bridge your assets" },
+  {
+    name: "Discussion",
+    link: "https://discord.com/invite/modenetworkofficial",
+    description:
+      "For general inquiries, active debate and discussion for all things Mode. Chat about from Governance, Building or Discovering the latest opportunities on Mode.",
+    cta: "Join Discord",
+  },
+  {
+    name: "Bridge",
+    link: "https://www.mode.network/developers",
+    description:
+      "Build on Mode: Push the limits with our community of hungry and talented builders. What innovations are you working on?",
+    cta: "Start building",
+  },
 ];
 
 export default function Home() {
