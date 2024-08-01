@@ -163,7 +163,7 @@ function transformStages(
                       voteAmount: formatterUtils.formatNumber(score.votes.toString(), {
                         format: NumberFormat.TOKEN_AMOUNT_SHORT,
                       }),
-                      votePercentage: Number((winningOption?.percentage ?? 0).toFixed(2)),
+                      votePercentage: Number((score.percentage ?? 0).toFixed(2)),
                       tokenSymbol: PUB_TOKEN_SYMBOL,
                     }))
                   : choices.map((choice) => ({
