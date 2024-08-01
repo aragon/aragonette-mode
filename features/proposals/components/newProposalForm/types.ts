@@ -89,10 +89,6 @@ export const ProposalCreationFormDefaultValues = {
 // defined by Snapshot
 export const MAX_BODY_CHAR_COUNT = 10000;
 
-// Because output is HTML, 7 chars are taken up by default
-// for paragraph tags
-export const CHAR_OFFSET = 7;
-
 export const startSwitchValues = [
   { label: "Immediately", value: "now" },
   { label: "Specific date + time", value: "date" },
@@ -108,7 +104,7 @@ export const ProposalCreationSchema = z
     title: z.string().min(1, { message: "Proposal title is required" }),
     body: z
       .string()
-      .max(MAX_BODY_CHAR_COUNT + CHAR_OFFSET, { message: "Proposal body should not exceed the 10,000 characters" })
+      .max(MAX_BODY_CHAR_COUNT, { message: "Proposal body should not exceed the 10,000 characters" })
       .optional(),
     discussion: z
       .string()

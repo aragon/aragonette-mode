@@ -14,7 +14,6 @@ import { type z } from "zod";
 import { DateTimeSelector } from "../components/dateTimeSelector/dateTimeSelector";
 import { FormItem } from "../components/newProposalForm/formItem";
 import {
-  CHAR_OFFSET,
   endSwitchValues,
   MAX_BODY_CHAR_COUNT,
   ProposalCreationSchema,
@@ -155,7 +154,7 @@ export default function NewProposal() {
         name="body"
         control={control}
         render={({ field }) => {
-          const charCount = field.value?.length ? field.value.length - CHAR_OFFSET : 0;
+          const charCount = field.value?.length ?? 0;
           return (
             <div className="flex flex-col gap-y-3">
               <TextAreaRichText
@@ -176,7 +175,7 @@ export default function NewProposal() {
               {!errors.body?.message && (
                 <p
                   className={classNames("text-xs font-normal leading-tight text-neutral-500 md:text-sm", {
-                    "animate-shake": charCount === MAX_BODY_CHAR_COUNT + CHAR_OFFSET,
+                    "animate-shake": charCount === MAX_BODY_CHAR_COUNT,
                   })}
                 >
                   {charCount}/{MAX_BODY_CHAR_COUNT}
