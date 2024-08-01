@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/update_proposals",
-      "schedule": "*/30 * * * *"
+      "schedule": "*/10 * * * *"
     }
   ]
 }
