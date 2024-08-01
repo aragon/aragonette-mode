@@ -6,12 +6,12 @@ import snapshot from "@snapshot-labs/snapshot.js";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
-export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
+export const useCreateSnapshotProposal = (onSuccess?: (id?: string) => void) => {
   const { addAlert } = useAlerts();
   const { address, connector } = useAccount();
 
   const [error, setError] = useState<Error | null>(null);
-  const [receipt, setReceipt] = useState<unknown>();
+  const [receipt, setReceipt] = useState<string>();
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
@@ -31,7 +31,7 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
         type: "success",
       });
 
-      onSuccess?.();
+      onSuccess?.(receipt);
     }
   }, [isConfirming, isConfirmed]);
 
@@ -72,8 +72,7 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
       });
 
       setIsConfirmed(true);
-      setReceipt(receipt);
-      onSuccess?.();
+      setReceipt((receipt as any).id as string);
     } catch (error) {
       setIsConfirmed(false);
       logger.error("Proposal creation failed", error);

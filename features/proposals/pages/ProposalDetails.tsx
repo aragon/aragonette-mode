@@ -278,5 +278,5 @@ export default function ProposalDetails() {
     return `An error has occurred: ${error.message}`;
   }
 
-  return "Loading...";
+  return <div className="text-neutral-500">Loading...</div>;
 }

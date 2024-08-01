@@ -1,4 +1,4 @@
-import { Proposals } from "@/components/nav/routes";
+import { ProposalDetails, Proposals } from "@/components/nav/routes";
 import { useCreateSnapshotProposal } from "@/plugins/snapshot/hooks/useCreateSnapshotProposal";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
 import { Button, InputText, RadioCard, RadioGroup, TextAreaRichText } from "@aragon/ods";
@@ -19,7 +19,7 @@ import {
   ProposalCreationSchema,
   startSwitchValues,
 } from "../components/newProposalForm/types";
-import { proposalList, proposalService } from "../services";
+import { proposal, proposalList, proposalService } from "../services";
 
 const UrlRegex = new RegExp(URL_PATTERN);
 const EmailRegex = new RegExp(EMAIL_PATTERN);
@@ -66,16 +66,20 @@ export default function NewProposal() {
 
   const [indexingStatus, setIndexingStatus] = useState<"idle" | "pending" | "success">("idle");
 
-  const onProposalSubmitted = useCallback(async () => {
-    setIndexingStatus("pending");
-    const response = await proposalService.invalidateProposals();
+  const onProposalSubmitted = useCallback(
+    async (id?: string) => {
+      setIndexingStatus("pending");
+      const response = await proposalService.invalidateProposals();
 
-    if (response) {
-      setIndexingStatus("success");
-      router.push(Proposals.path);
-      queryClient.invalidateQueries({ queryKey: proposalList().queryKey, refetchType: "all", type: "all" });
-    }
-  }, [queryClient, router]);
+      if (response && id) {
+        setIndexingStatus("success");
+        queryClient.prefetchQuery(proposal({ proposalId: id }));
+        router.push(ProposalDetails.getPath(id));
+        queryClient.invalidateQueries({ queryKey: proposalList().queryKey, refetchType: "all", type: "all" });
+      }
+    },
+    [queryClient, router]
+  );
 
   const { createProposal, isConfirming } = useCreateSnapshotProposal(onProposalSubmitted);
 
