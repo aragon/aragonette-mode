@@ -10,10 +10,6 @@ export default function CouncilPage() {
         <div className="flex flex-col gap-y-8">
           <div className="flex flex-col gap-y-6 md:w-4/5">
             <h1 className="text-4xl leading-tight text-neutral-800 md:text-5xl">Coming Soon...</h1>
-            <p className="text-2xl leading-normal text-neutral-600">
-              The Mode Council is a group of select accounts responsible for overseeing governance of the Mode DAO. This
-              page will contain the list of all council members and provide links to their onchain accounts.
-            </p>
           </div>
         </div>
       </div>
