@@ -22,9 +22,9 @@ export const HeaderDao = () => {
   return (
     <header className="relative flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
       {/* Radial gradients */}
-      <section className="absolute -top-[18px] right-[80px] -z-10 size-[320px] rounded-full bg-ellipse-34 blur-[120px]" />
-      <section className="absolute left-[68px] top-[170px] -z-10 size-[400px] rounded-full bg-ellipse-35 blur-[80px]" />
-      <section className="absolute right-[400px] top-[153px] -z-10 size-[540px] rounded-full bg-ellipse-36 blur-[120px]" />
+      <section className="absolute -top-[18px] -z-10 size-[180px] rounded-full bg-ellipse-34 blur-[120px] sm:right-[80px] sm:size-[320px]" />
+      <section className="absolute left-[68px] top-[170px] -z-10 size-[250px] rounded-full bg-ellipse-35 blur-[80px] sm:size-[400px]" />
+      <section className="absolute right-[400px] top-[153px] -z-10 hidden size-[540px] rounded-full bg-ellipse-36 blur-[120px] lg:block" />
 
       <div className="flex w-full max-w-screen-xl flex-col gap-y-8 px-4 pb-8 pt-8 md:gap-y-12 md:px-6 md:pt-16">
         <div className="flex flex-col gap-y-8">
@@ -37,11 +37,11 @@ export const HeaderDao = () => {
             </p>
           </div>
         </div>
-        <div className="flex gap-x-20 md:w-4/5">
+        <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
           {/* Proposal count */}
           {totalProposalCountFetched && totalProposals && !totalProposalsError && (
             <div className="flex flex-col gap-y-1.5">
-              <span className="text-4xl text-primary-400">
+              <span className="text-3xl text-primary-400 md:text-4xl">
                 {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
               </span>
               <span className="text-xl text-neutral-500">{totalProposals === 1 ? "Proposal" : "Proposals"}</span>
@@ -54,28 +54,11 @@ export const HeaderDao = () => {
             </div>
           )}
 
-          {/* Member count */}
-          {/* {membersFetched && !totalMembersError && ( */}
-          {/* <div className="flex flex-col gap-y-1.5">
-              <span className="text-4xl text-neutral-800">
-                {formatterUtils.formatNumber(totalMembers, { format: NumberFormat.GENERIC_SHORT })}
-              </span>
-              <span className="text-xl text-neutral-500">Members</span>
-            </div> 
-          {/* )} */}
-          {/* {membersLoading && ( */}
-          {/* <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
-            <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
-            <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
-          </div> */}
-          {/* )} */}
-
-          {/* Total supply */}
+          {/* TVL */}
           {tokenInfo && !tokenInfoError && (
             <div className="flex flex-col gap-y-1.5">
               <div className="flex items-baseline gap-x-1">
-                <span className="text-4xl text-primary-400">$500M</span>
-                {/* <span className="line-clamp-1 text-2xl text-neutral-500">{tokenInfo[1]}</span> */}
+                <span className="text-3xl text-primary-400 md:text-4xl">$500M</span>
               </div>
               <span className="text-xl text-neutral-500">TVL</span>
             </div>
@@ -86,16 +69,16 @@ export const HeaderDao = () => {
               <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
             </div>
           )}
-          {/* Total supply */}
+
+          {/* Token holders */}
           {tokenInfo && !tokenInfoError && (
             <div className="flex flex-col gap-y-1.5">
               <div className="flex items-baseline gap-x-1">
-                <span className="text-4xl text-primary-400">
+                <span className="text-3xl text-primary-400 md:text-4xl">
                   {formatterUtils.formatNumber(2000000, {
                     format: NumberFormat.GENERIC_SHORT,
                   })}
                 </span>
-                {/* <span className="line-clamp-1 text-2xl text-neutral-500">{tokenInfo[1]}</span> */}
               </div>
               <span className="text-xl text-neutral-500">Token holders</span>
             </div>

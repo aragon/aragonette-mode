@@ -14,7 +14,7 @@ export const LatestProposals = () => {
         </p>
       </div>
       <ProposalDataList
-        pageSize={4}
+        pageSize={3}
         display="overview"
         sortBy={ProposalSortBy.CreatedAt}
         sortDir={ProposalSortDir.Desc}
