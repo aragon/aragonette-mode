@@ -8,6 +8,7 @@ import {
   type ProposalType,
 } from "@aragon/ods";
 import { ProposalStages, ProposalStatus, type IProposal } from "../domain";
+import DOMPurify from "dompurify";
 
 type ProposalListItem = IProposalDataListItemStructureProps & { id: string };
 
@@ -64,7 +65,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       type,
       publisher,
       status: statusLabel,
-      summary,
+      summary: DOMPurify.sanitize(summary),
       title,
       result,
     };
