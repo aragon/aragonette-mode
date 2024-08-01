@@ -1,6 +1,8 @@
 import { MainSection } from "@/components/layout/mainSection";
+import { NewProposal } from "@/components/nav/routes";
 import { ProposalDataList } from "@/features/proposals";
-import { Heading } from "@aragon/ods";
+import { Button, Heading, IconType } from "@aragon/ods";
+import router from "next/router";
 
 export default function Proposals() {
   return (
@@ -10,6 +12,16 @@ export default function Proposals() {
           <Heading as="h1" className="line-clamp-1 flex flex-1 shrink-0">
             Mode Improvement Proposals
           </Heading>
+          <Button
+            iconLeft={IconType.PLUS}
+            size="lg"
+            className="!rounded-full"
+            onClick={() => {
+              router.push(NewProposal.path);
+            }}
+          >
+            Create proposal
+          </Button>
         </div>
         <ProposalDataList />
       </div>
