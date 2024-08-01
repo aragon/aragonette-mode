@@ -12,7 +12,7 @@ export const HeaderDao = () => {
     isFetched: totalProposalsFetched,
     error: totalProposalsError,
   } = useInfiniteQuery({
-    ...proposalList({ limit: 6, sortBy: ProposalSortBy.CreatedAt, sortDir: ProposalSortDir.Asc }),
+    ...proposalList({ limit: 6, sortBy: ProposalSortBy.CreatedAt, sortDir: ProposalSortDir.Desc }),
     select: (data) => data.pages[0].pagination.total,
   });
   const totalProposalCountFetched = totalProposalsFetched && !totalProposalsLoading;
