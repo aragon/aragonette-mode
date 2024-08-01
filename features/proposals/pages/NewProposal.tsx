@@ -1,4 +1,4 @@
-import { ProposalDetails, Proposals } from "@/components/nav/routes";
+import { ProposalDetails } from "@/components/nav/routes";
 import { useCreateSnapshotProposal } from "@/plugins/snapshot/hooks/useCreateSnapshotProposal";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
 import { Button, InputText, RadioCard, RadioGroup, TextAreaRichText } from "@aragon/ods";
@@ -95,7 +95,8 @@ export default function NewProposal() {
     }
 
     if (endSwitch === "duration" && startDate) {
-      endDate = new Date(startDate.valueOf() + 7 * 24 * 60 * 60 * 1000); // add week as duration: TODO: - TEMP
+      const week = 7 * 24 * 60 * 60 * 1000;
+      endDate = new Date(startDate.valueOf() + week);
     } else if (endSwitch === "date") {
       endDate = new Date(`${end.date}T${start.date}`);
     }
@@ -134,7 +135,8 @@ export default function NewProposal() {
   };
 
   return (
-    <main className="mx-auto flex max-w-[720px] flex-col gap-y-16 px-4 pb-20 pt-14 md:px-6">
+    <main className="mx-auto flex max-w-[720px] flex-col gap-y-10 px-4 pb-16 pt-12 md:gap-y-16 md:px-6 md:pb-20">
+      {/* CONTENT */}
       <InputText
         label="Title"
         maxLength={100}
@@ -202,6 +204,7 @@ export default function NewProposal() {
           : {})}
       />
 
+      {/* SETTINGS */}
       <FormProvider {...formValues}>
         {/* Start Time */}
         <div className="flex flex-col gap-y-4">
