@@ -48,27 +48,6 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         return await proposalRepository.upsertProposal({ ...proposal });
       })
     );
-    //for (const proposal of proposals) {
-    //  logger.info(`Upserting proposal ${proposal.id}...`);
-    //  await proposalRepository.upsertProposal({ ...proposal });
-    //}
-    // for (const proposal of proposals) {
-    //   await proposalRepository.upsertProposal({
-    //     ...proposal,
-    //   });
-    //   for (const stage of proposal.stages) {
-    //     if (!stage.voting) {
-    //       continue;
-    //     }
-    //     if (stage.status === StageStatus.ACTIVE) {
-    //       continue;
-    //     }
-    // TODO: Save to database
-    // TODO: Get from DB if it exists or update
-    // const votes = await buildVotesResponse(stage.voting.providerId, stage.type);
-    // const stageParam = printStageParam(stage.type);
-    //   }
-    // }
 
     res.status(200).json({ success: true });
   } catch (error) {

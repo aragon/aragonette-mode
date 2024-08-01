@@ -17,7 +17,7 @@ const resources: IDashboardResource[] = [
   },
   {
     name: "Discussion",
-    link: "https://www.google.com/url?q=https://discord.com/invite/modenetworkofficial&sa=D&source=docs&ust=1722506357703696&usg=AOvVaw0CQ9e7KwJHhNwQSPeDqMO5",
+    link: "https://discord.com/invite/modenetworkofficial",
     description:
       "For general inquiries, active debate and discussion for all things Mode. Chat about from Governance, Building or Discovering the latest opportunities on Mode.",
     cta: "Join Discord",
