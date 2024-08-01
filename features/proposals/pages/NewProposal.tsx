@@ -134,7 +134,7 @@ export default function NewProposal() {
   };
 
   return (
-    <main className="mx-auto flex max-w-[720px] flex-col gap-y-16 px-4 pb-20 pt-10 md:px-6">
+    <main className="mx-auto flex max-w-[720px] flex-col gap-y-16 px-4 pb-20 pt-14 md:px-6">
       <InputText
         label="Title"
         maxLength={100}
