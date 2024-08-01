@@ -2,20 +2,14 @@ import { NewProposal, ProposalDetails, Proposals } from "@/components/nav/routes
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 import { generateDataListState } from "@/utils/query";
-import {
-  Button,
-  DataList,
-  IconType,
-  ProposalDataListItemSkeleton,
-  ProposalDataListItemStructure,
-  type DataListState,
-} from "@aragon/ods";
+import { Button, DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ProposalStages, StageOrder, proposalList, voted, type IFetchProposalListParams } from "../../services";
 import { generateSortOptions, sortItems } from "./utils";
+import { ProposalDataListItemStructure } from "@/components/proposalDataListItem";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;

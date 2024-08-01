@@ -1,7 +1,8 @@
 import { ProposalDetails } from "@/components/nav/routes";
+import { TextAreaRichText } from "@/components/textAreaRichText/textAreaRichText";
 import { useCreateSnapshotProposal } from "@/plugins/snapshot/hooks/useCreateSnapshotProposal";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
-import { Button, InputText, RadioCard, RadioGroup, TextAreaRichText } from "@aragon/ods";
+import { Button, InputText, RadioCard, RadioGroup } from "@aragon/ods";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import classNames from "classnames";
