@@ -1,11 +1,10 @@
 import { PUB_TOKEN_SYMBOL } from "@/constants";
 import { ProposalStages } from "@/features/proposals/services";
 import { proposalVotes } from "@/features/proposals/services/query-options";
-import { AvatarIcon, IconType, NumberFormat, formatterUtils } from "@aragon/ods";
+import { NumberFormat, formatterUtils } from "@aragon/ods";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { type ContentType } from "recharts/types/component/Tooltip";
-import { calculateCubicRoots } from "@/utils/cubic-roots";
 
 interface IDynamicVetoRateChart {
   proposalId: string;
@@ -22,11 +21,10 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
     return null;
   }
 
-  const totalVotes = votesData?.pagination.total;
-  const totalSupply = 100; // TODO: fetch total supply
-
   let yesTotal = 0;
   let noTotal = 0;
+
+  const totalSupply = 3000000; // TODO: fetch total supply
 
   // TODO generate from backend
   const dataPoints = generateDataPoints(
@@ -41,36 +39,36 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
     totalSupply
   );
 
+  const totalVotes = yesTotal + noTotal;
+
   return (
     <div className="rounded-xl border border-neutral-100 bg-neutral-0 p-6 shadow-neutral-sm">
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-x-6">
           <div className="flex flex-1 flex-col gap-y-2">
-            <p className="text-lg leading-tight text-neutral-800">Dynamic Veto Rate</p>
-            <p className="text-base leading-tight text-neutral-500">
-              Total amount of <span className="text-neutral-800">No</span> votes required
+            <p className="text-lg leading-tight text-neutral-800">
+              Percentage of <span className="text-neutral-900">Yes</span> votes
             </p>
           </div>
           <div className="flex gap-x-2">
-            <span className="text-lg leading-tight text-neutral-800">{`≥${dataPoints[dataPoints.length - 1].minimumRate}%`}</span>
-            <AvatarIcon size="sm" icon={IconType.CLOSE} />
+            <span className="text-lg leading-tight text-neutral-800">{`${formatterUtils.formatNumber(dataPoints[dataPoints.length - 1].totalVotes / dataPoints[dataPoints.length - 1].totalSupply, { format: NumberFormat.PERCENTAGE_SHORT })}`}</span>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={254} className="">
           <AreaChart data={dataPoints} className="" margin={{ left: -12 }}>
             <defs>
-              <linearGradient id="colorMinimumRate" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#7B3FE4" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#7B3FE4" stopOpacity={0} />
+              <linearGradient id="colorpercentage" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#e0fe00" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#e0fe00" stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
               tickFormatter={(value) =>
                 `${formatterUtils.formatNumber(value, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}`
               }
-              dataKey="tokenAmount"
+              dataKey="totalVotes"
               className="text-xs"
-              domain={[dataPoints[0].tokenAmount, dataPoints[dataPoints.length - 1].tokenAmount]}
+              domain={[dataPoints[0].totalVotes, dataPoints[dataPoints.length - 1].totalVotes]}
               tickLine={false}
               axisLine={false}
               tickCount={6}
@@ -78,23 +76,23 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
             />
             <YAxis
               tickFormatter={(value) =>
-                `≥${formatterUtils.formatNumber(value / 100, { format: NumberFormat.PERCENTAGE_SHORT })}`
+                `${formatterUtils.formatNumber(value / 100, { format: NumberFormat.PERCENTAGE_SHORT })}`
               }
               className="text-xs"
-              domain={[dataPoints[0].minimumRate, dataPoints[dataPoints.length - 1].minimumRate]}
+              domain={[0, 100]}
               tickLine={false}
               axisLine={false}
               tickCount={5}
               type="number"
-              dataKey="minimumRate"
+              dataKey="percentage"
             />
             <Tooltip content={renderContent} cursor={false} />
             <Area
               type="monotone"
-              dataKey="minimumRate"
+              dataKey="percentage"
               stroke="rgb(var(--ods-color-primary-500))"
               fillOpacity={1}
-              fill="url(#colorMinimumRate)"
+              fill="url(#colorpercentage)"
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -105,10 +103,6 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
               <span className="text-neutral-800">{` of ${formatterUtils.formatNumber(totalSupply, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`}</span>
             </p>
           </div>
-          <p className="text-neutral-500">
-            The amount of participation determines the Dynamic Veto Rate. The required veto threshold increases with
-            decreasing participation (total amount of <span className="text-neutral-800">No</span> votes).
-          </p>
         </div>
       </div>
     </div>
@@ -116,69 +110,52 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
 };
 
 type VotingDataPoint = {
-  tokenAmount: number;
-  minimumRate: number;
+  totalSupply: number;
+  totalVotes: number;
+  percentage: number;
   noVotes: number;
-  neededNoVotes: number;
-  requiredNoVotesLeft: number;
+  yesVotes: number;
 };
 
 const renderContent: ContentType<string[], string> = ({ active, payload }) => {
   if (!active || !payload?.length) return undefined;
 
-  const { minimumRate, noVotes, neededNoVotes, requiredNoVotesLeft } = payload[0].payload;
+  const { percentage, noVotes, yesVotes, totalVotes } = payload[0].payload;
 
   return (
     <div className="flex flex-col gap-y-2 rounded-xl border border-primary-500 bg-neutral-0 p-3 shadow-tooltip">
       <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
-        <p className="flex-1">Minimum Rate</p>
-        <p className="font-semibold text-neutral-800">{`≥${minimumRate}%`}</p>
+        <p className="flex-1">Total votes</p>
+        <p className="font-semibold text-neutral-800">{`${formatterUtils.formatNumber(totalVotes, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}`}</p>
       </div>
       <div className="flex flex-col gap-y-[3.64px]">
         <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
-          <p className="flex-1">Needed No votes</p>
-          <p className="font-semibold text-neutral-800">{`>${formatterUtils.formatNumber(neededNoVotes, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`}</p>
+          <p className="flex-1">Yes votes</p>
+          <p className="font-semibold text-neutral-800">{`${formatterUtils.formatNumber(yesVotes, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`}</p>
         </div>
         <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
-          <p className="flex-1">Current No votes</p>
+          <p className="flex-1">No votes</p>
           <p className="font-semibold text-neutral-800">{`${formatterUtils.formatNumber(noVotes, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`}</p>
         </div>
         <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
-          <p className="flex-1">Required No votes left</p>
-          <p className="font-semibold text-neutral-800">{`>${formatterUtils.formatNumber(requiredNoVotesLeft, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`}</p>
+          <p className="flex-1">Percetage</p>
+          <p className="font-semibold text-neutral-800">{`${formatterUtils.formatNumber(percentage / 100, { format: NumberFormat.PERCENTAGE_SHORT })}`}</p>
         </div>
       </div>
     </div>
   );
 };
 
-function isProposalVetoed(noVotes: number, totalSupply: number, yesVotes: number): boolean {
-  // formula: noVotes / sqrt(totalSupply) > yesVotes / sqrt(yesVotes + noVotes)
-  return noVotes / Math.sqrt(totalSupply) > yesVotes / Math.sqrt(yesVotes + noVotes);
-}
-
-function calculateDynamicVetoRate(noVotes: number, turnout: number): number {
-  // formula: noVotes / turnout
-  return noVotes / turnout;
-}
-
-function calculateNoVotesForVeto(yesVotes: number, totalSupply: number): number {
-  // formula: no^3 + yes * no^2 - yes^2 * electorate = 0
-  return calculateCubicRoots(1, yesVotes, 0, -yesVotes * yesVotes * totalSupply)[0];
-}
-
 function generateDataPoints(votes: { yes: number; no: number }[], totalSupply: number): VotingDataPoint[] {
   const data = votes.map(({ yes, no }) => {
-    const turnout = yes + no;
-    const vetoed = isProposalVetoed(no, totalSupply, yes);
-    const noVotesForVeto = calculateNoVotesForVeto(yes, totalSupply);
+    const totalVotes = yes + no;
 
     return {
-      tokenAmount: turnout,
-      minimumRate: Math.ceil(calculateDynamicVetoRate(no, turnout) * 100),
+      totalSupply,
+      totalVotes,
+      percentage: (yes / totalVotes) * 100,
       noVotes: no,
-      neededNoVotes: noVotesForVeto,
-      requiredNoVotesLeft: vetoed || no > noVotesForVeto ? 0 : noVotesForVeto - no,
+      yesVotes: yes,
     };
   });
 

@@ -83,6 +83,7 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
           </div>
         </div>
       )}
+      <DynamicVetoRateChart proposalId={proposalId} />
       <div className="flex flex-col gap-y-3 rounded-xl border border-neutral-100 p-3 shadow-neutral-sm md:flex-row md:gap-x-6 md:p-6">
         {votingScores.map((choice, index) => (
           <div className="flex flex-1 flex-col gap-y-3 md:flex-row md:gap-x-6" key={choice.option}>
@@ -125,7 +126,6 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
           )}
         </div>
       )}
-      <DynamicVetoRateChart proposalId={proposalId} />
     </div>
   );
 };
