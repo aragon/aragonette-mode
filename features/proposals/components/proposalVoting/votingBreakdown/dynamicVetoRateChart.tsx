@@ -70,14 +70,12 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-x-6">
           <div className="flex flex-1 flex-col gap-y-2">
-            <p className="text-lg leading-tight text-neutral-800">Progress</p>
-            <p className="text-base leading-tight text-neutral-500">
-              Percentage of <span className="text-neutral-800">Yes</span> votes
+            <p className="text-lg leading-tight text-neutral-800">
+              Percentage of <span className="text-neutral-900">Yes</span> votes
             </p>
           </div>
           <div className="flex gap-x-2">
-            <span className="text-lg leading-tight text-neutral-800">{`${dataPoints[dataPoints.length - 1].percentage}%`}</span>
-            <AvatarIcon size="sm" icon={IconType.CLOSE} />
+            <span className="text-lg leading-tight text-neutral-800">{`${formatterUtils.formatNumber(dataPoints[dataPoints.length - 1].totalVotes / dataPoints[dataPoints.length - 1].totalSupply, { format: NumberFormat.PERCENTAGE_SHORT })}`}</span>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={254} className="">
@@ -102,7 +100,7 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
             />
             <YAxis
               tickFormatter={(value) =>
-                `≥${formatterUtils.formatNumber(value / 100, { format: NumberFormat.PERCENTAGE_SHORT })}`
+                `${formatterUtils.formatNumber(value / 100, { format: NumberFormat.PERCENTAGE_SHORT })}`
               }
               className="text-xs"
               domain={[0, 100]}
@@ -152,7 +150,7 @@ const renderContent: ContentType<string[], string> = ({ active, payload }) => {
     <div className="flex flex-col gap-y-2 rounded-xl border border-primary-500 bg-neutral-0 p-3 shadow-tooltip">
       <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
         <p className="flex-1">Total votes</p>
-        <p className="font-semibold text-neutral-800">{`${totalVotes}%`}</p>
+        <p className="font-semibold text-neutral-800">{`${formatterUtils.formatNumber(totalVotes, { format: NumberFormat.TOKEN_AMOUNT_SHORT })}`}</p>
       </div>
       <div className="flex flex-col gap-y-[3.64px]">
         <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
