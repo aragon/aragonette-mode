@@ -21,30 +21,6 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
     return null;
   }
 
-  votesData?.votes.push({
-    id: "0",
-    address: "0x0",
-    votingPower: Math.random() * 100000 + " " + PUB_TOKEN_SYMBOL,
-    choice: "yes",
-    justification: "Just because",
-  });
-
-  votesData?.votes.push({
-    id: "1",
-    address: "0x0",
-    votingPower: Math.random() * 100000 + " " + PUB_TOKEN_SYMBOL,
-    choice: "no",
-    justification: "Just because",
-  });
-
-  votesData?.votes.push({
-    id: "2",
-    address: "0x0",
-    votingPower: Math.random() * 100000 + " " + PUB_TOKEN_SYMBOL,
-    choice: "yes",
-    justification: "Just because",
-  });
-
   let yesTotal = 0;
   let noTotal = 0;
 
