@@ -79,7 +79,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     },
   ];
 
-  if (proposal.discussion && proposal.discussion.startsWith("http")) {
+  if (proposal.discussion?.startsWith("http")) {
     resources.push({
       name: "Discussion",
       link: proposal.discussion,
@@ -90,19 +90,14 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     mip: proposal.id,
     stageType: ProposalStages.COMMUNITY_VOTING,
     title: proposal.title,
-    description: proposal.body.substring(0, 200) + "...",
+    description: proposal.body,
     body: proposal.body,
     status,
     overallStatus,
     createdAt: new Date(proposal.created * 1000),
     creator,
     voting,
-    resources: [
-      {
-        name: "Snapshot",
-        link: proposal.link,
-      },
-    ],
+    resources,
     actions: [],
     bindings: [],
   };
