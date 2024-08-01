@@ -218,8 +218,7 @@ export default function ProposalDetails() {
                     isLoading: isVoting,
                     disabled: !isConnected || !userCanVote,
                     onClick: (choice: number, reason: string) => {
-                      castVote(choice, reason);
-                      track("proposal_vote", { proposalId });
+                      castVote(choice, reason).then(() => track("proposal_vote", { proposalId }));
                     },
                     label: getVoteLabel(),
                   }
