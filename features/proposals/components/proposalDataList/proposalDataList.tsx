@@ -31,7 +31,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
     display = "list",
     pageSize = DEFAULT_PAGE_SIZE,
     sortBy = ProposalSortBy.CreatedAt,
-    sortDir = ProposalSortDir.Asc,
+    sortDir = ProposalSortDir.Desc,
     status,
   } = props;
 
