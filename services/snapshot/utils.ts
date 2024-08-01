@@ -10,9 +10,9 @@ const computeStatus = (proposalState: string, scores: VotingScores[]): [StageSta
     case "closed":
       return evaluateVotingResult(scores);
     case "pending":
-      return [StageStatus.PENDING, ProposalStatus.ACTIVE];
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
     default:
-      return [StageStatus.PENDING, ProposalStatus.ACTIVE];
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
   }
 };
 
@@ -122,8 +122,8 @@ function evaluateVotingResult(votingData: VotingScores[]): [StageStatus, Proposa
   // Determine the result based on the counts
   // update with proper calculation
   return yesVotes > noVotes
-    ? [StageStatus.APPROVED, ProposalStatus.ACTIVE]
-    : [StageStatus.REJECTED, ProposalStatus.ACTIVE];
+    ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED]
+    : [StageStatus.REJECTED, ProposalStatus.REJECTED];
 }
 
 export function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {
