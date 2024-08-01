@@ -51,7 +51,7 @@ export const DynamicVetoRateChart: React.FC<IDynamicVetoRateChart> = (props) => 
             </p>
           </div>
           <div className="flex gap-x-2">
-            <span className="text-lg leading-tight text-neutral-800">{`${formatterUtils.formatNumber(dataPoints[dataPoints.length - 1].totalVotes / dataPoints[dataPoints.length - 1].totalSupply, { format: NumberFormat.PERCENTAGE_SHORT })}`}</span>
+            <span className="text-lg leading-tight text-neutral-800">{`${formatterUtils.formatNumber(dataPoints[dataPoints.length - 1].percentage / 100, { format: NumberFormat.PERCENTAGE_SHORT })}`}</span>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={254} className="">
