@@ -2,6 +2,7 @@ import { MainSection } from "@/components/layout/mainSection";
 import { useCastSnapshotVote } from "@/plugins/snapshot/hooks/useCastSnapshotVote";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { track } from "@vercel/analytics";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useCallback, useEffect } from "react";
@@ -13,7 +14,6 @@ import {
   ProposalAction,
   ProposalVoting,
   TransparencyReport,
-  type IBreakdownApprovalThresholdResult,
 } from "../components";
 import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
@@ -199,7 +199,7 @@ export default function ProposalDetails() {
     }
   }
 
-  function augmentStages(canAdvanceWithNextApproval: boolean) {
+  function augmentStages() {
     const now = dayjs();
 
     return proposal?.stages.flatMap((stage) => {
@@ -214,7 +214,9 @@ export default function ProposalDetails() {
                 ? {
                     isLoading: isVoting,
                     disabled: !isConnected || !userCanVote,
-                    onClick: castVote,
+                    onClick: (choice: number, reason: string) => {
+                      castVote(choice, reason).then(() => track("proposal_vote", { proposalId }));
+                    },
                     label: getVoteLabel(),
                   }
                 : undefined,
@@ -231,23 +233,10 @@ export default function ProposalDetails() {
   if (proposal) {
     // intermediate values
     const breadcrumbs = generateBreadcrumbs(router.asPath);
-    const isParentProposal = proposal.includedMips.length > 0;
     const showActions = proposal.actions.length > 0;
-    const showIncludedMIPS = isParentProposal;
 
-    // calculate whether proposal can advance with next approval
-    let canAdvanceWithNextApproval = false;
-    const isApprovalStage = proposal.currentStage === ProposalStages.COUNCIL_APPROVAL;
-    const result = proposal.stages.find((stage) => stage.type === proposal.currentStage)?.result;
+    const augmentedStages = augmentStages() ?? [];
 
-    if (result && isApprovalStage && !proposal.isEmergency) {
-      const { approvalAmount, approvalThreshold } = result as IBreakdownApprovalThresholdResult;
-      if (approvalAmount + 1 >= approvalThreshold) {
-        canAdvanceWithNextApproval = true;
-      }
-    }
-
-    const augmentedStages = augmentStages(canAdvanceWithNextApproval) ?? [];
     return (
       <>
         <HeaderProposal breadcrumbs={breadcrumbs} proposal={proposal} />
@@ -264,9 +253,6 @@ export default function ProposalDetails() {
             {/* Additional Information */}
             <div className="flex flex-col gap-y-6 md:w-[33%]">
               <CardResources resources={proposal.resources} title="Resources" />
-              {showIncludedMIPS && (
-                <CardResources resources={proposal.includedMips} title="Included MIPs" displayLink={false} />
-              )}
             </div>
           </div>
         </MainSection>

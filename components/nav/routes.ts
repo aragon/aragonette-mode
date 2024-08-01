@@ -29,3 +29,9 @@ export const PostDetail = {
   path: "/learn/:slug",
   getPath: (slug: string) => `/learn/${slug}`,
 };
+
+export const Council = {
+  name: "Council",
+  id: "council",
+  path: "/council",
+};
