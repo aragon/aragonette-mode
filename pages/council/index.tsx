@@ -10,11 +10,6 @@ export default function CouncilPage() {
         <div className="flex flex-col gap-y-8">
           <div className="flex flex-col gap-y-6 md:w-4/5">
             <h1 className="text-4xl leading-tight text-neutral-800 md:text-5xl">Coming Soon...</h1>
-            <p className="text-2xl leading-normal text-neutral-600">
-              The Mode Governance Hub is the home for the Mode community to participate in Mode&apos;s evolving
-              Governance. Mode builds infrastructure, assets, and applications with a mission to bring decentralized
-              finance to billions of users globally. Welcome to Mode, governed on Aragon.
-            </p>
           </div>
         </div>
       </div>
