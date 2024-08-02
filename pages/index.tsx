@@ -13,7 +13,6 @@ const resources: IDashboardResource[] = [
     link: "0",
     description: "View and formally comment on proposals.",
     cta: "Visit",
-    primary: true,
   },
   {
     name: "Discussion",
@@ -37,11 +36,16 @@ export default function Home() {
       <HeaderDao />
       <main className="mx-auto max-w-screen-xl">
         <div className="px-4 pb-6 pt-10 md:px-6 md:pb-20">
-          <div className="grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-6 md:gap-6">
+          <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-6 sm:grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] md:gap-6">
             {resources.map((resource) => (
-              <Card key={resource.link} className="flex flex-col gap-y-6 bg-neutral-0 p-6 shadow-neutral-md">
+              <Card
+                key={resource.link}
+                className="flex flex-col justify-between gap-y-6 bg-neutral-0 p-6 shadow-neutral-md"
+              >
                 <Heading size="h2">{resource.name}</Heading>
-                <p className="text-neutral-500">{resource.description}</p>
+                <div className="flex grow flex-col justify-start">
+                  <p className="text-neutral-500">{resource.description}</p>
+                </div>
                 <span className="flex">
                   <Button
                     href={resource.link}

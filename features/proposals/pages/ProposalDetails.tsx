@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { track } from "@vercel/analytics";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
 import {
   BodySection,
@@ -13,9 +13,7 @@ import {
   HeaderProposal,
   ProposalAction,
   ProposalVoting,
-  StageAdvancementDialog,
   TransparencyReport,
-  type IBreakdownApprovalThresholdResult,
 } from "../components";
 import { ProposalStages, ProposalStatus, StageStatus, proposalKeys } from "../services";
 import {
@@ -34,7 +32,6 @@ export default function ProposalDetails() {
   const { address, isConnected } = useAccount();
 
   // state variables
-  const [showAdvanceModal, setShowAdvanceModal] = useState(false);
 
   // fetch proposal details
   const proposalId = router.query.id as string;
@@ -248,7 +245,7 @@ export default function ProposalDetails() {
             {/* Proposal */}
             <div className="flex flex-col gap-y-6 md:w-[63%] md:shrink-0">
               {proposal.body && <BodySection body={proposal.body} />}
-              {true && <ProposalVoting stages={augmentedStages} isEmergency={!!proposal.isEmergency} />}
+              <ProposalVoting stages={augmentedStages} isEmergency={!!proposal.isEmergency} />
               {proposal.transparencyReport && <TransparencyReport report={proposal.transparencyReport} />}
               {showActions && <ProposalAction actions={proposal.actions} />}
             </div>
@@ -267,5 +264,5 @@ export default function ProposalDetails() {
     return `An error has occurred: ${error.message}`;
   }
 
-  return "Loading...";
+  return <div className="text-neutral-500">Loading...</div>;
 }

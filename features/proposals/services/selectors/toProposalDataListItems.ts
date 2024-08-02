@@ -49,7 +49,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
           ? ({
               option: winningOption?.choice,
               voteAmount: `${formatterUtils.formatNumber(winningOption?.votes?.toString() ?? 0, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} ${PUB_TOKEN_SYMBOL}`,
-              votePercentage: winningOption?.percentage ?? 0,
+              votePercentage: Number((winningOption?.percentage ?? 0).toFixed(2)),
             } as IMajorityVotingResult)
           : ({
               approvalAmount: activeStage.voting?.total_votes ?? 0,

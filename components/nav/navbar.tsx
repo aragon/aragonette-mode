@@ -7,11 +7,11 @@ import { useState } from "react";
 import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
-import { Dashboard, Proposals } from "./routes";
+import { Dashboard, Proposals, Council } from "./routes";
 
 export const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const navLinks: INavLink[] = [Dashboard, Proposals];
+  const navLinks: INavLink[] = [Dashboard, Proposals, Council];
 
   return (
     <>
