@@ -1,9 +1,17 @@
 import classNames from "classnames";
 import { createConfig, useEnsAvatar, useEnsName } from "wagmi";
-import { IWalletProps, MemberAvatar, StateSkeletonBar, addressUtils, useOdsModulesContext } from "@aragon/ods";
+import {
+  IWalletProps,
+  MemberAvatar,
+  StateSkeletonBar,
+  addressUtils,
+  ssrUtils,
+  useOdsModulesContext,
+} from "@aragon/ods";
 import { normalize } from "viem/ens";
 import { PUB_ENS_CHAIN, PUB_WEB3_ENS_ENDPOINT } from "@/constants";
 import { createClient, http } from "viem";
+import * as blockies from "blockies-ts";
 
 export const config = createConfig({
   chains: [PUB_ENS_CHAIN],
@@ -43,6 +51,13 @@ export const WalletFork: React.FC<IWalletProps> = (props) => {
     chainId: PUB_ENS_CHAIN.id,
   });
 
+  // if we can't find the avatar, we don't want to accidentally fetch the wrong
+  // one so we always have a fallback
+  const blockiesSrc =
+    user?.address && !ssrUtils.isServer()
+      ? blockies.create({ seed: addressUtils.getChecksum(user.address), scale: 8, size: 8 }).toDataURL()
+      : undefined;
+
   const { copy } = useOdsModulesContext();
 
   const buttonClassName = classNames(
@@ -74,7 +89,7 @@ export const WalletFork: React.FC<IWalletProps> = (props) => {
             ensName={user.name}
             address={user.address}
             /* Pass the resolved avatarSrc directly to the Avatar component */
-            avatarSrc={ensAvatarData as string | undefined}
+            avatarSrc={ensAvatarData ?? blockiesSrc}
           />
         </>
       )}
