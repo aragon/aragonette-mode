@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 
-const addresses: string[] = [];
+const addresses: string[] = ["0x2dB75d8404144CD5918815A44B8ac3f4DB2a7FAf"];
 
 export const useCanCreateProposal = () => {
   const { address } = useAccount();
@@ -11,7 +11,7 @@ export const useCanCreateProposal = () => {
   useEffect(() => {
     if (!address) {
       setGatingStatus("disconnected");
-    } else if (addresses.includes(address.toLowerCase())) {
+    } else if (addresses.includes(address)) {
       setGatingStatus("authorized");
     } else {
       setGatingStatus("unauthorized");
@@ -22,5 +22,6 @@ export const useCanCreateProposal = () => {
     isDisconnected: gatingStatus === "disconnected",
     isAuthorized: gatingStatus === "authorized",
     isUnAuthorized: gatingStatus === "unauthorized",
+    isAuthenticating: false,
   };
 };

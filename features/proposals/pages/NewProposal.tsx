@@ -1,5 +1,7 @@
 import { ProposalDetails } from "@/components/nav/routes";
+import { PleaseWaitSpinner } from "@/components/please-wait";
 import { TextAreaRichText } from "@/components/textAreaRichText/textAreaRichText";
+import Unauthorized from "@/components/unAuthorized/unAuthorized";
 import { useCreateSnapshotProposal } from "@/plugins/snapshot/hooks/useCreateSnapshotProposal";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
 import { AlertInline, Button, InputText, RadioCard, RadioGroup } from "@aragon/ods";
@@ -30,7 +32,7 @@ export default function NewProposal() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { isAuthorized, isDisconnected, isUnAuthorized } = useCanCreateProposal();
+  const { isAuthorized, isDisconnected, isUnAuthorized, isAuthenticating } = useCanCreateProposal();
 
   const formValues = useForm<z.infer<typeof ProposalCreationSchema>>({
     resolver: zodResolver(ProposalCreationSchema),
@@ -140,6 +142,12 @@ export default function NewProposal() {
       return "Create proposal";
     }
   };
+
+  if (isAuthenticating) {
+    return <PleaseWaitSpinner status="Checking permissions" />;
+  } else if (isUnAuthorized || isDisconnected) {
+    return <Unauthorized />;
+  }
 
   return (
     <main className="mx-auto flex max-w-[720px] flex-col gap-y-10 px-4 pb-16 pt-12 md:gap-y-16 md:px-6 md:pb-20">
