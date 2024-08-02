@@ -23,7 +23,7 @@ const resources: IDashboardResource[] = [
     cta: "Join Discord",
   },
   {
-    name: "Bridge",
+    name: "Developers",
     link: "https://www.mode.network/developers",
     description:
       "Build on Mode: Push the limits with our community of hungry and talented builders. What innovations are you working on?",

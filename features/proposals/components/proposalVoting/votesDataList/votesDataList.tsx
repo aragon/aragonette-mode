@@ -90,7 +90,7 @@ export const VotesDataList: React.FC<IVotesDataListProps> = (props) => {
         {data?.votes?.map(({ id, choice, ...otherProps }) => (
           <VotesDataListItemStructure
             {...otherProps}
-            href={`${PUB_CHAIN.blockExplorers?.default.apiUrl}/address/${otherProps.address}`}
+            href={`${PUB_CHAIN.blockExplorers?.default.url}/address/${otherProps.address}`}
             variant={choice}
             connectedAccount={address && isAddressEqual(address, otherProps.address)}
             key={id}
