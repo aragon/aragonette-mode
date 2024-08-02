@@ -43,7 +43,7 @@
     /* Success */
     --ods-color-success-100: 17 75 247;
     --ods-color-success-200: 17 75 247;
-    --ods-color-success-300: 197 243 121;
+    --ods-color-success-300: 224 254 0;
     --ods-color-success-400: 170 231 86;
     --ods-color-success-500: 132 216 36;
     --ods-color-success-600: 103 185 26;
@@ -70,7 +70,7 @@
     --ods-color-critical-500: 255 56 38;
     --ods-color-critical-600: 219 27 27;
     --ods-color-critical-700: 183 19 32;
-    --ods-color-critical-800: 108 0 62;
+    --ods-color-critical-800: 255 56 38;
     --ods-color-critical-900: 122 7 35;
 
     /* Font */

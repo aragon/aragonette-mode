@@ -170,7 +170,6 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
             className="!rounded-full"
             variant="secondary"
             size="md"
-            iconRight={IconType.CHEVRON_RIGHT}
             onClick={() => {
               router.push(Proposals.path);
             }}

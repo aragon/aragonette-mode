@@ -1,5 +1,5 @@
 import { capitalizeFirstLetter } from "@/utils/case";
-import { Button, Heading, Progress, RadioCard, RadioGroup, TextArea } from "@aragon/ods";
+import { AlertInline, Button, Heading, Progress, RadioCard, RadioGroup, TextArea } from "@aragon/ods";
 import classNames from "classnames";
 import { useState } from "react";
 import { DynamicVetoRateChart } from "./dynamicVetoRateChart";
@@ -109,15 +109,20 @@ export const BreakdownMajorityVotingResult: React.FC<IBreakdownMajorityVotingRes
       {/* Button group */}
       {cta && (
         <div className="flex w-full flex-col gap-y-4 md:flex-row md:gap-x-4">
-          <Button
-            size="md"
-            className="!rounded-full"
-            disabled={disabled}
-            onClick={handleVoteClick}
-            isLoading={cta.isLoading}
-          >
-            {label}
-          </Button>
+          <div className="flex flex-col gap-y-4">
+            <span>
+              <Button
+                size="md"
+                className="!rounded-full"
+                disabled={disabled}
+                onClick={handleVoteClick}
+                isLoading={cta.isLoading}
+              >
+                {label}
+              </Button>
+            </span>
+            {cta.alert && <AlertInline variant="warning" message={cta.alert} />}
+          </div>
 
           {showOptions && (
             <Button size="md" className="!rounded-full" onClick={() => setShowOptions(false)} variant="tertiary">

@@ -1,3 +1,6 @@
+import { councilMemberList } from "@/features/services/query-options";
+import { isAddressEqual } from "@/utils/evm";
+import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 
@@ -8,20 +11,31 @@ export const useCanCreateProposal = () => {
 
   const [gatingStatus, setGatingStatus] = useState<"disconnected" | "unauthorized" | "authorized">();
 
+  const {
+    data: councilMemberListData,
+    isLoading: councilMembersLoading,
+    isFetched: councilMembersFetched,
+  } = useQuery({
+    ...councilMemberList(),
+  });
+
   useEffect(() => {
+    const connectedAccountWhitelisted =
+      councilMembersFetched && !!councilMemberListData?.find((member) => isAddressEqual(member.address, address));
+
     if (!address) {
       setGatingStatus("disconnected");
-    } else if (addresses.includes(address)) {
+    } else if (connectedAccountWhitelisted) {
       setGatingStatus("authorized");
-    } else {
+    } else if (!connectedAccountWhitelisted) {
       setGatingStatus("unauthorized");
     }
-  }, [address]);
+  }, [address, councilMemberListData, councilMembersFetched]);
 
   return {
     isDisconnected: gatingStatus === "disconnected",
     isAuthorized: gatingStatus === "authorized",
     isUnAuthorized: gatingStatus === "unauthorized",
-    isAuthenticating: false,
+    isAuthenticating: !gatingStatus || councilMembersLoading,
   };
 };
