@@ -46,6 +46,14 @@ class ProposalService {
   async fetchProposal(params: IFetchProposalParams): Promise<IProposal> {
     const url = `${PUB_API_BASE_URL}/proposals/${params.proposalId}`;
     const response = await fetch(url);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error("Proposal not found");
+      }
+      throw new Error("An error occurred while fetching the proposal");
+    }
+
     const parsed: IProposal = await response.json();
     return parsed;
   }

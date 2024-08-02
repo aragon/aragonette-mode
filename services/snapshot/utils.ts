@@ -10,9 +10,9 @@ const computeStatus = (proposalState: string, scores: VotingScores[]): [StageSta
     case "closed":
       return evaluateVotingResult(scores);
     case "pending":
-      return [StageStatus.PENDING, ProposalStatus.ACTIVE];
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
     default:
-      return [StageStatus.PENDING, ProposalStatus.ACTIVE];
+      return [StageStatus.PENDING, ProposalStatus.PENDING];
   }
 };
 
@@ -79,7 +79,7 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     },
   ];
 
-  if (proposal.discussion && proposal.discussion.startsWith("http")) {
+  if (proposal.discussion?.startsWith("http")) {
     resources.push({
       name: "Discussion",
       link: proposal.discussion,
@@ -90,19 +90,14 @@ export function parseSnapshotProposalData(proposal: SnapshotProposalData): Propo
     mip: proposal.id,
     stageType: ProposalStages.COMMUNITY_VOTING,
     title: proposal.title,
-    description: proposal.body.substring(0, 200) + "...",
+    description: proposal.body,
     body: proposal.body,
     status,
     overallStatus,
     createdAt: new Date(proposal.created * 1000),
     creator,
     voting,
-    resources: [
-      {
-        name: "Snapshot",
-        link: proposal.link,
-      },
-    ],
+    resources,
     actions: [],
     bindings: [],
   };
@@ -127,8 +122,8 @@ function evaluateVotingResult(votingData: VotingScores[]): [StageStatus, Proposa
   // Determine the result based on the counts
   // update with proper calculation
   return yesVotes > noVotes
-    ? [StageStatus.APPROVED, ProposalStatus.ACTIVE]
-    : [StageStatus.REJECTED, ProposalStatus.ACTIVE];
+    ? [StageStatus.APPROVED, ProposalStatus.ACCEPTED]
+    : [StageStatus.REJECTED, ProposalStatus.REJECTED];
 }
 
 export function parseSnapshotVoteData(data: SnapshotVoteData[]): Vote[] {

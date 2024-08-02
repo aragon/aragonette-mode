@@ -1,18 +1,49 @@
-export default function CouncilPage() {
-  return (
-    <header className="relative flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
-      {/* Radial gradients */}
-      <section className="absolute -top-[18px] right-[80px] -z-10 size-[320px] rounded-full bg-ellipse-34 blur-[120px]" />
-      <section className="absolute left-[68px] top-[170px] -z-10 size-[400px] rounded-full bg-ellipse-35 blur-[80px]" />
-      <section className="absolute right-[400px] top-[153px] -z-10 size-[540px] rounded-full bg-ellipse-36 blur-[120px]" />
+import { CouncilDataList } from "@/components/councilDataList/councilDataList";
+import { MainSection } from "@/components/layout/mainSection";
+import { Heading, StateSkeletonBar } from "@aragon/ods";
+import { useQuery } from "@tanstack/react-query";
+import { councilMemberList } from "@/features/services/query-options";
 
-      <div className="flex w-full max-w-screen-xl flex-col gap-y-8 px-4 pb-8 pt-8 md:gap-y-12 md:px-6 md:pt-16">
-        <div className="flex flex-col gap-y-8">
-          <div className="flex flex-col gap-y-6 md:w-4/5">
-            <h1 className="text-4xl leading-tight text-neutral-800 md:text-5xl">Coming Soon...</h1>
+export default function MembersList() {
+  const { data: councilMemberListData, isLoading: councilMembersLoading } = useQuery({
+    ...councilMemberList(),
+  });
+
+  return (
+    <MainSection className="md:!px-6 md:pb-20 xl:pt-12">
+      <div className="flex w-full max-w-[1280px] flex-col gap-x-20 gap-y-8 lg:flex-row">
+        <div className="flex flex-1 flex-col gap-y-6">
+          <div className="flex flex-col items-start gap-y-6 sm:flex-row sm:items-center sm:justify-between">
+            <Heading size="h1">Council Members</Heading>
           </div>
+          <CouncilDataList />
         </div>
+        <aside className="flex w-full flex-col gap-y-4 md:max-w-[320px] md:gap-y-6">
+          <div className="flex flex-col gap-y-3">
+            <Heading size="h3">Details</Heading>
+            <p className="text-neutral-500">
+              {`The Mode Governance Council consists of a set of members who can have the power to create governance proposals, add new council members and remove existing members.`}
+            </p>
+          </div>
+          <dl className="divide-y divide-neutral-100">
+            {councilMembersLoading && (
+              <div className="flex flex-col gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <StateSkeletonBar width={"40%"} className="h-6 !bg-neutral-100" />
+                <StateSkeletonBar width={"50%"} className="h-5 !bg-neutral-100" />{" "}
+              </div>
+            )}
+
+            {councilMemberListData && (
+              <div className="flex flex-col items-baseline gap-y-2 py-3 md:gap-x-6 md:py-4">
+                <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
+                  Protocol council
+                </dt>
+                <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData.length} council members`}</dd>
+              </div>
+            )}
+          </dl>
+        </aside>
       </div>
-    </header>
+    </MainSection>
   );
 }

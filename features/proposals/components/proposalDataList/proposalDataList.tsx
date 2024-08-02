@@ -1,22 +1,15 @@
-import { ProposalDetails, Proposals } from "@/components/nav/routes";
+import { NewProposal, ProposalDetails, Proposals } from "@/components/nav/routes";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 import { generateDataListState } from "@/utils/query";
-import {
-  Button,
-  DataList,
-  IconType,
-  ProposalDataListItemSkeleton,
-  ProposalDataListItemStructure,
-  type DataListState,
-} from "@aragon/ods";
+import { Button, DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
 import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { type IFetchProposalListParams, ProposalStages, StageOrder, proposalList, voted } from "../../services";
+import { ProposalStages, StageOrder, proposalList, voted, type IFetchProposalListParams } from "../../services";
 import { generateSortOptions, sortItems } from "./utils";
-import { useRouter } from "next/navigation";
-import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
-import { SNAPSHOT_SPACE } from "@/constants";
+import { ProposalDataListItemStructure } from "@/components/proposalDataListItem";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -103,6 +96,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
     description: "Your applied filters are not matching with any results. Reset and search with other filters!",
     secondaryButton: {
       label: "Reset all filters",
+      className: "!rounded-full",
       iconLeft: IconType.RELOAD,
       onClick: () => resetFilters(),
     },
@@ -114,9 +108,9 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
     primaryButton: {
       label: "Create a proposal",
       iconLeft: IconType.PLUS,
+      className: "!rounded-full",
       onClick: () => {
-        // Redirect to Snapshot
-        router.push(`https://snapshot.org/#/${SNAPSHOT_SPACE}/proposal/new`);
+        router.push(NewProposal.path);
       },
     },
   };
@@ -127,6 +121,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
     secondaryButton: {
       label: "Reload proposals",
       iconLeft: IconType.RELOAD,
+      className: "!rounded-full",
       onClick: () => refetch(),
     },
   };

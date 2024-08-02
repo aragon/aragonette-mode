@@ -2,7 +2,7 @@ import { Collapsible } from "@/components/collapsible/collapsible";
 import { formatHexString } from "@/utils/evm";
 import { DataListItem, MemberAvatar, Tag, type IDataListItemProps, type TagVariant } from "@aragon/ods";
 import classNames from "classnames";
-import * as DOMPurify from "dompurify";
+import DOMPurify from "dompurify";
 
 export type IVotesDataListVariant = "yes" | "approve" | "no" | "abstain";
 

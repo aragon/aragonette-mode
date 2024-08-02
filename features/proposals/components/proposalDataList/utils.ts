@@ -9,29 +9,14 @@ export const generateSortOptions = (sort: string) => {
 
 export const sortItems = [
   {
-    value: `${ProposalSortBy.CreatedAt}-${ProposalSortDir.Asc}`,
-    label: "Sort by created at (ASC)",
-    type: "ASC" as const,
-  },
-  {
     value: `${ProposalSortBy.CreatedAt}-${ProposalSortDir.Desc}`,
-    label: "Sort by created at (DESC)",
+    label: "Most recent",
     type: "DESC" as const,
   },
+  { value: `${ProposalSortBy.Title}-${ProposalSortDir.Asc}`, label: "Title", type: "ASC" as const },
   {
     value: `${ProposalSortBy.Status}-${ProposalSortDir.Asc}`,
-    label: "Sort by status (ASC)",
+    label: "Proposal status",
     type: "ASC" as const,
-  },
-  {
-    value: `${ProposalSortBy.Status}-${ProposalSortDir.Desc}`,
-    label: "Sort by status (DESC)",
-    type: "DESC" as const,
-  },
-  { value: `${ProposalSortBy.Title}-${ProposalSortDir.Asc}`, label: "Sort by title (ASC)", type: "ASC" as const },
-  {
-    value: `${ProposalSortBy.Title}-${ProposalSortDir.Desc}`,
-    label: "Sort by title (DESC)",
-    type: "DESC" as const,
   },
 ];
