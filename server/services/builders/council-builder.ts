@@ -1,4 +1,4 @@
-import { COUNCIL_MEMBERS, ICouncilMemberDataListItem } from "@/council";
+import { COUNCIL_MEMBERS, type ICouncilMemberDataListItem } from "@/council";
 import { logger } from "@/services/logger";
 
 /**
