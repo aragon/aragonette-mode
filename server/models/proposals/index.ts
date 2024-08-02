@@ -150,12 +150,11 @@ const getImprovedSearch = (search?: string) => {
   if (!search) {
     return null;
   }
-  const parsedSearch = search.trim();
-  const intSearch = parseInt(parsedSearch);
-  if (Number.isNaN(intSearch)) {
-    return search;
-  }
-  return `${PROPOSAL_PREFIX}-${intSearch.toString().padStart(2, "0")}`;
+  return search
+    .trim()
+    .split(" ")
+    .filter((word) => !!word.length)
+    .join(" & ");
 };
 
 class ProposalRepository {
