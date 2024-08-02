@@ -9,7 +9,7 @@ const requestSnapshotData = async function <T>(
   variables?: Record<string, any>
 ): Promise<T> {
   try {
-    logger.info(`Fetching Snapshot data...`);
+    logger.info(`Fetching Snapshot (${func}) with query: ${query} and vars: ${JSON.stringify(variables)}`);
     return fetch(SNAPSHOT_API_URL, {
       method: "POST",
       headers: {
