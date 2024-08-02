@@ -1,5 +1,6 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { PleaseWaitSpinner } from "@/components/please-wait";
+import { NotFound } from "@/components/not-found";
 import { useCastSnapshotVote } from "@/plugins/snapshot/hooks/useCastSnapshotVote";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -266,7 +267,12 @@ export default function ProposalDetails() {
   }
 
   if (error) {
-    return `An error has occurred: ${error.message}`;
+    if (error.message === "Proposal not found") {
+      return <NotFound title={error.message} message={"We couldn't find a proposal matching the given id."} />;
+    }
+    return (
+      <NotFound title="Oh no! Something went wrong" message={"An unexpected error occurred. Please try again later."} />
+    );
   }
 
   return <PleaseWaitSpinner />;
