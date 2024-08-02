@@ -1,5 +1,6 @@
-import { formatHexString } from "@/utils/evm";
+import { formatHexString, isAddressEqual } from "@/utils/evm";
 import { Link, type IPublisher } from "@aragon/ods";
+import { useAccount } from "wagmi";
 
 const MAX_PUBLISHERS_SHOWN = 3;
 
@@ -9,6 +10,7 @@ interface IPublisherProps {
 
 export const Publisher: React.FC<IPublisherProps> = (props) => {
   const { publisher } = props;
+  const { address: connectedAddress } = useAccount();
 
   const showParsedPublisher = publisher.length <= MAX_PUBLISHERS_SHOWN;
 
@@ -19,7 +21,7 @@ export const Publisher: React.FC<IPublisherProps> = (props) => {
         {showParsedPublisher === false && <button>3+ creators</button>}
         {showParsedPublisher &&
           publisher.map(({ address, name, link }, index) => {
-            const label = name ?? formatHexString(address);
+            const label = name ?? isAddressEqual(address, connectedAddress) ? "You" : formatHexString(address);
 
             return (
               <span key={label} className="truncate">

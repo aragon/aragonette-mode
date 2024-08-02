@@ -10,17 +10,18 @@ export const Proposals = {
 };
 
 export const ProposalDetails = {
-  name: "Proposal Details",
+  name: "Proposal details",
   id: "proposals-details",
   path: "/proposals/:id",
   getPath: (id: number | string) => `/proposals/${id}`,
 };
 
 export const NewProposal = {
-  name: "New Proposal",
+  name: "Create proposal",
   id: "new-proposal",
   path: "/proposals/new",
   icon: IconType.APP_PROPOSALS,
+  exitPath: "/proposals",
 };
 
 export const PostDetail = {
@@ -35,3 +36,5 @@ export const Council = {
   id: "council",
   path: "/council",
 };
+
+export const ProcessRoutes = [NewProposal];

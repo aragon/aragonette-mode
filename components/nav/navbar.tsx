@@ -7,11 +7,21 @@ import { useState } from "react";
 import { BrandingSubline } from "../brandingSubline/brandingSubline";
 import { MobileNavDialog } from "./mobileNavDialog";
 import { NavLink, type INavLink } from "./navLink";
-import { Dashboard, Proposals, Council } from "./routes";
+import { Dashboard, Proposals, Council, ProcessRoutes } from "./routes";
+import { useRouter } from "next/router";
+import { NavProcess } from "./navProcess";
 
 export const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const navLinks: INavLink[] = [Dashboard, Proposals, Council];
+
+  const { asPath: currentPath } = useRouter();
+
+  const processRoute = ProcessRoutes.find((route) => `${route.path}/` === currentPath);
+
+  if (processRoute) {
+    return <NavProcess processName={processRoute.name} exitPath={processRoute.exitPath} />;
+  }
 
   return (
     <>
