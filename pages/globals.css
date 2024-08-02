@@ -31,7 +31,8 @@
 
     /* Info */
     --ods-color-info-100: 206 236 254;
-    --ods-color-info-200: 250 1 129;
+    /* --ods-color-info-200: 250 1 129; */
+    --ods-color-info-200: 255 149 0;
     --ods-color-info-300: 108 187 253;
     --ods-color-info-400: 71 161 251;
     --ods-color-info-500: 224 254 0;
@@ -70,7 +71,7 @@
     --ods-color-critical-500: 255 56 38;
     --ods-color-critical-600: 219 27 27;
     --ods-color-critical-700: 183 19 32;
-    --ods-color-critical-800: 255 56 38;
+    --ods-color-critical-800: 255 255 255;
     --ods-color-critical-900: 122 7 35;
 
     /* Font */
