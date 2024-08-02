@@ -38,7 +38,11 @@ export default function MembersList() {
                 <dt className="line-clamp-1 shrink-0 text-lg leading-tight text-neutral-800 md:line-clamp-6 md:w-40">
                   Protocol council
                 </dt>
-                <dd className="size-full text-base leading-tight text-neutral-500">{`${councilMemberListData.length} council members`}</dd>
+                <dd className="size-full text-base leading-tight text-neutral-500">
+                  {councilMemberListData.length === 1
+                    ? `1 council member`
+                    : `${councilMemberListData.length} council members`}
+                </dd>
               </div>
             )}
           </dl>
