@@ -90,7 +90,7 @@ export const WalletFork: React.FC<IWalletProps> = (props) => {
             title={user.name ?? user.address}
             className="hidden min-w-0 max-w-24 items-center truncate md:mr-3 md:flex"
           >
-            {ensLoading ? <StateSkeletonBar size="lg" /> : resolvedUserHandle}
+            {ensLoading ? <StateSkeletonBar size="lg" className="!bg-neutral-100" /> : resolvedUserHandle}
           </div>
           <MemberAvatar
             size="lg"

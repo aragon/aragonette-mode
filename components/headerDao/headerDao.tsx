@@ -1,6 +1,4 @@
-import { PUB_TOKEN_ADDRESS } from "@/constants";
 import { proposalList } from "@/features/proposals";
-import { useTokenInfo } from "@/plugins/erc20/hooks/useTokenInfo";
 import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 import { chakraPetch } from "@/utils/fonts";
 import { formatterUtils, NumberFormat, StateSkeletonBar } from "@aragon/ods";
@@ -18,13 +16,10 @@ export const HeaderDao = () => {
   });
   const totalProposalCountFetched = totalProposalsFetched && !totalProposalsLoading;
 
-  const { data: tokenInfo, isLoading: tokenInfoLoading, error: tokenInfoError } = useTokenInfo(PUB_TOKEN_ADDRESS);
-
-  chakraPetch;
   return (
     <header className="relative flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
       {/* Radial gradients */}
-      <section className="absolute -top-[18px] -z-10 size-[180px] rounded-full bg-ellipse-37 blur-[120px] sm:right-[80px] sm:size-[320px]" />
+      <section className="absolute -top-[36px] -z-10 size-[180px] rounded-full bg-ellipse-37 blur-[120px] sm:right-[80px] sm:size-[320px]" />
       <section className="absolute left-[68px] top-[170px] -z-10 size-[250px] rounded-full bg-ellipse-38 blur-[80px] sm:size-[400px]" />
       <section className="absolute right-[400px] top-[153px] -z-10 hidden size-[540px] rounded-full bg-ellipse-39 blur-[120px] lg:block" />
 
@@ -60,49 +55,33 @@ export const HeaderDao = () => {
           )}
 
           {/* TVL */}
-          {tokenInfo && !tokenInfoError && (
-            <div className="flex flex-col">
-              <div className="flex items-baseline gap-x-1">
-                <span
-                  className="text-3xl text-primary-400 md:text-4xl"
-                  style={{ fontFamily: chakraPetch.style.fontFamily }}
-                >
-                  $500M
-                </span>
-              </div>
-              <span className="text-xl text-neutral-500">TVL</span>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-x-1">
+              <span
+                className="text-3xl text-primary-400 md:text-4xl"
+                style={{ fontFamily: chakraPetch.style.fontFamily }}
+              >
+                $500M
+              </span>
             </div>
-          )}
-          {tokenInfoLoading && (
-            <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
-              <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
-              <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
-            </div>
-          )}
+            <span className="text-xl text-neutral-500">TVL</span>
+          </div>
 
           {/* Token holders */}
-          {tokenInfo && !tokenInfoError && (
-            <div className="flex flex-col">
-              <div className="flex items-baseline gap-x-1">
-                <span
-                  className="text-3xl text-primary-400 md:text-4xl"
-                  style={{ fontFamily: chakraPetch.style.fontFamily }}
-                >
-                  {formatterUtils.formatNumber(96500, {
-                    format: NumberFormat.GENERIC_SHORT,
-                  })}
-                  +
-                </span>
-              </div>
-              <span className="text-xl text-neutral-500">Token holders</span>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-x-1">
+              <span
+                className="text-3xl text-primary-400 md:text-4xl"
+                style={{ fontFamily: chakraPetch.style.fontFamily }}
+              >
+                {formatterUtils.formatNumber(96500, {
+                  format: NumberFormat.GENERIC_SHORT,
+                })}
+                +
+              </span>
             </div>
-          )}
-          {tokenInfoLoading && (
-            <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
-              <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
-              <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
-            </div>
-          )}
+            <span className="text-xl text-neutral-500">Token holders</span>
+          </div>
         </div>
       </div>
     </header>

@@ -23,7 +23,7 @@ const config: Config = {
         "ellipse-36":
           "radial-gradient(50% 50% at 50% 50%, rgba(161, 109, 238, 0.40) 0%, rgba(213, 179, 252, 0.40) 100%)",
 
-        "ellipse-37": "radial-gradient(50% 50% at 50% 50%, rgba(224, 254, 0, 0.40) 0%, rgba(224, 254, 0, 0.80) 100%);",
+        "ellipse-37": "radial-gradient(50% 50% at 50% 50%, rgba(224, 254, 0, 0.30) 0%, rgba(224, 254, 0, 0.80) 100%);",
         "ellipse-38": "radial-gradient(50% 50% at 50% 50%, rgba(224, 254, 0, 0.20) 0%, rgba(241, 253, 210, 0.40) 100%)",
         "ellipse-39": "radial-gradient(50% 50% at 50% 50%, rgba(224, 254, 0, 0.40) 0%, rgba(224, 254, 0, 0.40) 100%);",
       },
