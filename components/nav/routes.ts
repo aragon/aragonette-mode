@@ -16,6 +16,13 @@ export const ProposalDetails = {
   getPath: (id: number | string) => `/proposals/${id}`,
 };
 
+export const NewProposal = {
+  name: "New Proposal",
+  id: "new-proposal",
+  path: "/proposals/new",
+  icon: IconType.APP_PROPOSALS,
+};
+
 export const PostDetail = {
   name: "Post",
   id: "Post",

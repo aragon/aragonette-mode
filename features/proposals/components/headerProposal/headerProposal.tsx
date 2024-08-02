@@ -12,17 +12,7 @@ interface IHeaderProposalProps {
 export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
   const {
     breadcrumbs,
-    proposal: {
-      status,
-      statusMessage,
-      title,
-      isEmergency,
-      description,
-      publisher,
-      type,
-      createdAt: startDate,
-      endDate,
-    },
+    proposal: { status, statusMessage, title, isEmergency, publisher, type, createdAt: startDate, endDate },
   } = props;
 
   const showExpirationDate = !!endDate && (status === ProposalStatus.ACTIVE || status === ProposalStatus.PENDING);
@@ -48,12 +38,11 @@ export const HeaderProposal: React.FC<IHeaderProposalProps> = (props) => {
         />
         {/* Title & description */}
         <div className="flex w-full flex-col gap-y-2">
-          <div className="flex w-full items-center gap-x-4">
+          <div className="flex w-full items-center gap-x-4 py-8">
             <Heading size="h1">{title}</Heading>
             {type && type !== "unknown" && <Tag label={type} variant="primary" />}
             {isEmergency && <Tag label="Emergency" variant="critical" />}
           </div>
-          <p className="text-lg leading-normal text-neutral-500">{description}</p>
         </div>
         {/* Metadata */}
         <div className="flex flex-wrap gap-x-10 gap-y-2">

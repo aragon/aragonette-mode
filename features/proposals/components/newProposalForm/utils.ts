@@ -13,8 +13,16 @@ import { type ProposalCreationFormData } from "./types";
 const MIN_DURATION = 4 * 7 * 24 * 60 * 60; //4 weeks in seconds
 
 export function getProposalDates(params: ProposalCreationFormData) {
-  const { startSwitch, durationSwitch, startDate, startTime, startUtc, durationDays, durationHours, durationMinutes } =
-    params;
+  const {
+    startSwitch,
+    durationSwitch,
+    start: startDate,
+    startTime,
+    startUtc,
+    durationDays,
+    durationHours,
+    durationMinutes,
+  } = params;
 
   const { days: minDays, hours: minHours, minutes: minMinutes } = getDHMFromSeconds(MIN_DURATION);
 

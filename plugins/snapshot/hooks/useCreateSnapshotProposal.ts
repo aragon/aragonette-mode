@@ -6,12 +6,12 @@ import snapshot from "@snapshot-labs/snapshot.js";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
-export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
+export const useCreateSnapshotProposal = (onSuccess?: (id?: string) => void) => {
   const { addAlert } = useAlerts();
   const { address, connector } = useAccount();
 
   const [error, setError] = useState<Error | null>(null);
-  const [receipt, setReceipt] = useState<unknown>();
+  const [receipt, setReceipt] = useState<string>();
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
@@ -31,16 +31,16 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
         type: "success",
       });
 
-      onSuccess?.();
+      onSuccess?.(receipt);
     }
   }, [isConfirming, isConfirmed]);
 
   const createProposal = async (
-    title: string,
-    body: string,
     start: Date,
     end: Date,
-    discussion: string,
+    title: string,
+    body: string = "",
+    discussion: string = "",
     choices: string[] = ["Yes", "No"]
   ) => {
     if (!title || !body || !address) {
@@ -55,6 +55,8 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
       setIsConfirming(true);
       setError(null);
 
+      const latestBlock = await snapshot.utils.getBlockNumber(provider);
+
       const receipt = await snapshotClient.proposal(provider, address, {
         space: SNAPSHOT_SPACE,
         type: "single-choice",
@@ -62,17 +64,15 @@ export const useCreateSnapshotProposal = (onSuccess?: () => void) => {
         title,
         body,
         start: Math.floor(start.getTime() / 1000),
-        end: Math.floor(end.getTime() / 1000),
-        timestamp: Math.floor(Date.now() / 1000),
+        end: Math.floor(end.getTime() / 1000) + 60 * 1000,
         discussion,
         choices,
-        snapshot: 0,
-        plugins: "",
+        snapshot: latestBlock,
+        plugins: "{}",
       });
 
       setIsConfirmed(true);
-      setReceipt(receipt);
-      onSuccess?.();
+      setReceipt((receipt as any).id as string);
     } catch (error) {
       setIsConfirmed(false);
       logger.error("Proposal creation failed", error);
