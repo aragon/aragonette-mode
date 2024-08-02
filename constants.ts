@@ -50,8 +50,10 @@ export const GOOGLE_CALENDAR_API_KEY = process.env.GOOGLE_CALENDAR_API_KEY ?? ""
 export const PUB_APP_NAME = "Mode Governance Hub";
 export const PUB_APP_DESCRIPTION = "The place for all things Mode Governance.";
 
-export const PUB_PROJECT_URL = "https://mode.technology/";
-export const PUB_WALLET_ICON = "https://avatars.githubusercontent.com/u/30753617";
+export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_URL ?? "https://gov.mode.network/";
+export const PUB_WALLET_ICON =
+  process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??
+  "https://cdn.prod.website-files.com/64c906a6ed3c4d809558853b/64d0b11158be9cdd5c89a2fe_webc.png";
 
 export const PUB_DISCORD_URL = "https://discord.com/";
 export const PUB_X_HANDLE = "0xmode";

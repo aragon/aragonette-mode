@@ -34,8 +34,10 @@ const checkEnvVar = {
   DISCORD_URL: str({ devDefault: "https://discord.com" }),
   NEXT_PUBLIC_APP_NAME: str({ devDefault: "Mode Governance Hub" }),
   NEXT_PUBLIC_APP_DESCRIPTION: str({ devDefault: "Streamlined user interface for Mode governance" }),
-  NEXT_PUBLIC_PROJECT_URL: url({ devDefault: "https://mode.technology/" }),
-  NEXT_PUBLIC_WALLET_ICON: url({ devDefault: "https://avatars.githubusercontent.com/u/30753617" }),
+  NEXT_PUBLIC_WALLET_CONNECT_PROJECT_URL: url({ devDefault: "https://gov.mode.network/" }),
+  NEXT_PUBLIC_WALLET_CONNECT_ICON: url({
+    devDefault: "https://cdn.prod.website-files.com/64c906a6ed3c4d809558853b/64d0b11158be9cdd5c89a2fe_webc.png",
+  }),
 };
 
 // Validate environment variables
