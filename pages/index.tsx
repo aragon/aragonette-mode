@@ -2,6 +2,7 @@ import { FeaturedArticles } from "@/components/featuredArticles/featuredArticles
 import { HeaderDao } from "@/components/headerDao/headerDao";
 import { LatestProposals } from "@/components/latestProposals/latestProposals";
 import { UpcomingEvents } from "@/components/upcomingEvents/upcomingEvents";
+import { PUB_DISCORD_URL } from "@/constants";
 import { type IResource } from "@/utils/types";
 import { Button, Card, Heading } from "@aragon/ods";
 
@@ -16,7 +17,7 @@ const resources: IDashboardResource[] = [
   },
   {
     name: "Discussion",
-    link: "https://discord.com/invite/modenetworkofficial",
+    link: PUB_DISCORD_URL,
     description:
       "For general inquiries, active debate and discussion for all things Mode. Chat about from Governance, Building or Discovering the latest opportunities on Mode.",
     cta: "Join Discord",

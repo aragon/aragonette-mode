@@ -55,5 +55,5 @@ export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??
   "https://cdn.prod.website-files.com/64c906a6ed3c4d809558853b/64d0b11158be9cdd5c89a2fe_webc.png";
 
-export const PUB_DISCORD_URL = "https://discord.com/";
-export const PUB_X_HANDLE = "0xmode";
+export const PUB_DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_URL ?? "https://discord.com/invite/modenetworkofficial";
+export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
