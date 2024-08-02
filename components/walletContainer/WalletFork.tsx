@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { createConfig, useEnsAvatar, useEnsName } from "wagmi";
 import {
-  IWalletProps,
+  type IWalletProps,
   MemberAvatar,
   StateSkeletonBar,
   addressUtils,
@@ -10,7 +10,7 @@ import {
 } from "@aragon/ods";
 import { normalize } from "viem/ens";
 import { PUB_ENS_CHAIN, PUB_WEB3_ENS_ENDPOINT } from "@/constants";
-import { GetEnsNameReturnType, createClient, http } from "viem";
+import { type GetEnsNameReturnType, createClient, http } from "viem";
 import * as blockies from "blockies-ts";
 
 export const config = createConfig({
