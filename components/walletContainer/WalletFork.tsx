@@ -10,7 +10,7 @@ import {
 } from "@aragon/ods";
 import { normalize } from "viem/ens";
 import { PUB_ENS_CHAIN, PUB_WEB3_ENS_ENDPOINT } from "@/constants";
-import { createClient, http } from "viem";
+import { GetEnsNameReturnType, createClient, http } from "viem";
 import * as blockies from "blockies-ts";
 
 export const config = createConfig({
@@ -22,6 +22,28 @@ export const config = createConfig({
     });
   },
 });
+
+function useAvatar(
+  address: string | undefined,
+  resolvedUserName: GetEnsNameReturnType | undefined
+): string | undefined {
+  // fetch the avatar here using the resolved handle
+  const { data: ensAvatarData } = useEnsAvatar({
+    name: resolvedUserName ? normalize(resolvedUserName) : undefined,
+    query: { enabled: resolvedUserName != null },
+    config,
+    chainId: PUB_ENS_CHAIN.id,
+  });
+
+  // if we can't find the avatar, we don't want to accidentally fetch the wrong
+  // one so we always have a fallback
+  const blockiesSrc =
+    address && !ssrUtils.isServer()
+      ? blockies.create({ seed: addressUtils.getChecksum(address), scale: 8, size: 8 }).toDataURL()
+      : undefined;
+
+  return ensAvatarData ?? blockiesSrc;
+}
 
 /**
  * A fork of Aragon ODS wallet that directly passes the AvatarSrc to the Avatar component.
@@ -41,23 +63,9 @@ export const WalletFork: React.FC<IWalletProps> = (props) => {
   });
 
   const resolvedUserName = user?.name ?? ensName;
+  const avatarSrc = useAvatar(user?.address, resolvedUserName);
+
   const resolvedUserHandle = resolvedUserName ?? addressUtils.truncateAddress(user?.address);
-
-  // fetch the avatar here using the resolved handle
-  const { data: ensAvatarData } = useEnsAvatar({
-    name: resolvedUserName ? normalize(resolvedUserName) : undefined,
-    query: { enabled: resolvedUserName != null },
-    config,
-    chainId: PUB_ENS_CHAIN.id,
-  });
-
-  // if we can't find the avatar, we don't want to accidentally fetch the wrong
-  // one so we always have a fallback
-  const blockiesSrc =
-    user?.address && !ssrUtils.isServer()
-      ? blockies.create({ seed: addressUtils.getChecksum(user.address), scale: 8, size: 8 }).toDataURL()
-      : undefined;
-
   const { copy } = useOdsModulesContext();
 
   const buttonClassName = classNames(
@@ -89,7 +97,7 @@ export const WalletFork: React.FC<IWalletProps> = (props) => {
             ensName={user.name}
             address={user.address}
             /* Pass the resolved avatarSrc directly to the Avatar component */
-            avatarSrc={ensAvatarData ?? blockiesSrc}
+            avatarSrc={avatarSrc}
           />
         </>
       )}
