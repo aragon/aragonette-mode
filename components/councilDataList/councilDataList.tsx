@@ -3,7 +3,7 @@ import { MemberDataListItemStructure } from "../memberDataListItemStructure/memb
 import { useCouncilDataList } from "./useCouncilDataList";
 import { PUB_CHAIN } from "@/constants";
 
-const blockExplorerEndpoint = (PUB_CHAIN.blockExplorers?.default.url ?? "https://etherscan.io") + "/address/";
+const blockExplorerEndpoint = `${PUB_CHAIN.blockExplorers?.default.url ?? "https://etherscan.io"}/address/`;
 const profileExplorerURL = (address: string) => blockExplorerEndpoint + address;
 
 export const CouncilDataList: React.FC = () => {
