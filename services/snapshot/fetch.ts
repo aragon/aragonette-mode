@@ -9,6 +9,7 @@ const requestSnapshotData = async function <T>(
   variables?: Record<string, any>
 ): Promise<T> {
   try {
+    logger.info(`Fetching Snapshot data...`);
     return fetch(SNAPSHOT_API_URL, {
       method: "POST",
       headers: {
