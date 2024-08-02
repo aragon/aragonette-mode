@@ -116,7 +116,7 @@ export async function buildVotesResponse(
   page: number,
   limit: number
 ): Promise<IPaginatedResponse<IProposalVote>> {
-  logger.info(`Fetching votes for proposalId (${votingData.providerId}-${proposalStage})...`);
+  logger.info(`Building votes for proposalId (${votingData.providerId}-${proposalStage})...`);
   const proposalVotes = await getProposalVotes(votingData.providerId, votingData.choices, proposalStage, page, limit);
 
   return {
@@ -130,7 +130,7 @@ export async function buildVotedResponse(
   proposalStage: ProposalStages,
   voter: Address
 ): Promise<IVoted> {
-  logger.info(`Fetching votes for proposalId (${votingData.providerId}-${proposalStage})...`);
+  logger.info(`Building votes for proposalId (${votingData.providerId}-${proposalStage})...`);
   const voterVotes = await getVoterVotes(votingData.providerId, votingData.choices, proposalStage, voter);
 
   return {
@@ -144,6 +144,6 @@ export async function buildVotingPowerResponse(
   address: string,
   proposalId?: string
 ): Promise<number> {
-  logger.info(`Fetching voting power for address (${address}) in proposal (${proposalId}-${stage})...`);
+  logger.info(`Buildeing voting power for address (${address}) in proposal (${proposalId}-${stage})...`);
   return getVotingPower(stage, address, proposalId);
 }

@@ -26,16 +26,16 @@ export default async function handler() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 20,
+            gap: 30,
           }}
         >
           <svg
             version="1.1"
             id="Layer_1"
             x="0px"
-            width="640"
-            height="124"
             y="0px"
+            width="880.2px"
+            height="215.6px"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1760.4 431.2"
             xmlSpace="preserve"
@@ -61,7 +61,7 @@ export default async function handler() {
               gap: 20,
             }}
           >
-            <span style={{ fontSize: 64, color: "#fff" }}>Governed on</span>
+            <span style={{ fontSize: 64, color: "#fff", paddingLeft: "45px" }}>Governed on</span>
             <svg width="388" height="96" viewBox="0 0 97 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
