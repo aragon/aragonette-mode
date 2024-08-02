@@ -1,40 +1,25 @@
-import {
-  Avatar,
-  Breadcrumbs,
-  Heading,
-  type IBreadcrumbsLink,
-  StateSkeletonBar,
-  StateSkeletonCircular,
-} from "@aragon/ods";
+import { Avatar, Heading, StateSkeletonBar, StateSkeletonCircular } from "@aragon/ods";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
-import { generateBreadcrumbs } from "../../../../utils/nav";
 import { postDetailQueryOptions } from "../../services/posts/query-options";
 
 export const HeaderPost: React.FC = () => {
   const {
     query: { slug },
-    asPath,
   } = useRouter();
-  const breadcrumbs = generateBreadcrumbs(asPath);
 
   const { data: post, isLoading } = useQuery(postDetailQueryOptions({ slug: slug as string }));
 
   if (isLoading) {
-    return <HeaderPostLoader breadcrumbs={breadcrumbs} />;
+    return <HeaderPostLoader />;
   }
 
   return (
     <div className="flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
       <div className="flex w-full max-w-screen-lg flex-col gap-y-6 px-4 pb-6 pt-6 md:gap-y-10 md:pb-8 md:pt-10">
-        <Breadcrumbs
-          links={breadcrumbs.map((crumb, i) =>
-            i === breadcrumbs.length - 1 ? { ...crumb, label: crumb.label.split("-").join(" ") } : crumb
-          )}
-        />
         <div className="flex flex-col gap-y-10">
           {post?.cover_img && (
             <Image
@@ -62,15 +47,10 @@ export const HeaderPost: React.FC = () => {
   );
 };
 
-const HeaderPostLoader = ({ breadcrumbs }: { breadcrumbs: IBreadcrumbsLink[] }) => {
+const HeaderPostLoader = () => {
   return (
     <div className="flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
       <div className="flex w-full max-w-screen-lg flex-col gap-y-6 px-4 pb-6 pt-6 md:gap-y-10 md:pb-8 md:pt-10">
-        <Breadcrumbs
-          links={breadcrumbs.map((crumb, i) =>
-            i === breadcrumbs.length - 1 ? { ...crumb, label: crumb.label.split("-").join(" ") } : crumb
-          )}
-        />
         <div className="flex flex-col gap-y-10">
           <StateSkeletonBar
             className="shadow-neutral-lg mx-auto h-[200px] max-h-[422px] w-full !rounded-none !bg-neutral-100 object-cover object-center sm:!rounded-2xl md:h-[362px] lg:h-[422px]"
