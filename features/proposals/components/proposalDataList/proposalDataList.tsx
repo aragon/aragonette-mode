@@ -33,6 +33,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
     sortBy = ProposalSortBy.CreatedAt,
     sortDir = ProposalSortDir.Desc,
     status,
+    cached = false,
   } = props;
 
   const { address } = useAccount();
@@ -62,6 +63,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
       ...(activeSort ? generateSortOptions(activeSort) : {}),
       ...(debouncedQuery ? { search: debouncedQuery } : {}),
       ...(status ? { status } : {}),
+      cached,
     }),
   });
 

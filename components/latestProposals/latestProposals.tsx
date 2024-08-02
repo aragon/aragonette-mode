@@ -18,6 +18,7 @@ export const LatestProposals = () => {
         display="overview"
         sortBy={ProposalSortBy.CreatedAt}
         sortDir={ProposalSortDir.Desc}
+        cached={true}
       />
     </section>
   );

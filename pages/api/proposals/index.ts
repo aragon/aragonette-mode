@@ -7,8 +7,10 @@ import proposalRepository, {
 } from "@/server/models/proposals";
 import { buildVotingResponse } from "@/server/services/builders/proposal-builder";
 import { checkNullableParam } from "@/server/utils";
+import Cache from "@/services/cache/VercelCache";
 import { logger } from "@/services/logger";
 import { type IError, type IPaginatedResponse } from "@/utils/types";
+import { waitUntil } from "@vercel/functions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -16,7 +18,7 @@ export default async function handler(
   res: NextApiResponse<IPaginatedResponse<IProposal> | IError>
 ) {
   try {
-    const { page, limit, sortBy, sortDir, search, status, type } = req.query;
+    const { page, limit, sortBy, sortDir, search, status, type, cached } = req.query;
 
     const parsedPage = checkNullableParam(page, "page");
     const parsedLimit = checkNullableParam(limit, "limit");
@@ -25,6 +27,7 @@ export default async function handler(
     const parsedSearch = checkNullableParam(search, "search");
     const parsedStatus = checkNullableParam(status, "status");
     const parsedType = checkNullableParam(type, "type");
+    const parsedCached = checkNullableParam(cached, "cached");
 
     let pageInt = parseInt(parsedPage ?? "1", 10);
     let limitInt = parseInt(parsedLimit ?? "10", 10);
@@ -32,6 +35,7 @@ export default async function handler(
     const typedSortBy = parseProposalSortBy(parsedSortBy);
     const typedSortDir = parseProposalSortDir(parsedSortDir);
     const typedStatus = parseProposalStatus(parsedStatus);
+    const typedCached = parsedCached === "true";
 
     if (isNaN(limitInt) || limitInt < 1 || limitInt > 100) {
       limitInt = 10;
@@ -39,6 +43,17 @@ export default async function handler(
 
     if (isNaN(pageInt) || pageInt < 1) {
       pageInt = 1;
+    }
+
+    const cacheKey = `proposals-${pageInt}-${limitInt}-${typedSortBy}-${typedSortDir}-${parsedSearch}-${typedStatus}-${parsedType}`;
+    const cache = new Cache();
+
+    if (typedCached) {
+      const cachedProposals: any = await cache.get(cacheKey);
+
+      if (cachedProposals) {
+        return res.status(200).json(cachedProposals);
+      }
     }
 
     const paginatedProposals = await proposalRepository.getProposals(
@@ -64,6 +79,8 @@ export default async function handler(
         }
       }
     }
+
+    waitUntil(cache.set(cacheKey, paginatedProposals, 60));
 
     res.status(200).json(paginatedProposals);
   } catch (error) {
