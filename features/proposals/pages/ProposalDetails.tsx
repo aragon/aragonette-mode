@@ -1,5 +1,6 @@
 import { MainSection } from "@/components/layout/mainSection";
 import { NotFound } from "@/components/not-found";
+import { PleaseWaitSpinner } from "@/components/please-wait";
 import { useCastSnapshotVote } from "@/plugins/snapshot/hooks/useCastSnapshotVote";
 import { generateBreadcrumbs } from "@/utils/nav";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -219,6 +220,10 @@ export default function ProposalDetails() {
                       castVote(choice, reason).then(() => track("proposal_vote", { proposalId }));
                     },
                     label: getVoteLabel(),
+                    alert:
+                      isConnected && !userCanVote
+                        ? "Connected wallet did not have voting power when the proposal was created"
+                        : undefined,
                   }
                 : undefined,
           };
@@ -270,5 +275,5 @@ export default function ProposalDetails() {
     );
   }
 
-  return <div className="text-neutral-500">Loading...</div>;
+  return <PleaseWaitSpinner />;
 }

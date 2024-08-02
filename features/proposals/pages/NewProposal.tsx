@@ -144,7 +144,7 @@ export default function NewProposal() {
   };
 
   if (isAuthenticating) {
-    return <PleaseWaitSpinner status="Checking permissions" />;
+    return <PleaseWaitSpinner />;
   } else if (isUnAuthorized || isDisconnected) {
     return <Unauthorized />;
   }

@@ -35,4 +35,6 @@ export const COUNCIL_MEMBERS: ICouncilMemberDataListItem[] = [
     address: "0x0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
     bio: "Cryptocurrency legend and advocate for decentralized finance.",
   },
+  { address: "0x2dB75d8404144CD5918815A44B8ac3f4DB2a7FAf" },
+  { address: "0x8bF1e340055c7dE62F11229A149d3A1918de3d74" },
 ];

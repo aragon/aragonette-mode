@@ -93,7 +93,6 @@ export const EventDataList: React.FC = () => {
           className="!rounded-full"
           variant="secondary"
           size="md"
-          iconRight={IconType.CHEVRON_RIGHT}
           rel="noopener noreferrer"
           target="_blank"
           href={getSharedGoogleCalendarLink(PUB_GOOGLE_CALENDAR_CALENDAR_ID)}

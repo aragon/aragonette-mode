@@ -2,5 +2,6 @@ import { type IButtonProps } from "@aragon/ods";
 
 export type VotingCta = Pick<IButtonProps, "disabled" | "isLoading"> & {
   label?: string;
+  alert?: string;
   onClick?: (value?: number, justification?: string) => void;
 };
