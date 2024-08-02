@@ -1,29 +1,13 @@
 import { CouncilDataList } from "@/components/councilDataList/councilDataList";
 import { MainSection } from "@/components/layout/mainSection";
-import { PUB_TOKEN_SYMBOL } from "@/constants";
-import { useMetadata } from "@/hooks/useMetadata";
-import { Button, Heading, StateSkeletonBar, Toggle, ToggleGroup } from "@aragon/ods";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { useAccount } from "wagmi";
-import { councilMemberList, delegatesList } from "@/features/services/query-options";
-
-const DEFAULT_PAGE_SIZE = 12;
-
-type GovernanceBody = "council" | "delegates";
+import { Heading, StateSkeletonBar } from "@aragon/ods";
+import { useQuery } from "@tanstack/react-query";
+import { councilMemberList } from "@/features/services/query-options";
 
 export default function MembersList() {
-  const [governanceBody, setGovernanceBody] = useState<GovernanceBody>("council");
-
   const { data: councilMemberListData, isLoading: councilMembersLoading } = useQuery({
     ...councilMemberList(),
   });
-
-  const handleGovernanceBodyChange = (value: string | undefined) => {
-    if (value) {
-      setGovernanceBody(value as GovernanceBody);
-    }
-  };
 
   return (
     <MainSection className="md:!px-6 md:pb-20 xl:pt-12">
@@ -32,13 +16,13 @@ export default function MembersList() {
           <div className="flex flex-col items-start gap-y-6 sm:flex-row sm:items-center sm:justify-between">
             <Heading size="h1">Council Members</Heading>
           </div>
-          {governanceBody === "council" && <CouncilDataList />}
+          <CouncilDataList />
         </div>
         <aside className="flex w-full flex-col gap-y-4 md:max-w-[320px] md:gap-y-6">
           <div className="flex flex-col gap-y-3">
             <Heading size="h3">Details</Heading>
             <p className="text-neutral-500">
-              {`The Mode Governance Council consists of a set of members who can do stuff.`}
+              {`The Mode Governance Council consists of a set of members who can have the power to create governance proposals, add new council members and remove existing members.`}
             </p>
           </div>
           <dl className="divide-y divide-neutral-100">

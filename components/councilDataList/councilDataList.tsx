@@ -1,8 +1,10 @@
 import { DataList, MemberDataListItem } from "@aragon/ods";
 import { MemberDataListItemStructure } from "../memberDataListItemStructure/memberDataListItemStructure";
 import { useCouncilDataList } from "./useCouncilDataList";
+import { PUB_CHAIN } from "@/constants";
 
-const etherscanURL = (address: string) => "https://etherscan.io/address/" + address;
+const blockExplorerEndpoint = (PUB_CHAIN.blockExplorers?.default.url ?? "https://etherscan.io") + "/address/";
+const profileExplorerURL = (address: string) => blockExplorerEndpoint + address;
 
 export const CouncilDataList: React.FC = () => {
   const {
@@ -28,7 +30,7 @@ export const CouncilDataList: React.FC = () => {
         {councilMembers.map((member) => (
           <MemberDataListItemStructure
             key={member.address}
-            href={etherscanURL(member.address)}
+            href={profileExplorerURL(member.address)}
             target="_blank"
             {...member}
           />
