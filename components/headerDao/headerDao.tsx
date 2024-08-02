@@ -36,7 +36,7 @@ export const HeaderDao = () => {
         </div>
         <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
           {/* Proposal count */}
-          {totalProposalCountFetched && totalProposals && !totalProposalsError && (
+          {totalProposalCountFetched && totalProposals != null && !totalProposalsError && (
             <div className="flex flex-col">
               <span
                 className="text-3xl text-primary-400 md:text-4xl"
