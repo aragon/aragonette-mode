@@ -57,7 +57,7 @@ export const WalletFork: React.FC<IWalletProps> = (props) => {
 
   const { data: ensName, isLoading: ensLoading } = useEnsName({
     address: user != null ? addressUtils.getChecksum(user.address) : undefined,
-    query: { enabled: user?.name != null },
+    query: { enabled: user?.address != null },
     config,
     chainId: PUB_ENS_CHAIN.id,
   });
