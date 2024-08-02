@@ -37,7 +37,7 @@ export const COUNCIL_MEMBERS: ICouncilMemberDataListItem[] = [
   },
   { address: "0x2dB75d8404144CD5918815A44B8ac3f4DB2a7FAf" },
   { address: "0x8bF1e340055c7dE62F11229A149d3A1918de3d74" },
-  { address: " 0x35911Cc89aaBe7Af6726046823D5b678B6A1498d" },
+  { address: "0x35911Cc89aaBe7Af6726046823D5b678B6A1498d" },
   { address: "0x376c649111543C46Ce15fD3a9386b4F202A6E06c" },
   { address: "0x2777abb318C8F98470Cd5eB5d9bc9fA595c2af3A" },
 ];
