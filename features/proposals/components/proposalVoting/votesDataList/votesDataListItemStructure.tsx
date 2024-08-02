@@ -1,6 +1,14 @@
 import { Collapsible } from "@/components/collapsible/collapsible";
 import { formatHexString } from "@/utils/evm";
-import { DataListItem, MemberAvatar, Tag, type IDataListItemProps, type TagVariant } from "@aragon/ods";
+import {
+  DataListItem,
+  formatterUtils,
+  MemberAvatar,
+  NumberFormat,
+  Tag,
+  type IDataListItemProps,
+  type TagVariant,
+} from "@aragon/ods";
 import classNames from "classnames";
 import DOMPurify from "dompurify";
 
@@ -61,7 +69,7 @@ export const VotesDataListItemStructure: React.FC<IVotesDataListItemStructurePro
             {label && <Tag label={label} variant="primary" className="relative -top-2 left-1 shrink-0 capitalize" />}
           </div>
           {votingPower && (
-            <span className="line-clamp-1 text-sm leading-tight text-neutral-500">{`${votingPower} Voting power`}</span>
+            <span className="line-clamp-1 text-sm leading-tight text-neutral-500">{`${formatterUtils.formatNumber(votingPower, { format: NumberFormat.TOKEN_AMOUNT_SHORT })} Voting power`}</span>
           )}
         </div>
 
