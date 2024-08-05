@@ -23,6 +23,7 @@ const checkEnvVar = {
   NEXT_PUBLIC_IPFS_API_KEY: str(),
   NEXT_PUBLIC_API_BASE_URL: url({ devDefault: "http://localhost:3000/api" }),
   NEXT_PUBLIC_BASE_URL: url({ devDefault: "http://localhost:3000/" }),
+  AUTH_API_TOKEN: str({ devDefault: "12345" }),
   NEXT_PUBLIC_SNAPSHOT_SPACE: str(),
   SNAPSHOT_API_URL: url({ devDefault: "https://testnet.hub.snapshot.org/graphql" }),
   SNAPSHOT_API_KEY: str({ devDefault: "" }), //TODO: Optional while we don't have an API key
