@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/update_proposals",
+      "path": "/api/update-proposals-and-votes",
       "schedule": "*/10 * * * *"
     }
   ]
