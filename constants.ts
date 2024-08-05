@@ -1,8 +1,6 @@
-import { type Address } from "viem";
 import { type ChainName, getChain } from "./utils/chains";
 
 // Contract Addresses
-export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ?? "") as Address;
 export const PUB_TOKEN_SYMBOL = process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? "";
 
 // Target chain
@@ -37,10 +35,6 @@ export const SNAPSHOT_TEST_HUB = "https://testnet.hub.snapshot.org";
 // Arweave and Paragraph
 export const PUB_PARAGRAPH_PUBLICATION_SLUG = process.env.NEXT_PUBLIC_PARAGRAPH_PUBLICATION_SLUG ?? "";
 export const PUB_ARWEAVE_API_URL = process.env.NEXT_PUBLIC_ARWEAVE_API_URL ?? "";
-
-// Proposals
-export const PROPOSAL_PREFIX = process.env.PROPOSAL_PREFIX ?? "MIP";
-export const EMERGENCY_PREFIX = process.env.EMERGENCY_PREFIX ?? "SOS";
 
 // Google Calendar
 export const PUB_GOOGLE_CALENDAR_CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_CALENDAR_ID ?? "";

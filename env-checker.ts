@@ -13,7 +13,6 @@ const address = makeValidator<Address>((input: string) => {
 logger.info("Checking environment variables...");
 
 const checkEnvVar = {
-  NEXT_PUBLIC_TOKEN_ADDRESS: address(),
   NEXT_PUBLIC_TOKEN_SYMBOL: str({ devDefault: "MTTK" }),
   NEXT_PUBLIC_CHAIN_NAME: str({ devDefault: "sepolia" }), // Default to sepolia chain
   NEXT_PUBLIC_WEB3_URL_PREFIX: str(),
@@ -25,8 +24,6 @@ const checkEnvVar = {
   NEXT_PUBLIC_API_BASE_URL: url({ devDefault: "http://localhost:3000/api" }),
   NEXT_PUBLIC_BASE_URL: url({ devDefault: "http://localhost:3000/" }),
   NEXT_PUBLIC_SNAPSHOT_SPACE: str(),
-  PROPOSAL_PREFIX: str({ devDefault: "AIP" }),
-  EMERGENCY_PREFIX: str({ devDefault: "SOS" }),
   SNAPSHOT_API_URL: url({ devDefault: "https://testnet.hub.snapshot.org/graphql" }),
   SNAPSHOT_API_KEY: str({ devDefault: "" }), //TODO: Optional while we don't have an API key
   SNAPSHOT_URL: url({ devDefault: "https://testnet.snapshot.org/" }),
