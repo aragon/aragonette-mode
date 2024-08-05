@@ -10,9 +10,10 @@ type IDashboardResource = IResource & { cta: string; primary?: boolean };
 
 const resources: IDashboardResource[] = [
   {
-    name: "Community",
+    name: "Governance Forum",
     link: "https://modenetwork.notion.site",
-    description: "Contribute to the Mode community.",
+    description:
+      "Visit the Mode governance forum to see the latest developments in the community. Comment on or submit proposals for partnerships, services, or general protocol improvements.",
     cta: "Visit",
   },
   {
