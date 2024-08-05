@@ -1,4 +1,3 @@
-import { PROPOSAL_PREFIX } from "@/constants";
 import PrismaDatabase from "@/services/database/PrismaDatabase";
 import { logger } from "@/services/logger";
 import { checkPaginationParams } from "@/utils/pagination";
