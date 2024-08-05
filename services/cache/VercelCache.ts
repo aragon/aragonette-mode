@@ -1,5 +1,5 @@
-import { ICache } from "./ICache";
-import { createClient, VercelKV } from "@vercel/kv";
+import { type ICache } from "./ICache";
+import { createClient, type VercelKV } from "@vercel/kv";
 
 export default class VercelCache implements ICache {
   client: VercelKV;
@@ -28,8 +28,13 @@ export default class VercelCache implements ICache {
     }
   }
 
-  async remove(key: string): Promise<void> {
-    this.client.del(key);
+  async remove(keys_pattern: string): Promise<void> {
+    const keys = await this.client.keys(keys_pattern);
+    await Promise.all(
+      keys.map((key) => {
+        this.client.del(key);
+      })
+    );
   }
 
   async clear(): Promise<void> {

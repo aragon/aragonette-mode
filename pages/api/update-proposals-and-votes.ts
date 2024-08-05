@@ -1,6 +1,7 @@
 import { type IProposal } from "@/features/proposals";
 import proposalRepository from "@/server/models/proposals";
 import { buildProposalsResponse } from "@/server/services/builders/proposal-builder";
+import Cache from "@/services/cache/VercelCache";
 import { logger } from "@/services/logger";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -48,6 +49,17 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
         return await proposalRepository.upsertProposal({ ...proposal });
       })
     );
+
+    logger.info(`Upserted ${uniqueProposals.length} proposals successfully`);
+
+    const cache = new Cache();
+    await cache.remove("proposals-*");
+
+    logger.info("Cache cleared successfully");
+
+    await cache.set("proposals-count", uniqueProposals.length);
+
+    logger.info("Proposals count updated to", uniqueProposals.length);
 
     res.status(200).json({ success: true });
   } catch (error) {
