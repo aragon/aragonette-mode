@@ -30,7 +30,7 @@ export const PostDataListItemStructure: React.FC<IPostDataListItemStructure> = (
         <p className="line-clamp-2 text-ellipsis text-lg text-neutral-500">{subtitle}</p>
       </div>
       <div className="flex gap-x-6">
-        <span className="flex-1 text-lg leading-tight text-neutral-800">
+        <span className="flex-1 text-lg capitalize leading-tight text-neutral-800">
           {formatterUtils.formatDate(createdAt, { format: DateFormat.YEAR_MONTH_DAY })}
         </span>
         <Tag label={`#${categories[0]}`} variant="primary" />

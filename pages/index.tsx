@@ -10,9 +10,9 @@ type IDashboardResource = IResource & { cta: string; primary?: boolean };
 
 const resources: IDashboardResource[] = [
   {
-    name: "Governance Forum",
-    link: "0",
-    description: "View and formally comment on proposals.",
+    name: "Community",
+    link: "https://modenetwork.notion.site",
+    description: "Contribute to the Mode community.",
     cta: "Visit",
   },
   {
@@ -23,7 +23,7 @@ const resources: IDashboardResource[] = [
     cta: "Join Discord",
   },
   {
-    name: "Bridge",
+    name: "Developers",
     link: "https://www.mode.network/developers",
     description:
       "Build on Mode: Push the limits with our community of hungry and talented builders. What innovations are you working on?",
@@ -36,7 +36,7 @@ export default function Home() {
     <>
       <HeaderDao />
       <main className="mx-auto max-w-screen-xl">
-        <div className="px-4 pb-6 pt-10 md:px-6 md:pb-20">
+        <div className="px-4 pb-6 pt-10 md:px-6 md:pb-16">
           <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-6 sm:grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] md:gap-6">
             {resources.map((resource) => (
               <Card

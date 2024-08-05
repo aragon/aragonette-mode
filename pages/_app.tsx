@@ -10,7 +10,7 @@ import { HydrationBoundary } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const generalSans = localFont({
+const ibm = localFont({
   src: [
     {
       path: "../public/fonts/ibm/IBMPlexSans-Light.ttf",
@@ -25,13 +25,31 @@ const generalSans = localFont({
   ],
 });
 
+const chakraPetch = localFont({
+  src: [
+    {
+      path: "../public/fonts/chakra-petch/ChakraPetch-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+});
+
 export default function AragonetteApp({ Component, pageProps }: any) {
   return (
     <>
       {
         <style jsx={true} global={true}>{`
           html {
-            font-family: ${generalSans.style.fontFamily};
+            font-family: ${ibm.style.fontFamily};
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+              font-family: ${chakraPetch.style.fontFamily};
+              text-transform: uppercase;
+            }
           }
         `}</style>
       }

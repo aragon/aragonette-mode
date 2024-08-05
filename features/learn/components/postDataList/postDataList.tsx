@@ -107,7 +107,7 @@ export const PostDatList: React.FC<IPostDataListProps> = ({
       </DataList.Root>
       {showViewAll && (
         <span>
-          <Button className="!rounded-full" variant="secondary" size="md" iconRight={IconType.CHEVRON_RIGHT}>
+          <Button className="!rounded-full" variant="secondary" size="md">
             View all
           </Button>
         </span>

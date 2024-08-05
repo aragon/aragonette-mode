@@ -65,7 +65,7 @@ export function toProposalDataListItems(proposals: IProposal[]): ProposalListIte
       type,
       publisher,
       status: statusLabel,
-      summary: DOMPurify.sanitize(summary),
+      summary: DOMPurify.sanitize(summary.substring(0, 200)),
       title,
       result,
     };

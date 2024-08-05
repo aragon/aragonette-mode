@@ -38,8 +38,8 @@ export const Navbar: React.FC = () => {
               >
                 <Image
                   src="/mode-green.svg"
-                  width="164"
-                  height="32"
+                  width="120"
+                  height="36"
                   className="hidden shrink-0 sm:block"
                   alt="Mode"
                   priority={true}

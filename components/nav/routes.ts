@@ -35,6 +35,7 @@ export const Council = {
   name: "Council",
   id: "council",
   path: "/council",
+  icon: IconType.APP_MEMBERS,
 };
 
 export const ProcessRoutes = [NewProposal];

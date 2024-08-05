@@ -1,8 +1,10 @@
 import { ProposalDetails } from "@/components/nav/routes";
+import { PleaseWaitSpinner } from "@/components/please-wait";
 import { TextAreaRichText } from "@/components/textAreaRichText/textAreaRichText";
+import Unauthorized from "@/components/unAuthorized/unAuthorized";
 import { useCreateSnapshotProposal } from "@/plugins/snapshot/hooks/useCreateSnapshotProposal";
 import { EMAIL_PATTERN, URL_PATTERN, URL_WITH_PROTOCOL_PATTERN } from "@/utils/input-values";
-import { Button, InputText, RadioCard, RadioGroup } from "@aragon/ods";
+import { AlertInline, Button, InputText, RadioCard, RadioGroup } from "@aragon/ods";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -19,6 +21,7 @@ import {
   ProposalCreationSchema,
   startSwitchValues,
 } from "../components/newProposalForm/types";
+import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
 import { proposal, proposalList, proposalService } from "../services";
 
 const UrlRegex = new RegExp(URL_PATTERN);
@@ -28,6 +31,8 @@ const UrlWithProtocolRegex = new RegExp(URL_WITH_PROTOCOL_PATTERN);
 export default function NewProposal() {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { isAuthorized, isDisconnected, isUnAuthorized, isAuthenticating } = useCanCreateProposal();
 
   const formValues = useForm<z.infer<typeof ProposalCreationSchema>>({
     resolver: zodResolver(ProposalCreationSchema),
@@ -84,25 +89,27 @@ export default function NewProposal() {
   const { createProposal, isConfirming } = useCreateSnapshotProposal(onProposalSubmitted);
 
   const handleCreateProposal = async (values: z.infer<typeof ProposalCreationSchema>) => {
-    let startDate;
-    let endDate;
-    const { startSwitch, start, end } = values;
+    if (isAuthorized) {
+      let startDate;
+      let endDate;
+      const { startSwitch, start, end } = values;
 
-    if (startSwitch === "now") {
-      startDate = new Date();
-    } else if (startSwitch === "date") {
-      startDate = new Date(`${start.date}T${start.time}`);
-    }
+      if (startSwitch === "now") {
+        startDate = new Date();
+      } else if (startSwitch === "date") {
+        startDate = new Date(`${start.date}T${start.time}`);
+      }
 
-    if (endSwitch === "duration" && startDate) {
-      const week = 7 * 24 * 60 * 60 * 1000;
-      endDate = new Date(startDate.valueOf() + week);
-    } else if (endSwitch === "date") {
-      endDate = new Date(`${end.date}T${start.date}`);
-    }
+      if (endSwitch === "duration" && startDate) {
+        const week = 7 * 24 * 60 * 60 * 1000;
+        endDate = new Date(startDate.valueOf() + week);
+      } else if (endSwitch === "date") {
+        endDate = new Date(`${end.date}T${start.date}`);
+      }
 
-    if (startDate && endDate) {
-      createProposal(startDate, endDate, values.title, values.body, values.discussion);
+      if (startDate && endDate) {
+        createProposal(startDate, endDate, values.title, values.body, values.discussion);
+      }
     }
   };
 
@@ -125,7 +132,9 @@ export default function NewProposal() {
   };
 
   const getCtaLabel = () => {
-    if (isConfirming) {
+    if (isDisconnected) {
+      return "Connect to create proposal";
+    } else if (isConfirming) {
       return "Creating proposal";
     } else if (indexingStatus === "pending") {
       return "Indexing proposal";
@@ -133,6 +142,12 @@ export default function NewProposal() {
       return "Create proposal";
     }
   };
+
+  if (isAuthenticating) {
+    return <PleaseWaitSpinner />;
+  } else if (isUnAuthorized || isDisconnected) {
+    return <Unauthorized />;
+  }
 
   return (
     <main className="mx-auto flex max-w-[720px] flex-col gap-y-10 px-4 pb-16 pt-12 md:gap-y-16 md:px-6 md:pb-20">
@@ -271,17 +286,23 @@ export default function NewProposal() {
           {endSwitch === "date" && <DateTimeSelector prefix="end" />}
         </div>
       </FormProvider>
-      <span>
-        <Button
-          variant="primary"
-          size="lg"
-          className="!rounded-full"
-          isLoading={isConfirming || indexingStatus === "pending"}
-          onClick={handleSubmit(handleCreateProposal)}
-        >
-          {getCtaLabel()}
-        </Button>
-      </span>
+      <div className="flex flex-col gap-y-3">
+        <span>
+          <Button
+            variant="primary"
+            size="lg"
+            className="!rounded-full"
+            disabled={isUnAuthorized || isDisconnected}
+            isLoading={isConfirming || indexingStatus === "pending"}
+            onClick={handleSubmit(handleCreateProposal)}
+          >
+            {getCtaLabel()}
+          </Button>
+        </span>
+        {isUnAuthorized && (
+          <AlertInline message="Connected wallet is not whitelisted for proposal creation" variant="critical" />
+        )}
+      </div>
     </main>
   );
 }

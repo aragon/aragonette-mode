@@ -1,4 +1,5 @@
 import { NewProposal, ProposalDetails, Proposals } from "@/components/nav/routes";
+import { ProposalDataListItemStructure } from "@/components/proposalDataListItem";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 import { generateDataListState } from "@/utils/query";
@@ -7,9 +8,9 @@ import { useInfiniteQuery, useQueries } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import { useCanCreateProposal } from "../../hooks/useCanCreateProposal";
 import { ProposalStages, StageOrder, proposalList, voted, type IFetchProposalListParams } from "../../services";
 import { generateSortOptions, sortItems } from "./utils";
-import { ProposalDataListItemStructure } from "@/components/proposalDataListItem";
 
 const DEFAULT_PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MILLS = 500;
@@ -31,6 +32,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
 
   const { address } = useAccount();
   const router = useRouter();
+  const { isAuthorized } = useCanCreateProposal();
 
   const [activeSort, setActiveSort] = useState<string | undefined>(`${sortBy}-${sortDir}`);
   const [searchValue, setSearchValue] = useState<string>();
@@ -105,14 +107,16 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
   const emptyState = {
     heading: "No proposals found",
     description: "Start by creating a proposal",
-    primaryButton: {
-      label: "Create a proposal",
-      iconLeft: IconType.PLUS,
-      className: "!rounded-full",
-      onClick: () => {
-        router.push(NewProposal.path);
-      },
-    },
+    primaryButton: isAuthorized
+      ? {
+          label: "Create a proposal",
+          iconLeft: IconType.PLUS,
+          className: "!rounded-full",
+          onClick: () => {
+            router.push(NewProposal.path);
+          },
+        }
+      : undefined,
   };
 
   const errorState = {
@@ -168,7 +172,6 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
             className="!rounded-full"
             variant="secondary"
             size="md"
-            iconRight={IconType.CHEVRON_RIGHT}
             onClick={() => {
               router.push(Proposals.path);
             }}
