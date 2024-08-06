@@ -80,7 +80,7 @@ export default async function handler(
       }
     }
 
-    waitUntil(cache.set(cacheKey, paginatedProposals, 60));
+    waitUntil(cache.set(cacheKey, paginatedProposals, 60 * 15)); // 15 minutes
 
     res.status(200).json(paginatedProposals);
   } catch (error) {
