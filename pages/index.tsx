@@ -20,7 +20,7 @@ const resources: IDashboardResource[] = [
     name: "Discussion",
     link: PUB_DISCORD_URL,
     description:
-      "For general inquiries, active debate and discussion for all things Mode. Chat about from Governance, Building or Discovering the latest opportunities on Mode.",
+      "For general inquiries, active debate and discussion for all things Mode. Chat about Governance, Building or Discovering the latest opportunities on Mode.",
     cta: "Join Discord",
   },
   {
