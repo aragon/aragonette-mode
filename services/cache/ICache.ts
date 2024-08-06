@@ -18,7 +18,7 @@ export interface ICache {
    * Removes a value from the cache.
    * @param key The key associated with the value to remove.
    */
-  remove(key: string): Promise<void>;
+  remove(key: string): Promise<number>;
 
   /**
    * Clears the entire cache.

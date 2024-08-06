@@ -1,20 +1,8 @@
-import { proposalList } from "@/features/proposals";
-import { ProposalSortBy, ProposalSortDir } from "@/server/models/proposals";
 import { chakraPetch } from "@/utils/fonts";
-import { formatterUtils, NumberFormat, StateSkeletonBar } from "@aragon/ods";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { formatterUtils, NumberFormat } from "@aragon/ods";
 
-export const HeaderDao = () => {
-  const {
-    data: totalProposals,
-    isLoading: totalProposalsLoading,
-    isFetched: totalProposalsFetched,
-    error: totalProposalsError,
-  } = useInfiniteQuery({
-    ...proposalList({ limit: 6, sortBy: ProposalSortBy.CreatedAt, sortDir: ProposalSortDir.Desc }),
-    select: (data) => data.pages[0].pagination.total,
-  });
-  const totalProposalCountFetched = totalProposalsFetched && !totalProposalsLoading;
+export const HeaderDao = (props: any) => {
+  const totalProposals = props.count;
 
   return (
     <header className="relative flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
@@ -36,23 +24,15 @@ export const HeaderDao = () => {
         </div>
         <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
           {/* Proposal count */}
-          {totalProposalCountFetched && totalProposals != null && !totalProposalsError && (
-            <div className="flex flex-col">
-              <span
-                className="text-3xl text-primary-400 md:text-4xl"
-                style={{ fontFamily: chakraPetch.style.fontFamily }}
-              >
-                {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
-              </span>
-              <span className="text-xl text-neutral-500">{totalProposals === 1 ? "Proposal" : "Proposals"}</span>
-            </div>
-          )}
-          {totalProposalsLoading && (
-            <div className="flex w-24 flex-col justify-between gap-y-3 pb-1 pt-3">
-              <StateSkeletonBar size="2xl" className="h-[30px] !bg-neutral-100 py-4" width={"65%"} />
-              <StateSkeletonBar size="xl" className="!bg-neutral-100" width={"100%"} />
-            </div>
-          )}
+          <div className="flex flex-col">
+            <span
+              className="text-3xl text-primary-400 md:text-4xl"
+              style={{ fontFamily: chakraPetch.style.fontFamily }}
+            >
+              {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
+            </span>
+            <span className="text-xl text-neutral-500">{totalProposals === 1 ? "Proposal" : "Proposals"}</span>
+          </div>
 
           {/* TVL */}
           <div className="flex flex-col">

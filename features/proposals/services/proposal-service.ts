@@ -17,12 +17,30 @@ import type {
 } from "./params";
 import { encodeSearchParams } from "@/utils/query";
 import { serializeProposalStatus } from "@/server/models/proposals";
+import Cache from "@/services/cache/VercelCache";
+import proposalRepository from "@/server/models/proposals";
 
 type IFetchSerializedProposalListParams = Omit<IFetchProposalListParams, "status"> & {
   status?: string | ProposalStatus;
 };
 
 class ProposalService {
+  async fetchProposalsCount(): Promise<number> {
+    const cacheKey = "proposals-count";
+    const cache = new Cache();
+
+    const cachedProposalsCount: any = await cache.get(cacheKey);
+
+    if (cachedProposalsCount) {
+      return cachedProposalsCount;
+    }
+
+    const proposals = await proposalRepository.countProposals();
+    await cache.set(cacheKey, proposals, 60 * 60); // 1 hour
+
+    return proposals;
+  }
+
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
     const searchParams: IFetchSerializedProposalListParams = { ...params };
 

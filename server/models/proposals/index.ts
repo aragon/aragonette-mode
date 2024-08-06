@@ -157,6 +157,15 @@ const getImprovedSearch = (search?: string) => {
 };
 
 class ProposalRepository {
+  async countProposals(): Promise<number> {
+    try {
+      return await PrismaDatabase.proposal.count();
+    } catch (error) {
+      logger.error("Error counting proposals:", error);
+      throw error;
+    }
+  }
+
   async getProposals(
     page: number,
     limit: number,

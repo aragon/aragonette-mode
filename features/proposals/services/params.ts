@@ -13,6 +13,7 @@ export interface IFetchProposalListParams extends IFetchPaginatedParams {
   search?: string;
   status?: ProposalStatus;
   type?: ProposalType;
+  cached?: boolean;
 }
 
 export interface IFetchVotesParams extends IFetchPaginatedParams {
