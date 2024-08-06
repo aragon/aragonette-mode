@@ -17,6 +17,8 @@ import type {
 } from "./params";
 import { encodeSearchParams } from "@/utils/query";
 import { serializeProposalStatus } from "@/server/models/proposals";
+import Cache from "@/services/cache/VercelCache";
+import proposalRepository from "@/server/models/proposals";
 
 type IFetchSerializedProposalListParams = Omit<IFetchProposalListParams, "status"> & {
   status?: string | ProposalStatus;
@@ -24,11 +26,19 @@ type IFetchSerializedProposalListParams = Omit<IFetchProposalListParams, "status
 
 class ProposalService {
   async fetchProposalsCount(): Promise<number> {
-    const url = `${PUB_API_BASE_URL}/proposals/count`;
+    const cacheKey = "proposals-count";
+    const cache = new Cache();
 
-    const response = await fetch(url);
-    const parsed: number = await response.json();
-    return parsed;
+    const cachedProposalsCount: any = await cache.get(cacheKey);
+
+    if (cachedProposalsCount) {
+      return cachedProposalsCount;
+    }
+
+    const proposals = await proposalRepository.countProposals();
+    await cache.set(cacheKey, proposals, 60 * 60); // 1 hour
+
+    return proposals;
   }
 
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {

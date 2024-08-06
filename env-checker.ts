@@ -13,7 +13,6 @@ const address = makeValidator<Address>((input: string) => {
 logger.info("Checking environment variables...");
 
 const checkEnvVar = {
-  NEXT_PUBLIC_TOKEN_ADDRESS: address(),
   NEXT_PUBLIC_TOKEN_SYMBOL: str({ devDefault: "MTTK" }),
   NEXT_PUBLIC_CHAIN_NAME: str({ devDefault: "sepolia" }), // Default to sepolia chain
   NEXT_PUBLIC_WEB3_URL_PREFIX: str(),

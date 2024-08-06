@@ -1,8 +1,6 @@
-import { type Address } from "viem";
 import { type ChainName, getChain } from "./utils/chains";
 
 // Contract Addresses
-export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ?? "") as Address;
 export const PUB_TOKEN_SYMBOL = process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? "";
 
 // Target chain
@@ -24,7 +22,7 @@ export const PUB_WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLET_CONN
 export const PUB_IPFS_ENDPOINT = process.env.NEXT_PUBLIC_IPFS_ENDPOINT ?? "";
 export const PUB_IPFS_API_KEY = process.env.NEXT_PUBLIC_IPFS_API_KEY ?? "";
 
-export const PUB_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api";
+export const PUB_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 export const PUB_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000/";
 
 // Snapshot
