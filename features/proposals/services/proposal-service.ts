@@ -23,6 +23,14 @@ type IFetchSerializedProposalListParams = Omit<IFetchProposalListParams, "status
 };
 
 class ProposalService {
+  async fetchProposalsCount(): Promise<number> {
+    const url = `${PUB_API_BASE_URL}/proposals/count`;
+
+    const response = await fetch(url);
+    const parsed: number = await response.json();
+    return parsed;
+  }
+
   async fetchProposals(params: IFetchProposalListParams): Promise<IPaginatedResponse<IProposal>> {
     const searchParams: IFetchSerializedProposalListParams = { ...params };
 

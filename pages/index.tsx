@@ -3,8 +3,11 @@ import { HeaderDao } from "@/components/headerDao/headerDao";
 import { LatestProposals } from "@/components/latestProposals/latestProposals";
 import { UpcomingEvents } from "@/components/upcomingEvents/upcomingEvents";
 import { PUB_DISCORD_URL } from "@/constants";
+import { proposalsCount } from "@/features/proposals";
+import { queryClient } from "@/utils/query-client";
 import { type IResource } from "@/utils/types";
 import { Button, Card, Heading } from "@aragon/ods";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 type IDashboardResource = IResource & { cta: string; primary?: boolean };
 
@@ -31,10 +34,20 @@ const resources: IDashboardResource[] = [
   },
 ];
 
-export default function Home() {
+export const getServerSideProps = (async () => {
+  const count = await queryClient.fetchQuery(proposalsCount());
+
+  return {
+    props: {
+      count,
+    },
+  };
+}) satisfies GetServerSideProps<{ count: number }>;
+
+export default function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <>
-      <HeaderDao />
+      <HeaderDao count={props.count} />
       <main className="mx-auto max-w-screen-xl">
         <div className="px-4 pb-6 pt-10 md:px-6 md:pb-16">
           <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-6 sm:grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] md:gap-6">

@@ -13,6 +13,7 @@ import { toProposalVotes } from "./selectors/toProposalVote";
 export const proposalKeys = {
   all: ["proposals"] as const,
   proposal: (params: { proposalId: string }) => [...proposalKeys.all, "details", params] as const,
+  count: () => ["proposals", "count"] as const,
   list: (params: IFetchProposalListParams) => [...proposalKeys.all, "list", params] as const,
   detail: (params: IFetchProposalParams) => [...proposalKeys.all, "details", params] as const,
   voted: (params: IFetchVotedParams) =>
@@ -22,6 +23,13 @@ export const proposalKeys = {
   votes: (params: IFetchVotesParams) =>
     [...proposalKeys.detail({ proposalId: params.proposalId }), "votes", params] as const,
 };
+
+export function proposalsCount() {
+  return queryOptions({
+    queryKey: proposalKeys.count(),
+    queryFn: async () => proposalService.fetchProposalsCount(),
+  });
+}
 
 export function proposalList(params: IFetchProposalListParams = {}) {
   return infiniteQueryOptions({
