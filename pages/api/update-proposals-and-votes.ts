@@ -53,9 +53,9 @@ export default async function handler(_: NextApiRequest, res: NextApiResponse<an
     logger.info(`Upserted ${uniqueProposals.length} proposals successfully`);
 
     const cache = new Cache();
-    await cache.remove("proposals-*");
+    const removed = await cache.remove("proposals-*");
 
-    logger.info("Cache cleared successfully");
+    logger.info("Cache cleared successfully. Removed ", removed, " keys");
 
     await cache.set("proposals-count", uniqueProposals.length);
 

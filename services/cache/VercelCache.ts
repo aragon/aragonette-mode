@@ -28,13 +28,14 @@ export default class VercelCache implements ICache {
     }
   }
 
-  async remove(keys_pattern: string): Promise<void> {
+  async remove(keys_pattern: string): Promise<number> {
     const keys = await this.client.keys(keys_pattern);
-    await Promise.all(
+    const res = await Promise.all(
       keys.map((key) => {
-        this.client.del(key);
+        return this.client.del(key);
       })
     );
+    return res.reduce((acc, val) => acc + val, 0);
   }
 
   async clear(): Promise<void> {
