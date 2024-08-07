@@ -95,7 +95,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
 
   const emptyFilteredState = {
     heading: "No proposals found",
-    description: "Your applied filters are not matching with any results. Reset and search with other filters!",
+    description: "Your applied filters are not matching with any results. Reset and search with other filters.",
     secondaryButton: {
       label: "Reset all filters",
       className: "!rounded-full",

@@ -88,5 +88,14 @@
 
     /* Component specific */
     --ods-avatar-container-position: relative;
+
+    path {
+      fill: rgb(255 255 255);
+    }
+
+    ellipse {
+      fill: rgb(224 254 0);
+    }
   }
+
 }
