@@ -4,11 +4,13 @@ import { logger } from "@/services/logger";
 import { Web3Provider, type ExternalProvider } from "@ethersproject/providers";
 import snapshot from "@snapshot-labs/snapshot.js";
 import { useEffect, useState } from "react";
+import { useForceChain } from "@/hooks/useForceChains";
 import { useAccount } from "wagmi";
 
 export const useCastSnapshotVote = (proposal = "", onSuccess?: () => void) => {
   const { addAlert } = useAlerts();
   const { address, connector } = useAccount();
+  const { forceChain } = useForceChain();
 
   const [error, setError] = useState<Error | null>(null);
   const [receipt, setReceipt] = useState<unknown>();
@@ -41,32 +43,36 @@ export const useCastSnapshotVote = (proposal = "", onSuccess?: () => void) => {
       return;
     }
 
-    const snapshotClient = new snapshot.Client712(SNAPSHOT_TEST_HUB);
-    const provider = new Web3Provider((await connector?.getProvider()) as ExternalProvider);
+    forceChain({
+      onSuccess: async () => {
+        const snapshotClient = new snapshot.Client712(SNAPSHOT_TEST_HUB);
+        const provider = new Web3Provider((await connector?.getProvider()) as ExternalProvider);
 
-    try {
-      setIsConfirming(true);
-      setError(null);
+        try {
+          setIsConfirming(true);
+          setError(null);
 
-      const receipt = await snapshotClient.vote(provider, address, {
-        space: SNAPSHOT_SPACE,
-        proposal,
-        type: "single-choice",
-        choice,
-        reason,
-        app: PUB_APP_NAME,
-      });
+          const receipt = await snapshotClient.vote(provider, address, {
+            space: SNAPSHOT_SPACE,
+            proposal,
+            type: "single-choice",
+            choice,
+            reason,
+            app: PUB_APP_NAME,
+          });
 
-      setIsConfirmed(true);
-      setReceipt(receipt);
-      onSuccess?.();
-    } catch (error) {
-      setIsConfirmed(false);
-      logger.error("Could not vote on the proposal", error);
-      setError(error as Error);
-    } finally {
-      setIsConfirming(false);
-    }
+          setIsConfirmed(true);
+          setReceipt(receipt);
+          onSuccess?.();
+        } catch (error) {
+          setIsConfirmed(false);
+          logger.error("Could not vote on the proposal", error);
+          setError(error as Error);
+        } finally {
+          setIsConfirming(false);
+        }
+      },
+    });
   };
 
   return { castVote, isConfirming, isConfirmed, error, receipt };
