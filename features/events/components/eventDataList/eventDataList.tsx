@@ -74,7 +74,12 @@ export const EventDataList: React.FC = () => {
       itemsCount={total}
       onLoadMore={fetchNextPage}
     >
-      <DataList.Container SkeletonElement={EventDataListItemSkeleton} errorState={errorState} emptyState={emptyState}>
+      <DataList.Container
+        id="illustration-container"
+        SkeletonElement={EventDataListItemSkeleton}
+        errorState={errorState}
+        emptyState={emptyState}
+      >
         {data?.events?.map((e) => (
           <EventDataListItem
             href={e.link}

@@ -149,6 +149,7 @@ export const ProposalDataList: React.FC<IProposalDataListProps> = (props) => {
         />
       )}
       <DataList.Container
+        id="illustration-container"
         SkeletonElement={ProposalDataListItemSkeleton}
         errorState={errorState}
         emptyState={emptyState}

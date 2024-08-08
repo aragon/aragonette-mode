@@ -22,6 +22,7 @@ export const CouncilDataList: React.FC = () => {
   return (
     <DataList.Root entityLabel={entityLabel} itemsCount={itemsCount} pageSize={pageSize} state={dataListState}>
       <DataList.Container
+        id="illustration-container"
         className={containerClasses}
         errorState={errorState}
         emptyState={emptyState}

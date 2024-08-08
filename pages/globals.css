@@ -89,11 +89,11 @@
     /* Component specific */
     --ods-avatar-container-position: relative;
 
-    path {
+    #illustration-container path {
       fill: rgb(255 255 255);
     }
-
-    ellipse {
+    
+    #illustration-container ellipse {
       fill: rgb(224 254 0);
     }
   }

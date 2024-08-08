@@ -83,6 +83,7 @@ export const PostDatList: React.FC<IPostDataListProps> = ({
         onLoadMore={fetchNextPage}
       >
         <DataList.Container
+          id="illustration-container"
           SkeletonElement={PostDataListItemSkeleton}
           errorState={errorState}
           emptyState={emptyState}
