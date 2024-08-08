@@ -5,7 +5,7 @@ import proposalRepository, {
   parseProposalSortDir,
   parseProposalType,
 } from "@/server/models/proposals";
-import { buildVotingResponse } from "@/server/services/builders/proposal-builder";
+import { buildLiveProposalResponse } from "@/server/services/builders/proposal-builder";
 import { checkNullableParam } from "@/server/utils";
 import Cache from "@/services/cache/VercelCache";
 import { logger } from "@/services/logger";
@@ -66,21 +66,22 @@ export default async function handler(
       parseProposalType(parsedType)
     );
 
-    for (const proposal of paginatedProposals.data) {
-      for (const stage of proposal.stages) {
-        //TODO: Check if active after fixing dates/statuses [new Date(stage.voting.endDate) < new Date()]?
-        const res = await buildVotingResponse(stage);
-        if (res) {
-          const [voting, status, overallStatus] = res;
-          // TODO: Update stage and proposal statuses in the database
-          stage.voting = voting;
-          stage.status = status;
-          proposal.status = overallStatus;
-        }
-      }
-    }
+    const postUpdates = [];
 
-    waitUntil(cache.set(cacheKey, paginatedProposals, 60 * 15)); // 15 minutes
+    paginatedProposals.data = await Promise.all(
+      paginatedProposals.data.map(async (proposal) => {
+        const freshProposal = await buildLiveProposalResponse(proposal);
+        if (freshProposal) {
+          proposal = freshProposal;
+          postUpdates.push(proposalRepository.upsertProposal(freshProposal));
+        }
+        return proposal;
+      })
+    );
+
+    postUpdates.push(cache.set(cacheKey, paginatedProposals, 60 * 15)); // 15 minutes
+
+    waitUntil(Promise.all(postUpdates));
 
     res.status(200).json(paginatedProposals);
   } catch (error) {
