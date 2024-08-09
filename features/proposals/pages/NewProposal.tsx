@@ -104,7 +104,7 @@ export default function NewProposal() {
         const week = 7 * 24 * 60 * 60 * 1000;
         endDate = new Date(startDate.valueOf() + week);
       } else if (endSwitch === "date") {
-        endDate = new Date(`${end.date}T${start.date}`);
+        endDate = new Date(`${end.date}T${end.time}`);
       }
 
       if (startDate && endDate) {
