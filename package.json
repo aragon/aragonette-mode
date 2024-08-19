@@ -29,7 +29,7 @@
     "@hookform/resolvers": "^3.6.0",
     "@prisma/client": "^5.14.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "@shazow/whatsabi": "0.11.0",
+    "@shazow/whatsabi": "0.14.1",
     "@snapshot-labs/snapshot.js": "^0.12.2",
     "@tanstack/query-async-storage-persister": "^5.28.8",
     "@tanstack/react-query": "^5.28.8",
