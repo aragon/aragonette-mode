@@ -25,7 +25,7 @@
     --ods-color-neutral-400: 224 254 0;
     --ods-color-neutral-500: 255 255 255;
     --ods-color-neutral-600: 150 150 150;
-    --ods-color-neutral-700: 255 255 255;
+    --ods-color-neutral-700: 210 210 210;
     --ods-color-neutral-800: 224 254 0;
     --ods-color-neutral-900: 255 255 255;
 
@@ -97,5 +97,37 @@
       fill: rgb(224 254 0);
     }
   }
+}
 
+/* FONTS */
+
+@font-face {
+  font-family: "IBMPlexSans";
+  src: url(/fonts/ibm/IBMPlexSans-Light.ttf) format("truetype");
+  font-weight: 400;
+  style: "normal";
+}
+
+@font-face {
+  font-family: "IBMPlexSans";
+  src: url(/fonts/ibm/IBMPlexSans-Medium.ttf) format("truetype");
+  font-weight: 600;
+  style: "normal";
+}
+
+@font-face {
+  font-family: "ChakraPetch";
+  src: url(/fonts/chakra-petch/ChakraPetch-Regular.ttf) format("truetype");
+  font-weight: 400;
+  style: "normal";
+}
+
+html {
+  font-family: "IBMPlexSans";
+  color: rgb(var(--ods-color-neutral-700));
+}
+
+h1, h2, h3, h4, h5, .title {
+  font-family: "ChakraPetch";
+  text-transform: uppercase;
 }

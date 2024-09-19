@@ -1,23 +1,12 @@
-import { Button, Heading } from "@aragon/ods";
-import router from "next/router";
-import { Dashboard } from "./nav/routes";
-import React from "react";
+const DEFAULT_MESSAGE = "The link you followed refers to a resource that doesn't exist";
 
-export const NotFound: React.FC<{ title?: string; message?: string }> = ({
-  message = "We couldn't find the page that you're looking for.",
-  title = "Page not found",
-}) => {
+export function NotFound({ message }: { message?: string }) {
   return (
-    <main className="flex w-full flex-col items-center justify-center pt-32 md:pt-60">
-      <section className="absolute -top-[18px] -z-10 size-[180px] rounded-full bg-ellipse-37 blur-[120px] sm:right-[80px] sm:size-[340px]" />
-
-      <div className="flex w-full flex-col items-center justify-center px-4">
-        <Heading size="h1">{title}</Heading>
-        <p className="text-center text-xl text-neutral-800">{message}</p>
-        <Button className="mt-6 !rounded-full" variant="tertiary" onClick={() => router.push(Dashboard.path)}>
-          Go to Dashboard
-        </Button>
-      </div>
-    </main>
+    <div className="mx-auto w-full max-w-screen-xl px-16 py-6">
+      <section className="w-screen min-w-full max-w-full">
+        <h3 className="pr-4 text-3xl font-semibold text-neutral-700">Not found</h3>
+        <p>{message ?? DEFAULT_MESSAGE}</p>
+      </section>
+    </div>
   );
-};
+}

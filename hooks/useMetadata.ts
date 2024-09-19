@@ -1,17 +1,20 @@
-import { fetchJsonFromIpfs } from "@/services/ipfs";
-import { type JsonValue } from "@/utils/types";
+import { fetchIpfsAsJson } from "@/utils/ipfs";
+import { JsonValue } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 
-export function useMetadata<T = JsonValue>(ipfsUri: string | undefined = "") {
+export function useMetadata<T = JsonValue>(ipfsUri?: string) {
   const { data, isLoading, isSuccess, error } = useQuery<T, Error>({
-    queryKey: ["ipfs", ipfsUri],
-    queryFn: () => fetchJsonFromIpfs(ipfsUri),
+    queryKey: ["ipfs", ipfsUri || ""],
+    queryFn: () => {
+      if (!ipfsUri) return Promise.resolve("");
+
+      return fetchIpfsAsJson(ipfsUri);
+    },
     retry: true,
     refetchOnMount: false,
     refetchOnReconnect: false,
     retryOnMount: true,
     staleTime: Infinity,
-    enabled: !!ipfsUri,
   });
 
   return {
@@ -21,3 +24,5 @@ export function useMetadata<T = JsonValue>(ipfsUri: string | undefined = "") {
     error,
   };
 }
+
+export const useIpfsJsonData = useMetadata;
