@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+const DEFAULT_DELAY = 500;
+
 export interface IUseDebouncedValueParams {
   /**
    * Debounce time period in milliseconds.
@@ -27,12 +29,12 @@ export const useDebouncedValue = <TValue>(
 
   const [debouncedValue, setDebouncedValue] = useState(value);
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     timeoutRef.current = setTimeout(() => {
       setDebouncedValue(value);
-    }, delay);
+    }, delay ?? DEFAULT_DELAY);
 
     return () => clearTimeout(timeoutRef.current);
   }, [value, delay, params]);

@@ -1,0 +1,57 @@
+import { formatterUtils, NumberFormat } from "@aragon/ods";
+
+export const DashboardHeader = (props: any) => {
+  const totalProposals = props.count;
+
+  return (
+    <header className="relative flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
+      {/* Radial gradients */}
+      <section className="bg-ellipse-37 absolute -top-[36px] -z-10 size-[180px] rounded-full blur-[120px] sm:right-[80px] sm:size-[320px]" />
+      <section className="bg-ellipse-38 absolute left-[68px] top-[170px] -z-10 size-[250px] rounded-full blur-[80px] sm:size-[400px]" />
+      <section className="bg-ellipse-39 absolute right-[400px] top-[153px] -z-10 hidden size-[540px] rounded-full blur-[120px] lg:block" />
+
+      <div className="flex w-full max-w-screen-xl flex-col gap-y-8 pb-8 pt-8 md:gap-y-12 md:pt-8">
+        <div className="flex flex-col gap-y-8">
+          <div className="flex flex-col gap-y-2 md:w-4/5">
+            <h1 className="text-4xl leading-tight text-neutral-800 md:text-5xl">Welcome to the Mode Community</h1>
+            <p className="text-2xl leading-normal text-neutral-600">
+              The Mode Governance Hub is the home for the Mode community to participate in Mode&apos;s evolving
+              Governance. Mode builds infrastructure, assets, and applications with a mission to bring decentralized
+              finance to billions of users globally. Welcome to Mode, governed on Aragon.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
+          {/* Proposal count */}
+          <div className="flex flex-col">
+            <span className="text-3xl text-primary-400 md:text-4xl">
+              {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
+            </span>
+            <span className="text-xl text-neutral-500">{totalProposals === 1 ? "Proposal" : "Proposals"}</span>
+          </div>
+
+          {/* TVL */}
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-x-1">
+              <span className="text-3xl text-primary-400 md:text-4xl">$500M</span>
+            </div>
+            <span className="text-xl text-neutral-500">TVL</span>
+          </div>
+
+          {/* Token holders */}
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-x-1">
+              <span className="text-3xl text-primary-400 md:text-4xl">
+                {formatterUtils.formatNumber(96500, {
+                  format: NumberFormat.GENERIC_SHORT,
+                })}
+                +
+              </span>
+            </div>
+            <span className="text-xl text-neutral-500">Token holders</span>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};

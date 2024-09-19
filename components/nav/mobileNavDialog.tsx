@@ -1,7 +1,7 @@
 import { Dialog, type IDialogRootProps } from "@aragon/ods";
 import Image from "next/image";
 import { NavLink, type INavLink } from "./navLink";
-import { BrandingSubline } from "../brandingSubline/brandingSubline";
+import { BrandingSubline } from "./brandingSubline";
 
 interface IMobileNavDialogProps extends IDialogRootProps {
   navLinks: INavLink[];
