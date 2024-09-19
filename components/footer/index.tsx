@@ -1,4 +1,5 @@
-import { PUB_APP_NAME, PUB_BLOG_URL, PUB_DISCORD_URL, PUB_PROJECT_URL } from "@/constants";
+import { PUB_BLOG_URL, PUB_DISCORD_URL } from "@/constants";
+import Link from "next/link";
 
 export const Footer = () => {
   return (
@@ -44,11 +45,11 @@ export const Footer = () => {
         </div>
         <ul className="divide-y divide-neutral-100 md:order-1 md:flex md:items-center md:justify-center md:gap-x-6 md:divide-y-0 xl:justify-start">
           <li className="group py-4 md:py-0">
-            <a className="overflow-hidden" href="/">
+            <Link className="overflow-hidden" href="/">
               <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">
                 Dashboard
               </span>
-            </a>
+            </Link>
           </li>
           <li className="group py-4 md:py-0">
             <a className="overflow-hidden" href={PUB_DISCORD_URL} target="_blank">

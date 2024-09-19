@@ -7,8 +7,9 @@ import { useProposalStatus } from "../../hooks/useProposalVariantStatus";
 import { useToken } from "../../hooks/useToken";
 import { useAccount } from "wagmi";
 import { formatEther } from "viem";
-import { PUB_TOKEN_SYMBOL } from "@/constants";
 import { useProposalVoteList } from "../../hooks/useProposalVoteList";
+
+const PUB_TOKEN_SYMBOL = "X";
 
 const DEFAULT_PROPOSAL_METADATA_TITLE = "(No proposal title)";
 const DEFAULT_PROPOSAL_METADATA_SUMMARY = "(The metadata of the proposal is not available)";

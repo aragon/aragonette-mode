@@ -23,8 +23,9 @@ import { AddressText } from "@/components/text/address";
 import Link from "next/link";
 import { useCanVote } from "../hooks/useCanVote";
 import { useState } from "react";
-import { PUB_TOKEN_SYMBOL } from "@/constants";
 import { useProposalVoteList } from "../hooks/useProposalVoteList";
+
+const PUB_TOKEN_SYMBOL = "X";
 
 const ZERO = BigInt(0);
 const ABSTAIN_VALUE = 1;
