@@ -1,4 +1,4 @@
-import { PUB_APP_NAME, PUB_BLOG_URL, PUB_PROJECT_URL } from "@/constants";
+import { PUB_APP_NAME, PUB_BLOG_URL, PUB_DISCORD_URL, PUB_PROJECT_URL } from "@/constants";
 
 export const Footer = () => {
   return (
@@ -44,10 +44,15 @@ export const Footer = () => {
         </div>
         <ul className="divide-y divide-neutral-100 md:order-1 md:flex md:items-center md:justify-center md:gap-x-6 md:divide-y-0 xl:justify-start">
           <li className="group py-4 md:py-0">
-            <a className="overflow-hidden" href={PUB_PROJECT_URL} target="_blank">
+            <a className="overflow-hidden" href="/">
               <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">
-                {PUB_APP_NAME}
+                Dashboard
               </span>
+            </a>
+          </li>
+          <li className="group py-4 md:py-0">
+            <a className="overflow-hidden" href={PUB_DISCORD_URL} target="_blank">
+              <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">Discord</span>
             </a>
           </li>
           <li className="group py-4 md:py-0">
@@ -57,9 +62,7 @@ export const Footer = () => {
           </li>
         </ul>
         <div className="items-center pb-3 pt-6 md:order-3 md:flex md:justify-center md:pb-0 md:pt-0 xl:flex-1 xl:justify-end">
-          <span className="text-base leading-tight text-neutral-500">
-            © {new Date().getFullYear()} {PUB_APP_NAME}
-          </span>
+          <span className="text-base leading-tight text-neutral-500">© {new Date().getFullYear()} Mode</span>
         </div>
       </div>
     </div>
