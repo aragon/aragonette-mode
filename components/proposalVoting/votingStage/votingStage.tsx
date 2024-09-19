@@ -1,5 +1,5 @@
 import { PUB_CHAIN } from "@/constants";
-import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
+import { getSimpleRelativeDate } from "@/utils/dates";
 import { AccordionItem, AccordionItemContent, AccordionItemHeader, Heading, Tabs } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import dayjs from "dayjs";
@@ -8,7 +8,7 @@ import { VotingBreakdown, type IBreakdownMajorityVotingResult, type ProposalType
 import { type IBreakdownApprovalThresholdResult } from "../votingBreakdown/approvalThresholdResult";
 import { VotingDetails } from "../votingDetails";
 import { VotingStageStatus } from "./votingStageStatus";
-import type { IVote, IVotingStageDetails, ProposalStages } from "@/utils/types";
+import type { IVote, IVotingStageDetails } from "@/utils/types";
 import { VotesDataList } from "../votesDataList/votesDataList";
 
 export interface IVotingStageProps<TType extends ProposalType = ProposalType> {
@@ -87,7 +87,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
             <Heading size="h3" className="line-clamp-1 text-left">
               {title}
             </Heading>
-            <VotingStageStatus status={status} endDate={getSimpleRelativeTimeFromDate(dayjs(details?.endDate))} />
+            <VotingStageStatus status={status} endDate={getSimpleRelativeDate(details?.endDate)} />
           </div>
           <span className="hidden leading-tight text-neutral-500 sm:block">{stageKey}</span>
         </div>

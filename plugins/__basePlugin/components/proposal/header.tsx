@@ -3,7 +3,7 @@ import { Publisher } from "@/components/publisher";
 import { Proposal } from "../../utils/types";
 import { useProposalStatus } from "../../hooks/useProposalVariantStatus";
 import { Else, ElseIf, If, Then } from "@/components/if";
-import { getSimpleRelativeTimeFromDate } from "@/utils/dates";
+import { getSimpleRelativeTimestamp } from "@/utils/dates";
 import { HeaderSection } from "@/components/layout/header-section";
 import { getTagVariantFromStatus } from "@/utils/ui-variants";
 import { capitalizeFirstLetter } from "@/utils/case";
@@ -68,7 +68,7 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = ({ proposalIdx, proposal }
                 <Else>
                   <span className="text-neutral-500">Active for </span>
                   <span className="text-neutral-800">
-                    {getSimpleRelativeTimeFromDate(dayjs(Number(proposal.parameters.endDate) * 1000))}
+                    {getSimpleRelativeTimestamp(Number(proposal.parameters.endDate) * 1000)}
                   </span>
                 </Else>
               </If>
