@@ -1,11 +1,9 @@
 import { MainSection } from "@/components/layout/main-section";
-import { SpreadRow } from "@/components/layout/spread-row";
 import {
   Button,
   Card,
   DataListContainer,
   DataListFilter,
-  DataListItem,
   DataListRoot,
   IconType,
   InputNumberMax,
@@ -25,10 +23,36 @@ import {
   PUB_GET_MORE_MODE_URL,
   PUB_GET_MORE_BPT_URL,
   PUB_VE_TOKENS_LEARN_MORE_URL,
+  EPOCH_DURATION,
 } from "@/constants";
 import { ReactNode, useEffect, useState } from "react";
 import { Address } from "viem";
 import { RadialGradients } from "@/components/radial-gradients";
+import { getSimpleRelativeTimestamp } from "@/utils/dates";
+
+const TEST_VE_TOKENS: VeTokenItem[] = [
+  {
+    id: "501",
+    amount: BigInt(1234),
+    multiplyer: 2.5,
+    created: Date.now() - 1000 * 60 * 60 * 24 * 7,
+    status: "in-cooldown",
+  },
+  {
+    id: "505",
+    amount: BigInt(300),
+    multiplyer: 3.5,
+    created: Date.now() - 1000 * 60 * 60 * 24 * 15,
+    status: "claimable",
+  },
+  {
+    id: "507",
+    amount: BigInt(422),
+    multiplyer: 4.1,
+    created: Date.now() - 1000 * 60 * 60 * 24 * 19,
+    status: "claimable",
+  },
+];
 
 export default function PluginPage() {
   return (
@@ -173,12 +197,19 @@ const StakeToken = ({ name, address, balance }: { name: string; address: Address
 
 // VE Tokens
 
+type VeTokenItem = {
+  id: string;
+  amount: bigint;
+  multiplyer: number;
+  created: number;
+  status: string;
+};
+
 const VeTokensTable = () => {
   const [searchValue, setSearchValue] = useState("");
-  const veTokens = [
-    { id: "501", amount: BigInt(1234), multiplyer: 2.5, age: 13251234, status: "in-cooldown" },
-    { id: "505", amount: BigInt(300), multiplyer: 3.5, age: 15251234, status: "claimable" },
-  ];
+  const [allVeTokens, setAllVeTokens] = useState<VeTokenItem[]>(TEST_VE_TOKENS);
+
+  const veTokens = getVisibleTokens(allVeTokens, searchValue);
 
   return (
     <>
@@ -191,12 +222,12 @@ const VeTokensTable = () => {
         <DataListRoot entityLabel="Users" className="gap-y-6">
           <DataListFilter
             searchValue={searchValue}
-            placeholder="Filter by staked position, amount or token"
-            onSearchValueChange={(v) => setSearchValue(v || "")}
+            placeholder="Filter by staked position or amount"
+            onSearchValueChange={(v) => setSearchValue((v || "").trim())}
           />
 
           <div className="flex gap-x-4 px-4">
-            <div className="w-14 flex-auto">veToken ID</div>
+            <div className="w-14 flex-auto">Token ID</div>
             <div className="w-32 flex-auto">Amount</div>
             <div className="w-48 flex-auto">Multiplier</div>
             <div className="w-32 flex-auto">Age</div>
@@ -207,11 +238,12 @@ const VeTokensTable = () => {
             {veTokens.map((token, idx) => (
               <Card key={idx} className="flex items-center gap-x-4 border border-neutral-100 p-4">
                 <div className="w-14 flex-auto">{token.id}</div>
-                <div className="w-32 flex-auto">{token.amount}</div>
+                <div className="w-32 flex-auto">{token.amount.toString()}</div>
                 <div className="w-48 flex-auto">{token.multiplyer}x</div>
                 <div className="w-32 flex-auto">
-                  5 epochs
-                  <br />4 days
+                  {epochsSince(token.created)} epochs
+                  <br />
+                  {getSimpleRelativeTimestamp(token.created)}
                 </div>
                 <div className="w-48 flex-auto">
                   <div className="flex items-center gap-x-4">
@@ -253,3 +285,22 @@ const SectionHeader = ({
     </div>
   );
 };
+
+function epochsSince(timestamp: number): string {
+  const diff = Date.now() - timestamp;
+  if (diff < 0) return "-";
+
+  const epochsRatio = diff / EPOCH_DURATION;
+  return Math.ceil(epochsRatio).toString();
+}
+
+function getVisibleTokens(items: VeTokenItem[], filter: string) {
+  if (!filter) return items;
+
+  return items.filter((item) => {
+    if (item.id.includes(filter)) return true;
+    else if (item.amount.toString().includes(filter)) return true;
+
+    return false;
+  });
+}

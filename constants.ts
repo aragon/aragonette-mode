@@ -45,3 +45,5 @@ export const PUB_GET_MORE_BPT_URL = "#";
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??
   "https://cdn.prod.website-files.com/64c906a6ed3c4d809558853b/64d0b11158be9cdd5c89a2fe_webc.png";
+
+export const EPOCH_DURATION = 1000 * 60 * 60 * 24 * 7 * 2;
