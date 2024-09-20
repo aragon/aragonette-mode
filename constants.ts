@@ -37,7 +37,10 @@ export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
 export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://gov.mode.network/";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
-export const PUB_STAKING_LEARN_MORE_LINK = "https://mode.mirror.xyz/";
+export const PUB_STAKING_LEARN_MORE_URL = "https://mode.mirror.xyz/";
+export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://mode.mirror.xyz/";
+export const PUB_GET_MORE_MODE_URL = "#";
+export const PUB_GET_MORE_BPT_URL = "#";
 
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??

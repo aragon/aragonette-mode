@@ -3,6 +3,10 @@ import { SpreadRow } from "@/components/layout/spread-row";
 import {
   Button,
   Card,
+  DataListContainer,
+  DataListFilter,
+  DataListItem,
+  DataListRoot,
   IconType,
   InputNumberMax,
   Link,
@@ -10,31 +14,47 @@ import {
   TabsList,
   TabsRoot,
   TabsTrigger,
+  Tag,
   Toggle,
   ToggleGroup,
 } from "@aragon/ods";
-import { PUB_STAKING_LEARN_MORE_LINK, PUB_MODE_TOKEN_ADDRESS, PUB_BPT_TOKEN_ADDRESS } from "@/constants";
-import { useEffect, useState } from "react";
+import {
+  PUB_STAKING_LEARN_MORE_URL,
+  PUB_MODE_TOKEN_ADDRESS,
+  PUB_BPT_TOKEN_ADDRESS,
+  PUB_GET_MORE_MODE_URL,
+  PUB_GET_MORE_BPT_URL,
+  PUB_VE_TOKENS_LEARN_MORE_URL,
+} from "@/constants";
+import { ReactNode, useEffect, useState } from "react";
 import { Address } from "viem";
+import { RadialGradients } from "@/components/radial-gradients";
 
 export default function PluginPage() {
   return (
-    <MainSection>
-      <div>
-        <h1 className="line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
-          Stake
-        </h1>
-        <p className="max-w-[700px]">
-          Stake your MODE and/or BPT tokens to increase your voting power. The longer you stake, the higher your voting
-          power multiplier will be.
-          <br />
-          <Link target="_blank" href={PUB_STAKING_LEARN_MORE_LINK} variant="primary" iconRight={IconType.LINK_EXTERNAL}>
-            Learn more
-          </Link>
-        </p>
-      </div>
+    <div className="bg-gradient-to-b from-neutral-0 to-transparent">
+      <RadialGradients />
 
-      <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
+      <MainSection>
+        <StakeRow />
+        <br />
+        <VeTokensTable />
+      </MainSection>
+    </div>
+  );
+}
+
+// Inner
+
+const StakeRow = () => {
+  return (
+    <>
+      <SectionHeader title="Stake" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
+        Stake your MODE and/or BPT tokens to increase your voting power. The longer you stake, the higher your voting
+        power multiplier will be.
+      </SectionHeader>
+
+      <div className="mt-4 grid grid-cols-1 gap-x-4 md:grid-cols-2">
         <Card className="mt-4 w-full p-8">
           <TabsRoot defaultValue="mode">
             <TabsList>
@@ -73,20 +93,18 @@ export default function PluginPage() {
             </div>
           </dl>
           <div className="grid grid-cols-2 gap-3 py-3">
-            <Button variant="secondary" size="md" iconRight={IconType.LINK_EXTERNAL}>
+            <Button href={PUB_GET_MORE_MODE_URL} variant="secondary" size="md" iconRight={IconType.LINK_EXTERNAL}>
               Get more MODE
             </Button>
-            <Button variant="secondary" size="md" iconRight={IconType.LINK_EXTERNAL}>
+            <Button href={PUB_GET_MORE_BPT_URL} variant="secondary" size="md" iconRight={IconType.LINK_EXTERNAL}>
               Get more BPT
             </Button>
           </div>
         </aside>
       </div>
-    </MainSection>
+    </>
   );
-}
-
-// Inner
+};
 
 type PercentValues = "" | "0" | "25" | "50" | "75" | "100";
 
@@ -149,6 +167,89 @@ const StakeToken = ({ name, address, balance }: { name: string; address: Address
       <Button className="mt-4 w-full" onClick={stake}>
         Stake {name}
       </Button>
+    </div>
+  );
+};
+
+// VE Tokens
+
+const VeTokensTable = () => {
+  const [searchValue, setSearchValue] = useState("");
+  const veTokens = [
+    { id: "501", amount: BigInt(1234), multiplyer: 2.5, age: 13251234, status: "in-cooldown" },
+    { id: "505", amount: BigInt(300), multiplyer: 3.5, age: 15251234, status: "claimable" },
+  ];
+
+  return (
+    <>
+      <SectionHeader title="Your ve Tokens" learnMoreUrl={PUB_VE_TOKENS_LEARN_MORE_URL}>
+        Your staked MODE and/or BPT tokens are represented as veTokens. If you want to unstake your MODE and/or BPT
+        tokens, they will be available within 7 days after entering the cooldown.
+      </SectionHeader>
+
+      <div className="mt-8">
+        <DataListRoot entityLabel="Users" className="gap-y-6">
+          <DataListFilter
+            searchValue={searchValue}
+            placeholder="Filter by staked position, amount or token"
+            onSearchValueChange={(v) => setSearchValue(v || "")}
+          />
+
+          <div className="flex gap-x-4 px-4">
+            <div className="w-14 flex-auto">veToken ID</div>
+            <div className="w-32 flex-auto">Amount</div>
+            <div className="w-48 flex-auto">Multiplier</div>
+            <div className="w-32 flex-auto">Age</div>
+            <div className="w-48 flex-auto">Status</div>
+          </div>
+
+          <DataListContainer>
+            {veTokens.map((token, idx) => (
+              <Card key={idx} className="flex items-center gap-x-4 border border-neutral-100 p-4">
+                <div className="w-14 flex-auto">{token.id}</div>
+                <div className="w-32 flex-auto">{token.amount}</div>
+                <div className="w-48 flex-auto">{token.multiplyer}x</div>
+                <div className="w-32 flex-auto">
+                  5 epochs
+                  <br />4 days
+                </div>
+                <div className="w-48 flex-auto">
+                  <div className="flex items-center gap-x-4">
+                    <Tag label="Active" />
+                    <Button size="sm" variant="secondary">
+                      Enter cooldown
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </DataListContainer>
+        </DataListRoot>
+      </div>
+    </>
+  );
+};
+
+// Other
+
+const SectionHeader = ({
+  title,
+  children,
+  learnMoreUrl,
+}: {
+  title: string;
+  children: ReactNode;
+  learnMoreUrl: string;
+}) => {
+  return (
+    <div className="flex flex-col gap-y-3">
+      <h1 className="line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
+        {title}
+      </h1>
+      <p className="max-w-[700px]">{children}</p>
+      <Link target="_blank" href={learnMoreUrl} variant="primary" iconRight={IconType.LINK_EXTERNAL}>
+        Learn more
+      </Link>
     </div>
   );
 };
