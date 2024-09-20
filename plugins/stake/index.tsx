@@ -25,7 +25,7 @@ import {
   PUB_VE_TOKENS_LEARN_MORE_URL,
   EPOCH_DURATION,
 } from "@/constants";
-import { ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import { Address } from "viem";
 import { RadialGradients } from "@/components/radial-gradients";
 import { getSimpleRelativeTimestamp } from "@/utils/dates";
@@ -34,6 +34,7 @@ const TEST_VE_TOKENS: VeTokenItem[] = [
   {
     id: "501",
     amount: BigInt(1234),
+    token: "BPT",
     multiplyer: 2.5,
     created: Date.now() - 1000 * 60 * 60 * 24 * 7,
     status: "in-cooldown",
@@ -41,6 +42,7 @@ const TEST_VE_TOKENS: VeTokenItem[] = [
   {
     id: "505",
     amount: BigInt(300),
+    token: "MODE",
     multiplyer: 3.5,
     created: Date.now() - 1000 * 60 * 60 * 24 * 15,
     status: "claimable",
@@ -48,6 +50,7 @@ const TEST_VE_TOKENS: VeTokenItem[] = [
   {
     id: "507",
     amount: BigInt(422),
+    token: "BPT",
     multiplyer: 4.1,
     created: Date.now() - 1000 * 60 * 60 * 24 * 19,
     status: "claimable",
@@ -200,6 +203,7 @@ const StakeToken = ({ name, address, balance }: { name: string; address: Address
 type VeTokenItem = {
   id: string;
   amount: bigint;
+  token: "MODE" | "BPT";
   multiplyer: number;
   created: number;
   status: string;
@@ -226,39 +230,155 @@ const VeTokensTable = () => {
             onSearchValueChange={(v) => setSearchValue((v || "").trim())}
           />
 
-          <div className="flex gap-x-4 px-4">
-            <div className="w-14 flex-auto">Token ID</div>
+          <div className="hidden gap-x-4 px-4 md:flex">
+            <div className="w-16 flex-auto">Token ID</div>
             <div className="w-32 flex-auto">Amount</div>
-            <div className="w-48 flex-auto">Multiplier</div>
+            <div className="w-32 flex-auto">Multiplier</div>
             <div className="w-32 flex-auto">Age</div>
             <div className="w-48 flex-auto">Status</div>
           </div>
 
           <DataListContainer>
-            {veTokens.map((token, idx) => (
-              <Card key={idx} className="flex items-center gap-x-4 border border-neutral-100 p-4">
-                <div className="w-14 flex-auto">{token.id}</div>
-                <div className="w-32 flex-auto">{token.amount.toString()}</div>
-                <div className="w-48 flex-auto">{token.multiplyer}x</div>
-                <div className="w-32 flex-auto">
-                  {epochsSince(token.created)} epochs
-                  <br />
-                  {getSimpleRelativeTimestamp(token.created)}
-                </div>
-                <div className="w-48 flex-auto">
-                  <div className="flex items-center gap-x-4">
-                    <Tag label="Active" />
-                    <Button size="sm" variant="secondary">
-                      Enter cooldown
-                    </Button>
+            {veTokens.map((item, idx) => {
+              const strEpochs = epochsSince(item.created);
+              const relativeTime = getSimpleRelativeTimestamp(item.created);
+
+              return (
+                <Fragment key={idx}>
+                  <div className="hidden md:block">
+                    <Card className="flex items-center gap-x-4 border border-neutral-100 p-4">
+                      <div className="flex w-16 flex-auto items-center gap-x-3">
+                        <img
+                          className="w-8"
+                          src={item.token === "MODE" ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
+                        />
+                        {item.id}
+                      </div>
+                      <div className="w-32 flex-auto">
+                        {item.amount.toString()} {item.token}
+                      </div>
+                      <div className="w-32 flex-auto">{item.multiplyer}x</div>
+                      <div className="w-32 flex-auto">
+                        {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
+                        <br />
+                        <small className="text-neutral-200">{relativeTime}</small>
+                      </div>
+                      <div className="w-48 flex-auto">
+                        <TokenStatusCell id={item.id} />
+                      </div>
+                    </Card>
                   </div>
-                </div>
-              </Card>
-            ))}
+                  <div className="md:hidden">
+                    <Card className="my-2 border border-neutral-100 px-4 py-2">
+                      <dl className="flex flex-col divide-y divide-neutral-100">
+                        <div className="flex justify-between py-2">
+                          <div className="flex items-center gap-x-4">
+                            <img
+                              className="w-8"
+                              src={item.token === "MODE" ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
+                            />
+                            {item.id}
+                          </div>
+                          <div>
+                            {item.amount.toString()} {item.token}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between py-2">
+                          <div className="">
+                            <small>MULTIPLYER</small>
+                            <br />
+                            {item.multiplyer}x
+                          </div>
+                          <div className="text-right">
+                            <small>AGE</small>
+                            <br />
+                            {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}&nbsp;&nbsp;
+                            <small className="text-neutral-200">{relativeTime}</small>
+                          </div>
+                        </div>
+
+                        <div className="py-2">
+                          <TokenStatusCell id={item.id} />
+                        </div>
+                      </dl>
+
+                      {/* <div className="flex w-16 flex-auto items-center gap-x-3">
+                        <img
+                          className="w-8"
+                          src={item.token === "MODE" ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
+                        />
+                        {item.id}
+                      </div>
+                      <div className="w-32 flex-auto">
+                        {item.amount.toString()} {item.token}
+                      </div>
+                      <div className="w-32 flex-auto">{item.multiplyer}x</div>
+                      <div className="w-32 flex-auto">
+                        {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
+                        <br />
+                        <small className="text-neutral-200">{relativeTime}</small>
+                      </div>
+                      <div className="w-48 flex-auto">
+                        <TokenStatusCell id={item.id} />
+                      </div> */}
+                    </Card>
+                  </div>
+                </Fragment>
+              );
+            })}
           </DataListContainer>
         </DataListRoot>
       </div>
     </>
+  );
+};
+
+const TokenStatusCell = ({ id }: { id: string }) => {
+  // TODO: Fetch and resolve status
+  const loading = false;
+  const claimable = false;
+  const inCooldown = false;
+  const inWarmup = false;
+
+  if (loading) {
+    return <div className="flex items-center justify-between gap-x-4">-</div>;
+  } else if (claimable) {
+    return (
+      <div className="flex items-center justify-between gap-x-4">
+        <Tag label="Claimable" variant="success" />
+        <Button size="sm" variant="secondary">
+          Withdraw
+        </Button>
+      </div>
+    );
+  } else if (inCooldown) {
+    return (
+      <div className="flex items-center justify-between gap-x-4">
+        <Tag label="In cooldown" variant="warning" />
+        <Button size="sm" variant="secondary" disabled>
+          Withdraw
+        </Button>
+      </div>
+    );
+  } else if (inWarmup) {
+    return (
+      <div className="flex items-center justify-between gap-x-4">
+        <Tag label="In warmup" variant="info" />
+        <Button size="sm" variant="secondary">
+          Withdraw
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-x-4">
+      <Tag label="Active" />
+      <Button size="sm" variant="secondary">
+        Enter cooldown
+      </Button>
+    </div>
   );
 };
 

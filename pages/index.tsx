@@ -7,15 +7,16 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardResources } from "@/components/dashboard/resources";
 import { RadialGradients } from "@/components/radial-gradients";
 
-export default function StandardHome() {
-  const proposalCount = 0;
+// TODO: implement
+const TEMP_PROPOSAL_COUNT = 0;
 
+export default function StandardHome() {
   return (
     <div className="bg-gradient-to-b from-neutral-0 to-transparent">
       <RadialGradients />
 
       <MainSection>
-        <DashboardHeader count={proposalCount} />
+        <DashboardHeader count={TEMP_PROPOSAL_COUNT} />
         <DashboardResources />
       </MainSection>
       <ConnectWidget />
