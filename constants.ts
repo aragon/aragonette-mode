@@ -3,7 +3,8 @@ import { ChainName, getChain } from "./utils/chains";
 
 // Contract Addresses
 export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
-export const PUB_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS ?? "") as Address;
+export const PUB_MODE_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_MODE_TOKEN_ADDRESS ?? "") as Address;
+export const PUB_BPT_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_BPT_TOKEN_ADDRESS ?? "") as Address;
 
 export const PUB_LOCK_TO_VOTE_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_LOCK_TO_VOTE_PLUGIN_ADDRESS ?? "") as Address;
 export const PUB_TOKEN_VOTING_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_VOTING_PLUGIN_ADDRESS ?? "") as Address;
@@ -36,6 +37,7 @@ export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
 export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://gov.mode.network/";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
+export const PUB_STAKING_LEARN_MORE_LINK = "https://mode.mirror.xyz/";
 
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??

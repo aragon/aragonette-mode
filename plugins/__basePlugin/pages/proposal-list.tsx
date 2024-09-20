@@ -1,5 +1,5 @@
 import { useAccount, useBlockNumber, useReadContract } from "wagmi";
-import { type ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import ProposalCard from "../components/proposal";
 import { TokenVotingAbi } from "../artifacts/TokenVoting.sol";
 import { Button, DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Else, If, Then } from "@/components/if";
 import { PUB_TOKEN_VOTING_PLUGIN_ADDRESS, PUB_CHAIN } from "@/constants";
 import { MainSection } from "@/components/layout/main-section";
+import { SpreadRow } from "@/components/layout/spread-row";
 import { MissingContentView } from "@/components/MissingContentView";
 
 const DEFAULT_PAGE_SIZE = 6;
@@ -48,7 +49,7 @@ export default function Proposals() {
 
   return (
     <MainSection narrow>
-      <SectionView>
+      <SpreadRow>
         <h1 className="line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
           Proposals
         </h1>
@@ -61,7 +62,7 @@ export default function Proposals() {
             </Link>
           </If>
         </div>
-      </SectionView>
+      </SpreadRow>
 
       <If not={proposalCount}>
         <Then>
@@ -93,8 +94,4 @@ export default function Proposals() {
       </If>
     </MainSection>
   );
-}
-
-function SectionView({ children }: { children: ReactNode }) {
-  return <div className="flex w-full flex-row content-center justify-between">{children}</div>;
 }
