@@ -1,5 +1,5 @@
-import { Address } from "viem";
-import { ChainName, getChain } from "./utils/chains";
+import { type Address } from "viem";
+import { type ChainName, getChain } from "./utils/chains";
 
 // Contract Addresses
 export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
@@ -13,10 +13,18 @@ export const PUB_TOKEN_VOTING_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_VO
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "holesky") as ChainName;
 export const PUB_CHAIN = getChain(PUB_CHAIN_NAME);
 
+// Contracts
+export const MODE_ESCROW_CONTRACT = (process.env.NEXT_PUBLIC_MODE_ESCROW_CONTRACT ?? "") as Address;
+export const MODE_TOKEN_CONTRACT = (process.env.NEXT_PUBLIC_MODE_TOKEN_CONTRACT ?? "") as Address;
+
+export const BPT_ESCROW_CONTRACT = (process.env.NEXT_PUBLIC_BPT_ESCROW_CONTRACT ?? "") as Address;
+export const BPT_TOKEN_CONTRACT = (process.env.NEXT_PUBLIC_BPT_TOKEN_CONTRACT ?? "") as Address;
+
 // Network and services
 export const PUB_ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY ?? "";
 
-export const PUB_WEB3_ENDPOINT = (process.env.NEXT_PUBLIC_WEB3_URL_PREFIX ?? "") + PUB_ALCHEMY_API_KEY;
+export const PUB_WEB3_ENDPOINT = process.env.NEXT_PUBLIC_WEB3_URL_PREFIX ?? "";
+export const PUB_WEB3_ENS_ENDPOINT = (process.env.NEXT_PUBLIC_WEB3_ENS_URL_PREFIX ?? "") + PUB_ALCHEMY_API_KEY;
 
 export const PUB_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?? "";
 
