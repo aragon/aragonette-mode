@@ -14,8 +14,7 @@ interface IHeaderProps {
 
 export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
-  const [percentToggle, setPercentToggle] = useState<PercentValues>("100");
-
+  const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
   const { stakeToken } = useStakeToken(token);
 
   const { data } = useGetBalance(token);
