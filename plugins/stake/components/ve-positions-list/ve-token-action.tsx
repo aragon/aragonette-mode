@@ -17,10 +17,9 @@ export const TokenAction = ({ tokenId, token, vp, created }: TokenActionProps) =
   const { beginWithdrawal } = useBeginWithdrawal(token, tokenId);
   const { withdraw } = useWithdraw(token, tokenId);
 
-  const inWarmup = false; //created.getTime() > Date.now();
-  const inCooldown = false; //!vp;
-
-  const claimable = true;
+  const inWarmup = created.getTime() > Date.now();
+  const inCooldown = !vp;
+  const claimable = false;
 
   if (claimable) {
     return (
