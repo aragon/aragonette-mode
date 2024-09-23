@@ -26,13 +26,11 @@ export default function StandardHome() {
             Stake your MODE and/or BPT tokens to increase your voting power. The longer you stake, the higher your
             voting power multiplier will be.
           </SectionHeader>
-          <div className="flex w-full flex-row">
-            <div className="mx-6 my-9 w-1/2">
+          <div className="mt-4 grid grid-cols-1 gap-x-4 md:grid-cols-2">
+            <div className="mx-3 mb-6 mt-10">
               <MultiplyerChart amount={multVp} />
             </div>
-            <div className="w-1/2">
-              <Stake />
-            </div>
+            <Stake />
           </div>
         </div>
         <DashboardResources />
