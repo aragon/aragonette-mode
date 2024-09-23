@@ -1,4 +1,4 @@
-import { DataListContainer, DataListFilter, DataListItem, DataListRoot } from "@aragon/ods";
+import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
 import { PUB_VE_TOKENS_LEARN_MORE_URL } from "@/constants";
 import { useState } from "react";
 
@@ -43,7 +43,7 @@ export const StakePositions = () => {
       </SectionHeader>
 
       <div className="mt-8">
-        <DataListRoot entityLabel="Positions" className="gap-y-6">
+        <DataListRoot entityLabel="veTokens" className="gap-y-6">
           <DataListFilter
             searchValue={searchValue}
             placeholder="Filter by staked position or amount"

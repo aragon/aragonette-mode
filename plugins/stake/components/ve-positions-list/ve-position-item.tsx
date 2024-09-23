@@ -7,6 +7,7 @@ import { Token } from "../../types/tokens";
 import { type VeTokenItem } from "./types";
 import { epochsSince } from "./utils";
 import { TokenAction } from "./ve-token-action";
+import { Fragment } from "react";
 
 type VePositionItemProps = {
   props: VeTokenItem;
@@ -21,7 +22,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const amount = formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
-  const created = new Date(Number(tokenInfo?.start) * 1000 ?? 0);
+  const created = new Date(Number(tokenInfo?.start ?? 0n) * 1000);
 
   const symbol = token === Token.MODE ? "MODE" : "BPT";
   const multiplyer = 2;
@@ -32,41 +33,96 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   });
 
   return (
-    <DataListItem key={id.toString()} className="flex items-center gap-x-4 border border-neutral-100 p-4">
-      <div className="flex w-16 flex-auto items-center gap-x-3">
-        <Image
-          className="w-8"
-          alt="Token icon"
-          width={32}
-          height={32}
-          src={token === Token.MODE ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
-        />
-        {id.toString()}
-      </div>
-      <div className="w-32 flex-auto">
-        {amount} {symbol}
-      </div>
-      <div className="w-32 flex-auto">{multiplyer}x</div>
-      <div className="w-32 flex-auto">
-        {strEpochs !== "-" ? (
-          <>
-            {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
-            <br />
-            <small className="text-neutral-200">{relativeTime}</small>
-          </>
-        ) : (
-          <span>-</span>
-        )}
-      </div>
-      <div className="w-48 flex-auto">
-        {isLoading ? (
-          <div className="flex w-48 flex-auto items-center justify-between gap-x-4">
-            <div className="flex items-center justify-between gap-x-4">-</div>;
+    <Fragment>
+      <div className="hidden md:block">
+        <DataListItem key={id.toString()} className="flex items-center gap-x-4 border border-neutral-100 p-4">
+          <div className="flex w-16 flex-auto items-center gap-x-3">
+            <Image
+              className="w-8"
+              alt="Token icon"
+              width={32}
+              height={32}
+              src={token === Token.MODE ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
+            />
+            {id.toString()}
           </div>
-        ) : (
-          <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} />
-        )}
+          <div className="w-32 flex-auto">
+            {amount} {symbol}
+          </div>
+          <div className="w-32 flex-auto">{multiplyer}x</div>
+          <div className="w-32 flex-auto">
+            {strEpochs !== "-" ? (
+              <>
+                {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
+                <br />
+                <small className="text-neutral-200">{relativeTime}</small>
+              </>
+            ) : (
+              <span>-</span>
+            )}
+          </div>
+          <div className="w-48 flex-auto">
+            {isLoading ? (
+              <div className="flex w-48 flex-auto items-center justify-between gap-x-4">
+                <div className="flex items-center justify-between gap-x-4">-</div>;
+              </div>
+            ) : (
+              <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} />
+            )}
+          </div>
+        </DataListItem>
       </div>
-    </DataListItem>
+      <div className="md:hidden">
+        <DataListItem key={id.toString()} className="my-2 border border-neutral-100 px-4 py-2">
+          <dl className="flex flex-col divide-y divide-neutral-100">
+            <div className="flex justify-between py-2">
+              <div className="flex items-center gap-x-4">
+                <Image
+                  className="w-8"
+                  alt="Token icon"
+                  width={32}
+                  height={32}
+                  src={token === Token.MODE ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
+                />
+                {id.toString()}
+              </div>
+              <div>
+                {amount} {symbol}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between py-2">
+              <div className="">
+                <small>MULTIPLYER</small>
+                <br />
+                {multiplyer}x
+              </div>
+              <div className="text-right">
+                <small>AGE</small>
+                <br />
+                {strEpochs !== "-" ? (
+                  <>
+                    {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
+                    <br />
+                    <small className="text-neutral-200">{relativeTime}</small>
+                  </>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            </div>
+            <div className="pt-5">
+              {isLoading ? (
+                <div className="flex w-48 flex-auto items-center justify-between gap-x-4">
+                  <div className="flex items-center justify-between gap-x-4">-</div>;
+                </div>
+              ) : (
+                <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} />
+              )}
+            </div>
+          </dl>
+        </DataListItem>
+      </div>
+    </Fragment>
   );
 };
