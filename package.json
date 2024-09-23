@@ -41,7 +41,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.52.1",
     "viem": "^2.19.8",
-    "wagmi": "2.12.7"
+    "wagmi": "2.12.13"
   },
   "devDependencies": {
     "@aragon/osx-commons-configs": "^0.2.0",
