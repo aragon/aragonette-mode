@@ -41,6 +41,7 @@
     "react-blockies": "^1.4.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.52.1",
+    "recharts": "^2.12.7",
     "viem": "^2.21.12",
     "wagmi": "2.12.13"
   },
