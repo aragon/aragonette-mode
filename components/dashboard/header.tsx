@@ -5,14 +5,7 @@ export const DashboardHeader = (props: { count: number }) => {
   const totalProposals = props.count;
 
   return (
-    <header className="relative flex w-full justify-center bg-gradient-to-b from-neutral-0 to-transparent">
-      {/* Radial gradients */}
-      <div>
-        {/* <section className="bg-ellipse-37 absolute -top-[36px] -z-10 size-[180px] rounded-full blur-[120px] sm:right-[80px] sm:size-[320px]" /> */}
-        <section className="absolute left-[68px] top-[170px] -z-10 size-[250px] rounded-full bg-ellipse-38 blur-[80px] sm:size-[400px]" />
-        <section className="absolute right-[400px] top-[153px] -z-10 hidden size-[540px] rounded-full bg-ellipse-39 blur-[120px] lg:block" />
-      </div>
-
+    <header className="relative flex w-full justify-center">
       <div className="flex w-full max-w-screen-xl flex-col gap-y-8 pb-8 pt-8 md:gap-y-12 md:pt-8">
         <div className="flex flex-col gap-y-8">
           <div className="flex flex-col gap-y-2 md:w-4/5">
