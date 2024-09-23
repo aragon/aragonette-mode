@@ -29,7 +29,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
   const onBalanceEnter = (newBalance: string) => {
     const newValue = parseUnits(newBalance, decimals);
 
-    if (newValue > balance) {
+    if (newValue >= balance) {
       setBalanceToStake(balance);
       setPercentToggle("100");
     } else {

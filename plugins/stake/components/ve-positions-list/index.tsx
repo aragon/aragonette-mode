@@ -1,12 +1,12 @@
-import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
 import { PUB_VE_TOKENS_LEARN_MORE_URL } from "@/constants";
+import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
 import { useState } from "react";
 
 import { SectionHeader } from "../section-header";
 //import { getVisibleTokens } from "./utils";
-import { VePositionItem } from "./ve-position-item";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { Token } from "../../types/tokens";
+import { VePositionItem } from "./ve-position-item";
 
 export const StakePositions = () => {
   const [searchValue, setSearchValue] = useState("");

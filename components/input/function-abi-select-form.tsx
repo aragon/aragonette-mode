@@ -163,7 +163,7 @@ const FunctionSelect = ({
             onClick={() => setShowReadOnly(true)}
             className="flex cursor-pointer flex-col items-baseline gap-y-2 py-3 first:rounded-t-xl last:rounded-b-xl hover:bg-neutral-50 lg:gap-x-6 lg:py-4"
           >
-            <dd className="size-full px-3 text-base text-sm leading-tight text-neutral-300">
+            <dd className="size-full px-3 text-sm leading-tight text-neutral-300">
               Show read only methods ({readonlyCount})
             </dd>
           </div>
