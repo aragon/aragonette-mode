@@ -25,7 +25,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const created = new Date(Number(tokenInfo?.start ?? 0n) * 1000);
 
   const symbol = token === Token.MODE ? "MODE" : "BPT";
-  const multiplyer = 2;
+  const multiplyer = Math.max(Number((vp ?? 1n) / (tokenInfo?.amount ?? 1n)), 1);
 
   const strEpochs = epochsSince(created.getTime());
   const relativeTime = formatterUtils.formatDate(created.getTime(), {
