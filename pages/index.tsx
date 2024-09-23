@@ -13,7 +13,7 @@ import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 export default function StandardHome() {
   const { data } = useGetBalance(Token.MODE);
 
-  const baba = Math.max(data ? Number(formatUnits(39012n * 10n ** 18n, data?.decimals)) : 1, 1);
+  const multVp = Math.max(data ? Number(formatUnits(data?.balance, data?.decimals)) : 1, 1);
 
   return (
     <div className="bg-gradient-to-b from-neutral-0 to-transparent">
@@ -28,7 +28,7 @@ export default function StandardHome() {
           </SectionHeader>
           <div className="flex w-full flex-row">
             <div className="mx-6 my-9 w-1/2">
-              <MultiplyerChart amount={baba} />
+              <MultiplyerChart amount={multVp} />
             </div>
             <div className="w-1/2">
               <Stake />

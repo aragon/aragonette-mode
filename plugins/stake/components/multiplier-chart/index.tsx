@@ -94,7 +94,7 @@ const MultiplyerChart: React.FC<{ amount: number }> = ({ amount }) => {
           tickCount={dataPoints.length + 1}
           dataKey="val"
         />
-        <Tooltip content={renderContent} cursor={false} active={true} allowEscapeViewBox={{ x: false, y: true }} />
+        <Tooltip content={renderContent} cursor={true} allowEscapeViewBox={{ x: false, y: true }} />
         <Area
           className="border"
           type="monotone"
