@@ -1,5 +1,6 @@
 import { EPOCH_DURATION } from "@/constants";
 import { type VeTokenItem } from "./types";
+import { Token } from "../../types/tokens";
 
 export function epochsSince(timestamp: number): string {
   const diff = Date.now() - timestamp;
@@ -9,12 +10,13 @@ export function epochsSince(timestamp: number): string {
   return Math.ceil(epochsRatio).toString();
 }
 
-export function getVisibleTokens(items: VeTokenItem[], filter: string) {
+export function filterTokens(items: VeTokenItem[], filter: string) {
   if (!filter) return items;
 
   return items.filter((item) => {
-    //if (item.id.includes(filter)) return true;
-    //else if (item.amount.toString().includes(filter)) return true;
+    if (item.id.toString().includes(filter)) return true;
+    else if (item.token === Token.MODE && "mode".includes(filter)) return true;
+    else if (item.token === Token.BPT && "bpt".includes(filter)) return true;
 
     return false;
   });

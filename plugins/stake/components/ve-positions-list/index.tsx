@@ -7,6 +7,7 @@ import { SectionHeader } from "../section-header";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { Token } from "../../types/tokens";
 import { VePositionItem } from "./ve-position-item";
+import { filterTokens } from "./utils";
 
 export const StakePositions = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -29,11 +30,11 @@ export const StakePositions = () => {
 
   const allVeTokens = [...(modeTokens ?? []), ...(bptTokens ?? [])];
 
-  //allVeTokens.sort((a, b) => {
-  //  return Number(a.id - b.id);
-  //});
+  allVeTokens.sort((a, b) => {
+    return Number(b.id - a.id);
+  });
 
-  const veTokens = allVeTokens; //getVisibleTokens(allVeTokens, searchValue);
+  const veTokens = filterTokens(allVeTokens, searchValue);
 
   return (
     <>
@@ -46,7 +47,7 @@ export const StakePositions = () => {
         <DataListRoot entityLabel="veTokens" className="gap-y-6">
           <DataListFilter
             searchValue={searchValue}
-            placeholder="Filter by staked position or amount"
+            placeholder="Filter by token ID or token name"
             onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
           />
 
