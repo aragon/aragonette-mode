@@ -4,7 +4,7 @@ import { RadialGradients } from "@/components/radial-gradients";
 
 import { Stake } from "./components/stake";
 import { StakeUserStats } from "./components/stake-user-stats";
-import { StakePositions } from "./components/ve-positions";
+import { StakePositions } from "./components/ve-positions-list";
 import { SectionHeader } from "./components/section-header";
 import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 
@@ -39,5 +39,3 @@ const StakeRow = () => {
     </>
   );
 };
-
-// VE Tokens

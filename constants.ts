@@ -13,6 +13,10 @@ export const PUB_TOKEN_VOTING_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_VO
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "holesky") as ChainName;
 export const PUB_CHAIN = getChain(PUB_CHAIN_NAME);
 
+// ENS target chain
+export const PUB_ENS_CHAIN_NAME = (process.env.NEXT_PUBLIC_ENS_CHAIN_NAME ?? "mainnet") as ChainName;
+export const PUB_ENS_CHAIN = getChain(PUB_ENS_CHAIN_NAME);
+
 // Contracts
 export const MODE_ESCROW_CONTRACT = (process.env.NEXT_PUBLIC_MODE_ESCROW_CONTRACT ?? "") as Address;
 export const MODE_TOKEN_CONTRACT = (process.env.NEXT_PUBLIC_MODE_TOKEN_CONTRACT ?? "") as Address;

@@ -1,4 +1,4 @@
-import { RawAction } from "@/utils/types";
+import { type RawAction } from "@/utils/types";
 import { WithdrawalForm } from "@/components/input/withdrawal-form";
 import { FunctionAbiSelectForm } from "@/components/input/function-abi-select-form";
 import { Button, DialogContent, DialogFooter, DialogHeader, DialogRoot, type IDialogRootProps } from "@aragon/ods";

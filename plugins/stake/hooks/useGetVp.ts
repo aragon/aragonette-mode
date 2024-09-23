@@ -1,0 +1,20 @@
+import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
+import { useReadContract } from "wagmi";
+import { type Token } from "../types/tokens";
+import { getEscrowContract } from "./useGetContract";
+
+export function useGetVp(token: Token, tokenId: bigint) {
+  const escrowContract = getEscrowContract(token);
+
+  const { data: vp, isLoading } = useReadContract({
+    address: escrowContract,
+    abi: VotingEscrow,
+    functionName: "votingPower",
+    args: [tokenId],
+  });
+
+  return {
+    vp,
+    isLoading,
+  };
+}

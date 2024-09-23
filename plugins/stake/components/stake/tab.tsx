@@ -1,21 +1,33 @@
 import { Button, InputNumberMax, Toggle, ToggleGroup } from "@aragon/ods";
 import { useEffect, useState } from "react";
-import { type Address } from "viem";
+import { useGetBalance } from "../../hooks/useGetBalance";
+import { type Token } from "../../types/tokens";
+import { formatUnits, parseUnits } from "viem";
+import { NumberFormat, formatterUtils } from "@aragon/ods";
+import { useStakeToken } from "../../hooks/useStakeToken";
 
 type PercentValues = "" | "0" | "25" | "50" | "75" | "100";
 
 interface IHeaderProps {
-  name: string;
-  address: Address;
-  balance: bigint;
+  token: Token;
 }
 
-export const StakeToken: React.FC<IHeaderProps> = ({ name, address, balance }) => {
+export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
-  const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
+  const [percentToggle, setPercentToggle] = useState<PercentValues>("100");
+
+  const { stakeToken } = useStakeToken(token);
+
+  const { data } = useGetBalance(token);
+
+  const balance = data?.balance ?? 0n;
+  const decimals = data?.decimals ?? 18;
+  const symbol = data?.symbol ?? "";
+  const formattedBalance = data?.formattedBalance ?? "0";
+  const formattedQuantity = formatterUtils.formatNumber(formattedBalance, { format: NumberFormat.TOKEN_AMOUNT_LONG });
 
   const onBalanceEnter = (newBalance: string) => {
-    const newValue = BigInt(newBalance);
+    const newValue = parseUnits(newBalance, decimals);
 
     if (newValue > balance) {
       setBalanceToStake(balance);
@@ -26,8 +38,8 @@ export const StakeToken: React.FC<IHeaderProps> = ({ name, address, balance }) =
   };
 
   useEffect(() => {
-    setBalanceToStake(0n);
-    setPercentToggle("0");
+    setBalanceToStake(balance);
+    setPercentToggle("100");
   }, [balance]);
 
   useEffect(() => {
@@ -35,17 +47,21 @@ export const StakeToken: React.FC<IHeaderProps> = ({ name, address, balance }) =
 
     const newValue = (balance * BigInt(percentToggle)) / BigInt(100);
     setBalanceToStake(newValue);
-  }, [percentToggle]);
+  }, [percentToggle, balance]);
 
   const stake = () => {
-    alert("Unimplemented");
+    stakeToken(balanceToStake);
   };
 
   return (
     <div className="mt-4 flex w-full flex-col gap-4">
       <InputNumberMax
-        max={Number(balance)}
-        value={balanceToStake?.toString() || ""}
+        max={Number(formatUnits(balance, decimals))}
+        value={
+          formatterUtils.formatNumber(formatUnits(balanceToStake, decimals), {
+            format: NumberFormat.TOKEN_AMOUNT_LONG,
+          }) ?? ""
+        }
         onChange={(v) => onBalanceEnter(v || "0")}
       />
 
@@ -62,10 +78,10 @@ export const StakeToken: React.FC<IHeaderProps> = ({ name, address, balance }) =
         <Toggle value="100" label="100%" className="rounded-lg" />
       </ToggleGroup>
       <p className="text-right">
-        Your balance: {balance.toString()} {name}
+        Your balance: {formattedQuantity} {symbol}
       </p>
       <Button className="mt-4 w-full" onClick={stake}>
-        Stake {name}
+        Stake
       </Button>
     </div>
   );

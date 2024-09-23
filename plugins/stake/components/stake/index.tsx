@@ -1,7 +1,7 @@
 import { Card, TabsContent, TabsList, TabsRoot, TabsTrigger } from "@aragon/ods";
 import React from "react";
 import { StakeToken } from "./tab";
-import { PUB_BPT_TOKEN_ADDRESS, PUB_MODE_TOKEN_ADDRESS } from "@/constants";
+import { Token } from "../../types/tokens";
 
 export const Stake: React.FC = () => {
   return (
@@ -12,10 +12,10 @@ export const Stake: React.FC = () => {
           <TabsTrigger label="Stake BPT" value="bpt" />
         </TabsList>
         <TabsContent value="mode">
-          <StakeToken name="MODE" address={PUB_MODE_TOKEN_ADDRESS} balance={1234n} />
+          <StakeToken token={Token.MODE} />
         </TabsContent>
         <TabsContent value="bpt">
-          <StakeToken name="BPT" address={PUB_BPT_TOKEN_ADDRESS} balance={5555n} />
+          <StakeToken token={Token.BPT} />
         </TabsContent>
       </TabsRoot>
     </Card>

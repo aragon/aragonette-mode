@@ -1,8 +1,29 @@
 import { PUB_GET_MORE_BPT_URL, PUB_GET_MORE_MODE_URL } from "@/constants";
 import { Button, IconType } from "@aragon/ods";
 import React from "react";
+import { useGetBalance } from "../hooks/useGetBalance";
+import { Token } from "../types/tokens";
+import { NumberFormat, formatterUtils } from "@aragon/ods";
 
 export const StakeUserStats: React.FC = () => {
+  const { data: modeToken } = useGetBalance(Token.MODE);
+  const { data: bptToken } = useGetBalance(Token.BPT);
+
+  const balanceMode = formatterUtils.formatNumber(modeToken?.formattedBalance ?? "0", {
+    format: NumberFormat.TOKEN_AMOUNT_SHORT,
+  });
+
+  const balanceBPT = formatterUtils.formatNumber(bptToken?.formattedBalance ?? "0", {
+    format: NumberFormat.TOKEN_AMOUNT_SHORT,
+  });
+
+  const totalBalance = formatterUtils.formatNumber(
+    Number(modeToken?.formattedBalance ?? "0") + Number(bptToken?.formattedBalance ?? "0"),
+    {
+      format: NumberFormat.TOKEN_AMOUNT_SHORT,
+    }
+  );
+
   return (
     <aside className="flex w-full flex-col gap-y-4 justify-self-center md:max-w-[370px] md:gap-y-6">
       <dl className="divide-y divide-neutral-100">
@@ -14,16 +35,16 @@ export const StakeUserStats: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-y-3 py-3">
           <div>MODE</div>
-          <div>1234</div>
+          <div>{balanceMode}</div>
         </div>
 
         <div className="grid grid-cols-2 gap-y-3 py-3">
           <div>BPT</div>
-          <div>5555</div>
+          <div>{balanceBPT}</div>
         </div>
         <div className="grid grid-cols-2 gap-y-3 py-3">
           <div>Total</div>
-          <div>6789</div>
+          <div>{totalBalance}</div>
         </div>
       </dl>
       <div className="grid grid-cols-2 gap-3 py-3">
