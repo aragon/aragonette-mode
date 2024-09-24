@@ -1,4 +1,4 @@
-import { IconType } from "@aragon/ods";
+import { type IconType } from "@aragon/ods";
 
 type PluginItem = {
   /** The URL fragment after /plugins */

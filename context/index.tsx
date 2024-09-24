@@ -10,6 +10,7 @@ import { WagmiProvider, deserialize, serialize } from "wagmi";
 import { AlertProvider } from "./Alerts";
 import { OdsModulesProvider } from "@aragon/ods";
 import { customModulesCopy, odsCoreProviderValues } from "@/components/ods-customizations";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,16 +48,17 @@ createWeb3Modal({
 export function RootContextProvider({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={config}>
-      <OdsModulesProvider
-        wagmiConfig={config}
-        queryClient={queryClient}
-        coreProviderValues={odsCoreProviderValues}
-        values={{ copy: customModulesCopy }}
-      >
-        <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+      <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+        <OdsModulesProvider
+          wagmiConfig={config}
+          queryClient={queryClient}
+          coreProviderValues={odsCoreProviderValues}
+          values={{ copy: customModulesCopy }}
+        >
           <AlertProvider>{children}</AlertProvider>
-        </PersistQueryClientProvider>
-      </OdsModulesProvider>
+        </OdsModulesProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </PersistQueryClientProvider>
     </WagmiProvider>
   );
 }

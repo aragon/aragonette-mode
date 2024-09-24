@@ -5,7 +5,7 @@ import classNames from "classnames";
 
 export type IVotesDataListVariant = "yes" | "approve" | "no" | "abstain";
 
-export interface IVotesDataListItemStructureProps extends IDataListItemProps {
+export interface IVotesDataListItemStructureProps {
   address: string;
   variant: IVotesDataListVariant;
   ensAvatar?: string;
@@ -16,8 +16,7 @@ export interface IVotesDataListItemStructureProps extends IDataListItemProps {
 }
 
 export const VotesDataListItemStructure: React.FC<IVotesDataListItemStructureProps> = (props) => {
-  const { address, connectedAccount, delegate, ensAvatar, ensName, variant, className, votingPower, ...otherProps } =
-    props;
+  const { address, connectedAccount, delegate, ensAvatar, ensName, variant, votingPower, ...otherProps } = props;
   const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${address}`;
 
   const label = connectedAccount ? "You" : delegate ? "Your delegate" : null;
@@ -33,7 +32,7 @@ export const VotesDataListItemStructure: React.FC<IVotesDataListItemStructurePro
     <DataListItem
       href={explorerUrl}
       target="_blank"
-      className={classNames("flex flex-col gap-y-3 py-3 md:py-4", className)}
+      className={classNames("flex flex-col gap-y-3 py-3 md:py-4")}
       {...otherProps}
     >
       <div className="flex w-full items-center gap-x-3 md:gap-x-4">

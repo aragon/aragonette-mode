@@ -1,9 +1,7 @@
 import React from "react";
 import { formatterUtils, NumberFormat } from "@aragon/ods";
 
-export const DashboardHeader = (props: { count: number }) => {
-  const totalProposals = props.count;
-
+export const DashboardHeader = () => {
   return (
     <header className="relative flex w-full justify-center">
       <div className="flex w-full max-w-screen-xl flex-col gap-y-8 pb-8 pt-8 md:gap-y-12 md:pt-8">
@@ -18,14 +16,6 @@ export const DashboardHeader = (props: { count: number }) => {
           </div>
         </div>
         <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
-          {/* Proposal count */}
-          <div className="flex flex-col">
-            <span className="title text-3xl text-primary-400 md:text-4xl">
-              {formatterUtils.formatNumber(totalProposals, { format: NumberFormat.GENERIC_SHORT })}
-            </span>
-            <span className="text-xl text-neutral-500">{totalProposals === 1 ? "Proposal" : "Proposals"}</span>
-          </div>
-
           {/* TVL */}
           <div className="flex flex-col">
             <div className="title flex items-baseline gap-x-1">
