@@ -8,6 +8,7 @@ import { type VeTokenItem } from "./types";
 import { epochsSince } from "./utils";
 import { TokenAction } from "./ve-token-action";
 import { Fragment } from "react";
+import { useGetContracts } from "../../hooks/useGetContract";
 
 type VePositionItemProps = {
   props: VeTokenItem;
@@ -18,6 +19,8 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const token = props.token;
   const { tokenInfo } = useTokenInfo(token, id);
   const { vp, isLoading } = useGetVp(token, id);
+  const { data } = useGetContracts(token);
+  console.log(data);
 
   const amount = formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,

@@ -45,56 +45,6 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "WHITELIST_ANY_ADDRESS",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "approve",
-    inputs: [
-      {
-        name: "to",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "balanceOf",
-    inputs: [
-      {
-        name: "owner",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "beginWithdrawal",
     inputs: [
       {
@@ -203,32 +153,6 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "enableTransfers",
-    inputs: [],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "getApproved",
-    inputs: [
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "implementation",
     inputs: [],
     outputs: [
@@ -255,16 +179,6 @@ export const VotingEscrow = [
         internalType: "address",
       },
       {
-        name: "_name",
-        type: "string",
-        internalType: "string",
-      },
-      {
-        name: "_symbol",
-        type: "string",
-        internalType: "string",
-      },
-      {
         name: "_clock",
         type: "address",
         internalType: "address",
@@ -272,30 +186,6 @@ export const VotingEscrow = [
     ],
     outputs: [],
     stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "isApprovedForAll",
-    inputs: [
-      {
-        name: "owner",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "operator",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
-    stateMutability: "view",
   },
   {
     type: "function",
@@ -342,6 +232,19 @@ export const VotingEscrow = [
   },
   {
     type: "function",
+    name: "lockNFT",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "locked",
     inputs: [
       {
@@ -373,19 +276,6 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "name",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "string",
-        internalType: "string",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "ownedTokens",
     inputs: [
       {
@@ -399,25 +289,6 @@ export const VotingEscrow = [
         name: "tokenIds",
         type: "uint256[]",
         internalType: "uint256[]",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "ownerOf",
-    inputs: [
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
       },
     ],
     stateMutability: "view",
@@ -483,75 +354,6 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "safeTransferFrom",
-    inputs: [
-      {
-        name: "from",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "to",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "safeTransferFrom",
-    inputs: [
-      {
-        name: "from",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "to",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "data",
-        type: "bytes",
-        internalType: "bytes",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "setApprovalForAll",
-    inputs: [
-      {
-        name: "operator",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "approved",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "setClock",
     inputs: [
       {
@@ -569,6 +371,19 @@ export const VotingEscrow = [
     inputs: [
       {
         name: "_curve",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setLockNFT",
+    inputs: [
+      {
+        name: "_nft",
         type: "address",
         internalType: "address",
       },
@@ -604,60 +419,10 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "setWhitelisted",
-    inputs: [
-      {
-        name: "_account",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "_isWhitelisted",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "supportsInterface",
-    inputs: [
-      {
-        name: "_interfaceId",
-        type: "bytes4",
-        internalType: "bytes4",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "sweep",
     inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "symbol",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "string",
-        internalType: "string",
-      },
-    ],
-    stateMutability: "view",
   },
   {
     type: "function",
@@ -674,82 +439,7 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "tokenByIndex",
-    inputs: [
-      {
-        name: "index",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "tokenOfOwnerByIndex",
-    inputs: [
-      {
-        name: "owner",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "index",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "tokenURI",
-    inputs: [
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "string",
-        internalType: "string",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "totalLocked",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "totalSupply",
     inputs: [],
     outputs: [
       {
@@ -791,29 +481,6 @@ export const VotingEscrow = [
       },
     ],
     stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "transferFrom",
-    inputs: [
-      {
-        name: "from",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "to",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -930,25 +597,6 @@ export const VotingEscrow = [
   },
   {
     type: "function",
-    name: "whitelisted",
-    inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "withdraw",
     inputs: [
       {
@@ -975,56 +623,6 @@ export const VotingEscrow = [
         type: "address",
         indexed: false,
         internalType: "address",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "Approval",
-    inputs: [
-      {
-        name: "owner",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "approved",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        indexed: true,
-        internalType: "uint256",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "ApprovalForAll",
-    inputs: [
-      {
-        name: "owner",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "operator",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "approved",
-        type: "bool",
-        indexed: false,
-        internalType: "bool",
       },
     ],
     anonymous: false,
@@ -1126,31 +724,6 @@ export const VotingEscrow = [
   },
   {
     type: "event",
-    name: "Transfer",
-    inputs: [
-      {
-        name: "from",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "to",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        indexed: true,
-        internalType: "uint256",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
     name: "Unpaused",
     inputs: [
       {
@@ -1171,25 +744,6 @@ export const VotingEscrow = [
         type: "address",
         indexed: true,
         internalType: "address",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "WhitelistSet",
-    inputs: [
-      {
-        name: "account",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "status",
-        type: "bool",
-        indexed: false,
-        internalType: "bool",
       },
     ],
     anonymous: false,
@@ -1300,11 +854,6 @@ export const VotingEscrow = [
   {
     type: "error",
     name: "NotVoter",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "NotWhitelisted",
     inputs: [],
   },
   {
