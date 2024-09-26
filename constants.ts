@@ -1,14 +1,6 @@
 import { type Address } from "viem";
 import { type ChainName, getChain } from "./utils/chains";
 
-// Contract Addresses
-export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
-export const PUB_MODE_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_MODE_TOKEN_ADDRESS ?? "") as Address;
-export const PUB_BPT_TOKEN_ADDRESS = (process.env.NEXT_PUBLIC_BPT_TOKEN_ADDRESS ?? "") as Address;
-
-export const PUB_LOCK_TO_VOTE_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_LOCK_TO_VOTE_PLUGIN_ADDRESS ?? "") as Address;
-export const PUB_TOKEN_VOTING_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_TOKEN_VOTING_PLUGIN_ADDRESS ?? "") as Address;
-
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "holesky") as ChainName;
 export const PUB_CHAIN = getChain(PUB_CHAIN_NAME);
@@ -18,6 +10,7 @@ export const PUB_ENS_CHAIN_NAME = (process.env.NEXT_PUBLIC_ENS_CHAIN_NAME ?? "ma
 export const PUB_ENS_CHAIN = getChain(PUB_ENS_CHAIN_NAME);
 
 // Contracts
+export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
 export const MODE_ESCROW_CONTRACT = (process.env.NEXT_PUBLIC_MODE_ESCROW_CONTRACT ?? "") as Address;
 export const MODE_TOKEN_CONTRACT = (process.env.NEXT_PUBLIC_MODE_TOKEN_CONTRACT ?? "") as Address;
 

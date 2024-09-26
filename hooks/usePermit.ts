@@ -3,14 +3,14 @@ import { useReadContracts, useSignTypedData, useAccount } from "wagmi";
 import { hexToSignature, Address } from "viem";
 import { ERC20PermitAbi } from "@/artifacts/ERC20Permit.sol";
 import { useAlerts, AlertContextProps } from "@/context/Alerts";
-import { PUB_CHAIN, PUB_MODE_TOKEN_ADDRESS } from "@/constants";
+import { PUB_CHAIN, MODE_TOKEN_CONTRACT } from "@/constants";
 
 export function usePermit() {
   const { addAlert } = useAlerts() as AlertContextProps;
 
   const account_address = useAccount().address!;
   const erc20Contract = {
-    address: PUB_MODE_TOKEN_ADDRESS,
+    address: MODE_TOKEN_CONTRACT,
     abi: ERC20PermitAbi,
   };
   const { data: erc20data, refetch: erc20refetch } = useReadContracts({
@@ -71,7 +71,7 @@ export function usePermit() {
       chainId: PUB_CHAIN.id,
       name: erc20_name,
       version: versionFromContract,
-      verifyingContract: PUB_MODE_TOKEN_ADDRESS,
+      verifyingContract: MODE_TOKEN_CONTRACT,
     };
 
     const types = {

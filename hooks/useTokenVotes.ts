@@ -1,5 +1,5 @@
 import { iVotesAbi } from "../artifacts/iVotes.sol";
-import { PUB_CHAIN, PUB_MODE_TOKEN_ADDRESS } from "@/constants";
+import { PUB_CHAIN, MODE_TOKEN_CONTRACT } from "@/constants";
 import { type Address } from "viem";
 import { useReadContracts } from "wagmi";
 
@@ -12,21 +12,21 @@ export const useTokenVotes = (address?: Address) => {
         abi: iVotesAbi,
         functionName: "delegates",
         args: [address!],
-        address: PUB_MODE_TOKEN_ADDRESS,
+        address: MODE_TOKEN_CONTRACT,
       },
       {
         chainId: PUB_CHAIN.id,
         abi: iVotesAbi,
         functionName: "getVotes",
         args: [address!],
-        address: PUB_MODE_TOKEN_ADDRESS,
+        address: MODE_TOKEN_CONTRACT,
       },
       {
         chainId: PUB_CHAIN.id,
         abi: iVotesAbi,
         functionName: "balanceOf",
         args: [address!],
-        address: PUB_MODE_TOKEN_ADDRESS,
+        address: MODE_TOKEN_CONTRACT,
       },
     ],
     query: { enabled: !!address },
