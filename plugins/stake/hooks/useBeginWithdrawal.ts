@@ -4,6 +4,7 @@ import { useIsVoting } from "./useIsVoting";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
+import { useApproveNFT } from "./useApproveNFT";
 
 export function useBeginWithdrawal(token: Token, tokenId: bigint) {
   const { writeContract } = useTransactionManager({
@@ -14,19 +15,23 @@ export function useBeginWithdrawal(token: Token, tokenId: bigint) {
     onErrorMessage: "Could not start withdrawal",
     onErrorDescription: "The transaction could not be completed",
   });
+
   const { forceChain } = useForceChain();
   const { isVoting } = useIsVoting(token, tokenId);
   const escrowContract = getEscrowContract(token);
 
+  const { approveNFT } = useApproveNFT(token, () => {
+    writeContract({
+      abi: VotingEscrow,
+      address: escrowContract,
+      functionName: isVoting ? "resetVotesAndBeginWithdrawal" : "beginWithdrawal",
+      args: [tokenId],
+    });
+  });
+
   const beginWithdrawal = () => {
     forceChain({
-      onSuccess: () =>
-        writeContract({
-          abi: VotingEscrow,
-          address: escrowContract,
-          functionName: isVoting ? "resetVotesAndBeginWithdrawal" : "beginWithdrawal",
-          args: [tokenId],
-        }),
+      onSuccess: () => approveNFT(tokenId),
     });
   };
 

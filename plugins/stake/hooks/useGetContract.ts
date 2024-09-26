@@ -41,6 +41,10 @@ export function useGetContracts(token: Token) {
         ...votingEscrowContract,
         functionName: "clock",
       },
+      {
+        ...votingEscrowContract,
+        functionName: "lockNFT",
+      },
     ],
     query: {
       select(data) {
@@ -50,6 +54,7 @@ export function useGetContracts(token: Token) {
           curveContract: data[2],
           queueContract: data[3],
           clockContract: data[4],
+          lockNFTContract: data[5],
         };
       },
       gcTime: Infinity,

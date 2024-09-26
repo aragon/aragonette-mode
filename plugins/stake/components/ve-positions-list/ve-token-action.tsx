@@ -2,24 +2,32 @@ import { Button, DateFormat, formatterUtils, Tag } from "@aragon/ods";
 import { useBeginWithdrawal } from "../../hooks/useBeginWithdrawal";
 import { useWithdraw } from "../../hooks/useWithdrawToken";
 import { type Token } from "../../types/tokens";
+import { useGetCooldown } from "../../hooks/useGetCooldown";
+import { useCanExit } from "../../hooks/useCanExit";
+import { useIsWarm } from "../../hooks/useIsWarm";
 
 type TokenActionProps = {
   tokenId: bigint;
   token: Token;
   vp: bigint;
-  created: Date;
+  created: number;
+  now: number;
 };
 
-export const TokenAction = ({ tokenId, token, vp, created }: TokenActionProps) => {
-  const relativeTime = formatterUtils.formatDate(created.getTime(), {
+export const TokenAction = ({ tokenId, token, vp, created, now }: TokenActionProps) => {
+  const diffTime = now - new Date().getTime();
+  const relativeTime = formatterUtils.formatDate(created - diffTime, {
     format: DateFormat.RELATIVE,
   });
   const { beginWithdrawal } = useBeginWithdrawal(token, tokenId);
   const { withdraw } = useWithdraw(token, tokenId);
+  const { cooldown } = useGetCooldown(token, tokenId);
+  const { canExit } = useCanExit(token, tokenId);
+  const { isWarm } = useIsWarm(token, tokenId);
 
-  const inWarmup = created.getTime() > Date.now();
-  const inCooldown = !vp;
-  const claimable = false;
+  const inWarmup = !vp && !isWarm;
+  const inCooldown = !vp && cooldown?.exitDate;
+  const claimable = !!canExit;
 
   if (claimable) {
     return (

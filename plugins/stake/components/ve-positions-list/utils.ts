@@ -2,8 +2,8 @@ import { EPOCH_DURATION } from "@/constants";
 import { type VeTokenItem } from "./types";
 import { Token } from "../../types/tokens";
 
-export function epochsSince(timestamp: number): string {
-  const diff = Date.now() - timestamp;
+export function epochsSince(timestamp: number, now: number): string {
+  const diff = now - timestamp;
   if (diff < 0) return "-";
 
   const epochsRatio = diff / EPOCH_DURATION;

@@ -6,7 +6,7 @@ import { DateFormat, formatterUtils, NumberFormat } from "@aragon/ods";
 const renderContent: ContentType<string[], string> = ({ active, payload }) => {
   if (!active || !payload?.length) return undefined;
 
-  const { val, date, rewards } = payload[0].payload;
+  const { val, date } = payload[0].payload;
 
   const parsedDate =
     date.getTime() - new Date().getTime() < 0
@@ -14,7 +14,7 @@ const renderContent: ContentType<string[], string> = ({ active, payload }) => {
       : (formatterUtils.formatDate(date.getTime(), { format: DateFormat.RELATIVE }) ?? "");
 
   const parsedVal = formatterUtils.formatNumber(val, { format: NumberFormat.GENERIC_SHORT }) ?? "";
-  const parsedRewards = formatterUtils.formatNumber(rewards, { format: NumberFormat.GENERIC_SHORT }) ?? "";
+  //const parsedRewards = formatterUtils.formatNumber(rewards, { format: NumberFormat.GENERIC_SHORT }) ?? "";
 
   return (
     <div className="flex flex-col gap-y-2 rounded-xl border border-primary-500 bg-neutral-0 p-3 shadow-tooltip">
@@ -25,10 +25,6 @@ const renderContent: ContentType<string[], string> = ({ active, payload }) => {
       <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
         <p className="flex-1">Voting Power</p>
         <p className="font-semibold text-neutral-800">{parsedVal}</p>
-      </div>
-      <div className="flex gap-x-[10.91px] text-base leading-tight text-neutral-500">
-        <p className="flex-1">Rewards</p>
-        <p className="font-semibold text-neutral-800">{parsedRewards}</p>
       </div>
     </div>
   );
@@ -54,7 +50,7 @@ const generatePoints = (startDate: Date, endDate: Date, amount: number, steps: n
 
 const MultiplyerChart: React.FC<{ amount: number }> = ({ amount }) => {
   const startDate = new Date();
-  const endDate = new Date(new Date().getTime() + 1000 * 3600 * 24 * 30 * 10);
+  const endDate = new Date(new Date().getTime() + 1000 * 3600 * 24 * 7 * 10); // 10 weeks
 
   const dataPoints: { val: number; date: Date }[] = generatePoints(startDate, endDate, amount, 10);
 
@@ -99,15 +95,6 @@ const MultiplyerChart: React.FC<{ amount: number }> = ({ amount }) => {
           className="border"
           type="monotone"
           dataKey="val"
-          stroke="rgb(var(--ods-color-primary-500))"
-          strokeWidth={2.5}
-          fillOpacity={1}
-          fill="url(#colorValue)"
-        />
-        <Area
-          className="border"
-          type="monotone"
-          dataKey="rewards"
           stroke="rgb(var(--ods-color-primary-500))"
           strokeWidth={2.5}
           fillOpacity={1}

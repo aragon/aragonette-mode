@@ -1,15 +1,13 @@
-import { erc20Abi } from "viem";
 import { useAccount } from "wagmi";
 import { useForceChain } from "@/hooks/useForceChain";
 import { type Token } from "../types/tokens";
-import { getEscrowContract, getTokenContract } from "./useGetContract";
+import { getTokenContract } from "./useGetContract";
 import { PUB_CHAIN } from "@/constants";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 
 export function useMintToken(token: Token, onSuccess?: () => void) {
   const { address } = useAccount();
   const { forceChain } = useForceChain();
-  const escrowContract = getEscrowContract(token);
   const tokenContract = getTokenContract(token);
 
   const { writeContract } = useTransactionManager({

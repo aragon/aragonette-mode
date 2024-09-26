@@ -1,5 +1,5 @@
 import { isContract } from "@/utils/evm";
-import { Address, isAddress } from "viem";
+import { type Address, isAddress } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 
@@ -23,7 +23,7 @@ export function useIsContract(address?: Address) {
     refetchOnReconnect: false,
     retryOnMount: true,
     enabled: !!address && isAddress(address) && !!publicClient,
-    staleTime: Infinity,
+    staleTime: 1000 * 60,
   });
 
   return {

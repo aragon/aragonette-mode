@@ -6,6 +6,11 @@ import Head from "next/head";
 import "@aragon/ods/index.css";
 import "@/pages/globals.css";
 
+// Fix BigInt serialization for Tanstack
+(BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function () {
+  return this.toString();
+};
+
 export default function App({ Component, pageProps }: any) {
   return (
     <div>

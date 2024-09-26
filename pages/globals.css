@@ -92,7 +92,7 @@
     #illustration-container path {
       fill: rgb(255 255 255);
     }
-    
+
     #illustration-container ellipse {
       fill: rgb(224 254 0);
     }
@@ -127,7 +127,12 @@ html {
   color: rgb(var(--ods-color-neutral-700));
 }
 
-h1, h2, h3, h4, h5, .title {
+h1,
+h2,
+h3,
+h4,
+h5,
+.title {
   font-family: "ChakraPetch";
   text-transform: uppercase;
 }
