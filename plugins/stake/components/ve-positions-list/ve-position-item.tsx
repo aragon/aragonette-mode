@@ -8,7 +8,7 @@ import { type VeTokenItem } from "./types";
 import { epochsSince } from "./utils";
 import { TokenAction } from "./ve-token-action";
 import { Fragment } from "react";
-import { useGetContracts } from "../../hooks/useGetContract";
+import { useNow } from "../../hooks/useNow";
 
 type VePositionItemProps = {
   props: VeTokenItem;
@@ -19,19 +19,21 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const token = props.token;
   const { tokenInfo } = useTokenInfo(token, id);
   const { vp, isLoading } = useGetVp(token, id);
-  const { data } = useGetContracts(token);
-  console.log(data);
+  const { now } = useNow();
 
   const amount = formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
-  const created = new Date(Number(tokenInfo?.start ?? 0n) * 1000);
+  const created = Number(tokenInfo?.start ?? 0n) * 1000;
 
   const symbol = token === Token.MODE ? "MODE" : "BPT";
-  const multiplyer = Math.max(Number((vp ?? 1n) / (tokenInfo?.amount ?? 1n)), 1);
+  const multiplyer = formatterUtils.formatNumber(Math.max(Number((vp ?? 1n) / (tokenInfo?.amount ?? 1n)), 1), {
+    format: NumberFormat.TOKEN_AMOUNT_SHORT,
+  });
 
-  const strEpochs = epochsSince(created.getTime());
-  const relativeTime = formatterUtils.formatDate(created.getTime(), {
+  const strEpochs = epochsSince(created, now);
+  const diffTime = now - new Date().getTime();
+  const relativeTime = formatterUtils.formatDate(created - diffTime, {
     format: DateFormat.RELATIVE,
   });
 
@@ -70,7 +72,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                 <div className="flex items-center justify-between gap-x-4">-</div>;
               </div>
             ) : (
-              <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} />
+              <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} now={now} />
             )}
           </div>
         </DataListItem>
@@ -120,7 +122,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                   <div className="flex items-center justify-between gap-x-4">-</div>;
                 </div>
               ) : (
-                <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} />
+                <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} now={now} />
               )}
             </div>
           </dl>

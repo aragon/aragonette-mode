@@ -34,6 +34,9 @@ export const PUB_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?
 
 export const PUB_WALLET_CONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
 
+export const PUB_USE_BLOCK_TIMESTAMP = process.env.NEXT_PUBLIC_USE_BLOCK_TIMESTAMP === "true";
+
+// IFPS
 export const PUB_IPFS_ENDPOINTS = process.env.NEXT_PUBLIC_IPFS_ENDPOINTS ?? "";
 export const PUB_PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT ?? "";
 
@@ -43,7 +46,7 @@ export const PUB_APP_DESCRIPTION = "The place for all things Mode Governance.";
 export const PUB_PROJECT_LOGO = "/mode-green.svg";
 
 export const PUB_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-export const PUB_SOCIAL_IMAGE = process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? PUB_BASE_URL + "/og";
+export const PUB_SOCIAL_IMAGE = process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? `${PUB_BASE_URL}/og`;
 export const PUB_DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_URL ?? "https://discord.com/invite/modenetworkofficial";
 export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
