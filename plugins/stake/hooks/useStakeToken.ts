@@ -1,16 +1,18 @@
-import { useState } from "react";
 import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
 import { useForceChain } from "@/hooks/useForceChain";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
 import { PUB_CHAIN } from "@/constants";
-import { useApproveToken } from "./useApproveToken";
+import { useState } from "react";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 
-export function useStakeToken(token: Token, onSuccess?: () => void, onError?: () => void) {
+export function useStakeToken(amount: bigint, token: Token, onSuccess?: () => void, onError?: () => void) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { writeContract, isConfirming: isConfirming1 } = useTransactionManager({
+  const { forceChain } = useForceChain();
+  const escrowContract = getEscrowContract(token);
+
+  const { writeContract, isConfirming: isConfirming } = useTransactionManager({
     onSuccessMessage: "Staked successfully",
     onSuccessDescription: "The transaction has been validated",
     onDeclineMessage: "Stake declined",
@@ -26,46 +28,28 @@ export function useStakeToken(token: Token, onSuccess?: () => void, onError?: ()
       onError?.();
     },
   });
-  const [amount, setAmount] = useState<bigint>(0n);
-  const { approveToken, isConfirming: isConfirming2 } = useApproveToken(
-    token,
-    onTokenApproveSuccess,
-    onTokenApproveError
-  );
-  const { forceChain } = useForceChain();
-  const escrowContract = getEscrowContract(token);
 
-  function onTokenApproveSuccess() {
-    writeContract({
-      chain: PUB_CHAIN,
-      abi: VotingEscrow,
-      address: escrowContract,
-      functionName: "createLock",
-      args: [amount],
-    });
-  }
-  function onTokenApproveError() {
-    setIsLoading(false);
-    onError?.();
-  }
-
-  const stakeToken = (amount: bigint) => {
-    if (!amount) return;
+  const stakeToken = async () => {
+    if (!amount) throw new Error("Amount is required");
     setIsLoading(true);
 
-    forceChain()
-      .then(() => {
-        setAmount(amount);
-        approveToken(amount);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        onError?.();
+    try {
+      await forceChain();
+      writeContract({
+        chain: PUB_CHAIN,
+        abi: VotingEscrow,
+        address: escrowContract,
+        functionName: "createLock",
+        args: [amount],
       });
+    } catch (err) {
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   return {
     stakeToken,
-    isConfirming: isLoading || isConfirming1 || isConfirming2,
+    isConfirming: isLoading || isConfirming,
   };
 }
