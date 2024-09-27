@@ -3,7 +3,7 @@ import { DashboardResources } from "@/components/dashboard/resources";
 import { MainSection } from "@/components/layout/main-section";
 import { RadialGradients } from "@/components/radial-gradients";
 import { Stake } from "@/plugins/stake/components/stake";
-import MultiplyerChart from "@/plugins/stake/components/multiplier-chart";
+import MultiplierChart from "@/plugins/stake/components/multiplier-chart";
 import { useGetBalance } from "@/plugins/stake/hooks/useGetBalance";
 import { Token } from "@/plugins/stake/types/tokens";
 import { formatUnits } from "viem";
@@ -28,7 +28,7 @@ export default function StandardHome() {
           </SectionHeader>
           <div className="mt-4 grid grid-cols-1 gap-x-4 md:grid-cols-2">
             <div className="mx-3 mb-6 mt-10">
-              <MultiplyerChart amount={multVp} />
+              <MultiplierChart amount={multVp} />
             </div>
             <Stake />
           </div>
