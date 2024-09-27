@@ -8,17 +8,33 @@ import { useState } from "react";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 
 export function useStakeToken(token: Token, onSuccess?: () => void) {
-  const { writeContract } = useTransactionManager({
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { writeContract, isConfirming: isConfirming1 } = useTransactionManager({
     onSuccessMessage: "Staked successfully",
     onSuccessDescription: "The transaction has been validated",
     onDeclineMessage: "Stake declined",
     onDeclineDescription: "The transaction has been declined",
     onErrorMessage: "Could not stake",
     onErrorDescription: "The transaction could not be completed",
-    onSuccess: onSuccess,
+    onSuccess() {
+      setIsLoading(false);
+      onSuccess?.();
+    },
+    onError() {
+      setIsLoading(false);
+    },
   });
   const [amount, setAmount] = useState<bigint>(0n);
-  const { approveToken } = useApproveToken(token, () => {
+  const { approveToken, isConfirming: isConfirming2 } = useApproveToken(
+    token,
+    onTokenApproveSuccess,
+    onTokenApproveError
+  );
+  const { forceChain } = useForceChain();
+  const escrowContract = getEscrowContract(token);
+
+  function onTokenApproveSuccess() {
     writeContract({
       chain: PUB_CHAIN,
       abi: VotingEscrow,
@@ -26,21 +42,29 @@ export function useStakeToken(token: Token, onSuccess?: () => void) {
       functionName: "createLock",
       args: [amount],
     });
-  });
-  const { forceChain } = useForceChain();
-  const escrowContract = getEscrowContract(token);
+  }
+
+  function onTokenApproveError() {
+    setIsLoading(false);
+  }
 
   const stakeToken = (amount: bigint) => {
     if (!amount) return;
+    setIsLoading(true);
+
     forceChain({
       onSuccess: () => {
         setAmount(amount);
         approveToken(amount);
+      },
+      onError() {
+        setIsLoading(false);
       },
     });
   };
 
   return {
     stakeToken,
+    isConfirming: isLoading || isConfirming1 || isConfirming2,
   };
 }

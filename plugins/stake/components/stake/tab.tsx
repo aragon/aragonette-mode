@@ -15,7 +15,7 @@ interface IHeaderProps {
 export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
   const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
-  const { stakeToken } = useStakeToken(token);
+  const { stakeToken, isConfirming } = useStakeToken(token);
 
   const { data } = useGetBalance(token);
 
@@ -79,7 +79,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
       <p className="text-right">
         Your balance: {formattedQuantity} {symbol}
       </p>
-      <Button className="mt-4 w-full" onClick={stake}>
+      <Button className="mt-4 w-full" onClick={stake} isLoading={isConfirming || isConfirming}>
         Stake
       </Button>
     </div>
