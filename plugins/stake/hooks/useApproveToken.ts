@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { erc20Abi } from "viem";
 import { useAccount } from "wagmi";
 import { useForceChain } from "@/hooks/useForceChain";
@@ -7,6 +8,8 @@ import { PUB_CHAIN } from "@/constants";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 
 export function useApproveToken(token: Token, onSuccess?: () => void, onError?: () => void) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const { address } = useAccount();
   const { forceChain } = useForceChain();
   const escrowContract = getEscrowContract(token);
@@ -19,15 +22,22 @@ export function useApproveToken(token: Token, onSuccess?: () => void, onError?: 
     onDeclineDescription: "The transaction has been declined",
     onErrorMessage: "Could not approve",
     onErrorDescription: "The transaction could not be completed",
-    onSuccess: onSuccess,
-    onError: onError,
+    onSuccess() {
+      setIsLoading(false);
+      onSuccess?.();
+    },
+    onError() {
+      setIsLoading(false);
+      onError?.();
+    },
   });
 
   const approveToken = (amount: bigint) => {
     if (!address) return;
+    setIsLoading(true);
 
-    forceChain({
-      onSuccess: () => {
+    forceChain()
+      .then(() => {
         writeContract({
           chain: PUB_CHAIN,
           abi: erc20Abi,
@@ -35,12 +45,15 @@ export function useApproveToken(token: Token, onSuccess?: () => void, onError?: 
           functionName: "approve",
           args: [escrowContract, amount],
         });
-      },
-    });
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        onError?.();
+      });
   };
 
   return {
     approveToken,
-    isConfirming,
+    isConfirming: isLoading || isConfirming,
   };
 }

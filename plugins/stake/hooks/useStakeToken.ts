@@ -1,13 +1,13 @@
+import { useState } from "react";
 import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
 import { useForceChain } from "@/hooks/useForceChain";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
 import { PUB_CHAIN } from "@/constants";
 import { useApproveToken } from "./useApproveToken";
-import { useState } from "react";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 
-export function useStakeToken(token: Token, onSuccess?: () => void) {
+export function useStakeToken(token: Token, onSuccess?: () => void, onError?: () => void) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { writeContract, isConfirming: isConfirming1 } = useTransactionManager({
@@ -23,6 +23,7 @@ export function useStakeToken(token: Token, onSuccess?: () => void) {
     },
     onError() {
       setIsLoading(false);
+      onError?.();
     },
   });
   const [amount, setAmount] = useState<bigint>(0n);
@@ -43,24 +44,24 @@ export function useStakeToken(token: Token, onSuccess?: () => void) {
       args: [amount],
     });
   }
-
   function onTokenApproveError() {
     setIsLoading(false);
+    onError?.();
   }
 
   const stakeToken = (amount: bigint) => {
     if (!amount) return;
     setIsLoading(true);
 
-    forceChain({
-      onSuccess: () => {
+    forceChain()
+      .then(() => {
         setAmount(amount);
         approveToken(amount);
-      },
-      onError() {
+      })
+      .catch((err) => {
         setIsLoading(false);
-      },
-    });
+        onError?.();
+      });
   };
 
   return {

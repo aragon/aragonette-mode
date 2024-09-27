@@ -19,8 +19,8 @@ export const TokenAction = ({ tokenId, token, vp, created, now }: TokenActionPro
   const relativeTime = formatterUtils.formatDate(created - diffTime, {
     format: DateFormat.RELATIVE,
   });
-  const { beginWithdrawal } = useBeginWithdrawal(token, tokenId);
-  const { withdraw } = useWithdraw(token, tokenId);
+  const { beginWithdrawal, isConfirming: isConfirmingBeginWithdraw } = useBeginWithdrawal(token, tokenId);
+  const { withdraw, isConfirming: isConfirmingWithdraw } = useWithdraw(token, tokenId);
   const { cooldown } = useGetCooldown(token, tokenId);
   const { canExit } = useCanExit(token, tokenId);
   const { isWarm } = useIsWarm(token, tokenId);
@@ -33,7 +33,7 @@ export const TokenAction = ({ tokenId, token, vp, created, now }: TokenActionPro
     return (
       <div className="flex items-center justify-between gap-x-4">
         <Tag label="Claimable" variant="success" />
-        <Button size="sm" variant="secondary" onClick={withdraw}>
+        <Button size="sm" variant="secondary" onClick={withdraw} isLoading={isConfirmingWithdraw}>
           Withdraw
         </Button>
       </div>
@@ -67,7 +67,7 @@ export const TokenAction = ({ tokenId, token, vp, created, now }: TokenActionPro
   return (
     <div className="flex items-center justify-between gap-x-4">
       <Tag label="Active" />
-      <Button size="sm" variant="secondary" onClick={beginWithdrawal}>
+      <Button size="sm" variant="secondary" onClick={beginWithdrawal} isLoading={isConfirmingBeginWithdraw}>
         Enter cooldown
       </Button>
     </div>
