@@ -48,7 +48,7 @@ const generatePoints = (startDate: Date, endDate: Date, amount: number, steps: n
   return dataPoints;
 };
 
-const MultiplyerChart: React.FC<{ amount: number }> = ({ amount }) => {
+const MultiplierChart: React.FC<{ amount: number }> = ({ amount }) => {
   const startDate = new Date();
   const endDate = new Date(new Date().getTime() + 1000 * 3600 * 24 * 7 * 10); // 10 weeks
 
@@ -105,4 +105,4 @@ const MultiplyerChart: React.FC<{ amount: number }> = ({ amount }) => {
   );
 };
 
-export default MultiplyerChart;
+export default MultiplierChart;

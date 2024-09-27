@@ -2,24 +2,29 @@ import { PUB_CHAIN } from "@/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount, useSwitchChain } from "wagmi";
 
-interface IForceChainParams {
-  chainId?: number;
-  onSuccess: () => void;
-  onError?: (err: Error) => void;
-  onSettled?: () => void;
-}
-
 export const useForceChain = () => {
   const { open } = useWeb3Modal();
   const { isConnected } = useAccount();
   const { switchChain } = useSwitchChain();
 
-  function forceChain({ chainId = PUB_CHAIN.id, onSuccess, onError, onSettled }: IForceChainParams) {
+  function forceChain(chainId: number = PUB_CHAIN.id): Promise<any> {
     if (!isConnected) {
-      open();
-    } else {
-      switchChain({ chainId }, { onSuccess, onError, onSettled });
+      return open();
     }
+
+    return new Promise<any>((resolve, reject) => {
+      switchChain(
+        { chainId },
+        {
+          onSuccess() {
+            resolve(undefined);
+          },
+          onError(error) {
+            reject(error);
+          },
+        }
+      );
+    });
   }
 
   return { forceChain };

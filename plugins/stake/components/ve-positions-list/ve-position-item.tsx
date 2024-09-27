@@ -27,7 +27,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const created = Number(tokenInfo?.start ?? 0n) * 1000;
 
   const symbol = token === Token.MODE ? "MODE" : "BPT";
-  const multiplyer = formatterUtils.formatNumber(Math.max(Number((vp ?? 1n) / (tokenInfo?.amount ?? 1n)), 1), {
+  const multiplier = formatterUtils.formatNumber(Math.max(Number((vp ?? 1n) / (tokenInfo?.amount ?? 1n)), 1), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
 
@@ -54,7 +54,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
           <div className="w-32 flex-auto">
             {amount} {symbol}
           </div>
-          <div className="w-32 flex-auto">{multiplyer}x</div>
+          <div className="w-32 flex-auto">{multiplier}x</div>
           <div className="w-32 flex-auto">
             {strEpochs !== "-" ? (
               <>
@@ -98,9 +98,9 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
 
             <div className="flex items-center justify-between py-2">
               <div className="">
-                <small>MULTIPLYER</small>
+                <small>MULTIPLiER</small>
                 <br />
-                {multiplyer}x
+                {multiplier}x
               </div>
               <div className="text-right">
                 <small>AGE</small>

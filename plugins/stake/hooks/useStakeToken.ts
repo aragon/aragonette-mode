@@ -1,24 +1,41 @@
+import { useState } from "react";
 import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
 import { useForceChain } from "@/hooks/useForceChain";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
 import { PUB_CHAIN } from "@/constants";
 import { useApproveToken } from "./useApproveToken";
-import { useState } from "react";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 
-export function useStakeToken(token: Token, onSuccess?: () => void) {
-  const { writeContract } = useTransactionManager({
+export function useStakeToken(token: Token, onSuccess?: () => void, onError?: () => void) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { writeContract, isConfirming: isConfirming1 } = useTransactionManager({
     onSuccessMessage: "Staked successfully",
     onSuccessDescription: "The transaction has been validated",
     onDeclineMessage: "Stake declined",
     onDeclineDescription: "The transaction has been declined",
     onErrorMessage: "Could not stake",
     onErrorDescription: "The transaction could not be completed",
-    onSuccess: onSuccess,
+    onSuccess() {
+      setIsLoading(false);
+      onSuccess?.();
+    },
+    onError() {
+      setIsLoading(false);
+      onError?.();
+    },
   });
   const [amount, setAmount] = useState<bigint>(0n);
-  const { approveToken } = useApproveToken(token, () => {
+  const { approveToken, isConfirming: isConfirming2 } = useApproveToken(
+    token,
+    onTokenApproveSuccess,
+    onTokenApproveError
+  );
+  const { forceChain } = useForceChain();
+  const escrowContract = getEscrowContract(token);
+
+  function onTokenApproveSuccess() {
     writeContract({
       chain: PUB_CHAIN,
       abi: VotingEscrow,
@@ -26,21 +43,29 @@ export function useStakeToken(token: Token, onSuccess?: () => void) {
       functionName: "createLock",
       args: [amount],
     });
-  });
-  const { forceChain } = useForceChain();
-  const escrowContract = getEscrowContract(token);
+  }
+  function onTokenApproveError() {
+    setIsLoading(false);
+    onError?.();
+  }
 
   const stakeToken = (amount: bigint) => {
     if (!amount) return;
-    forceChain({
-      onSuccess: () => {
+    setIsLoading(true);
+
+    forceChain()
+      .then(() => {
         setAmount(amount);
         approveToken(amount);
-      },
-    });
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        onError?.();
+      });
   };
 
   return {
     stakeToken,
+    isConfirming: isLoading || isConfirming1 || isConfirming2,
   };
 }
