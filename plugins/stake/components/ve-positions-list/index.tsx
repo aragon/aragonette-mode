@@ -1,5 +1,5 @@
 import { PUB_VE_TOKENS_LEARN_MORE_URL } from "@/constants";
-import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
+import { DataListContainer, DataListFilter, DataListPagination, DataListRoot } from "@aragon/ods";
 import { useState } from "react";
 
 import { SectionHeader } from "../section-header";
@@ -44,7 +44,13 @@ export const StakePositions = () => {
       </SectionHeader>
 
       <div className="mt-8">
-        <DataListRoot entityLabel="veTokens" className="gap-y-6" state={isLoading ? "initialLoading" : "idle"}>
+        <DataListRoot
+          entityLabel="veTokens"
+          itemsCount={veTokens.length}
+          pageSize={5}
+          className="gap-y-6"
+          state={isLoading ? "initialLoading" : "idle"}
+        >
           <DataListFilter
             searchValue={searchValue}
             placeholder="Filter by token ID or token name"
@@ -65,6 +71,8 @@ export const StakePositions = () => {
               <VePositionItem key={pos} props={veToken} />
             ))}
           </DataListContainer>
+
+          <DataListPagination />
         </DataListRoot>
       </div>
     </>
