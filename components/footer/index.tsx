@@ -1,4 +1,4 @@
-import { PUB_BLOG_URL, PUB_DISCORD_URL } from "@/constants";
+import { PUB_BLOG_URL, PUB_TELEGRAM_URL } from "@/constants";
 import Link from "next/link";
 
 export const Footer = () => {
@@ -52,7 +52,7 @@ export const Footer = () => {
             </Link>
           </li>
           <li className="group py-4 md:py-0">
-            <a className="overflow-hidden" href={PUB_DISCORD_URL} target="_blank">
+            <a className="overflow-hidden" href={PUB_TELEGRAM_URL} target="_blank">
               <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">Discord</span>
             </a>
           </li>

@@ -1,5 +1,5 @@
 import React from "react";
-import { PUB_DISCORD_URL } from "@/constants";
+import { PUB_TELEGRAM_URL } from "@/constants";
 import { Button, Card, Heading } from "@aragon/ods";
 
 const resources = [
@@ -11,11 +11,11 @@ const resources = [
     cta: "Visit",
   },
   {
-    name: "Discussion",
-    link: PUB_DISCORD_URL,
+    name: "Community",
+    link: PUB_TELEGRAM_URL,
     description:
-      "For general inquiries, active debate and discussion for all things Mode. Chat about Governance, Building or Discovering the latest opportunities on Mode.",
-    cta: "Join Discord",
+      "Join the token-gated Mode community for direct access to the Mode team, ecosystem builders and exclusive insights. Chat with other community members, grow your network and discover the latest opportunities on Mode.",
+    cta: "Join",
   },
   {
     name: "Developers",

@@ -40,7 +40,7 @@ export const PUB_PROJECT_LOGO = "/mode-green.svg";
 
 export const PUB_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 export const PUB_SOCIAL_IMAGE = process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? `${PUB_BASE_URL}/og`;
-export const PUB_DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_URL ?? "https://discord.com/invite/modenetworkofficial";
+export const PUB_TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https://guild.xyz/mode-telegram";
 export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
 export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://gov.mode.network/";
