@@ -1,10 +1,13 @@
 import { Button, InputNumberMax, Toggle, ToggleGroup } from "@aragon/ods";
 import { useEffect, useState } from "react";
 import { useGetBalance } from "../../hooks/useGetBalance";
-import { type Token } from "../../types/tokens";
+import { Token } from "../../types/tokens";
 import { formatUnits, parseUnits } from "viem";
 import { NumberFormat, formatterUtils } from "@aragon/ods";
 import { useStakeToken } from "../../hooks/useStakeToken";
+import { useQueryClient } from "@tanstack/react-query";
+import { useOwnedTokens } from "../../hooks/useOwnedTokens";
+import { useApproveToken } from "../../hooks/useApproveToken";
 
 type PercentValues = "" | "0" | "25" | "50" | "75" | "100";
 
@@ -15,9 +18,18 @@ interface IHeaderProps {
 export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
   const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
-  const { stakeToken, isConfirming } = useStakeToken(token);
+  const { data, queryKey: balanceQueryKey } = useGetBalance(token);
+  const { queryKey: modeQueryKey } = useOwnedTokens(Token.MODE, false);
+  const { queryKey: bptQueryKey } = useOwnedTokens(Token.BPT, false);
+  const queryClient = useQueryClient();
 
-  const { data } = useGetBalance(token);
+  const { stakeToken, isConfirming: isConfirming1 } = useStakeToken(balanceToStake, token, () => {
+    queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+    queryClient.invalidateQueries({ queryKey: modeQueryKey });
+    queryClient.invalidateQueries({ queryKey: bptQueryKey });
+  });
+
+  const { approveToken, isConfirming: isConfirming2 } = useApproveToken(balanceToStake, token, stakeToken);
 
   const balance = data?.balance ?? 0n;
   const decimals = data?.decimals ?? 18;
@@ -48,10 +60,6 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
     setBalanceToStake(newValue);
   }, [percentToggle, balance]);
 
-  const stake = () => {
-    stakeToken(balanceToStake);
-  };
-
   return (
     <div className="mt-4 flex w-full flex-col gap-4">
       <InputNumberMax
@@ -79,7 +87,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
       <p className="text-right">
         Your balance: {formattedQuantity} {symbol}
       </p>
-      <Button className="mt-4 w-full" onClick={stake} isLoading={isConfirming || isConfirming}>
+      <Button className="mt-4 w-full" onClick={approveToken} isLoading={isConfirming1 || isConfirming2}>
         Stake
       </Button>
     </div>

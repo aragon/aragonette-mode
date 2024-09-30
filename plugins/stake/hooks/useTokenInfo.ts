@@ -6,7 +6,7 @@ import { getEscrowContract } from "./useGetContract";
 export function useTokenInfo(token: Token, tokenId: bigint) {
   const escrowContract = getEscrowContract(token);
 
-  const { data: tokenInfo, isFetched } = useReadContract({
+  const { data: tokenInfo, isLoading } = useReadContract({
     address: escrowContract,
     abi: VotingEscrow,
     functionName: "locked",
@@ -18,6 +18,6 @@ export function useTokenInfo(token: Token, tokenId: bigint) {
 
   return {
     tokenInfo,
-    isFetched,
+    isLoading,
   };
 }

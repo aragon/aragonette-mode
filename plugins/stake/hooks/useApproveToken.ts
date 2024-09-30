@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { erc20Abi } from "viem";
 import { useAccount } from "wagmi";
+import { readContract } from "@wagmi/core";
 import { useForceChain } from "@/hooks/useForceChain";
 import { type Token } from "../types/tokens";
 import { getEscrowContract, getTokenContract } from "./useGetContract";
 import { PUB_CHAIN } from "@/constants";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
+import { config } from "@/context/Web3Modal";
 
-export function useApproveToken(token: Token, onSuccess?: () => void, onError?: () => void) {
+export function useApproveToken(amount: bigint, token: Token, onSuccess?: () => void, onError?: () => void) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { address } = useAccount();
@@ -32,24 +34,36 @@ export function useApproveToken(token: Token, onSuccess?: () => void, onError?: 
     },
   });
 
-  const approveToken = (amount: bigint) => {
-    if (!address) return;
+  const approveToken = async () => {
+    if (!address) throw new Error("No address found");
     setIsLoading(true);
 
-    forceChain()
-      .then(() => {
-        writeContract({
-          chain: PUB_CHAIN,
-          abi: erc20Abi,
-          address: tokenContract,
-          functionName: "approve",
-          args: [escrowContract, amount],
-        });
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        onError?.();
+    try {
+      await forceChain();
+
+      const allowance = await readContract(config, {
+        address: tokenContract,
+        abi: erc20Abi,
+        functionName: "allowance",
+        args: [address!, escrowContract],
       });
+
+      if (allowance && allowance >= amount) {
+        setIsLoading(false);
+        return onSuccess?.();
+      }
+
+      writeContract({
+        chain: PUB_CHAIN,
+        abi: erc20Abi,
+        address: tokenContract,
+        functionName: "approve",
+        args: [escrowContract, amount],
+      });
+    } catch (error) {
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   return {

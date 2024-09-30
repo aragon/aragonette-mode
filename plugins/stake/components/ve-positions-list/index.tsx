@@ -1,9 +1,8 @@
 import { PUB_VE_TOKENS_LEARN_MORE_URL } from "@/constants";
-import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
+import { DataListContainer, DataListFilter, DataListPagination, DataListRoot } from "@aragon/ods";
 import { useState } from "react";
 
 import { SectionHeader } from "../section-header";
-//import { getVisibleTokens } from "./utils";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { Token } from "../../types/tokens";
 import { VePositionItem } from "./ve-position-item";
@@ -11,8 +10,8 @@ import { filterTokens } from "./utils";
 
 export const StakePositions = () => {
   const [searchValue, setSearchValue] = useState("");
-  const { ownedTokens: modeTokensIds } = useOwnedTokens(Token.MODE);
-  const { ownedTokens: bptTokensIds } = useOwnedTokens(Token.BPT);
+  const { ownedTokens: modeTokensIds, isLoading: modeTokensLoading } = useOwnedTokens(Token.MODE);
+  const { ownedTokens: bptTokensIds, isLoading: bptTokensLoading } = useOwnedTokens(Token.BPT);
 
   const modeTokens = modeTokensIds?.map((id) => {
     return {
@@ -28,6 +27,7 @@ export const StakePositions = () => {
     };
   });
 
+  const isLoading = modeTokensLoading || bptTokensLoading;
   const allVeTokens = [...(modeTokens ?? []), ...(bptTokens ?? [])];
 
   allVeTokens.sort((a, b) => {
@@ -44,7 +44,13 @@ export const StakePositions = () => {
       </SectionHeader>
 
       <div className="mt-8">
-        <DataListRoot entityLabel="veTokens" className="gap-y-6">
+        <DataListRoot
+          entityLabel="veTokens"
+          itemsCount={veTokens.length}
+          pageSize={5}
+          className="gap-y-6"
+          state={isLoading ? "initialLoading" : "idle"}
+        >
           <DataListFilter
             searchValue={searchValue}
             placeholder="Filter by token ID or token name"
@@ -65,6 +71,8 @@ export const StakePositions = () => {
               <VePositionItem key={pos} props={veToken} />
             ))}
           </DataListContainer>
+
+          <DataListPagination />
         </DataListRoot>
       </div>
     </>

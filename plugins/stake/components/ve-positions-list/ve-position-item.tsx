@@ -17,9 +17,11 @@ type VePositionItemProps = {
 export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const id = props.id;
   const token = props.token;
-  const { tokenInfo } = useTokenInfo(token, id);
-  const { vp, isLoading } = useGetVp(token, id);
+  const { tokenInfo, isLoading: infoLoading } = useTokenInfo(token, id);
+  const { vp, isLoading: vpLoading } = useGetVp(token, id);
   const { now } = useNow();
+
+  const isLoading = infoLoading || vpLoading;
 
   const amount = formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
