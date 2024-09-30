@@ -1,4 +1,4 @@
-import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
+import { VotingEscrowAbi } from "@/artifacts/VotingEscrow.sol";
 import { useAccount, useReadContract } from "wagmi";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
@@ -13,7 +13,7 @@ export function useOwnedTokens(token: Token, enabled: boolean = true) {
     queryKey,
   } = useReadContract({
     address: escrowContract,
-    abi: VotingEscrow,
+    abi: VotingEscrowAbi,
     functionName: "ownedTokens",
     args: [address!],
     query: {

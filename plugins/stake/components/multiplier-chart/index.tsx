@@ -1,7 +1,7 @@
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import React from "react";
 import { type ContentType } from "recharts/types/component/Tooltip";
-import { DateFormat, formatterUtils, NumberFormat } from "@aragon/ods";
+import { formatterUtils, NumberFormat } from "@aragon/ods";
 import { type Token } from "../../types/tokens";
 import { useGetCoefficients } from "../../hooks/useGetCoefficients";
 import { formatUnits } from "viem";
@@ -67,7 +67,7 @@ const MultiplierChart: React.FC<{ amount: number; token: Token }> = ({ amount, t
   const { maxBias } = useGetMaxBias(token);
   const parsedMaxBias = Number(formatUnits(maxBias ?? 6n, 18));
   const parsedCoefficients = coefficients?.map((coef) => Number(formatUnits(coef, 18))) ?? [
-    1, 2.36205593348e-7, 9.7637e-14, 0,
+    1, 2.36205593348e-7, 9.7637e-14,
   ];
   const startDate = new Date();
   const endDate = new Date(new Date().getTime() + 1000 * 3600 * 24 * 7 * 10); // 10 weeks

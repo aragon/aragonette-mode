@@ -1,4 +1,4 @@
-import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
+import { VotingEscrowAbi } from "@/artifacts/VotingEscrow.sol";
 import { useReadContracts } from "wagmi";
 import { MODE_ESCROW_CONTRACT, MODE_TOKEN_CONTRACT, BPT_ESCROW_CONTRACT, BPT_TOKEN_CONTRACT } from "@/constants";
 import { Token } from "../types/tokens";
@@ -16,7 +16,7 @@ export function useGetContracts(token: Token) {
 
   const votingEscrowContract = {
     address: escrowContract,
-    abi: VotingEscrow,
+    abi: VotingEscrowAbi,
   } as const;
 
   const res = useReadContracts({

@@ -1,4 +1,4 @@
-export const ExitQueue = [
+export const ExitQueueAbi = [
   {
     type: "constructor",
     inputs: [],
@@ -88,8 +88,8 @@ export const ExitQueue = [
     outputs: [
       {
         name: "",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     stateMutability: "view",
@@ -176,8 +176,8 @@ export const ExitQueue = [
       },
       {
         name: "_cooldown",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
       {
         name: "_dao",
@@ -196,8 +196,8 @@ export const ExitQueue = [
       },
       {
         name: "_minLock",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     outputs: [],
@@ -210,8 +210,8 @@ export const ExitQueue = [
     outputs: [
       {
         name: "",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     stateMutability: "view",
@@ -297,8 +297,8 @@ export const ExitQueue = [
     inputs: [
       {
         name: "_cooldown",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     outputs: [],
@@ -323,8 +323,8 @@ export const ExitQueue = [
     inputs: [
       {
         name: "_minLock",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     outputs: [],
@@ -362,8 +362,8 @@ export const ExitQueue = [
     outputs: [
       {
         name: "",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     stateMutability: "view",
@@ -450,9 +450,9 @@ export const ExitQueue = [
     inputs: [
       {
         name: "cooldown",
-        type: "uint256",
+        type: "uint48",
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint48",
       },
     ],
     anonymous: false,
@@ -533,9 +533,9 @@ export const ExitQueue = [
     inputs: [
       {
         name: "minLock",
-        type: "uint256",
+        type: "uint48",
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint48",
       },
     ],
     anonymous: false,
@@ -616,7 +616,13 @@ export const ExitQueue = [
   {
     type: "error",
     name: "FeeTooHigh",
-    inputs: [],
+    inputs: [
+      {
+        name: "maxFee",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
   },
   {
     type: "error",
@@ -629,15 +635,20 @@ export const ExitQueue = [
       },
       {
         name: "minLock",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
       {
         name: "earliestExitDate",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
+  },
+  {
+    type: "error",
+    name: "MinLockOutOfBounds",
+    inputs: [],
   },
   {
     type: "error",

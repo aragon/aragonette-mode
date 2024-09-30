@@ -1,4 +1,4 @@
-export const VotingEscrow = [
+export const VotingEscrowAbi = [
   {
     type: "constructor",
     inputs: [],
@@ -183,6 +183,11 @@ export const VotingEscrow = [
         type: "address",
         internalType: "address",
       },
+      {
+        name: "_initialMinDeposit",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -232,6 +237,19 @@ export const VotingEscrow = [
   },
   {
     type: "function",
+    name: "lastLockId",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "lockNFT",
     inputs: [],
     outputs: [
@@ -261,15 +279,28 @@ export const VotingEscrow = [
         components: [
           {
             name: "amount",
-            type: "uint256",
-            internalType: "uint256",
+            type: "uint208",
+            internalType: "uint208",
           },
           {
             name: "start",
-            type: "uint256",
-            internalType: "uint256",
+            type: "uint48",
+            internalType: "uint48",
           },
         ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "minDeposit",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
@@ -393,6 +424,19 @@ export const VotingEscrow = [
   },
   {
     type: "function",
+    name: "setMinDeposit",
+    inputs: [
+      {
+        name: "_minDeposit",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "setQueue",
     inputs: [
       {
@@ -421,6 +465,24 @@ export const VotingEscrow = [
     type: "function",
     name: "sweep",
     inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "sweepNFT",
+    inputs: [
+      {
+        name: "_tokenId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "_to",
+        type: "address",
+        internalType: "address",
+      },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -692,6 +754,19 @@ export const VotingEscrow = [
   },
   {
     type: "event",
+    name: "MinDepositSet",
+    inputs: [
+      {
+        name: "minDeposit",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "Paused",
     inputs: [
       {
@@ -715,6 +790,25 @@ export const VotingEscrow = [
       },
       {
         name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "SweepNFT",
+    inputs: [
+      {
+        name: "to",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "tokenId",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
@@ -792,6 +886,11 @@ export const VotingEscrow = [
   },
   {
     type: "error",
+    name: "AmountTooSmall",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "CannotExit",
     inputs: [],
   },
@@ -820,6 +919,11 @@ export const VotingEscrow = [
         internalType: "bytes32",
       },
     ],
+  },
+  {
+    type: "error",
+    name: "LockNFTAlreadySet",
+    inputs: [],
   },
   {
     type: "error",
@@ -869,6 +973,11 @@ export const VotingEscrow = [
   {
     type: "error",
     name: "SameAddress",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TransferBalanceIncorrect",
     inputs: [],
   },
   {

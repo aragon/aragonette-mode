@@ -1,4 +1,4 @@
-import { QuadraticIncreasingEscrow } from "@/artifacts/QuadraticIncreasingEscrow.sol";
+import { QuadraticIncreasingEscrowAbi } from "@/artifacts/QuadraticIncreasingEscrow.sol";
 import { useReadContract } from "wagmi";
 import { type Token } from "../types/tokens";
 import { useGetContracts } from "../hooks/useGetContract";
@@ -10,7 +10,7 @@ export function useGetMaxBias(token: Token) {
 
   const { data: maxBias, isLoading } = useReadContract({
     address: curveContract,
-    abi: QuadraticIncreasingEscrow,
+    abi: QuadraticIncreasingEscrowAbi,
     functionName: "previewMaxBias",
     args: [10n ** 18n],
     query: {
