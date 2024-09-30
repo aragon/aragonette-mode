@@ -1,4 +1,4 @@
-import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
+import { VotingEscrowAbi } from "@/artifacts/VotingEscrow.sol";
 import { useReadContract } from "wagmi";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
@@ -8,7 +8,7 @@ export function useTokenInfo(token: Token, tokenId: bigint) {
 
   const { data: tokenInfo, isLoading } = useReadContract({
     address: escrowContract,
-    abi: VotingEscrow,
+    abi: VotingEscrowAbi,
     functionName: "locked",
     args: [tokenId!],
     query: {

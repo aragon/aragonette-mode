@@ -1,4 +1,4 @@
-export const QuadraticIncreasingEscrow = [
+export const QuadraticIncreasingEscrowAbi = [
   {
     type: "constructor",
     inputs: [],
@@ -60,19 +60,31 @@ export const QuadraticIncreasingEscrow = [
     name: "_isWarm",
     inputs: [
       {
-        name: "_tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "_userEpoch",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "t",
-        type: "uint256",
-        internalType: "uint256",
+        name: "_point",
+        type: "tuple",
+        internalType: "struct IEscrowCurveTokenStorage.TokenPoint",
+        components: [
+          {
+            name: "bias",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "checkpointTs",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "writtenTs",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "coefficients",
+            type: "int256[3]",
+            internalType: "int256[3]",
+          },
+        ],
       },
     ],
     outputs: [
@@ -100,13 +112,13 @@ export const QuadraticIncreasingEscrow = [
         components: [
           {
             name: "amount",
-            type: "uint256",
-            internalType: "uint256",
+            type: "uint208",
+            internalType: "uint208",
           },
           {
             name: "start",
-            type: "uint256",
-            internalType: "uint256",
+            type: "uint48",
+            internalType: "uint48",
           },
         ],
       },
@@ -117,13 +129,13 @@ export const QuadraticIncreasingEscrow = [
         components: [
           {
             name: "amount",
-            type: "uint256",
-            internalType: "uint256",
+            type: "uint208",
+            internalType: "uint208",
           },
           {
             name: "start",
-            type: "uint256",
-            internalType: "uint256",
+            type: "uint48",
+            internalType: "uint48",
           },
         ],
       },
@@ -207,8 +219,8 @@ export const QuadraticIncreasingEscrow = [
     outputs: [
       {
         name: "",
-        type: "int256[4]",
-        internalType: "int256[4]",
+        type: "int256[3]",
+        internalType: "int256[3]",
       },
     ],
     stateMutability: "pure",
@@ -242,8 +254,8 @@ export const QuadraticIncreasingEscrow = [
       },
       {
         name: "_warmupPeriod",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
       {
         name: "_clock",
@@ -311,8 +323,8 @@ export const QuadraticIncreasingEscrow = [
     inputs: [
       {
         name: "_warmupPeriod",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     outputs: [],
@@ -336,6 +348,71 @@ export const QuadraticIncreasingEscrow = [
       },
     ],
     stateMutability: "pure",
+  },
+  {
+    type: "function",
+    name: "tokenPointHistory",
+    inputs: [
+      {
+        name: "_tokenId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "_tokenInterval",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        internalType: "struct IEscrowCurveTokenStorage.TokenPoint",
+        components: [
+          {
+            name: "bias",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "checkpointTs",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "writtenTs",
+            type: "uint128",
+            internalType: "uint128",
+          },
+          {
+            name: "coefficients",
+            type: "int256[3]",
+            internalType: "int256[3]",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "tokenPointIntervals",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -370,66 +447,6 @@ export const QuadraticIncreasingEscrow = [
   },
   {
     type: "function",
-    name: "userPointEpoch",
-    inputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "userPointHistory",
-    inputs: [
-      {
-        name: "_tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "_userEpoch",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "tuple",
-        internalType: "struct IEscrowCurveUserStorage.UserPoint",
-        components: [
-          {
-            name: "bias",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "ts",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "coefficients",
-            type: "int256[4]",
-            internalType: "int256[4]",
-          },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "votingPowerAt",
     inputs: [
       {
@@ -459,8 +476,8 @@ export const QuadraticIncreasingEscrow = [
     outputs: [
       {
         name: "",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint48",
+        internalType: "uint48",
       },
     ],
     stateMutability: "view",
@@ -529,9 +546,9 @@ export const QuadraticIncreasingEscrow = [
     inputs: [
       {
         name: "warmup",
-        type: "uint256",
+        type: "uint48",
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint48",
       },
     ],
     anonymous: false,
@@ -564,12 +581,12 @@ export const QuadraticIncreasingEscrow = [
   },
   {
     type: "error",
-    name: "InvalidTokenId",
+    name: "InvalidCheckpoint",
     inputs: [],
   },
   {
     type: "error",
-    name: "NegativeBase",
+    name: "InvalidTokenId",
     inputs: [],
   },
   {

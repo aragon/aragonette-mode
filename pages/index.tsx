@@ -9,9 +9,11 @@ import { Token } from "@/plugins/stake/types/tokens";
 import { formatUnits } from "viem";
 import { SectionHeader } from "@/plugins/stake/components/section-header";
 import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
+import GetMoreTokens from "@/plugins/stake/components/get-tokens-links";
 
 export default function StandardHome() {
-  const { data } = useGetBalance(Token.MODE);
+  const token = Token.MODE;
+  const { data } = useGetBalance(token);
 
   const multVp = Math.max(data ? Number(formatUnits(data?.balance, data?.decimals)) : 1, 1);
 
@@ -28,9 +30,14 @@ export default function StandardHome() {
           </SectionHeader>
           <div className="mt-4 grid grid-cols-1 gap-x-4 md:grid-cols-2">
             <div className="mx-3 mb-6 mt-10">
-              <MultiplierChart amount={multVp} />
+              <MultiplierChart amount={multVp} token={token} />
             </div>
-            <Stake />
+            <div className="mx-3 mb-6">
+              <Stake />
+              <div className="mx-2 mt-4">
+                <GetMoreTokens />
+              </div>
+            </div>
           </div>
         </div>
         <DashboardResources />

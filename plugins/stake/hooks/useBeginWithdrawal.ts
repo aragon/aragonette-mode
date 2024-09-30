@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
+import { VotingEscrowAbi } from "@/artifacts/VotingEscrow.sol";
 import { useForceChain } from "@/hooks/useForceChain";
 import { useIsVoting } from "./useIsVoting";
 import { type Token } from "../types/tokens";
@@ -39,7 +39,7 @@ export function useBeginWithdrawal(token: Token, tokenId: bigint, onSuccess?: ()
 
   function onTokensApproveSuccess() {
     writeContract({
-      abi: VotingEscrow,
+      abi: VotingEscrowAbi,
       address: escrowContract,
       functionName: isVoting ? "resetVotesAndBeginWithdrawal" : "beginWithdrawal",
       args: [tokenId],

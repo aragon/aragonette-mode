@@ -1,4 +1,4 @@
-export const SimpleGaugeVoting = [
+export const SimpleGaugeVotingAbi = [
   {
     type: "constructor",
     inputs: [],

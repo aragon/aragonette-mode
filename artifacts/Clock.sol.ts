@@ -1,4 +1,4 @@
-export const Clock = [
+export const ClockAbi = [
   {
     type: "constructor",
     inputs: [],
@@ -265,6 +265,44 @@ export const Clock = [
   },
   {
     type: "function",
+    name: "resolveEpochNextCheckpointIn",
+    inputs: [
+      {
+        name: "timestamp",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    name: "resolveEpochNextCheckpointTs",
+    inputs: [
+      {
+        name: "timestamp",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
     name: "resolveEpochStartTs",
     inputs: [
       {
@@ -285,6 +323,25 @@ export const Clock = [
   {
     type: "function",
     name: "resolveEpochStartsIn",
+    inputs: [
+      {
+        name: "timestamp",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    name: "resolveEpochVoteEndTs",
     inputs: [
       {
         name: "timestamp",
@@ -423,7 +480,7 @@ export const Clock = [
   },
   {
     type: "function",
-    name: "voteWindowOffset",
+    name: "voteWindowBuffer",
     inputs: [],
     outputs: [
       {

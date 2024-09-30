@@ -1,4 +1,4 @@
-import { VotingEscrow } from "@/artifacts/VotingEscrow.sol";
+import { VotingEscrowAbi } from "@/artifacts/VotingEscrow.sol";
 import { useForceChain } from "@/hooks/useForceChain";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
@@ -37,7 +37,7 @@ export function useStakeToken(amount: bigint, token: Token, onSuccess?: () => vo
       await forceChain();
       writeContract({
         chain: PUB_CHAIN,
-        abi: VotingEscrow,
+        abi: VotingEscrowAbi,
         address: escrowContract,
         functionName: "createLock",
         args: [amount],

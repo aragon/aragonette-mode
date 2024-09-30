@@ -40,7 +40,7 @@ export const PUB_PROJECT_LOGO = "/mode-green.svg";
 
 export const PUB_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 export const PUB_SOCIAL_IMAGE = process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? `${PUB_BASE_URL}/og`;
-export const PUB_DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_URL ?? "https://discord.com/invite/modenetworkofficial";
+export const PUB_TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https://guild.xyz/mode-telegram";
 export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
 export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://gov.mode.network/";
@@ -50,8 +50,7 @@ export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://mode.mirror.xyz/";
 export const PUB_GET_MORE_MODE_URL =
   process.env.NEXT_PUBLIC_GET_MORE_MODE_URL ??
   "https://jumper.exchange/?fromChain=1&fromToken=0x0000000000000000000000000000000000000000&toChain=34443&toToken=0xDfc7C877a950e49D2610114102175A06C2e3167a";
-export const PUB_GET_MORE_BPT_URL =
-  process.env.NEXT_PUBLIC_GET_MORE_BPT_URL ?? "https://app.balancer.fi/#/ethereum/swap";
+export const PUB_GET_MORE_BPT_URL = process.env.NEXT_PUBLIC_GET_MORE_BPT_URL ?? "https://balancer.fi/swap/ethereum/ETH";
 export const PUB_GET_MORE_BOTH_URL = process.env.NEXT_PUBLIC_GET_MORE_BOTH_URL ?? "https://web3packs.com/shop";
 
 export const PUB_WALLET_ICON =

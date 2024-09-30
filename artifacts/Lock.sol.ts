@@ -731,6 +731,11 @@ export const LockAbi = [
   },
   {
     type: "error",
+    name: "ForbiddenWhitelistAddress",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "NotWhitelisted",
     inputs: [],
   },
