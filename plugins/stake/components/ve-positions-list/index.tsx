@@ -7,11 +7,32 @@ import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { Token } from "../../types/tokens";
 import { VePositionItem } from "./ve-position-item";
 import { filterTokens } from "./utils";
+import { useGetCooldownLogs } from "../../hooks/useGetCooldownLogs";
 
 export const StakePositions = () => {
   const [searchValue, setSearchValue] = useState("");
   const { ownedTokens: modeTokensIds, isLoading: modeTokensLoading } = useOwnedTokens(Token.MODE);
   const { ownedTokens: bptTokensIds, isLoading: bptTokensLoading } = useOwnedTokens(Token.BPT);
+
+  const { data: cooldownModeLogs, isLoading: cooldownModeLoading } = useGetCooldownLogs(Token.MODE);
+  const { data: cooldownBptLogs, isLoading: cooldownBptLoading } = useGetCooldownLogs(Token.BPT);
+
+  const cooldownModeTokens = cooldownModeLogs?.flatMap((log) =>
+    log?.args.exitDate
+      ? {
+          id: log?.args.tokenId ?? 0n,
+          token: Token.MODE,
+        }
+      : []
+  );
+  const cooldownBptTokens = cooldownBptLogs?.flatMap((log) =>
+    log?.args.exitDate
+      ? {
+          id: log?.args.tokenId ?? 0n,
+          token: Token.BPT,
+        }
+      : []
+  );
 
   const modeTokens = modeTokensIds?.map((id) => {
     return {
@@ -27,14 +48,24 @@ export const StakePositions = () => {
     };
   });
 
-  const isLoading = modeTokensLoading || bptTokensLoading;
-  const allVeTokens = [...(modeTokens ?? []), ...(bptTokens ?? [])];
+  const isLoading = modeTokensLoading || bptTokensLoading || cooldownModeLoading || cooldownBptLoading;
+  const allVeTokens = [
+    ...(modeTokens ?? []),
+    ...(bptTokens ?? []),
+    ...(cooldownModeTokens ?? []),
+    ...(cooldownBptTokens ?? []),
+  ];
 
   allVeTokens.sort((a, b) => {
     return Number(b.id - a.id);
   });
 
-  const veTokens = filterTokens(allVeTokens, searchValue);
+  // Remove duplicates
+  const veTokens = allVeTokens.filter((veToken, index, self) => {
+    return index === self.findIndex((t) => t.id === veToken.id && t.token === veToken.token);
+  });
+
+  const filteredVeTokens = filterTokens(veTokens, searchValue);
 
   return (
     <>
@@ -46,7 +77,7 @@ export const StakePositions = () => {
       <div className="mt-8">
         <DataListRoot
           entityLabel="veTokens"
-          itemsCount={veTokens.length}
+          itemsCount={filteredVeTokens.length}
           pageSize={5}
           className="gap-y-6"
           state={isLoading ? "initialLoading" : "idle"}
@@ -66,8 +97,8 @@ export const StakePositions = () => {
           </div>
 
           <DataListContainer>
-            {veTokens.length === 0 && <div className="text-neutral-500">No veTokens found</div>}
-            {veTokens.map((veToken, pos) => (
+            {filteredVeTokens.length === 0 && <div className="text-neutral-500">No veTokens found</div>}
+            {filteredVeTokens.map((veToken, pos) => (
               <VePositionItem key={pos} props={veToken} />
             ))}
           </DataListContainer>

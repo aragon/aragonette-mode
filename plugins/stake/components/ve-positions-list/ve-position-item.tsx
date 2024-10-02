@@ -9,6 +9,7 @@ import { epochsSince } from "./utils";
 import { TokenAction } from "./ve-token-action";
 import { Fragment } from "react";
 import { useNow } from "../../hooks/useNow";
+import { useGetPoint } from "../../hooks/useGetPoint";
 
 type VePositionItemProps = {
   props: VeTokenItem;
@@ -20,18 +21,23 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const { tokenInfo, isLoading: infoLoading } = useTokenInfo(token, id);
   const { vp, isLoading: vpLoading } = useGetVp(token, id);
   const { now } = useNow();
+  const { point: depositPoint } = useGetPoint(token, id, 1n);
 
   const isLoading = infoLoading || vpLoading;
 
-  const amount = formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
-    format: NumberFormat.TOKEN_AMOUNT_SHORT,
-  });
-  const created = Number(tokenInfo?.start ?? 0n) * 1000;
+  const amount = tokenInfo?.amount
+    ? formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
+        format: NumberFormat.TOKEN_AMOUNT_SHORT,
+      })
+    : null;
+  const created = Number(depositPoint?.writtenTs ?? 0) * 1000;
 
   const symbol = token === Token.MODE ? "MODE" : "BPT";
-  const multiplier = formatterUtils.formatNumber(Math.max(Number((vp ?? 1n) / (tokenInfo?.amount ?? 1n)), 1), {
-    format: NumberFormat.TOKEN_AMOUNT_SHORT,
-  });
+  const multiplier = tokenInfo?.amount
+    ? formatterUtils.formatNumber(Math.max(Number((vp ?? 1n) / (tokenInfo?.amount || 1n)), 1), {
+        format: NumberFormat.TOKEN_AMOUNT_SHORT,
+      })
+    : null;
 
   const strEpochs = epochsSince(created, now);
   const diffTime = now - new Date().getTime();
@@ -53,10 +59,8 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
             />
             {id.toString()}
           </div>
-          <div className="w-32 flex-auto">
-            {amount} {symbol}
-          </div>
-          <div className="w-32 flex-auto">{multiplier}x</div>
+          <div className="w-32 flex-auto">{amount ? `${amount} ${symbol}` : "-"}</div>
+          <div className="w-32 flex-auto">{multiplier ? `${multiplier}x` : "-"}</div>
           <div className="w-32 flex-auto">
             {strEpochs !== "-" ? (
               <>
@@ -93,16 +97,14 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                 />
                 {id.toString()}
               </div>
-              <div>
-                {amount} {symbol}
-              </div>
+              <div>{amount ? `${amount} ${symbol}` : "-"}</div>
             </div>
 
             <div className="flex items-center justify-between py-2">
               <div className="">
-                <small>MULTIPLiER</small>
+                <small>MULTIPLIER</small>
                 <br />
-                {multiplier}x
+                {multiplier ? `${multiplier}x` : "-"}
               </div>
               <div className="text-right">
                 <small>AGE</small>

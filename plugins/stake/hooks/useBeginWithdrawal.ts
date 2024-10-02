@@ -58,6 +58,7 @@ export function useBeginWithdrawal(token: Token, tokenId: bigint, onSuccess?: ()
         approveNFT(tokenId);
       })
       .catch((err) => {
+        console.error(err);
         setIsLoading(false);
         onError?.();
       });
