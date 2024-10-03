@@ -8,7 +8,11 @@ export function useCanExit(token: Token, tokenId: bigint) {
 
   const queueContract = data?.queueContract.result;
 
-  const { data: canExit, isLoading } = useReadContract({
+  const {
+    data: canExit,
+    isLoading,
+    queryKey,
+  } = useReadContract({
     address: queueContract,
     abi: ExitQueueAbi,
     functionName: "canExit",
@@ -21,5 +25,6 @@ export function useCanExit(token: Token, tokenId: bigint) {
   return {
     canExit,
     isLoading,
+    queryKey,
   };
 }

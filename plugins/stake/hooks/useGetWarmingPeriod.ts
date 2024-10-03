@@ -8,7 +8,11 @@ export function useGetWarmingPeriod(token: Token) {
 
   const curveContract = data?.curveContract.result;
 
-  const { data: warmingPeriod, isLoading } = useReadContract({
+  const {
+    data: warmingPeriod,
+    isLoading,
+    queryKey,
+  } = useReadContract({
     address: curveContract,
     abi: QuadraticIncreasingEscrowAbi,
     functionName: "warmupPeriod",
@@ -21,5 +25,6 @@ export function useGetWarmingPeriod(token: Token) {
   return {
     warmingPeriod,
     isLoading,
+    queryKey,
   };
 }

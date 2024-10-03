@@ -25,8 +25,13 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
 
   const isLoading = infoLoading || vpLoading;
 
+  const amountVal = Number(formatUnits(tokenInfo?.amount ?? 0n, 18));
+  const vpVal = Number(formatUnits(vp ?? 0n, 18));
+
+  const multiplierVal = Math.max(vpVal / (amountVal || 1), 1);
+
   const amount = tokenInfo?.amount
-    ? formatterUtils.formatNumber(formatUnits(tokenInfo?.amount ?? 0n, 18), {
+    ? formatterUtils.formatNumber(amountVal, {
         format: NumberFormat.TOKEN_AMOUNT_SHORT,
       })
     : null;
@@ -34,7 +39,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
 
   const symbol = token === Token.MODE ? "MODE" : "BPT";
   const multiplier = tokenInfo?.amount
-    ? formatterUtils.formatNumber(Math.max(Number((vp ?? 1n) / (tokenInfo?.amount || 1n)), 1), {
+    ? formatterUtils.formatNumber(multiplierVal, {
         format: NumberFormat.TOKEN_AMOUNT_SHORT,
       })
     : null;
@@ -62,7 +67,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
           <div className="w-32 flex-auto">{amount ? `${amount} ${symbol}` : "-"}</div>
           <div className="w-32 flex-auto">{multiplier ? `${multiplier}x` : "-"}</div>
           <div className="w-32 flex-auto">
-            {strEpochs !== "-" ? (
+            {strEpochs !== "0" && strEpochs !== "-" ? (
               <>
                 {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
                 <br />
@@ -78,7 +83,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                 <div className="flex items-center justify-between gap-x-4">-</div>;
               </div>
             ) : (
-              <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} now={now} />
+              <TokenAction tokenId={id} token={token} created={created} now={now} />
             )}
           </div>
         </DataListItem>
@@ -126,7 +131,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                   <div className="flex items-center justify-between gap-x-4">-</div>;
                 </div>
               ) : (
-                <TokenAction tokenId={id} token={token} vp={vp ?? 0n} created={created} now={now} />
+                <TokenAction tokenId={id} token={token} created={created} now={now} />
               )}
             </div>
           </dl>

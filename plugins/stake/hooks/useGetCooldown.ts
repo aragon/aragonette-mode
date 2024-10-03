@@ -8,7 +8,11 @@ export function useGetCooldown(token: Token, tokenId: bigint) {
 
   const queueContract = data?.queueContract.result;
 
-  const { data: cooldown, isLoading } = useReadContract({
+  const {
+    data: cooldown,
+    isLoading,
+    queryKey,
+  } = useReadContract({
     address: queueContract,
     abi: ExitQueueAbi,
     functionName: "queue",
@@ -21,5 +25,6 @@ export function useGetCooldown(token: Token, tokenId: bigint) {
   return {
     cooldown,
     isLoading,
+    queryKey,
   };
 }

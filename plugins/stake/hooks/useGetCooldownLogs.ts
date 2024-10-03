@@ -4,13 +4,12 @@ import { decodeEventLog, getAbiItem } from "viem";
 import { ExitQueueAbi } from "@/artifacts/ExitQueue.sol";
 import { useQuery } from "wagmi/query";
 import { useGetContracts } from "./useGetContract";
-import { useBlockNumber } from "wagmi";
+import { CONTRACTS_DEPLOYMENT_BLOCK } from "@/constants";
 
 export function useGetCooldownLogs(token: Token) {
   const publicClient = usePublicClient();
   const { address } = useAccount();
   const { data } = useGetContracts(token);
-  const { data: blockNumber } = useBlockNumber();
 
   const queueContract = data?.queueContract.result;
 
@@ -21,14 +20,14 @@ export function useGetCooldownLogs(token: Token) {
 
   return useQuery({
     queryKey: ["exitQueue", token, address ?? ""],
-    enabled: !!queueContract && !!address && !!blockNumber,
+    enabled: !!queueContract && !!address,
     queryFn: () =>
       publicClient?.getLogs({
         address: queueContract,
         event: ExitQueueEvent,
         args: { holder: address! },
-        fromBlock: blockNumber! - 100n,
-        toBlock: blockNumber!,
+        fromBlock: CONTRACTS_DEPLOYMENT_BLOCK,
+        toBlock: "latest",
       }),
     select: (data) =>
       data?.flatMap((log) => {

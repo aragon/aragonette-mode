@@ -20,7 +20,7 @@ export const StakePositions = () => {
   const cooldownModeTokens = cooldownModeLogs?.flatMap((log) =>
     log?.args.exitDate
       ? {
-          id: log?.args.tokenId ?? 0n,
+          id: BigInt(log?.args.tokenId ?? 0n),
           token: Token.MODE,
         }
       : []
@@ -28,7 +28,7 @@ export const StakePositions = () => {
   const cooldownBptTokens = cooldownBptLogs?.flatMap((log) =>
     log?.args.exitDate
       ? {
-          id: log?.args.tokenId ?? 0n,
+          id: BigInt(log?.args.tokenId ?? 0n),
           token: Token.BPT,
         }
       : []
@@ -36,14 +36,14 @@ export const StakePositions = () => {
 
   const modeTokens = modeTokensIds?.map((id) => {
     return {
-      id: id,
+      id: BigInt(id),
       token: Token.MODE,
     };
   });
 
   const bptTokens = bptTokensIds?.map((id) => {
     return {
-      id: id,
+      id: BigInt(id),
       token: Token.BPT,
     };
   });
@@ -57,6 +57,7 @@ export const StakePositions = () => {
   ];
 
   allVeTokens.sort((a, b) => {
+    console.log(a.id, b.id);
     return Number(b.id - a.id);
   });
 
