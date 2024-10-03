@@ -5,8 +5,12 @@ import { getEscrowContract, useGetContracts } from "./useGetContract";
 import { PUB_CHAIN } from "@/constants";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
 import { LockAbi } from "@/artifacts/Lock.sol";
+import { readContract } from "@wagmi/core";
+import { config } from "@/context/Web3Modal";
 
-export function useApproveNFT(token: Token, onSuccess?: () => void, onError?: () => void) {
+import { erc721Abi } from "viem";
+
+export function useApproveNFT(token: Token, tokenId: bigint, onSuccess?: () => void, onError?: () => void) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { forceChain } = useForceChain();
@@ -32,24 +36,37 @@ export function useApproveNFT(token: Token, onSuccess?: () => void, onError?: ()
     },
   });
 
-  const approveNFT = (tokenId: bigint) => {
+  const approveNFT = async () => {
     if (!lockNFTContract) return;
     setIsLoading(true);
 
-    forceChain()
-      .then(() => {
-        writeContract({
-          chain: PUB_CHAIN,
-          abi: LockAbi,
-          address: lockNFTContract!,
-          functionName: "approve",
-          args: [escrowContract, tokenId],
-        });
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        onError?.();
+    try {
+      await forceChain();
+
+      const approvedOperator = await readContract(config, {
+        address: lockNFTContract,
+        abi: erc721Abi,
+        functionName: "getApproved",
+        args: [tokenId],
       });
+
+      if (approvedOperator === escrowContract) {
+        setIsLoading(false);
+        return onSuccess?.();
+      }
+
+      writeContract({
+        chain: PUB_CHAIN,
+        abi: LockAbi,
+        address: lockNFTContract!,
+        functionName: "approve",
+        args: [escrowContract, tokenId],
+      });
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   return {

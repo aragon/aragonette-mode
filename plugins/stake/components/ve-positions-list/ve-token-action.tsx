@@ -8,6 +8,7 @@ import { useGetWarmingPeriod } from "../../hooks/useGetWarmingPeriod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetVp } from "../../hooks/useGetVp";
 import { useGetNextEpochIn } from "../../hooks/useGetNextEpochIn";
+import { useApproveNFT } from "../../hooks/useApproveNFT";
 
 type TokenActionProps = {
   tokenId: bigint;
@@ -31,6 +32,8 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
     queryClient.invalidateQueries({ queryKey: vpQueryKey });
     queryClient.invalidateQueries({ queryKey: ["exitQueue"] });
   });
+  const { approveNFT, isConfirming: isConfirmingApproval } = useApproveNFT(token, tokenId, beginWithdrawal);
+
   const { withdraw, isConfirming: isConfirmingWithdraw } = useWithdraw(token, tokenId, () => {
     queryClient.invalidateQueries({ queryKey: cooldownQueryKey });
     queryClient.invalidateQueries({ queryKey: canExitQueryKey });
@@ -110,7 +113,12 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
   return (
     <div className="flex items-center justify-between gap-x-4">
       <Tag label="Active" variant="primary" />
-      <Button size="sm" variant="secondary" onClick={beginWithdrawal} isLoading={isConfirmingBeginWithdraw}>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={approveNFT}
+        isLoading={isConfirmingApproval || isConfirmingBeginWithdraw}
+      >
         Enter cooldown
       </Button>
     </div>

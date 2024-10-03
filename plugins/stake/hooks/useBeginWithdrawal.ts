@@ -5,7 +5,6 @@ import { useIsVoting } from "./useIsVoting";
 import { type Token } from "../types/tokens";
 import { getEscrowContract } from "./useGetContract";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
-import { useApproveNFT } from "./useApproveNFT";
 
 export function useBeginWithdrawal(token: Token, tokenId: bigint, onSuccess?: () => void, onError?: () => void) {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,41 +30,27 @@ export function useBeginWithdrawal(token: Token, tokenId: bigint, onSuccess?: ()
   const { isVoting } = useIsVoting(token, tokenId);
   const escrowContract = getEscrowContract(token);
 
-  const { approveNFT, isConfirming: isConfirming2 } = useApproveNFT(
-    token,
-    onTokensApproveSuccess,
-    onTokensApproveError
-  );
-
-  function onTokensApproveSuccess() {
-    writeContract({
-      abi: VotingEscrowAbi,
-      address: escrowContract,
-      functionName: isVoting ? "resetVotesAndBeginWithdrawal" : "beginWithdrawal",
-      args: [tokenId],
-    });
-  }
-  function onTokensApproveError() {
-    setIsLoading(false);
-    onError?.();
-  }
-
-  const beginWithdrawal = () => {
+  const beginWithdrawal = async () => {
     setIsLoading(true);
 
-    forceChain()
-      .then(() => {
-        approveNFT(tokenId);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-        onError?.();
+    try {
+      await forceChain();
+
+      writeContract({
+        abi: VotingEscrowAbi,
+        address: escrowContract,
+        functionName: isVoting ? "resetVotesAndBeginWithdrawal" : "beginWithdrawal",
+        args: [tokenId],
       });
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   return {
     beginWithdrawal,
-    isConfirming: isLoading || isConfirming || isConfirming2,
+    isConfirming: isLoading || isConfirming,
   };
 }
