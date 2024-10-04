@@ -28,20 +28,22 @@ export function useWithdraw(token: Token, tokenId: bigint, onSuccess?: () => voi
   const { forceChain } = useForceChain();
   const escrowContract = getEscrowContract(token);
 
-  const withdraw = () => {
-    forceChain()
-      .then(() => {
-        writeContract({
-          abi: VotingEscrowAbi,
-          address: escrowContract,
-          functionName: "withdraw",
-          args: [tokenId],
-        });
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        onError?.();
+  const withdraw = async () => {
+    setIsLoading(true);
+
+    try {
+      await forceChain();
+
+      writeContract({
+        abi: VotingEscrowAbi,
+        address: escrowContract,
+        functionName: "withdraw",
+        args: [tokenId],
       });
+    } catch (err) {
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   return {
