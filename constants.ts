@@ -4,6 +4,7 @@ import { type ChainName, getChain } from "./utils/chains";
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "holesky") as ChainName;
 export const PUB_CHAIN = getChain(PUB_CHAIN_NAME);
+export const CONTRACTS_DEPLOYMENT_BLOCK = BigInt(process.env.NEXT_PUBLIC_CONTRACTS_DEPLOYMENT_BLOCK ?? "0");
 
 // ENS target chain
 export const PUB_ENS_CHAIN_NAME = (process.env.NEXT_PUBLIC_ENS_CHAIN_NAME ?? "mainnet") as ChainName;
@@ -50,7 +51,9 @@ export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://mode.mirror.xyz/";
 export const PUB_GET_MORE_MODE_URL =
   process.env.NEXT_PUBLIC_GET_MORE_MODE_URL ??
   "https://jumper.exchange/?fromChain=1&fromToken=0x0000000000000000000000000000000000000000&toChain=34443&toToken=0xDfc7C877a950e49D2610114102175A06C2e3167a";
-export const PUB_GET_MORE_BPT_URL = process.env.NEXT_PUBLIC_GET_MORE_BPT_URL ?? "https://balancer.fi/swap/ethereum/ETH";
+export const PUB_GET_MORE_BPT_URL =
+  process.env.NEXT_PUBLIC_GET_MORE_BPT_URL ??
+  "https://balancer.fi/pools/mode/v2/0x7c86a44778c52a0aad17860924b53bf3f35dc932000200000000000000000007/add-liquidity";
 export const PUB_GET_MORE_BOTH_URL = process.env.NEXT_PUBLIC_GET_MORE_BOTH_URL ?? "https://web3packs.com/shop";
 
 export const PUB_WALLET_ICON =

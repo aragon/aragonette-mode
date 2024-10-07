@@ -1,6 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
-import { useNow } from "./useNow";
 
 export function useSetTimestamp(timestamp: bigint) {
   const publicClient = usePublicClient();
