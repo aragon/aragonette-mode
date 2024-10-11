@@ -1,20 +1,25 @@
 import { fetchIpfsAsJson } from "@/utils/ipfs";
-import { JsonValue } from "@/utils/types";
+import { type JsonValue } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useMetadata<T = JsonValue>(ipfsUri?: string) {
   const { data, isLoading, isSuccess, error } = useQuery<T, Error>({
-    queryKey: ["ipfs", ipfsUri || ""],
-    queryFn: () => {
-      if (!ipfsUri) return Promise.resolve("");
+    queryKey: ["ipfs", ipfsUri ?? ""],
+    queryFn: async () => {
+      if (!ipfsUri) return;
 
-      return fetchIpfsAsJson(ipfsUri);
+      try {
+        return await fetchIpfsAsJson(ipfsUri);
+      } catch (error) {
+        console.error("Failed to fetch IPFS metadata", error);
+        throw error;
+      }
     },
     retry: true,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
     retryOnMount: true,
-    staleTime: Infinity,
+    staleTime: 0,
   });
 
   return {

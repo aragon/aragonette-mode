@@ -42,7 +42,7 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
   });
 
   const diffTime = now - new Date().getTime();
-  const warmingPeriodDate = Math.max(created + (warmingPeriod ?? 0) * 1000, created + Number(nextEpochIn) * 1000);
+  const warmingPeriodDate = created + Math.max(warmingPeriod ?? 0, Number(nextEpochIn)) * 1000;
 
   const inWarmup = now <= warmingPeriodDate;
   const inCooldown = cooldown?.exitDate;

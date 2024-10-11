@@ -12,6 +12,8 @@ export const PUB_ENS_CHAIN = getChain(PUB_ENS_CHAIN_NAME);
 
 // Contracts
 export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
+export const PUB_MULTISIG_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_MULTISIG_PLUGIN_ADDRESS ?? "") as Address;
+
 export const MODE_ESCROW_CONTRACT = (process.env.NEXT_PUBLIC_MODE_ESCROW_CONTRACT ?? "") as Address;
 export const MODE_TOKEN_CONTRACT = (process.env.NEXT_PUBLIC_MODE_TOKEN_CONTRACT ?? "") as Address;
 

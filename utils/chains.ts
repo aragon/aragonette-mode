@@ -7,10 +7,21 @@ import {
   polygonMumbai,
   mode,
   modeTestnet,
+  anvil,
   type Chain,
 } from "@wagmi/core/chains";
 
-const chainNames = ["mainnet", "polygon", "sepolia", "holesky", "mumbai", "arbitrum", "mode", "mode-sepolia"] as const;
+const chainNames = [
+  "mainnet",
+  "polygon",
+  "sepolia",
+  "holesky",
+  "mumbai",
+  "arbitrum",
+  "mode",
+  "mode-sepolia",
+  "anvil",
+] as const;
 
 export type ChainName = (typeof chainNames)[number];
 
@@ -32,6 +43,8 @@ export function getChain(chainName: ChainName): Chain {
       return mode;
     case "mode-sepolia":
       return modeTestnet;
+    case "anvil":
+      return anvil;
     default:
       throw new Error("Unknown chain");
   }

@@ -17,4 +17,16 @@ export const plugins: PluginItem[] = [
     title: "Stake",
     // icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
   },
+  {
+    id: "voting",
+    folderName: "voting",
+    title: "Vote",
+    // icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
+  },
+  {
+    id: "multisig",
+    folderName: "multisig",
+    title: "Multisig",
+    // icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
+  },
 ];
