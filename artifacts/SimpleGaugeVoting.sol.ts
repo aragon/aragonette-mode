@@ -278,6 +278,41 @@ export const SimpleGaugeVotingAbi = [
   },
   {
     type: "function",
+    name: "getGauge",
+    inputs: [
+      {
+        name: "_gauge",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        internalType: "struct IGauge.Gauge",
+        components: [
+          {
+            name: "active",
+            type: "bool",
+            internalType: "bool",
+          },
+          {
+            name: "created",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "metadataURI",
+            type: "string",
+            internalType: "string",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "function",
     name: "getAllGauges",
     inputs: [],
     outputs: [

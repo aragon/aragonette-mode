@@ -1,0 +1,117 @@
+import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
+import { useState } from "react";
+import { useGetGauges } from "../../hooks/useGetGauges";
+
+import { GaugeListItem } from "./gauge-item";
+import { type GaugeMetadata, type GaugeItem } from "./types";
+import { Token } from "../../types/tokens";
+import { useGetGaugesInfo } from "../../hooks/useGetGaugesInfo";
+import { type Address } from "viem";
+import { VotingBar } from "../voting-bar";
+import { useGetGaugeMetadata } from "../../hooks/useGetGaugeMetadata";
+import { useGetTotalGaugeVotes } from "../../hooks/useGetTotalGaugeVotes";
+
+export const StakePositions = () => {
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
+
+  const { gauges: modeGauges } = useGetGauges(Token.MODE);
+  const { gauges: bptGauges } = useGetGauges(Token.BPT);
+
+  const { data: modeInfo } = useGetGaugesInfo(Token.MODE, (modeGauges as Address[]) ?? []);
+  const { data: bptInfo } = useGetGaugesInfo(Token.BPT, (bptGauges as Address[]) ?? []);
+
+  const gaugesData = [...(modeInfo ?? []), ...(bptInfo ?? [])];
+
+  const gaugesInfo = gaugesData.filter((gauge) => gauge.info.active);
+
+  const { metadata: gaugesMetadata } = useGetGaugeMetadata<GaugeMetadata>(gaugesInfo.map((g) => g.info.metadataURI));
+
+  const allGauges = gaugesInfo.map((gauge, index) => {
+    const metadata = gaugesMetadata[index].data;
+    return {
+      ...gauge,
+      metadata,
+    };
+  }) as GaugeItem[];
+
+  const { data: totalModeVotesData } = useGetTotalGaugeVotes(
+    Token.MODE,
+    allGauges.filter((gauge) => gauge.token === Token.MODE).map((gauge) => gauge.address)
+  );
+  const { data: totalBptVotesData } = useGetTotalGaugeVotes(
+    Token.BPT,
+    allGauges.filter((gauge) => gauge.token === Token.BPT).map((gauge) => gauge.address)
+  );
+
+  const totalVotesBn = (totalModeVotesData ?? 0n) + (totalBptVotesData ?? 0n);
+
+  const isLoading = false;
+
+  // TODO: match the gauges
+  const gauges = allGauges.filter((gauge, index, self) => {
+    return index === self.findIndex((t) => t.address === gauge.address);
+  });
+
+  const filteredGauges = gauges.filter((gauge) => {
+    if (!searchValue) return true;
+    return (
+      gauge.metadata?.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      gauge.metadata?.website.url.toLowerCase().includes(searchValue.toLowerCase()) ||
+      gauge.metadata?.docs.url.toLowerCase().includes(searchValue.toLowerCase()) ||
+      gauge.address.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  });
+
+  return (
+    <div className="mt-8">
+      <DataListRoot
+        entityLabel="Projects"
+        itemsCount={filteredGauges.length}
+        pageSize={filteredGauges.length}
+        className="mb-12 gap-y-6"
+        state={isLoading ? "initialLoading" : "idle"}
+      >
+        <DataListFilter
+          searchValue={searchValue}
+          placeholder="Filter projects by name or address"
+          onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
+        />
+
+        <div className="hidden gap-x-4 px-4 md:flex">
+          <div className="w-1/6 flex-auto">Name</div>
+          <div className="w-1/4 flex-auto text-right">Total Votes</div>
+          <div className="w-1/4 flex-auto text-right">Your Votes</div>
+          <div className="w-1/4 flex-auto"></div>
+        </div>
+
+        <DataListContainer>
+          {filteredGauges.length === 0 && <div className="text-neutral-500">No Projects found</div>}
+          {filteredGauges.map((gauge, pos) => (
+            <GaugeListItem
+              key={pos}
+              props={gauge}
+              totalVotes={totalVotesBn}
+              selected={selectedGauges.findIndex((g) => g.address === gauge.address) >= 0}
+              onSelect={(selected) => {
+                const cleanedGauges = selectedGauges.filter((g) => g.address !== gauge.address);
+                if (selected) {
+                  setSelectedGauges([...cleanedGauges, gauge]);
+                } else {
+                  setSelectedGauges(cleanedGauges);
+                }
+              }}
+            />
+          ))}
+        </DataListContainer>
+      </DataListRoot>
+      <VotingBar
+        selectedGauges={selectedGauges}
+        onRemove={(gauge) => {
+          const index = selectedGauges.findIndex((g) => g.address === gauge.address);
+          if (index !== -1) setSelectedGauges(selectedGauges.filter((_, i) => i !== index));
+        }}
+      />
+    </div>
+  );
+};
