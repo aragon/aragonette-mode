@@ -33,7 +33,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
 
   const balance = data?.balance ?? 0n;
   const decimals = data?.decimals ?? 18;
-  const symbol = data?.symbol ?? "";
+  const symbol = token === Token.MODE ? "MODE" : "BPT";
   const formattedBalance = data?.formattedBalance ?? "0";
   const formattedQuantity = formatterUtils.formatNumber(formattedBalance, { format: NumberFormat.TOKEN_AMOUNT_LONG });
 
