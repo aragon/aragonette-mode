@@ -10,6 +10,7 @@ import { formatUnits } from "viem";
 import { SectionHeader } from "@/plugins/stake/components/section-header";
 import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 import GetMoreTokens from "@/plugins/stake/components/get-tokens-links";
+import Router from "next/router";
 
 export default function StandardHome() {
   const token = Token.MODE;
@@ -33,7 +34,7 @@ export default function StandardHome() {
               <MultiplierChart amount={multVp} token={token} />
             </div>
             <div className="mx-3 mb-6">
-              <Stake />
+              <Stake onStake={() => Router.push("/plugins/stake")} />
               <div className="mx-2 mt-4">
                 <GetMoreTokens />
               </div>

@@ -13,9 +13,10 @@ type PercentValues = "" | "0" | "25" | "50" | "75" | "100";
 
 interface IHeaderProps {
   token: Token;
+  onStake: () => void;
 }
 
-export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
+export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
   const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
   const { data, queryKey: balanceQueryKey } = useGetBalance(token);
@@ -27,6 +28,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token }) => {
     queryClient.invalidateQueries({ queryKey: balanceQueryKey });
     queryClient.invalidateQueries({ queryKey: modeQueryKey });
     queryClient.invalidateQueries({ queryKey: bptQueryKey });
+    onStake();
   });
 
   const { approveToken, isConfirming: isConfirming2 } = useApproveToken(balanceToStake, token, stakeToken);

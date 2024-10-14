@@ -1,5 +1,6 @@
 import WalletContainer from "@/components/WalletContainer";
 import { plugins } from "@/plugins";
+import { useCanCreateProposal } from "@/plugins/multisig/hooks/useCanCreateProposal";
 import classNames from "classnames";
 import Link from "next/link";
 import { useState } from "react";
@@ -10,15 +11,18 @@ import { PUB_APP_NAME, PUB_PROJECT_LOGO } from "@/constants";
 
 export const Navbar: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const { canCreate } = useCanCreateProposal();
 
   const navLinks: INavLink[] = [
     { path: "/", id: "dashboard", name: "Dashboard" /*, icon: IconType.APP_DASHBOARD*/ },
-    ...plugins.map((p) => ({
-      id: p.id,
-      name: p.title,
-      path: `/plugins/${p.id}/#/`,
-      // icon: p.icon,
-    })),
+    ...plugins
+      .filter((p) => !p.restricted || (p.restricted && canCreate))
+      .map((p) => ({
+        id: p.id,
+        name: p.title,
+        path: `/plugins/${p.id}/#/`,
+        // icon: p.icon,
+      })),
   ];
 
   return (

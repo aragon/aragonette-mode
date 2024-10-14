@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { ProposalMetadata, RawAction } from "@/utils/types";
+import { type ProposalMetadata, type RawAction } from "@/utils/types";
 import { useAlerts } from "@/context/Alerts";
 import { PUB_APP_NAME, PUB_CHAIN, PUB_MULTISIG_PLUGIN_ADDRESS, PUB_PROJECT_URL } from "@/constants";
 import { uploadToPinata } from "@/utils/ipfs";

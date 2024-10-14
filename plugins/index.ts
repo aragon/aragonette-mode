@@ -8,6 +8,7 @@ type PluginItem = {
   /** Title on menu */
   title: string;
   icon?: IconType;
+  restricted?: boolean;
 };
 
 export const plugins: PluginItem[] = [
@@ -27,6 +28,7 @@ export const plugins: PluginItem[] = [
     id: "multisig",
     folderName: "multisig",
     title: "Multisig",
+    restricted: true,
     // icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
   },
 ];
