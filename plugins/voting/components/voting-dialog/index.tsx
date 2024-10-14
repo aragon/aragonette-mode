@@ -16,38 +16,30 @@ import { type GaugeItem } from "../gauges-list/types";
 import { Token } from "../../types/tokens";
 import { useVote } from "../../hooks/useVote";
 import { useGetAccountVp } from "../../hooks/useGetAccountVp";
-import { formatUnits } from "viem";
+import { type Address, formatUnits } from "viem";
+import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 
 type VotingDialogProps = {
   selectedGauges: GaugeItem[];
-  modeOwnedTokens: bigint[];
-  bptOwnedTokens: bigint[];
+  voted: boolean;
   onRemove: (gauge: GaugeItem) => void;
 };
 
-export const VotingDialog: React.FC<VotingDialogProps> = ({
-  selectedGauges,
-  modeOwnedTokens,
-  bptOwnedTokens,
-  onRemove,
-}) => {
+type Vote = {
+  address: Address;
+  votes: number;
+};
+
+export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, voted, onRemove }) => {
   const [open, setOpen] = useState(false);
-  const [modeVotes, setModeVotes] = useState(
-    selectedGauges.map((gauge) => {
-      return {
-        gauge,
-        votes: Math.floor(100 / selectedGauges.length),
-      };
-    })
-  );
-  const [bptVotes, setBptVotes] = useState(
-    selectedGauges.map((gauge) => {
-      return {
-        gauge,
-        votes: Math.floor(100 / selectedGauges.length),
-      };
-    })
-  );
+  const [modeVotes, setModeVotes] = useState<Vote[]>([]);
+  const [bptVotes, setBptVotes] = useState<Vote[]>([]);
+
+  const { ownedTokens: modeOwnedTokensData } = useOwnedTokens(Token.MODE);
+  const { ownedTokens: bptOwnedTokensData } = useOwnedTokens(Token.BPT);
+
+  const modeOwnedTokens = [...(modeOwnedTokensData ?? [])];
+  const bptOwnedTokens = [...(bptOwnedTokensData ?? [])];
 
   const { vp: modeVp } = useGetAccountVp(Token.MODE);
   const { vp: bptVp } = useGetAccountVp(Token.BPT);
@@ -62,49 +54,39 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({
   const { vote: bptVote, isConfirming: bptIsConfirming } = useVote(
     Token.BPT,
     bptOwnedTokens,
-    bptVotes.map((v) => ({ gauge: v.gauge.address, weight: BigInt(v.votes * 100) })),
+    bptVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
     () => setOpen(false)
   );
   const { vote: modeVote, isConfirming: modeIsConfirming } = useVote(
     Token.MODE,
     modeOwnedTokens,
-    modeVotes.map((v) => ({ gauge: v.gauge.address, weight: BigInt(v.votes * 100) })),
+    modeVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
     bptVote
   );
+
+  const totalModeVotes = modeVotes.reduce((acc, v) => acc + v.votes, 0);
+  const totalBptVotes = bptVotes.reduce((acc, v) => acc + v.votes, 0);
+  const isValidVotes =
+    (totalModeVotes === 100 || totalModeVotes === 0) && (totalBptVotes === 0 || totalBptVotes === 100);
 
   useEffect(() => {
     if (!selectedGauges.length) {
       setOpen(false);
     }
-    setBptVotes(
-      selectedGauges.map((gauge) => {
-        return {
-          gauge,
-          votes: Math.floor(100 / selectedGauges.length),
-        };
-      })
-    );
-    setModeVotes(
-      selectedGauges.map((gauge) => {
-        return {
-          gauge,
-          votes: Math.floor(100 / selectedGauges.length),
-        };
-      })
-    );
-  }, [selectedGauges, selectedGauges.length]);
+  }, [selectedGauges.length]);
 
   return (
     <>
       <Button
         size="sm"
+        isLoading={open}
         onClick={() => {
           setOpen(true);
         }}
         variant="primary"
         disabled={!selectedGauges.length}
       >
-        Vote now
+        {!voted ? "Vote now" : "Edit votes"}
       </Button>
       <DialogRoot open={open} onInteractOutside={() => setOpen(false)} containerClassName="!max-w-[1200px]">
         <DialogHeader
@@ -120,74 +102,33 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({
                   <VotingListItem
                     key={pos}
                     gauge={gauge}
-                    modeVotes={modeVotes.find((v) => v.gauge === gauge)?.votes ?? 50}
-                    bptVotes={bptVotes.find((v) => v.gauge === gauge)?.votes ?? 50}
+                    modeVotes={modeVotes.find((v) => v.address === gauge.address)?.votes}
+                    bptVotes={bptVotes.find((v) => v.address === gauge.address)?.votes}
+                    totalModeVotes={modeVotes.reduce((acc, v) => acc + v.votes, 0)}
+                    totalBptVotes={bptVotes.reduce((acc, v) => acc + v.votes, 0)}
                     onRemove={() => {
-                      setModeVotes(modeVotes.filter((v) => v.gauge !== gauge));
-                      setBptVotes(bptVotes.filter((v) => v.gauge !== gauge));
+                      setModeVotes(modeVotes.filter((v) => v.address !== gauge.address));
+                      setBptVotes(bptVotes.filter((v) => v.address !== gauge.address));
                       onRemove(gauge);
                     }}
-                    onChange={(m, b) => {
-                      if (m === Token.MODE) {
-                        const newValue = { gauge, votes: b };
-                        const oldModeVotes = modeVotes.filter((v) => v.gauge !== gauge);
-                        oldModeVotes.sort((a, b) => {
-                          //if (a.votes === b.votes) {
-                          //  return a.g
-                          //}
-                          return b.votes - a.votes;
+                    onChange={(token, val) => {
+                      const newValue = {
+                        address: gauge.address,
+                        votes: val,
+                      };
+
+                      if (token === Token.MODE) {
+                        setModeVotes((votes) => {
+                          const oldVotes = votes.filter((v) => v.address !== gauge.address);
+                          oldVotes.push(newValue);
+                          return oldVotes;
                         });
-                        const sum = oldModeVotes.reduce((acc, v) => acc + v.votes, 0) + newValue.votes;
-                        if (oldModeVotes.length) {
-                          if (sum > 100) {
-                            //Search for the last element with votes > 0 and decrease it
-                            for (let i = oldModeVotes.length - 1; i >= 0; i--) {
-                              if (oldModeVotes[i].votes > 0) {
-                                oldModeVotes[i].votes -= sum - 100;
-                                break;
-                              }
-                            }
-                          } else if (sum < 100) {
-                            //Search for the last element with votes < 100 and increase it
-                            for (let i = oldModeVotes.length - 1; i >= 0; i--) {
-                              if (oldModeVotes[i].votes <= 100) {
-                                oldModeVotes[i].votes += 100 - sum;
-                                break;
-                              }
-                            }
-                          }
-                        }
-                        setModeVotes([...oldModeVotes, newValue]);
                       } else {
-                        const newValue = { gauge, votes: b };
-                        const oldBptVotes = bptVotes.filter((v) => v.gauge !== gauge);
-                        oldBptVotes.sort((a, b) => {
-                          //if (a.votes === b.votes) {
-                          //  return a.g
-                          //}
-                          return b.votes - a.votes;
+                        setBptVotes((votes) => {
+                          const oldVotes = votes.filter((v) => v.address !== gauge.address);
+                          oldVotes.push(newValue);
+                          return oldVotes;
                         });
-                        const sum = oldBptVotes.reduce((acc, v) => acc + v.votes, 0) + newValue.votes;
-                        if (oldBptVotes.length) {
-                          if (sum > 100) {
-                            //Search for the last element with votes > 0 and decrease it
-                            for (let i = oldBptVotes.length - 1; i >= 0; i--) {
-                              if (oldBptVotes[i].votes > 0) {
-                                oldBptVotes[i].votes -= sum - 100;
-                                break;
-                              }
-                            }
-                          } else if (sum < 100) {
-                            //Search for the last element with votes < 100 and increase it
-                            for (let i = oldBptVotes.length - 1; i >= 0; i--) {
-                              if (oldBptVotes[i].votes <= 100) {
-                                oldBptVotes[i].votes += 100 - sum;
-                                break;
-                              }
-                            }
-                          }
-                        }
-                        setBptVotes([...oldBptVotes, newValue]);
                       }
                     }}
                   />
@@ -212,27 +153,26 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({
                 size="sm"
                 variant="secondary"
                 onClick={() => {
-                  setBptVotes(
-                    selectedGauges.map((gauge) => {
-                      return {
-                        gauge,
-                        votes: Math.floor(100 / selectedGauges.length),
-                      };
-                    })
-                  );
-                  setModeVotes(
-                    selectedGauges.map((gauge) => {
-                      return {
-                        gauge,
-                        votes: Math.floor(100 / selectedGauges.length),
-                      };
-                    })
-                  );
+                  const votes = selectedGauges.map((gauge, index) => {
+                    return {
+                      address: gauge.address,
+                      votes: Math.floor(100 / selectedGauges.length) + (index === 0 ? 100 % selectedGauges.length : 0),
+                    };
+                  });
+                  if (modeVp) setModeVotes(votes);
+                  if (bptVp) setBptVotes(votes);
                 }}
               >
                 Distribute evently
               </Button>
-              <Button size="sm" variant="tertiary">
+              <Button
+                size="sm"
+                variant="tertiary"
+                onClick={() => {
+                  setModeVotes([]);
+                  setBptVotes([]);
+                }}
+              >
                 Reset
               </Button>
             </div>
@@ -241,6 +181,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({
         <DialogFooter
           primaryAction={{
             isLoading: modeIsConfirming || bptIsConfirming,
+            disabled: !isValidVotes,
             label: "Submit votes",
             onClick: () => {
               modeVote();
@@ -249,6 +190,8 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({
           secondaryAction={{
             label: "Cancel",
             onClick: () => {
+              setModeVotes([]);
+              setBptVotes([]);
               setOpen(false);
             },
           }}

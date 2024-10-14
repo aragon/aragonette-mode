@@ -8,6 +8,7 @@ import { useGetGaugeVotes } from "../../hooks/useGetGaugeVotes";
 import { formatUnits } from "viem";
 import { GaugeDetailsDialog } from "./gauge-details-dialog";
 import { Token } from "../../types/tokens";
+import { useGetAccountVp } from "../../hooks/useGetAccountVp";
 
 type GaugeItemProps = {
   props: GaugeItem;
@@ -31,10 +32,15 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
   const { data: modeGaugeVotesData } = useGetGaugeVotes(Token.MODE, props.address);
   const { data: bptGaugeVotesData } = useGetGaugeVotes(Token.BPT, props.address);
 
-  const userModeVotesBn = userModeVotesData ?? 0n;
-  const userBptVotesBn = userBptVotesData ?? 0n;
-  const modeGaugeTotalVotesBn = modeGaugeVotesData ?? 0n;
-  const bptGaugeTotalVotesBn = bptGaugeVotesData ?? 0n;
+  const { vp: modeVp } = useGetAccountVp(Token.MODE);
+  const { vp: bptVp } = useGetAccountVp(Token.BPT);
+
+  const hasBalance = !(modeVp === 0n && bptVp === 0n);
+
+  const userModeVotesBn = BigInt(userModeVotesData ?? 0n);
+  const userBptVotesBn = BigInt(userBptVotesData ?? 0n);
+  const modeGaugeTotalVotesBn = BigInt(modeGaugeVotesData ?? 0n);
+  const bptGaugeTotalVotesBn = BigInt(bptGaugeVotesData ?? 0n);
 
   const gaugeTotalVotesBn = modeGaugeTotalVotesBn + bptGaugeTotalVotesBn;
 
@@ -49,9 +55,12 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
   });
 
   const percentage = (Number(formatUnits(gaugeTotalVotesBn, 18)) / Number(formatUnits(totalVotesBn, 18))) * 100;
+  const formattedPercentage = formatterUtils.formatNumber(percentage, {
+    format: NumberFormat.TOKEN_AMOUNT_SHORT,
+  });
 
   useEffect(() => {
-    if (userModeVotesBn > 0 || userBptVotesBn > 0) {
+    if (userModeVotesBn > 0n || userBptVotesBn > 0n) {
       onSelect(true);
     }
   }, [userModeVotesBn, userBptVotesBn]);
@@ -93,19 +102,26 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
             <div className="w-1/4 flex-auto">
               <div className="flex flex-col text-right">
                 <div>{gaugeTotalVotes} votes</div>
-                <div>{percentage}% of total</div>
+                <div>{formattedPercentage}% of total</div>
               </div>
             </div>
             <div className="w-1/4 flex-auto">
               <div className="flex flex-col text-right">
-                <div>{modeUserVotes} Mode</div>
-                <div>{bptUserVotes} BPT</div>
+                {userModeVotesBn ? (
+                  <>
+                    <div>{modeUserVotes} Mode</div>
+                    <div>{bptUserVotes} BPT</div>
+                  </>
+                ) : (
+                  <div>None</div>
+                )}
               </div>
             </div>
             <div className="w-1/4 flex-auto">
               <div className="flex flex-row-reverse">
                 <Button
                   size="sm"
+                  disabled={!hasBalance}
                   variant={selected ? "primary" : "tertiary"}
                   iconLeft={selected ? IconType.CHECKMARK : undefined}
                   className="btn btn-primary w-1/2"
@@ -114,7 +130,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
                     onSelect(!selected);
                   }}
                 >
-                  {selected ? "Selected" : "Select to vote"}
+                  {selected ? "Selected" : hasBalance ? "Select to vote" : "Stake to vote"}
                 </Button>
               </div>
             </div>

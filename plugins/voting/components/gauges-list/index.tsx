@@ -48,7 +48,6 @@ export const StakePositions = () => {
 
   const isLoading = false;
 
-  // TODO: match the gauges
   const gauges = allGauges.filter((gauge, index, self) => {
     return index === self.findIndex((t) => t.address === gauge.address);
   });
@@ -92,14 +91,15 @@ export const StakePositions = () => {
               key={pos}
               props={gauge}
               totalVotes={totalVotesBn}
-              selected={selectedGauges.findIndex((g) => g.address === gauge.address) >= 0}
+              selected={!!selectedGauges.find((g) => g.address === gauge.address)}
               onSelect={(selected) => {
-                const cleanedGauges = selectedGauges.filter((g) => g.address !== gauge.address);
-                if (selected) {
-                  setSelectedGauges([...cleanedGauges, gauge]);
-                } else {
-                  setSelectedGauges(cleanedGauges);
-                }
+                setSelectedGauges((selectedGauges) => {
+                  const cleanedGauges = selectedGauges.filter((g) => g.address !== gauge.address);
+                  if (selected) {
+                    cleanedGauges.splice(pos, 0, gauge);
+                  }
+                  return cleanedGauges;
+                });
               }}
             />
           ))}

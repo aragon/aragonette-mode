@@ -32,9 +32,10 @@ export default function PluginPage() {
           <div className="flex flex-col">
             <div className=" flex items-baseline gap-x-1">
               <span className="title text-3xl text-primary-400 md:text-3xl">{nextVotingDate}</span>
-              <span className="md:text-md text-md">in days</span>
             </div>
-            <span className="text-md text-neutral-500">{active ? "Current" : "Next"} voting window</span>
+            <span className="text-md text-neutral-500">
+              {active ? "Current" : "Next"} voting {active ? "ends" : "starts"}
+            </span>
           </div>
 
           <div className="flex flex-col">
