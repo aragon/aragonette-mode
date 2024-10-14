@@ -4,7 +4,7 @@ import { StakeToken } from "./tab";
 import { Token } from "../../types/tokens";
 
 interface IStakeProps {
-  onStake: () => void;
+  onStake?: () => void;
 }
 
 export const Stake: React.FC<IStakeProps> = ({ onStake }) => {
