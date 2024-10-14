@@ -78,7 +78,7 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
           <small className="text-neutral-200">{relativeTime}</small>
         </div>
         <Button size="sm" variant="secondary" disabled={true}>
-          Withdraw
+          Unstake
         </Button>
       </div>
     );
@@ -95,7 +95,7 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
           <small className="text-neutral-200">{relativeTime}</small>
         </div>
         <Button size="sm" variant="secondary" disabled={true}>
-          Withdraw
+          Unstake
         </Button>
       </div>
     );
@@ -119,7 +119,7 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
         onClick={approveNFT}
         isLoading={isConfirmingApproval || isConfirmingBeginWithdraw}
       >
-        Enter cooldown
+        Unstake
       </Button>
     </div>
   );
