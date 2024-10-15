@@ -8,15 +8,23 @@ import { DateFormat, formatterUtils, NumberFormat } from "@aragon/ods";
 import { useGetVotingStartsIn } from "./hooks/useGetVotingStartsIn";
 import { useGetVotingEndsIn } from "./hooks/useGetVotingEndsIn";
 import { Token } from "./types/tokens";
+import { useGetTotalVpCast } from "./hooks/useGetTotalVpCast";
+import { formatUnits } from "viem";
 
 export default function PluginPage() {
   const { votingStartsIn } = useGetVotingStartsIn(Token.MODE, BigInt(Math.floor(new Date().getTime() / 1000)));
   const { votingEndsIn } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(new Date().getTime() / 1000)));
 
+  const { data: totalVpBn } = useGetTotalVpCast(Token.MODE);
+
   const active = votingEndsIn && votingEndsIn !== 0n;
   const nextVotingDateD = Number(active ? votingEndsIn : votingStartsIn) * 1000 + new Date().getTime();
   const nextVotingDate = formatterUtils.formatDate(nextVotingDateD, {
     format: DateFormat.RELATIVE,
+  });
+
+  const totalVp = formatterUtils.formatNumber(formatUnits(totalVpBn ?? 0n, 18), {
+    format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
 
   return (
@@ -40,11 +48,7 @@ export default function PluginPage() {
 
           <div className="flex flex-col">
             <div className="flex items-baseline gap-x-1">
-              <span className="title text-3xl text-primary-400 md:text-3xl">
-                {formatterUtils.formatNumber(101120, {
-                  format: NumberFormat.GENERIC_SHORT,
-                })}
-              </span>
+              <span className="title text-3xl text-primary-400 md:text-3xl">{totalVp}</span>
             </div>
             <span className="text-md text-neutral-500">Total voting power</span>
           </div>

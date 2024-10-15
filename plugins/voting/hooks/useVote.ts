@@ -46,7 +46,7 @@ export function useVote(
         abi: SimpleGaugeVotingAbi,
         address: voterContract,
         functionName: "voteMultiple",
-        args: [tokenIds, gauges],
+        args: [tokenIds, gauges.filter((gauge) => gauge.weight > 0)],
       });
     } catch (err) {
       setIsLoading(false);

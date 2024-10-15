@@ -43,11 +43,11 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
   const { vp: bptVp } = useGetAccountVp(Token.BPT);
 
   const modePerc = usedModeVp
-    ? Math.floor((Number(formatUnits(userModeVotesData ?? 0n, 18)) / Number(formatUnits(usedModeVp, 18))) * 100)
+    ? Math.round((Number(formatUnits(userModeVotesData ?? 0n, 18)) / Number(formatUnits(usedModeVp, 18))) * 100)
     : 0;
 
   const bptPerc = usedBptVp
-    ? Math.floor((Number(formatUnits(userBptVotesData ?? 0n, 18)) / Number(formatUnits(usedBptVp, 18))) * 100)
+    ? Math.round((Number(formatUnits(userBptVotesData ?? 0n, 18)) / Number(formatUnits(usedBptVp, 18))) * 100)
     : 0;
 
   useEffect(() => {

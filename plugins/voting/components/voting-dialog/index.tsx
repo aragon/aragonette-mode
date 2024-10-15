@@ -18,6 +18,8 @@ import { useVote } from "../../hooks/useVote";
 import { useGetAccountVp } from "../../hooks/useGetAccountVp";
 import { type Address, formatUnits } from "viem";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
+import { useGetVps } from "../../hooks/useGetVps";
+import { useQueryClient } from "@tanstack/react-query";
 
 type VotingDialogProps = {
   selectedGauges: GaugeItem[];
@@ -41,6 +43,9 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
   const modeOwnedTokens = [...(modeOwnedTokensData ?? [])];
   const bptOwnedTokens = [...(bptOwnedTokensData ?? [])];
 
+  const { data: modeOwnedTokensWithVp } = useGetVps(Token.MODE, modeOwnedTokens);
+  const { data: bptOwnedTokensWithVp } = useGetVps(Token.BPT, bptOwnedTokens);
+
   const { vp: modeVp } = useGetAccountVp(Token.MODE);
   const { vp: bptVp } = useGetAccountVp(Token.BPT);
 
@@ -51,15 +56,23 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
 
+  const queryClient = useQueryClient();
+
   const { vote: bptVote, isConfirming: bptIsConfirming } = useVote(
     Token.BPT,
-    bptOwnedTokens,
+    bptOwnedTokensWithVp ?? [],
     bptVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
-    () => setOpen(false)
+    () => {
+      queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "gaugeVotes" }] });
+      queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "usedVotingPower" }] });
+      // TODO: Remove this when we have a better way to invalidate the cache
+      queryClient.invalidateQueries();
+      setOpen(false);
+    }
   );
   const { vote: modeVote, isConfirming: modeIsConfirming } = useVote(
     Token.MODE,
-    modeOwnedTokens,
+    modeOwnedTokensWithVp ?? [],
     modeVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
     bptVote
   );
@@ -78,7 +91,8 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
   return (
     <>
       <Button
-        size="sm"
+        size="lg"
+        responsiveSize={{ md: "sm" }}
         isLoading={open}
         onClick={() => {
           setOpen(true);

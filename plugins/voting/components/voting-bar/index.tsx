@@ -58,27 +58,31 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
   const voted = (usedModeVp ?? 0n) > 0n || (usedBptVp ?? 0n) > 0n;
 
   return (
-    <div className="sticky -bottom-2 -mx-12 -mb-12">
+    <div className="sticky -bottom-2 -mb-12 md:-mx-12">
       <DataListItem>
-        <div className="flex flex-auto items-center gap-4 py-2">
-          <p>Your total voting power</p>
-          <div className="flex flex-row gap-2">
-            <Avatar alt="Gauge icon" size="sm" src="/mode-token-icon.png" />
-            <p>{formattedModeVp} Mode</p>
-            <p>({formattedModePercentage} used)</p>
-          </div>
-          <div className="flex flex-auto gap-2">
-            <Avatar alt="Gauge icon" size="sm" src="/bpt-token-icon.png" />
-            <p>{formattedBptVp} BPT</p>
-            {bptPercentage > 0 && <p>({formattedBptPercentage} used)</p>}
+        <div className="flex flex-col gap-4 py-2 md:flex-row md:items-center">
+          <p className="text-xl md:text-base">Your total voting power</p>
+          <div className="flex flex-grow flex-row gap-8">
+            <div className="flex flex-row items-center gap-2">
+              <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
+              <p className="text-xl md:text-base">{formattedModeVp} Mode</p>
+              <p className="hidden sm:block">({formattedModePercentage} used)</p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
+              <p className="text-xl md:text-base">{formattedBptVp} BPT</p>
+              {bptPercentage > 0 && <p>({formattedBptPercentage} used)</p>}
+            </div>
           </div>
 
-          {hasVp &&
-            (voted || !!selectedGauges.length ? (
-              <Tag label={`${selectedGauges.length} selected`} />
-            ) : (
-              <Tag label="Select gauges" />
-            ))}
+          <div className="absolute right-3 top-4 md:relative md:right-0 md:top-0 md:flex md:flex-row md:gap-2">
+            {hasVp &&
+              (voted || !!selectedGauges.length ? (
+                <Tag label={`${selectedGauges.length} selected`} />
+              ) : (
+                <Tag label="Select gauges" />
+              ))}
+          </div>
           <VotingDialog voted={voted} selectedGauges={selectedGauges} onRemove={(gauge) => onRemove(gauge)} />
         </div>
       </DataListItem>

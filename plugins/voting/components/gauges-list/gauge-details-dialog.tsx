@@ -49,7 +49,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
         </div>
         <hr />
         <div className="flex flex-row">
-          <div className="w-1/2 text-sm">Docs</div>
+          <div className="w-1/2 text-sm">Eligibility Forum</div>
           <div className="flex w-1/2 flex-col">
             <Link href="https://aragon.org" iconRight={IconType.LINK_EXTERNAL} target="_blank">
               <p className="text-sm">{selectedGauge.metadata?.docs.name}</p>
@@ -60,7 +60,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
         <hr />
         <div className="mb-8 flex flex-row">
           <div className="w-1/2 text-sm">Total incentives</div>
-          <p className="w-1/2 text-sm text-neutral-200">{100}??</p>
+          <p className="w-1/2 text-sm text-neutral-200">$100K USD</p>
         </div>
       </DialogContent>
     </DialogRoot>
