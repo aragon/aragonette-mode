@@ -2,7 +2,6 @@ import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
 import { useReadContracts } from "wagmi";
 import { type Token } from "../types/tokens";
 import { useGetContracts } from "./useGetContract";
-import { type Abi } from "viem";
 
 export function useGetUsedVp(token: Token, tokenIds: bigint[]) {
   const { data } = useGetContracts(token);
@@ -11,7 +10,7 @@ export function useGetUsedVp(token: Token, tokenIds: bigint[]) {
 
   return useReadContracts({
     contracts: tokenIds.map((tokenId) => ({
-      abi: SimpleGaugeVotingAbi as Abi,
+      abi: SimpleGaugeVotingAbi,
       address: voterContract,
       functionName: "usedVotingPower",
       args: [tokenId],
