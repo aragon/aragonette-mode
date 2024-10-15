@@ -15,7 +15,7 @@ export function useSetTimestamp(timestamp: bigint) {
       .then(() => {
         setTimeout(() => {
           queryClient.invalidateQueries();
-        }, 500);
+        }, 6000);
       });
   };
 

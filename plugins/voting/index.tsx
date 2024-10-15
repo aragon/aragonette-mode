@@ -10,16 +10,19 @@ import { useGetVotingEndsIn } from "./hooks/useGetVotingEndsIn";
 import { Token } from "./types/tokens";
 import { useGetTotalVpCast } from "./hooks/useGetTotalVpCast";
 import { formatUnits } from "viem";
+import { useNow } from "./hooks/useNow";
 
 export default function PluginPage() {
   const { votingStartsIn } = useGetVotingStartsIn(Token.MODE, BigInt(Math.floor(new Date().getTime() / 1000)));
   const { votingEndsIn } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(new Date().getTime() / 1000)));
+  const { now } = useNow();
 
   const { data: totalVpBn } = useGetTotalVpCast(Token.MODE);
+  const diffTime = now - new Date().getTime();
 
   const active = votingEndsIn && votingEndsIn !== 0n;
-  const nextVotingDateD = Number(active ? votingEndsIn : votingStartsIn) * 1000 + new Date().getTime();
-  const nextVotingDate = formatterUtils.formatDate(nextVotingDateD, {
+  const nextVotingDateTs = Number(active ? votingEndsIn : votingStartsIn) * 1000 + now;
+  const nextVotingDate = formatterUtils.formatDate(nextVotingDateTs - diffTime, {
     format: DateFormat.RELATIVE,
   });
 

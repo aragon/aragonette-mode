@@ -24,10 +24,12 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   const { queryKey: bptQueryKey } = useOwnedTokens(Token.BPT, false);
   const queryClient = useQueryClient();
 
-  const { stakeToken, isConfirming: isConfirming1 } = useStakeToken(balanceToStake, token, () => {
-    queryClient.invalidateQueries({ queryKey: balanceQueryKey });
-    queryClient.invalidateQueries({ queryKey: modeQueryKey });
-    queryClient.invalidateQueries({ queryKey: bptQueryKey });
+  const minAmount = 100000000000000000000n;
+
+  const { stakeToken, isConfirming: isConfirming1 } = useStakeToken(balanceToStake, token, async () => {
+    await queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+    await queryClient.invalidateQueries({ queryKey: modeQueryKey });
+    await queryClient.invalidateQueries({ queryKey: bptQueryKey });
     onStake?.();
   });
 
@@ -66,6 +68,11 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
     <div className="mt-4 flex w-full flex-col gap-4">
       <InputNumberMax
         max={Number(formatUnits(balance, decimals))}
+        alert={
+          balanceToStake < minAmount
+            ? { message: `The amount is too low (min 100 ${symbol})`, variant: "critical" }
+            : undefined
+        }
         value={
           formatterUtils.formatNumber(formatUnits(balanceToStake, decimals), {
             format: NumberFormat.TOKEN_AMOUNT_LONG,
@@ -89,7 +96,12 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
       <p className="text-right">
         Your balance: {formattedQuantity} {symbol}
       </p>
-      <Button className="mt-4 w-full" onClick={approveToken} isLoading={isConfirming1 || isConfirming2}>
+      <Button
+        className="mt-4 w-full"
+        disabled={balanceToStake < minAmount}
+        onClick={approveToken}
+        isLoading={isConfirming1 || isConfirming2}
+      >
         Stake
       </Button>
     </div>

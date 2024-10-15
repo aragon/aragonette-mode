@@ -62,11 +62,11 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
     Token.BPT,
     bptOwnedTokensWithVp ?? [],
     bptVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
-    () => {
-      queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "gaugeVotes" }] });
-      queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "usedVotingPower" }] });
+    async () => {
+      await queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "gaugeVotes" }] });
+      await queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "usedVotingPower" }] });
       // TODO: Remove this when we have a better way to invalidate the cache
-      queryClient.invalidateQueries();
+      await queryClient.invalidateQueries();
       setOpen(false);
     }
   );
