@@ -8,11 +8,7 @@ export function useGetNextEpochIn(token: Token, timestamp: bigint) {
 
   const clockContract = data?.clockContract.result;
 
-  const {
-    data: nextEpochIn,
-    isLoading,
-    queryKey,
-  } = useReadContract({
+  return useReadContract({
     address: clockContract,
     abi: ClockAbi,
     functionName: "resolveEpochNextCheckpointIn",
@@ -21,10 +17,4 @@ export function useGetNextEpochIn(token: Token, timestamp: bigint) {
       enabled: !!clockContract,
     },
   });
-
-  return {
-    nextEpochIn,
-    isLoading,
-    queryKey,
-  };
 }

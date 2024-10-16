@@ -19,7 +19,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const id = props.id;
   const token = props.token;
   const { tokenInfo, isLoading: infoLoading } = useTokenInfo(token, id);
-  const { vp, isLoading: vpLoading } = useGetVp(token, id);
+  const { data: vp, isLoading: vpLoading } = useGetVp(token, id);
   const { now } = useNow();
   const { point: depositPoint } = useGetPoint(token, id, 1n);
 

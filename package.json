@@ -26,11 +26,11 @@
     "@hookform/resolvers": "^3.9.0",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@shazow/whatsabi": "^0.14.1",
-    "@tanstack/query-async-storage-persister": "^5.52.0",
-    "@tanstack/query-sync-storage-persister": "^5.52.0",
-    "@tanstack/react-query": "^5.52.0",
-    "@tanstack/react-query-devtools": "^5.52.0",
-    "@tanstack/react-query-persist-client": "^5.52.0",
+    "@tanstack/query-async-storage-persister": "^5.59.13",
+    "@tanstack/query-sync-storage-persister": "^5.59.13",
+    "@tanstack/react-query": "^5.59.13",
+    "@tanstack/react-query-devtools": "^5.59.13",
+    "@tanstack/react-query-persist-client": "^5.59.13",
     "@web3modal/wagmi": "^4.2.3",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
@@ -42,8 +42,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.52.1",
     "recharts": "^2.12.7",
-    "viem": "^2.21.12",
-    "wagmi": "2.12.13"
+    "viem": "^2.21.26",
+    "wagmi": "2.12.17"
   },
   "devDependencies": {
     "@aragon/osx-commons-configs": "^0.2.0",

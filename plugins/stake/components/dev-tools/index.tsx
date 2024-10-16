@@ -1,13 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Button,
-  DialogAlertContent,
-  DialogAlertFooter,
-  DialogAlertHeader,
-  DialogAlertRoot,
-  InputNumber,
-  Tag,
-} from "@aragon/ods";
+import { Button, DialogContent, DialogFooter, DialogHeader, DialogRoot, InputNumber, Tag } from "@aragon/ods";
 import { useMintToken } from "../../hooks/useMintToken";
 import { useSetTimestamp } from "../../hooks/useSetTimestamp";
 import { Token } from "../../types/tokens";
@@ -39,6 +31,11 @@ export function DevMintTokens() {
     setDays(0);
   };
 
+  const close = () => {
+    setOpen(false);
+    reset();
+  };
+
   return (
     <>
       <Button
@@ -49,9 +46,9 @@ export function DevMintTokens() {
       >
         Dev Tools
       </Button>
-      <DialogAlertRoot open={open} onOpenChange={() => {}}>
-        <DialogAlertHeader title="Dev Tools" />
-        <DialogAlertContent>
+      <DialogRoot open={open} onOpenChange={() => {}} onInteractOutside={close}>
+        <DialogHeader title="Dev Tools" />
+        <DialogContent>
           <div className="grid grid-cols-2 gap-3 py-3">
             <Button onClick={() => mintMode(10n * 10n ** 24n)} variant="secondary" size="md">
               Mint MODE
@@ -68,25 +65,21 @@ export function DevMintTokens() {
             <Tag className="w-fit text-nowrap" label={`Now: ${new Date(Number(now)).toISOString()}`} />
             <Tag className="w-fit text-nowrap" label={`Set: ${new Date(Number(ts) * 1000).toISOString()}`} />
           </div>
-        </DialogAlertContent>
-        <DialogAlertFooter
-          actionButton={{
+        </DialogContent>
+        <DialogFooter
+          primaryAction={{
             label: "Set Timestamp",
             onClick: () => {
               setTimestamp();
-              setOpen(false);
-              reset();
+              close();
             },
           }}
-          cancelButton={{
+          secondaryAction={{
             label: "Cancel",
-            onClick: () => {
-              setOpen(false);
-              reset();
-            },
+            onClick: close,
           }}
         />
-      </DialogAlertRoot>
+      </DialogRoot>
     </>
   );
 }

@@ -66,7 +66,7 @@ export const SimpleGaugeVotingAbi = [
         internalType: "address",
       },
       {
-        name: "_metadata",
+        name: "_metadataURI",
         type: "string",
         internalType: "string",
       },
@@ -250,9 +250,9 @@ export const SimpleGaugeVotingAbi = [
         internalType: "uint256",
       },
       {
-        name: "metadata",
-        type: "bytes32",
-        internalType: "bytes32",
+        name: "metadataURI",
+        type: "string",
+        internalType: "string",
       },
     ],
     stateMutability: "view",
@@ -285,6 +285,42 @@ export const SimpleGaugeVotingAbi = [
         name: "",
         type: "address[]",
         internalType: "address[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getGauge",
+    inputs: [
+      {
+        name: "_gauge",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple",
+        internalType: "struct IGauge.Gauge",
+        components: [
+          {
+            name: "active",
+            type: "bool",
+            internalType: "bool",
+          },
+          {
+            name: "created",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "metadataURI",
+            type: "string",
+            internalType: "string",
+          },
+        ],
       },
     ],
     stateMutability: "view",
@@ -476,7 +512,7 @@ export const SimpleGaugeVotingAbi = [
         internalType: "address",
       },
       {
-        name: "_metadata",
+        name: "_metadataURI",
         type: "string",
         internalType: "string",
       },
@@ -693,7 +729,7 @@ export const SimpleGaugeVotingAbi = [
         internalType: "address",
       },
       {
-        name: "metadata",
+        name: "metadataURI",
         type: "string",
         indexed: false,
         internalType: "string",
@@ -725,7 +761,7 @@ export const SimpleGaugeVotingAbi = [
         internalType: "address",
       },
       {
-        name: "metadata",
+        name: "metadataURI",
         type: "string",
         indexed: false,
         internalType: "string",
@@ -788,13 +824,19 @@ export const SimpleGaugeVotingAbi = [
         internalType: "uint256",
       },
       {
-        name: "votingPower",
+        name: "votingPowerRemovedFromGauge",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
       },
       {
-        name: "totalVotingPower",
+        name: "totalVotingPowerInGauge",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "totalVotingPowerInContract",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
@@ -863,13 +905,19 @@ export const SimpleGaugeVotingAbi = [
         internalType: "uint256",
       },
       {
-        name: "votingPower",
+        name: "votingPowerCastForGauge",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
       },
       {
-        name: "totalVotingPower",
+        name: "totalVotingPowerInGauge",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "totalVotingPowerInContract",
         type: "uint256",
         indexed: false,
         internalType: "uint256",

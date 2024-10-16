@@ -57,7 +57,6 @@ export const StakePositions = () => {
   ];
 
   allVeTokens.sort((a, b) => {
-    console.log(a.id, b.id);
     return Number(b.id - a.id);
   });
 

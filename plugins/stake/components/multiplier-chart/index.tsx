@@ -33,6 +33,7 @@ const quadraticEquation = (a: number, b: number, c: number) => {
   const discriminant = b ** 2 - 4 * a * c;
   if (discriminant < 0) return [];
   if (discriminant === 0) return [-b / (2 * a)];
+  if (a === 0) return [-c / b];
   return [(-b + Math.sqrt(discriminant)) / (2 * a), (-b - Math.sqrt(discriminant)) / (2 * a)];
 };
 
@@ -69,13 +70,11 @@ const MultiplierChart: React.FC<{ amount: number; token: Token }> = ({ amount, t
   const parsedCoefficients = coefficients?.map((coef) => Number(formatUnits(coef, 18))) ?? [
     1, 2.36205593348e-7, 9.7637e-14,
   ];
-  const startDate = new Date();
-  const endDate = new Date(new Date().getTime() + 1000 * 3600 * 24 * 7 * 10); // 10 weeks
 
   const dataPoints: { val: number; date: Date }[] = generatePoints(
     parsedCoefficients,
     parsedMaxBias,
-    startDate,
+    new Date(),
     amount
   );
 
@@ -99,7 +98,7 @@ const MultiplierChart: React.FC<{ amount: number; token: Token }> = ({ amount, t
           }}
           dataKey="date"
           className="text-xs"
-          domain={[startDate.getTime(), endDate.getTime()]}
+          domain={[dataPoints[0].date.getTime(), dataPoints[dataPoints.length - 1].date.getTime()]}
           tickLine={false}
           axisLine={true}
           type="number"
