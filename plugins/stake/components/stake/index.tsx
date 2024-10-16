@@ -22,12 +22,14 @@ export const Stake: React.FC<IStakeProps> = ({ onStake }) => {
           <StakeToken token={Token.BPT} onStake={onStake} />
         </TabsContent>
       </TabsRoot>
-      <p className="mt-5 text-center">
-        Please note that you will need to wait for the warmup and cooldown periods to complete in order to unstake.
+      <div className="mt-5 text-center">
+        <span>
+          Please note that you will need to wait for the warmup and cooldown periods to complete in order to unstake.
+        </span>
         <Link href="https://docs.balancer.finance/guides/staking" iconRight={IconType.LINK_EXTERNAL} className="pl-1">
           Learn more
         </Link>
-      </p>
+      </div>
     </Card>
   );
 };

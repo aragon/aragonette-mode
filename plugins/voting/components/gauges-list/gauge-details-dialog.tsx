@@ -36,24 +36,21 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
           <Button className="" size="sm" variant="tertiary" iconLeft={IconType.CLOSE} onClick={close} />
         </div>
       </div>
-      <DialogContent className="flex flex-col gap-y-4 md:gap-y-4">
+      <DialogContent className="flex flex-col gap-y-4 pb-8  md:gap-y-4">
         <div className="">{selectedGauge.metadata?.description}</div>
         {selectedGauge.metadata?.resources.map((resource, index) => (
           <div key={index} className="flex flex-row">
             <div className="w-1/2 text-sm">{resource.field}</div>
             <div className="flex w-1/2 flex-col">
-              <Link href={resource.url} iconRight={IconType.LINK_EXTERNAL} target="_blank">
-                <p className="text-sm">{resource.value}</p>
-              </Link>
-              <p className="text-sm text-neutral-200">{resource.url}</p>
+              {resource.url && (
+                <Link href={resource.url} iconRight={IconType.LINK_EXTERNAL} target="_blank">
+                  <p className="text-sm">{resource.value}</p>
+                </Link>
+              )}
+              <p className="text-sm text-neutral-200">{resource.url ?? resource.value}</p>
             </div>
           </div>
         ))}
-        <hr />
-        <div className="mb-8 flex flex-row">
-          <div className="w-1/2 text-sm">Total incentives</div>
-          <p className="w-1/2 text-sm text-neutral-200">$100K USD</p>
-        </div>
       </DialogContent>
     </DialogRoot>
   );

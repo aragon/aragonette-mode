@@ -69,7 +69,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
       <InputNumberMax
         max={Number(formatUnits(balance, decimals))}
         alert={
-          balanceToStake < minAmount
+          !!balanceToStake && balanceToStake < minAmount
             ? { message: `The amount is too low (min 100 ${symbol})`, variant: "critical" }
             : undefined
         }
