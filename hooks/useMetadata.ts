@@ -6,7 +6,7 @@ export function useMetadata<T = JsonValue>(ipfsUri?: string) {
   const { data, isLoading, isSuccess, error } = useQuery<T, Error>({
     queryKey: ["ipfs", ipfsUri ?? ""],
     queryFn: async () => {
-      if (!ipfsUri) return;
+      if (!ipfsUri) return null;
 
       try {
         return await fetchIpfsAsJson(ipfsUri);

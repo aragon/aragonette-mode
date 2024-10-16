@@ -1,6 +1,7 @@
-import { Avatar, Button, DialogContent, DialogFooter, DialogRoot, Icon, IconType, Link } from "@aragon/ods";
+import { Avatar, Button, DialogContent, DialogRoot, IconType, Link } from "@aragon/ods";
 import { type GaugeItem } from "../gauges-list/types";
 import { shortenAddress } from "@/utils/address";
+import { CopyToClipBoard } from "@/components/copyToClipboard";
 
 type GaugeDetailsDialogProps = {
   openDialog: boolean;
@@ -28,28 +29,34 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
             }
           />
           <div className="flex flex-col">
-            <div>{selectedGauge.metadata?.name}</div>
-            <div>{shortenAddress(selectedGauge.address)}</div>
+            <p className="title text-xl">{selectedGauge.metadata?.name}</p>
+            <div className="flex flex-row items-center gap-x-2">
+              <p>{shortenAddress(selectedGauge.address)}</p>
+              <CopyToClipBoard value={selectedGauge.address} />
+            </div>
           </div>
         </div>
         <div className="mx-8 flex flex-grow justify-end">
           <Button className="" size="sm" variant="tertiary" iconLeft={IconType.CLOSE} onClick={close} />
         </div>
       </div>
-      <DialogContent className="flex flex-col gap-y-4 pb-8  md:gap-y-4">
-        <div className="">{selectedGauge.metadata?.description}</div>
+      <DialogContent className="flex flex-col gap-y-4 pb-8 md:gap-y-4">
+        <div>{selectedGauge.metadata?.description}</div>
         {selectedGauge.metadata?.resources.map((resource, index) => (
-          <div key={index} className="flex flex-row">
-            <div className="w-1/2 text-sm">{resource.field}</div>
-            <div className="flex w-1/2 flex-col">
-              {resource.url && (
-                <Link href={resource.url} iconRight={IconType.LINK_EXTERNAL} target="_blank">
-                  <p className="text-sm">{resource.value}</p>
-                </Link>
-              )}
-              <p className="text-sm text-neutral-200">{resource.url ?? resource.value}</p>
+          <>
+            <hr />
+            <div key={index} className="flex flex-row">
+              <div className="w-1/2 text-sm">{resource.field}</div>
+              <div className="flex w-1/2 flex-col">
+                {!!resource.url && (
+                  <Link href={resource.url} iconRight={IconType.LINK_EXTERNAL} target="_blank">
+                    <p className="text-sm">{resource.value}</p>
+                  </Link>
+                )}
+                <p className="text-sm text-neutral-200">{!resource.url ? resource.value : resource.url}</p>
+              </div>
             </div>
-          </div>
+          </>
         ))}
       </DialogContent>
     </DialogRoot>

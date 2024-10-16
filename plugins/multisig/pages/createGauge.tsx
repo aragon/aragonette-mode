@@ -13,7 +13,7 @@ import { useGetContracts } from "@/plugins/stake/hooks/useGetContract";
 import { Token } from "@/plugins/stake/types/tokens";
 //import { PUB_ENS_CHAIN } from "@/constants";
 //import { config } from "@/components/WalletContainer";
-import { useUploadMetadata } from "../hooks/useUploadIPFS";
+import { usePinJSONtoIPFS } from "../hooks/usePinJSONtoIPFS";
 
 export default function Create() {
   const { address: selfAddress, isConnected } = useAccount();
@@ -25,14 +25,12 @@ export default function Create() {
   const [gaugeDescription, setGaugeDescription] = useState("");
   const [gaugeLogo, setGaugeLogo] = useState("");
   const [resources, setResources] = useState<{ field: string; value: string; url: string }[]>([]);
-  const { mutate: uploadMetadata, isPending: uploadingIpfs } = useUploadMetadata(
-    JSON.stringify({
-      name: title,
-      description: gaugeDescription,
-      logo: gaugeLogo,
-      resources: resources,
-    })
-  );
+  const { mutate: uploadMetadata, isPending: uploadingIpfs } = usePinJSONtoIPFS({
+    name: title,
+    description: gaugeDescription,
+    logo: gaugeLogo,
+    resources: resources,
+  });
 
   const { data: modeContracts } = useGetContracts(Token.MODE);
   const { data: bptContracts } = useGetContracts(Token.BPT);

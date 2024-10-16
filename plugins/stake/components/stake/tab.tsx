@@ -8,6 +8,7 @@ import { useStakeToken } from "../../hooks/useStakeToken";
 import { useQueryClient } from "@tanstack/react-query";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { useApproveToken } from "../../hooks/useApproveToken";
+import { useGetMinDeposit } from "../../hooks/useGetMinDeposit";
 
 type PercentValues = "" | "0" | "25" | "50" | "75" | "100";
 
@@ -20,16 +21,13 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
   const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
   const { data, queryKey: balanceQueryKey } = useGetBalance(token);
-  const { queryKey: modeQueryKey } = useOwnedTokens(Token.MODE, false);
-  const { queryKey: bptQueryKey } = useOwnedTokens(Token.BPT, false);
+  const { queryKey: ownedTokensQueryKey } = useOwnedTokens(token, false);
+  const { data: minAmountData } = useGetMinDeposit(token);
   const queryClient = useQueryClient();
-
-  const minAmount = 100000000000000000000n;
 
   const { stakeToken, isConfirming: isConfirming1 } = useStakeToken(balanceToStake, token, async () => {
     await queryClient.invalidateQueries({ queryKey: balanceQueryKey });
-    await queryClient.invalidateQueries({ queryKey: modeQueryKey });
-    await queryClient.invalidateQueries({ queryKey: bptQueryKey });
+    await queryClient.invalidateQueries({ queryKey: ownedTokensQueryKey });
     onStake?.();
   });
 
@@ -37,9 +35,13 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
 
   const balance = data?.balance ?? 0n;
   const decimals = data?.decimals ?? 18;
+  const minAmount = minAmountData ?? 100n * 10n ** BigInt(decimals);
   const symbol = token === Token.MODE ? "MODE" : "BPT";
   const formattedBalance = data?.formattedBalance ?? "0";
   const formattedQuantity = formatterUtils.formatNumber(formattedBalance, { format: NumberFormat.TOKEN_AMOUNT_LONG });
+  const formattedMinAmount = formatterUtils.formatNumber(formatUnits(minAmount, 18), {
+    format: NumberFormat.TOKEN_AMOUNT_LONG,
+  });
 
   const onBalanceEnter = (newBalance: string) => {
     const newValue = parseUnits(newBalance, decimals);
@@ -70,7 +72,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
         max={Number(formatUnits(balance, decimals))}
         alert={
           !!balanceToStake && balanceToStake < minAmount
-            ? { message: `The amount is too low (min 100 ${symbol})`, variant: "critical" }
+            ? { message: `The amount is too low (min ${formattedMinAmount} ${symbol})`, variant: "critical" }
             : undefined
         }
         value={

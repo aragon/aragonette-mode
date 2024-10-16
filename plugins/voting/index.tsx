@@ -57,7 +57,7 @@ export default function PluginPage() {
             <span className="text-md text-neutral-500">Total voting power</span>
           </div>
 
-          <div className="flex flex-col">
+          <div className="hidden flex-col">
             <div className="flex items-baseline gap-x-1">
               <span className="title text-3xl text-primary-400 md:text-3xl">
                 ~
