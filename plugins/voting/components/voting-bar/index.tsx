@@ -60,13 +60,13 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
   return (
     <div className="sticky -bottom-2 -mb-12 md:-mx-12">
       <DataListItem>
-        <div className="flex flex-col gap-4 py-2 md:flex-row md:items-center">
-          <p className="text-xl md:text-base">Your total voting power</p>
+        <div className="flex flex-col gap-8 py-2 md:flex-row md:items-center">
+          <p className="text-xl md:text-base">Your total voting power:</p>
           <div className="flex flex-grow flex-row gap-8">
             <div className="flex flex-row items-center gap-2">
               <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
               <p className="text-xl md:text-base">{formattedModeVp} Mode</p>
-              <p className="hidden sm:block">({formattedModePercentage} used)</p>
+              {modePercentage > 0 && <p className="hidden sm:block">({formattedModePercentage} used)</p>}
             </div>
             <div className="flex flex-row items-center gap-2">
               <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />

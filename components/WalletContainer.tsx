@@ -4,7 +4,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { createClient, http } from "viem";
 import { createConfig, useAccount } from "wagmi";
 
-const config = createConfig({
+export const config = createConfig({
   chains: [PUB_ENS_CHAIN],
   ssr: true,
   client({ chain }) {

@@ -3,17 +3,25 @@ import { type JsonValue } from "@/utils/types";
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query";
 
 export function useGetGaugeMetadata<T = JsonValue>(ipfsUris: string[]) {
-  type TQueries = UseQueryOptions<T, Error>[];
+  type TQueries = UseQueryOptions<
+    {
+      metadata: T;
+      ipfsUri: string;
+    },
+    Error
+  >[];
 
   const metadata = useQueries<TQueries>({
-    queries: ipfsUris.map((ipfsUri) => {
+    queries: [...new Set(ipfsUris)].map((ipfsUri) => {
       return {
         queryKey: ["ipfs", ipfsUri ?? ""],
         queryFn: async () => {
-          if (!ipfsUri) return;
-
           try {
-            return await fetchIpfsAsJson(ipfsUri);
+            const metadata = await fetchIpfsAsJson(ipfsUri);
+            return {
+              metadata,
+              ipfsUri,
+            };
           } catch (error) {
             console.error("Failed to fetch IPFS metadata", error);
             throw error;

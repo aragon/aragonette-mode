@@ -27,11 +27,11 @@ export const StakePositions = () => {
 
   const { metadata: gaugesMetadata } = useGetGaugeMetadata<GaugeMetadata>(gaugesInfo.map((g) => g.info.metadataURI));
 
-  const allGauges = gaugesInfo.map((gauge, index) => {
-    const metadata = gaugesMetadata[index].data;
+  const allGauges = gaugesInfo.map((gauge) => {
+    const metadata = gaugesMetadata.find((m) => m.data?.ipfsUri === gauge.info.metadataURI);
     return {
       ...gauge,
-      metadata,
+      metadata: metadata?.data?.metadata,
     };
   }) as GaugeItem[];
 
@@ -56,8 +56,6 @@ export const StakePositions = () => {
     if (!searchValue) return true;
     return (
       gauge.metadata?.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      gauge.metadata?.website.url.toLowerCase().includes(searchValue.toLowerCase()) ||
-      gauge.metadata?.docs.url.toLowerCase().includes(searchValue.toLowerCase()) ||
       gauge.address.toLowerCase().includes(searchValue.toLowerCase())
     );
   });

@@ -8,6 +8,7 @@ import { MultisigPluginAbi } from "../artifacts/MultisigPlugin.sol";
 import { URL_PATTERN } from "@/utils/input-values";
 import { toHex } from "viem";
 import { useTransactionManager } from "@/hooks/useTransactionManager";
+import { useNow } from "@/plugins/stake/hooks/useNow";
 
 const PROPOSAL_EXPIRATION_TIME = 60 * 60 * 24 * 10; // 10 days in seconds
 const UrlRegex = new RegExp(URL_PATTERN);
@@ -21,6 +22,7 @@ type CreateProposalParams = {
 export function useCreateProposal() {
   const { push } = useRouter();
   const { addAlert } = useAlerts();
+  const { now } = useNow();
   const [isCreating, setIsCreating] = useState(false);
   const [title, setTitle] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
@@ -90,7 +92,7 @@ export function useCreateProposal() {
       };
 
       const ipfsPin = await uploadToPinata(JSON.stringify(proposalMetadataJsonObject));
-      const endDate = Math.floor(Date.now() / 1000) + PROPOSAL_EXPIRATION_TIME;
+      const endDate = Math.floor(now / 1000) + PROPOSAL_EXPIRATION_TIME;
 
       createProposalWrite({
         chainId: PUB_CHAIN.id,

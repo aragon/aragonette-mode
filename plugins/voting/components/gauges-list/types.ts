@@ -14,8 +14,9 @@ export type GaugeInfo = {
   metadataURI: string;
 };
 
-export type Link = {
-  name: string;
+export type Resource = {
+  field: string;
+  value: string;
   url: string;
 };
 
@@ -23,6 +24,5 @@ export type GaugeMetadata = {
   name: string;
   description: string;
   logo: string;
-  website: Link;
-  docs: Link;
+  resources: Resource[];
 };

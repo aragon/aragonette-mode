@@ -13,15 +13,16 @@ import { formatUnits } from "viem";
 import { useNow } from "./hooks/useNow";
 
 export default function PluginPage() {
-  const { votingStartsIn } = useGetVotingStartsIn(Token.MODE, BigInt(Math.floor(new Date().getTime() / 1000)));
-  const { votingEndsIn } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(new Date().getTime() / 1000)));
   const { now } = useNow();
+  const { votingStartsIn } = useGetVotingStartsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
+  const { votingEndsIn } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
 
   const { data: totalVpBn } = useGetTotalVpCast(Token.MODE);
   const diffTime = now - new Date().getTime();
 
-  const active = votingEndsIn && votingEndsIn !== 0n;
-  const nextVotingDateTs = Number(active ? votingEndsIn : votingStartsIn) * 1000 + now;
+  const active = votingEndsIn && votingEndsIn > 3600n;
+  const nextVotingDateTs = Number(active ? votingEndsIn - 3600n : (votingStartsIn ?? 0n) + 3600n) * 1000 + now;
+
   const nextVotingDate = formatterUtils.formatDate(nextVotingDateTs - diffTime, {
     format: DateFormat.RELATIVE,
   });

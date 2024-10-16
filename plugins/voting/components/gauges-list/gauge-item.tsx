@@ -68,7 +68,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
   return (
     <>
       <Fragment>
-        <div className="hidden md:block">
+        <div>
           <GaugeDetailsDialog
             selectedGauge={props}
             openDialog={openDialog}
@@ -78,15 +78,16 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
           />
           <DataListItem
             key={metadata?.name}
-            className="flex items-center gap-x-4 border border-neutral-100 p-4"
+            className="flex flex-col gap-x-4 border border-neutral-100 p-4 md:flex-row md:items-center"
             onClick={() => {
               setOpenDialog(true);
             }}
           >
-            <div className="flex w-1/6 flex-auto items-center gap-x-3">
+            <div className="flex w-full flex-row items-center gap-x-3 md:w-1/6">
               <Avatar
                 alt="Gauge icon"
-                size="lg"
+                size="xl"
+                responsiveSize={{ md: "lg" }}
                 src={metadata?.logo}
                 fallback={
                   <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
@@ -95,29 +96,27 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
                 }
               />
               <div className="flex flex-col">
-                <div>{metadata?.name}</div>
-                <div>{shortenAddress(props.address)}</div>
+                <p>{metadata?.name}</p>
+                <p>{shortenAddress(props.address)}</p>
               </div>
             </div>
-            <div className="w-1/4 flex-auto">
-              <div className="flex flex-col text-right">
-                <div>{gaugeTotalVotes} votes</div>
-                <div>{formattedPercentage}% of total</div>
+            <div className="flex w-full flex-row md:w-3/6">
+              <div className="flex flex-col md:w-1/2 md:text-right">
+                <p>{gaugeTotalVotes} votes</p>
+                <p>{formattedPercentage}% of total</p>
               </div>
-            </div>
-            <div className="w-1/4 flex-auto">
-              <div className="flex flex-col text-right">
+              <div className="flex flex-col justify-center md:w-1/2 md:text-right">
                 {userModeVotesBn ? (
                   <>
-                    <div>{modeUserVotes} Mode</div>
-                    <div>{bptUserVotes} BPT</div>
+                    <p>{modeUserVotes} Mode</p>
+                    <p>{bptUserVotes} BPT</p>
                   </>
                 ) : (
                   <div>None</div>
                 )}
               </div>
             </div>
-            <div className="w-1/4 flex-auto">
+            <div className="w-full flex-auto md:w-1/6">
               <div className="flex flex-row-reverse">
                 <Button
                   size="sm"
@@ -136,7 +135,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
             </div>
           </DataListItem>
         </div>
-        <div className="md:hidden">
+        <div className="hidden">
           <DataListItem key={metadata?.name} className="my-2 border border-neutral-100 px-4 py-2">
             <dl className="flex flex-col divide-y divide-neutral-100">
               <div className="flex justify-between py-2">

@@ -1,6 +1,5 @@
-import { Button, IconType, InputText, Tag, TextAreaRichText } from "@aragon/ods";
-import React, { ReactNode, useState } from "react";
-import { RawAction } from "@/utils/types";
+import { AddressInput, Button, IconType, InputText } from "@aragon/ods";
+import React, { type ReactNode, useState } from "react";
 import { Else, ElseIf, If, Then } from "@/components/if";
 import { MainSection } from "@/components/layout/main-section";
 import { useCreateProposal } from "../hooks/useCreateProposal";
@@ -8,110 +7,171 @@ import { useAccount } from "wagmi";
 import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
 import { MissingContentView } from "@/components/MissingContentView";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { Address } from "viem";
-import { NewActionDialog, NewActionType } from "@/components/dialogs/NewActionDialog";
-import { AddActionCard } from "@/components/cards/AddActionCard";
+import { type Address, isAddress, toHex } from "viem";
 import { ProposalActions } from "@/components/proposalActions/proposalActions";
-import { downloadAsFile } from "@/utils/download-as-file";
-import { encodeActionsAsJson } from "@/utils/json-actions";
+import { useGetContracts } from "@/plugins/stake/hooks/useGetContract";
+import { Token } from "@/plugins/stake/types/tokens";
+//import { PUB_ENS_CHAIN } from "@/constants";
+//import { config } from "@/components/WalletContainer";
+import { useUploadMetadata } from "../hooks/useUploadIPFS";
 
 export default function Create() {
   const { address: selfAddress, isConnected } = useAccount();
   const { canCreate } = useCanCreateProposal();
-  const [addActionType, setAddActionType] = useState<NewActionType>("");
-  const {
-    title,
-    summary,
-    description,
-    actions,
-    resources,
-    setTitle,
-    setSummary,
-    setDescription,
-    setActions,
-    setResources,
-    isCreating,
-    submitProposal,
-  } = useCreateProposal();
+  const { title, actions, setTitle, setSummary, setDescription, setActions, isCreating, submitProposal } =
+    useCreateProposal();
+  const [gaugeAddress, setGaugeAddress] = useState<string | undefined>();
+  //const [validGaugeAddress, setValidGaugeAddress] = useState("");
+  const [gaugeDescription, setGaugeDescription] = useState("");
+  const [gaugeLogo, setGaugeLogo] = useState("");
+  const [resources, setResources] = useState<{ field: string; value: string; url: string }[]>([]);
+  const { mutate: uploadMetadata, isPending: uploadingIpfs } = useUploadMetadata(
+    JSON.stringify({
+      name: title,
+      description: gaugeDescription,
+      logo: gaugeLogo,
+      resources: resources,
+    })
+  );
+
+  const { data: modeContracts } = useGetContracts(Token.MODE);
+  const { data: bptContracts } = useGetContracts(Token.BPT);
+
+  const modeVoterContract = modeContracts?.voterContract.result;
+  const bptVoterContract = bptContracts?.voterContract.result;
 
   const handleTitleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event?.target?.value);
+    setDescription(`Create ${event?.target?.value} gauge`);
+    setSummary(`Create ${event?.target?.value} gauge`);
   };
-  const handleSummaryInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSummary(event?.target?.value);
-  };
-  const handleNewActionDialogClose = (newAction: RawAction[] | null) => {
-    if (!newAction) {
-      setAddActionType("");
-      return;
-    }
 
-    setActions(actions.concat(newAction));
-    setAddActionType("");
+  const handleGaugeDescriptionInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGaugeDescription(event?.target?.value);
   };
-  const onRemoveAction = (idx: number) => {
-    actions.splice(idx, 1);
-    setActions([].concat(actions as any));
+
+  //const handleGaugeAddressValidInput = (event?: { address?: string; name?: string }) => {
+  //  if (!event?.address) return;
+  //  setValidGaugeAddress(event?.address);
+  //};
+  //
+  //const handleGaugeAddressInput = (event?: string) => {
+  //  setGaugeAddress(event);
+  //};
+
+  const handleGaugeAddressInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGaugeAddress(event?.target?.value);
   };
+
+  const handleGaugeLogoInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGaugeLogo(event?.target?.value);
+  };
+
   const removeResource = (idx: number) => {
     resources.splice(idx, 1);
     setResources([].concat(resources as any));
   };
-  const onResourceNameChange = (event: React.ChangeEvent<HTMLInputElement>, idx: number) => {
-    resources[idx].name = event.target.value;
+  const onResourceValueChange = (event: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+    resources[idx].value = event.target.value;
     setResources([].concat(resources as any));
   };
   const onResourceUrlChange = (event: React.ChangeEvent<HTMLInputElement>, idx: number) => {
     resources[idx].url = event.target.value;
     setResources([].concat(resources as any));
   };
+  const onResourceFieldChange = (event: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+    resources[idx].field = event.target.value;
+    setResources([].concat(resources as any));
+  };
 
-  const exportAsJson = () => {
-    if (!actions.length) return;
+  const createGauge = async () => {
+    if (!isAddress(gaugeAddress ?? "")) return;
+    if (!modeVoterContract || !isAddress(modeVoterContract)) return;
+    if (!bptVoterContract || !isAddress(bptVoterContract)) return;
 
-    const strResult = encodeActionsAsJson(actions);
-    downloadAsFile("actions.json", strResult, "text/json");
+    uploadMetadata(undefined, {
+      onSuccess: async (ipfsPin) => {
+        const ipfsCid = toHex(ipfsPin).slice(2);
+        const ipfsLength = toHex(ipfsPin.length).slice(2);
+        const cleanedGaugeAddress = gaugeAddress?.slice(2);
+
+        setActions([
+          {
+            to: modeVoterContract,
+            data: `0x071d2171000000000000000000000000${cleanedGaugeAddress}000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000${ipfsLength}${ipfsCid}000000000000000000000000000000000000000000000000000000000000`,
+            value: 0n,
+          },
+          {
+            to: bptVoterContract,
+            data: `0x071d2171000000000000000000000000${cleanedGaugeAddress}000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000${ipfsLength}${ipfsCid}000000000000000000000000000000000000000000000000000000000000`,
+            value: 0n,
+          },
+        ]);
+      },
+    });
+  };
+
+  const submitGauge = async () => {
+    await submitProposal();
   };
 
   return (
-    <MainSection narrow>
+    <MainSection narrow={true}>
       <div className="w-full justify-between">
         <h1 className="mb-8 line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
-          Create Proposal
+          Create Gauge
         </h1>
 
         <PlaceHolderOr selfAddress={selfAddress} canCreate={canCreate} isConnected={isConnected}>
           <div className="mb-6">
             <InputText
               className=""
-              label="Title"
+              label="Name"
               maxLength={100}
-              placeholder="A short title that describes the main purpose"
+              placeholder="The gauge name"
               variant="default"
               value={title}
               readOnly={isCreating}
               onChange={handleTitleInput}
             />
           </div>
+
+          <div className="mb-6">
+            <InputText //AddressInput
+              //chainId={PUB_ENS_CHAIN.id}
+              //wagmiConfig={config}
+              placeholder="0x12...3456"
+              maxLength={42}
+              readOnly={isCreating}
+              label="Address"
+              onChange={handleGaugeAddressInput}
+              value={gaugeAddress}
+              //onChange={handleGaugeAddressInput}
+              //onAccept={handleGaugeAddressValidInput}
+            />
+          </div>
+
           <div className="mb-6">
             <InputText
               className=""
-              label="Summary"
-              maxLength={280}
-              placeholder="A short summary that outlines the main purpose of the proposal"
+              label="Description"
+              placeholder="The gauge description"
               variant="default"
-              value={summary}
+              value={gaugeDescription}
               readOnly={isCreating}
-              onChange={handleSummaryInput}
+              onChange={handleGaugeDescriptionInput}
             />
           </div>
+
           <div className="mb-6">
-            <TextAreaRichText
-              label="Body"
-              className="pt-2"
-              value={description}
-              onChange={setDescription}
-              placeholder="A description of what the proposal is all about"
+            <InputText
+              className=""
+              label="Logo"
+              placeholder="The gauge logo"
+              variant="default"
+              value={gaugeLogo}
+              readOnly={isCreating}
+              onChange={handleGaugeLogoInput}
             />
           </div>
 
@@ -119,7 +179,6 @@ export default function Create() {
             <div className="flex flex-col gap-0.5 md:gap-1">
               <div className="flex gap-x-3">
                 <p className="text-base font-normal leading-tight text-neutral-800 md:text-lg">Resources</p>
-                <Tag label="Optional" />
               </div>
               <p className="text-sm font-normal leading-normal text-neutral-500 md:text-base">
                 Add links to external resources
@@ -134,28 +193,36 @@ export default function Create() {
               {resources.map((resource, idx) => {
                 return (
                   <div key={idx} className="flex flex-col gap-y-3 py-3 md:py-4">
-                    <div className="flex items-end gap-x-3">
+                    <div className="flex items-center gap-x-3">
                       <InputText
-                        label="Resource name"
+                        label="Field name"
+                        value={resource.field}
+                        onChange={(e) => onResourceFieldChange(e, idx)}
+                        placeholder="Website, Docs, Github, etc."
                         readOnly={isCreating}
-                        value={resource.name}
-                        onChange={(e) => onResourceNameChange(e, idx)}
-                        placeholder="GitHub, Twitter, etc."
+                      />
+                      <InputText
+                        label="Value or URL name"
+                        readOnly={isCreating}
+                        value={resource.value}
+                        onChange={(e) => onResourceValueChange(e, idx)}
+                        placeholder="100, Mode Network Wiki, etc."
+                      />
+                      <InputText
+                        label="URL"
+                        value={resource.url}
+                        onChange={(e) => onResourceUrlChange(e, idx)}
+                        placeholder="https://gov.mode.network/wiki/..."
+                        readOnly={isCreating}
                       />
                       <Button
-                        size="lg"
+                        size="sm"
+                        className="mt-8"
                         variant="tertiary"
                         onClick={() => removeResource(idx)}
                         iconLeft={IconType.MINUS}
                       />
                     </div>
-                    <InputText
-                      label="URL"
-                      value={resource.url}
-                      onChange={(e) => onResourceUrlChange(e, idx)}
-                      placeholder="https://..."
-                      readOnly={isCreating}
-                    />
                   </div>
                 );
               })}
@@ -163,11 +230,11 @@ export default function Create() {
             <span className="mt-3">
               <Button
                 variant="tertiary"
-                size="lg"
+                size="sm"
                 iconLeft={IconType.PLUS}
                 disabled={isCreating}
                 onClick={() => {
-                  setResources(resources.concat({ url: "", name: "" }));
+                  setResources(resources.concat({ field: "", value: "", url: "" }));
                 }}
               >
                 Add resource
@@ -177,71 +244,26 @@ export default function Create() {
 
           {/* Actions */}
 
-          <ProposalActions
-            actions={actions}
-            emptyListDescription="The proposal has no actions defined yet. Select a type of action to add to the proposal."
-            onRemove={(idx) => onRemoveAction(idx)}
-          />
-
-          <If lengthOf={actions} above={0}>
-            <Button
-              className="mt-6"
-              iconLeft={IconType.RICHTEXT_LIST_UNORDERED}
-              size="lg"
-              variant="tertiary"
-              onClick={() => exportAsJson()}
-            >
-              Export actions as JSON
-            </Button>
-          </If>
-
-          <div className="mt-8 grid w-full grid-cols-2 gap-4 md:grid-cols-4">
-            <AddActionCard
-              title="Add a payment"
-              icon={IconType.WITHDRAW}
-              disabled={isCreating}
-              onClick={() => setAddActionType("withdrawal")}
+          {!!actions.length && (
+            <ProposalActions
+              actions={actions}
+              emptyListDescription="The proposal has no actions defined yet. Select a type of action to add to the proposal."
             />
-            <AddActionCard
-              title="Add a function call"
-              icon={IconType.BLOCKCHAIN_BLOCKCHAIN}
-              disabled={isCreating}
-              onClick={() => setAddActionType("select-abi-function")}
-            />
-            <AddActionCard
-              title="Add raw calldata"
-              icon={IconType.COPY}
-              disabled={isCreating}
-              onClick={() => setAddActionType("calldata")}
-            />
-            <AddActionCard
-              title="Import JSON actions"
-              disabled={isCreating}
-              icon={IconType.RICHTEXT_LIST_UNORDERED}
-              onClick={() => setAddActionType("import-json")}
-            />
-          </div>
-
-          {/* Dialog */}
-
-          <NewActionDialog
-            newActionType={addActionType}
-            onClose={(newActions) => handleNewActionDialogClose(newActions)}
-          />
+          )}
 
           {/* Submit */}
 
           <div className="mt-6 flex w-full flex-col items-center">
             <Button
-              isLoading={isCreating}
+              isLoading={isCreating || uploadingIpfs}
               className="mt-3 border-primary-400"
               size="lg"
               variant={actions.length ? "primary" : "secondary"}
-              onClick={() => submitProposal()}
+              onClick={actions.length ? () => submitGauge() : () => createGauge()}
             >
               <If lengthOf={actions} above={0}>
                 <Then>Submit proposal</Then>
-                <Else>Submit signaling proposal</Else>
+                <Else>Upload metadata</Else>
               </If>
             </Button>
           </div>
