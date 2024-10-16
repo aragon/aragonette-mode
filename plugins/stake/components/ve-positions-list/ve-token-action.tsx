@@ -153,7 +153,7 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
             onClick={approveNFT}
             isLoading={isConfirmingApproval || isConfirmingBeginWithdraw}
           >
-            Claim
+            Unstake
           </Button>
         </div>
       );
