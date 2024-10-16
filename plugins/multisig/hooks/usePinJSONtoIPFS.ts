@@ -1,7 +1,7 @@
 import { uploadToPinata } from "@/utils/ipfs";
 import { useMutation } from "@tanstack/react-query";
 
-export function useUploadMetadata(content: any) {
+export function usePinJSONtoIPFS(content: any) {
   return useMutation<string>({
     mutationFn: async () => {
       try {
