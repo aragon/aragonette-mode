@@ -70,7 +70,7 @@ export const StakePositions = () => {
   const pageSize = 10;
 
   return (
-    <div className="mt-6">
+    <div>
       <h2 className="text-3xl font-semibold normal-case text-neutral-800">
         <span className="text-neutral-900">YOUR</span> veTOKENS
       </h2>

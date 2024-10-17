@@ -20,7 +20,7 @@ export const DashboardHeader = () => {
             </p>
           </div>
         </div>
-        <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
+        <div className="flex flex-row gap-x-20 gap-y-6">
           {/* TVL */}
           <div className="flex flex-col">
             <div className="title flex items-baseline gap-x-1">

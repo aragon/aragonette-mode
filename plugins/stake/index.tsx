@@ -18,7 +18,9 @@ export default function PluginPage() {
           3 day warmup before eligible to vote.
         </SectionHeader>
         <div className="mt-6 grid grid-cols-1 gap-x-4 md:grid-cols-2">
-          <Stake />
+          <div className="mb-6">
+            <Stake />
+          </div>
           <StakeUserStats />
         </div>
         <br />

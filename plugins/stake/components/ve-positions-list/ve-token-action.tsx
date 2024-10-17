@@ -97,7 +97,7 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
     case TokenActionStatus.Loading:
       return (
         <div className="flex items-center justify-between gap-x-4">
-          <Tag label="..." variant="neutral" className="rounded-[7px] normal-case [&>p]:px-2" />
+          <Tag label="..." variant="neutral" className="rounded-[8px] normal-case [&>p]:px-2" />
           <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true} isLoading={true}>
             Loading
           </Button>
@@ -106,7 +106,7 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
     case TokenActionStatus.Claimable:
       return (
         <div className="flex items-center justify-between gap-x-4">
-          <Tag label="Claimable" variant="critical" className="rounded-[7px] normal-case [&>p]:px-[1px]" />
+          <Tag label="Claimable" variant="critical" className="rounded-[8px] normal-case [&>p]:px-[1px]" />
           <Button
             size="sm"
             className="pt-[2px]"
@@ -122,7 +122,7 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
       return (
         <div className="flex items-center justify-between gap-x-4">
           <div>
-            <Tag label="In warmup" variant="info" className="rounded-[7px] normal-case [&>p]:px-[1px]" />
+            <Tag label="In warmup" variant="info" className="rounded-[8px] normal-case [&>p]:px-[1px]" />
             <Tooltip content={nextPeriodDateTime}>
               <p className="text-xs lowercase text-neutral-700">{relativeTime} left</p>
             </Tooltip>
@@ -144,7 +144,7 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
       return (
         <div className="flex items-center justify-between gap-x-4">
           <div>
-            <Tag label="In cooldown" variant="success" className="rounded-[7px] normal-case [&>p]:px-[1px]" />
+            <Tag label="In cooldown" variant="success" className="rounded-[8px] normal-case [&>p]:px-[1px]" />
             <Tooltip content={nextPeriodDateTime}>
               <p className="text-xs lowercase text-neutral-700">{relativeTime} left</p>
             </Tooltip>
@@ -168,7 +168,7 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
           <Tag
             label="Inactive"
             variant="neutral"
-            className="rounded-[7px] normal-case [&>p]:px-[1px] [&>p]:text-neutral-700"
+            className="rounded-[8px] normal-case [&>p]:px-[1px] [&>p]:text-neutral-700"
           />
           <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true}>
             Claimed
@@ -180,7 +180,7 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
         <div className="flex items-center justify-between gap-x-4">
           <Tag
             label="Active"
-            className="rounded-[7px] bg-primary-900 normal-case [&>p]:px-[1px] [&>p]:text-neutral-0"
+            className="rounded-[8px] bg-primary-900 normal-case [&>p]:px-[1px] [&>p]:text-neutral-0"
           />
           <Button
             className="pt-[2px]"

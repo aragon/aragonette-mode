@@ -89,17 +89,17 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
         <DataListItem key={id.toString()} className="my-2 border border-neutral-100 px-4 py-2">
           <dl className="flex flex-col divide-y divide-neutral-100">
             <div className="flex justify-between py-2">
-              <div className="flex items-center gap-x-4">
+              <div className="mb-1 flex gap-x-4">
                 <Image
-                  className="w-8"
+                  className="-mt-1"
                   alt="Token icon"
                   width={32}
                   height={32}
                   src={token === Token.MODE ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
                 />
-                {id.toString()}
+                <p>{id.toString()}</p>
               </div>
-              <p>{amount ? `${amount} ${symbol}` : "-"}</p>
+              <p className="text-neutral-900">{amount ? `${amount} ${symbol}` : "-"}</p>
             </div>
 
             <div className="flex items-center justify-between py-2">

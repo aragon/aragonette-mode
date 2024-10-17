@@ -30,14 +30,14 @@ export default function StandardHome() {
             Stake your MODE and/or BPT tokens to increase your voting power. The longer you stake, the higher your
             voting power multiplier will be.
           </SectionHeader>
-          <Card className="mt-8 grid w-full grid-cols-1 md:grid-cols-2">
-            <div className="mx-3 mb-6">
+          <Card className="mt-8 grid w-full grid-cols-1 px-3 pb-5 md:grid-cols-2">
+            <div className="-mx-3">
               <Stake onStake={() => Router.push("/plugins/stake")} />
               <div className="mx-8 mb-2">
                 <GetMoreTokens />
               </div>
             </div>
-            <div className="mx-3 mb-6 mt-12">
+            <div className="mt-3 md:mt-12">
               <MultiplierChart amount={multVp} token={token} />
             </div>
           </Card>
