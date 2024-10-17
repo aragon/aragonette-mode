@@ -12,8 +12,12 @@ export const Stake: React.FC<IStakeProps> = ({ onStake }) => {
     <Card className="w-full p-8">
       <TabsRoot defaultValue="mode">
         <TabsList>
-          <TabsTrigger className="mode-token-icon w-1/2 px-1 text-xl md:w-auto" label="MODE" value="mode" />
-          <TabsTrigger className="bpt-token-icon w-1/2 px-1 text-xl md:w-auto" label="BPT" value="bpt" />
+          <TabsTrigger
+            className="mode-token-icon w-1/2 justify-center px-1 text-xl md:w-auto"
+            label="MODE"
+            value="mode"
+          />
+          <TabsTrigger className="bpt-token-icon w-1/2 justify-center px-1 text-xl md:w-auto" label="BPT" value="bpt" />
         </TabsList>
         <TabsContent value="mode" className="pt-4">
           <StakeToken token={Token.MODE} onStake={onStake} />
