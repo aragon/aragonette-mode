@@ -4,7 +4,7 @@ import { DevMintTokens } from "../dev-tools";
 
 const GetMoreTokens = () => {
   return (
-    <div className="grid grid-cols-3 gap-3 py-3">
+    <div className="grid grid-cols-2 gap-3 py-3 md:grid-cols-3">
       <Button
         href={PUB_GET_MORE_MODE_URL}
         target="_blank"

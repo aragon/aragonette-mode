@@ -27,6 +27,9 @@ function resolveVariant(type: IAlert["type"]) {
     case "error":
       result = "critical";
       break;
+    case "info":
+      result = "success";
+      break;
     default:
       result = type;
   }

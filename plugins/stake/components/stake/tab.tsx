@@ -89,17 +89,17 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
         value={percentToggle}
         className="flex justify-between"
       >
-        <Toggle value="0" label="None" className="rounded-lg" />
+        <Toggle value="0" label="None" className="hidden rounded-lg sm:block" />
         <Toggle value="25" label="25%" className="rounded-lg" />
         <Toggle value="50" label="50%" className="rounded-lg" />
         <Toggle value="75" label="75%" className="rounded-lg" />
         <Toggle value="100" label="100%" className="rounded-lg" />
       </ToggleGroup>
-      <p className="text-right">
+      <p className="mt-2 text-left">
         Your balance: {formattedQuantity} {symbol}
       </p>
       <Button
-        className="mt-4 w-full"
+        className="mt-2 w-full"
         disabled={balanceToStake < minAmount}
         onClick={approveToken}
         isLoading={isConfirming1 || isConfirming2}

@@ -20,7 +20,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
   const token = props.token;
   const { tokenInfo, isLoading: infoLoading } = useTokenInfo(token, id);
   const { data: vp, isLoading: vpLoading } = useGetVp(token, id);
-  const { now } = useNow();
+  const { now, getRelativeTime } = useNow();
   const { point: depositPoint } = useGetPoint(token, id, 1n);
 
   const isLoading = infoLoading || vpLoading;
@@ -45,16 +45,13 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
     : null;
 
   const strEpochs = epochsSince(created, now);
-  const diffTime = now - new Date().getTime();
-  const relativeTime = formatterUtils.formatDate(created - diffTime, {
-    format: DateFormat.RELATIVE,
-  });
+  const relativeTime = getRelativeTime(created, DateFormat.RELATIVE);
 
   return (
     <Fragment>
       <div className="hidden md:block">
         <DataListItem key={id.toString()} className="flex items-center gap-x-4 border border-neutral-100 p-4">
-          <div className="flex w-16 flex-auto items-center gap-x-3">
+          <p className="flex w-16 flex-auto items-center gap-x-3">
             <Image
               className="w-8"
               alt="Token icon"
@@ -63,27 +60,27 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
               src={token === Token.MODE ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
             />
             {id.toString()}
-          </div>
-          <div className="w-32 flex-auto">{amount ? `${amount} ${symbol}` : "-"}</div>
-          <div className="w-32 flex-auto">{multiplier ? `${multiplier}x` : "-"}</div>
-          <div className="w-32 flex-auto">
+          </p>
+          <p className="w-32 flex-auto">{amount ? `${amount} ${symbol}` : "-"}</p>
+          <p className="w-32 flex-auto lowercase">{multiplier ? `${multiplier}x` : "-"}</p>
+          <p className="w-32 flex-auto lowercase">
             {strEpochs !== "0" && strEpochs !== "-" ? (
               <>
                 {strEpochs} {strEpochs === "1" ? "epoch" : "epochs"}
                 <br />
-                <small className="text-neutral-200">{relativeTime}</small>
+                <p className="text-xs lowercase text-neutral-200">{relativeTime}</p>
               </>
             ) : (
               <span>-</span>
             )}
-          </div>
+          </p>
           <div className="w-48 flex-auto">
             {isLoading ? (
               <div className="flex w-48 flex-auto items-center justify-between gap-x-4">
-                <div className="flex items-center justify-between gap-x-4">-</div>;
+                <p className="flex items-center justify-between gap-x-4">-</p>;
               </div>
             ) : (
-              <TokenAction tokenId={id} token={token} created={created} now={now} />
+              <TokenAction tokenId={id} token={token} created={created} />
             )}
           </div>
         </DataListItem>
@@ -92,17 +89,17 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
         <DataListItem key={id.toString()} className="my-2 border border-neutral-100 px-4 py-2">
           <dl className="flex flex-col divide-y divide-neutral-100">
             <div className="flex justify-between py-2">
-              <div className="flex items-center gap-x-4">
+              <div className="mb-1 flex gap-x-4">
                 <Image
-                  className="w-8"
+                  className="-mt-1"
                   alt="Token icon"
                   width={32}
                   height={32}
                   src={token === Token.MODE ? "/mode-token-icon.png" : "/bpt-token-icon.png"}
                 />
-                {id.toString()}
+                <p>{id.toString()}</p>
               </div>
-              <div>{amount ? `${amount} ${symbol}` : "-"}</div>
+              <p className="text-neutral-900">{amount ? `${amount} ${symbol}` : "-"}</p>
             </div>
 
             <div className="flex items-center justify-between py-2">
@@ -128,10 +125,10 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
             <div className="pt-5">
               {isLoading ? (
                 <div className="flex w-48 flex-auto items-center justify-between gap-x-4">
-                  <div className="flex items-center justify-between gap-x-4">-</div>;
+                  <p className="flex items-center justify-between gap-x-4">-</p>;
                 </div>
               ) : (
-                <TokenAction tokenId={id} token={token} created={created} now={now} />
+                <TokenAction tokenId={id} token={token} created={created} />
               )}
             </div>
           </dl>

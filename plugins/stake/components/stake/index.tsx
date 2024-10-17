@@ -9,16 +9,20 @@ interface IStakeProps {
 
 export const Stake: React.FC<IStakeProps> = ({ onStake }) => {
   return (
-    <Card className="mt-4 w-full p-8">
+    <Card className="w-full p-8">
       <TabsRoot defaultValue="mode">
         <TabsList>
-          <TabsTrigger label="Stake MODE" value="mode" />
-          <TabsTrigger label="Stake BPT" value="bpt" />
+          <TabsTrigger
+            className="mode-token-icon w-1/2 justify-center px-1 text-xl md:w-auto"
+            label="MODE"
+            value="mode"
+          />
+          <TabsTrigger className="bpt-token-icon w-1/2 justify-center px-1 text-xl md:w-auto" label="BPT" value="bpt" />
         </TabsList>
-        <TabsContent value="mode">
+        <TabsContent value="mode" className="pt-4">
           <StakeToken token={Token.MODE} onStake={onStake} />
         </TabsContent>
-        <TabsContent value="bpt">
+        <TabsContent value="bpt" className="pt-4">
           <StakeToken token={Token.BPT} onStake={onStake} />
         </TabsContent>
       </TabsRoot>

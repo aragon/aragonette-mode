@@ -1,4 +1,4 @@
-import { Button, DateFormat, formatterUtils, Tag } from "@aragon/ods";
+import { Button, DateFormat, formatterUtils, Tag, Tooltip } from "@aragon/ods";
 import { useBeginWithdrawal } from "../../hooks/useBeginWithdrawal";
 import { useWithdraw } from "../../hooks/useWithdrawToken";
 import { type Token } from "../../types/tokens";
@@ -11,12 +11,12 @@ import { useGetNextEpochIn } from "../../hooks/useGetNextEpochIn";
 import { useApproveNFT } from "../../hooks/useApproveNFT";
 import { useEffect, useState } from "react";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
+import { useNow } from "../../hooks/useNow";
 
 type TokenActionProps = {
   tokenId: bigint;
   token: Token;
   created: number;
-  now: number;
 };
 
 enum TokenActionStatus {
@@ -28,9 +28,10 @@ enum TokenActionStatus {
   Active = "active",
 }
 
-export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) => {
+export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
   const queryClient = useQueryClient();
 
+  const { now, getRelativeTime } = useNow();
   const { data: vp, isLoading: vpLoading, queryKey: vpQueryKey } = useGetVp(token, tokenId);
   const { data: cooldown, isLoading: cooldownLoading, queryKey: cooldownQueryKey } = useGetCooldown(token, tokenId);
   const { data: warmingPeriod, isLoading: warmingPeriodLoading } = useGetWarmingPeriod(token);
@@ -58,18 +59,19 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
   const [status, setStatus] = useState<TokenActionStatus>(TokenActionStatus.Loading);
   const [nextPeriodDate, setNextPeriodDate] = useState(0);
 
-  const relativeTime = formatterUtils.formatDate(nextPeriodDate, {
-    format: DateFormat.RELATIVE,
+  const relativeTime = getRelativeTime(nextPeriodDate, DateFormat.DURATION);
+
+  const nextPeriodDateTime = formatterUtils.formatDate(nextPeriodDate, {
+    format: DateFormat.YEAR_MONTH_DAY_TIME,
   });
 
   const isLoading = vpLoading || cooldownLoading || warmingPeriodLoading || nextEpochTsLoading || canExitLoading;
 
   useEffect(() => {
-    const diffTime = now - new Date().getTime();
-    const warmingPeriodDate = created + Math.max(warmingPeriod ?? 0, Number(nextEpochIn)) * 1000;
-    const exitDate = Number(cooldown?.exitDate) * 1000;
+    const warmingPeriodDate = created + Math.max(Number(warmingPeriod ?? 0), Number(nextEpochIn ?? 0)) * 1000;
+    const exitDate = Number(cooldown?.exitDate ?? 0) * 1000;
 
-    const nextPeriodDate = (exitDate ? exitDate : warmingPeriodDate) - diffTime;
+    const nextPeriodDate = exitDate ? exitDate : warmingPeriodDate;
     setNextPeriodDate(nextPeriodDate);
 
     const inWarmup = now <= warmingPeriodDate;
@@ -95,8 +97,8 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
     case TokenActionStatus.Loading:
       return (
         <div className="flex items-center justify-between gap-x-4">
-          <Tag label="Loading" variant="neutral" />
-          <Button size="sm" variant="secondary" disabled={true} isLoading={true}>
+          <Tag label="..." variant="neutral" className="rounded-[8px] normal-case [&>p]:px-2" />
+          <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true} isLoading={true}>
             Loading
           </Button>
         </div>
@@ -104,8 +106,14 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
     case TokenActionStatus.Claimable:
       return (
         <div className="flex items-center justify-between gap-x-4">
-          <Tag label="Claimable" variant="critical" />
-          <Button size="sm" variant="secondary" onClick={withdraw} isLoading={isConfirmingWithdraw}>
+          <Tag label="Claimable" variant="critical" className="rounded-[8px] normal-case [&>p]:px-[1px]" />
+          <Button
+            size="sm"
+            className="pt-[2px]"
+            variant="secondary"
+            onClick={withdraw}
+            isLoading={isConfirmingWithdraw}
+          >
             Withdraw
           </Button>
         </div>
@@ -114,31 +122,55 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
       return (
         <div className="flex items-center justify-between gap-x-4">
           <div>
-            <Tag label="In warmup" variant="info" />
-            <small className="text-neutral-200">{relativeTime}</small>
+            <Tag label="In warmup" variant="info" className="rounded-[8px] normal-case [&>p]:px-[1px]" />
+            <Tooltip content={nextPeriodDateTime}>
+              <p className="text-xs lowercase text-neutral-700">{relativeTime} left</p>
+            </Tooltip>
           </div>
-          <Button size="sm" variant="secondary" disabled={true}>
-            Unstake
-          </Button>
+          <Tooltip
+            content={
+              <div>
+                <p>You can unstake after the warming period ends</p>
+              </div>
+            }
+          >
+            <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true}>
+              Unstake
+            </Button>
+          </Tooltip>
         </div>
       );
     case TokenActionStatus.InCooldown:
       return (
         <div className="flex items-center justify-between gap-x-4">
           <div>
-            <Tag label="In cooldown" variant="success" />
-            <small className="text-neutral-200">{relativeTime}</small>
+            <Tag label="In cooldown" variant="success" className="rounded-[8px] normal-case [&>p]:px-[1px]" />
+            <Tooltip content={nextPeriodDateTime}>
+              <p className="text-xs lowercase text-neutral-700">{relativeTime} left</p>
+            </Tooltip>
           </div>
-          <Button size="sm" variant="secondary" disabled={true}>
-            Withdraw
-          </Button>
+          <Tooltip
+            content={
+              <div>
+                <p>You can withdraw after the cooldown period ends</p>
+              </div>
+            }
+          >
+            <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true}>
+              Withdraw
+            </Button>
+          </Tooltip>
         </div>
       );
     case TokenActionStatus.Inactive:
       return (
         <div className="flex items-center justify-between gap-x-4">
-          <Tag label="Inactive" variant="neutral" />
-          <Button size="sm" variant="secondary" disabled={true}>
+          <Tag
+            label="Inactive"
+            variant="neutral"
+            className="rounded-[8px] normal-case [&>p]:px-[1px] [&>p]:text-neutral-700"
+          />
+          <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true}>
             Claimed
           </Button>
         </div>
@@ -146,8 +178,12 @@ export const TokenAction = ({ tokenId, token, created, now }: TokenActionProps) 
     case TokenActionStatus.Active:
       return (
         <div className="flex items-center justify-between gap-x-4">
-          <Tag label="Active" variant="success" />
+          <Tag
+            label="Active"
+            className="rounded-[8px] bg-primary-900 normal-case [&>p]:px-[1px] [&>p]:text-neutral-0"
+          />
           <Button
+            className="pt-[2px]"
             size="sm"
             variant="secondary"
             onClick={approveNFT}

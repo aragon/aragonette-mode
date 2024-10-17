@@ -78,55 +78,68 @@ const MultiplierChart: React.FC<{ amount: number; token: Token }> = ({ amount, t
     amount
   );
 
+  const formattedAmount = formatterUtils.formatNumber(amount, { format: NumberFormat.GENERIC_SHORT }) ?? "1";
+
   return (
-    <ResponsiveContainer width="100%" height={400} className="-my-3">
-      <AreaChart data={dataPoints} className="py-3" margin={{ left: -40 }}>
-        <defs>
-          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#e0fe00" stopOpacity={0.4} />
-            <stop offset="95%" stopColor="#e0fe00" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <XAxis
-          tickFormatter={(value) => {
-            const date = new Date(value);
-            return date.toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            });
-          }}
-          dataKey="date"
-          className="text-xs"
-          domain={[dataPoints[0].date.getTime(), dataPoints[dataPoints.length - 1].date.getTime()]}
-          tickLine={false}
-          axisLine={true}
-          type="number"
-          tickCount={dataPoints.length}
-        />
-        <YAxis
-          tickFormatter={(value) => formatterUtils.formatNumber(value, { format: NumberFormat.GENERIC_SHORT }) ?? ""}
-          className="text-xs"
-          width={80}
-          domain={[0, dataPoints[dataPoints.length - 1].val]}
-          tickLine={false}
-          axisLine={true}
-          type="number"
-          tickCount={10}
-          dataKey="val"
-        />
-        <Tooltip content={renderContent} cursor={true} allowEscapeViewBox={{ x: false, y: true }} />
-        <Area
-          className="border"
-          type="monotone"
-          dataKey="val"
-          stroke="rgb(var(--ods-color-primary-500))"
-          strokeWidth={2.5}
-          fillOpacity={1}
-          fill="url(#colorValue)"
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+    <div className="mx-1 mb-2 mt-1 md:ml-0 md:mr-4">
+      <ResponsiveContainer width="100%" height={390} className="pr-2">
+        <AreaChart data={dataPoints} className="py-3" margin={{ left: -40 }}>
+          <defs>
+            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#e0fe00" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#e0fe00" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <XAxis
+            tickFormatter={(value) => {
+              const date = new Date(value);
+              return date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              });
+            }}
+            dataKey="date"
+            className="text-xs"
+            domain={[dataPoints[0].date.getTime(), dataPoints[dataPoints.length - 1].date.getTime()]}
+            tickLine={false}
+            axisLine={true}
+            type="number"
+            tickCount={dataPoints.length}
+          />
+          <YAxis
+            tickFormatter={(value) => formatterUtils.formatNumber(value, { format: NumberFormat.GENERIC_SHORT }) ?? ""}
+            className="text-xs"
+            width={80}
+            domain={[0, dataPoints[dataPoints.length - 1].val]}
+            tickLine={false}
+            axisLine={true}
+            type="number"
+            tickCount={10}
+            dataKey="val"
+          />
+          <Tooltip content={renderContent} cursor={true} allowEscapeViewBox={{ x: false, y: true }} />
+          <Area
+            className="border"
+            type="monotone"
+            dataKey="val"
+            stroke="rgb(var(--ods-color-primary-500))"
+            strokeWidth={2.5}
+            fillOpacity={1}
+            fill="url(#colorValue)"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+      <div className="md:ml-8">
+        <p className="text-center text-neutral-600">
+          Example of {amount > 1 ? "your" : "the"} voting power of{" "}
+          <span className="text-neutral-900">{formattedAmount}</span> {amount > 1 ? "tokens" : "token"} over time.
+        </p>
+        <p className="text-center text-neutral-600">
+          You can get up to <span className="text-neutral-900">{Math.round(parsedMaxBias)}x</span> your staked amount
+        </p>
+      </div>
+    </div>
   );
 };
 

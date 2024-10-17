@@ -17,8 +17,10 @@ export default function PluginPage() {
           longer you stake, the higher your voting power multiplier will be. New stakes will be subject to a minimun of
           3 day warmup before eligible to vote.
         </SectionHeader>
-        <div className="mt-4 grid grid-cols-1 gap-x-4 md:grid-cols-2">
-          <Stake />
+        <div className="mt-6 grid grid-cols-1 gap-x-4 md:grid-cols-2">
+          <div className="mb-6">
+            <Stake />
+          </div>
           <StakeUserStats />
         </div>
         <br />

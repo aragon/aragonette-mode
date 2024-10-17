@@ -11,6 +11,7 @@ import { SectionHeader } from "@/plugins/stake/components/section-header";
 import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 import GetMoreTokens from "@/plugins/stake/components/get-tokens-links";
 import Router from "next/router";
+import { Card } from "@aragon/ods";
 
 export default function StandardHome() {
   const token = Token.MODE;
@@ -29,19 +30,21 @@ export default function StandardHome() {
             Stake your MODE and/or BPT tokens to increase your voting power. The longer you stake, the higher your
             voting power multiplier will be.
           </SectionHeader>
-          <div className="mt-4 grid grid-cols-1 gap-x-4 md:grid-cols-2">
-            <div className="mx-3 mb-6 mt-10">
-              <MultiplierChart amount={multVp} token={token} />
-            </div>
-            <div className="mx-3 mb-6">
+          <Card className="mt-8 grid w-full grid-cols-1 px-3 pb-5 md:grid-cols-2">
+            <div className="-mx-3">
               <Stake onStake={() => Router.push("/plugins/stake")} />
-              <div className="mx-2 mt-4">
+              <div className="mx-8 mb-2">
                 <GetMoreTokens />
               </div>
             </div>
-          </div>
+            <div className="mt-3 md:mt-12">
+              <MultiplierChart amount={multVp} token={token} />
+            </div>
+          </Card>
         </div>
-        <DashboardResources />
+        <div className="md:mt-12">
+          <DashboardResources />
+        </div>
       </MainSection>
     </div>
   );

@@ -4,7 +4,7 @@ import Link from "next/link";
 export const Footer = () => {
   return (
     <div className="flex w-full flex-row border-t border-t-neutral-100 bg-neutral-0 p-4 md:p-0 xl:h-20">
-      <div className="mx-auto w-full max-w-screen-xl md:flex md:flex-col md:justify-center md:gap-y-6 md:px-6 md:py-10 xl:flex-row xl:gap-x-6 xl:px-6 xl:py-5">
+      <div className="mx-auto w-full max-w-screen-xl md:flex md:flex-col md:justify-center md:gap-y-6 md:px-6 md:py-10 xl:flex-row xl:gap-x-6 xl:px-16 xl:py-5">
         <div className="flex items-center justify-between pb-4 pt-3 md:order-2 md:justify-center md:gap-x-4 md:pb-0 md:pt-0 xl:order-1 xl:flex-1 xl:justify-start">
           <div className="flex items-center gap-x-1.5 md:gap-x-2 lg:gap-x-2.5">
             <span className="text-xs leading-tight text-neutral-500 md:text-sm lg:text-base">Governed on</span>
