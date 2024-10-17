@@ -95,11 +95,11 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
         <Toggle value="75" label="75%" className="rounded-lg" />
         <Toggle value="100" label="100%" className="rounded-lg" />
       </ToggleGroup>
-      <p className="text-right">
+      <p className="mt-2 text-left">
         Your balance: {formattedQuantity} {symbol}
       </p>
       <Button
-        className="mt-4 w-full"
+        className="mt-2 w-full"
         disabled={balanceToStake < minAmount}
         onClick={approveToken}
         isLoading={isConfirming1 || isConfirming2}

@@ -170,3 +170,33 @@ h5,
   font-family: "ChakraPetch";
   text-transform: uppercase;
 }
+
+a,
+button {
+  font-family: "ChakraPetch";
+  text-transform: uppercase;
+}
+
+p {
+  font-family: "IBMPlexSans";
+}
+
+.mode-token-icon:before {
+  content: "";
+  display: inline-block;
+  background: url("/mode-token-icon.png") no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+  margin-right: -8px;
+}
+
+.bpt-token-icon:before {
+  content: "";
+  display: inline-block;
+  background: url("/bpt-token-icon.png") no-repeat;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+  margin-right: -8px;
+}

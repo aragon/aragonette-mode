@@ -126,7 +126,7 @@ export default function Create() {
               className=""
               label="Name"
               maxLength={100}
-              placeholder="The gauge name"
+              placeholder="Gauge name"
               variant="default"
               value={title}
               readOnly={isCreating}

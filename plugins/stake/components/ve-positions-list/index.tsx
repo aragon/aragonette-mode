@@ -67,9 +67,14 @@ export const StakePositions = () => {
 
   const filteredVeTokens = filterTokens(veTokens, searchValue);
 
+  const pageSize = 10;
+
   return (
     <div className="mt-6">
-      <SectionHeader title="Your ve Tokens" learnMoreUrl={PUB_VE_TOKENS_LEARN_MORE_URL}>
+      <h2 className="text-3xl font-semibold normal-case text-neutral-800">
+        <span className="text-neutral-900">YOUR</span> veTOKENS
+      </h2>
+      <SectionHeader title="" learnMoreUrl={PUB_VE_TOKENS_LEARN_MORE_URL}>
         Your staked MODE and/or BPT tokens are represented as veTokens. If you want to unstake your MODE and/or BPT
         tokens, they will be available within 7 days after entering the cooldown.
       </SectionHeader>
@@ -78,7 +83,7 @@ export const StakePositions = () => {
         <DataListRoot
           entityLabel="veTokens"
           itemsCount={filteredVeTokens.length}
-          pageSize={5}
+          pageSize={pageSize}
           className="gap-y-6"
           state={isLoading ? "initialLoading" : "idle"}
         >
@@ -88,12 +93,12 @@ export const StakePositions = () => {
             onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
           />
 
-          <div className="hidden gap-x-4 px-4 md:flex">
-            <div className="w-16 flex-auto">Token ID</div>
-            <div className="w-32 flex-auto">Amount</div>
-            <div className="w-32 flex-auto">Multiplier</div>
-            <div className="w-32 flex-auto">Age</div>
-            <div className="w-48 flex-auto">Status</div>
+          <div className="hidden gap-x-4 px-6 md:flex">
+            <p className="w-16 flex-auto">Token ID</p>
+            <p className="w-32 flex-auto">Amount</p>
+            <p className="w-32 flex-auto">Multiplier</p>
+            <p className="w-32 flex-auto">Age</p>
+            <p className="w-48 flex-auto">Status</p>
           </div>
 
           <DataListContainer>
@@ -103,7 +108,7 @@ export const StakePositions = () => {
             ))}
           </DataListContainer>
 
-          {filteredVeTokens.length !== 0 && <DataListPagination />}
+          {filteredVeTokens.length > pageSize && <DataListPagination />}
         </DataListRoot>
       </div>
     </div>
