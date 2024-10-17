@@ -128,7 +128,7 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                   <p className="flex items-center justify-between gap-x-4">-</p>;
                 </div>
               ) : (
-                <TokenAction tokenId={id} token={token} created={created} now={now} />
+                <TokenAction tokenId={id} token={token} created={created} />
               )}
             </div>
           </dl>
