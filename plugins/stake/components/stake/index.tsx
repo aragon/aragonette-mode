@@ -30,7 +30,7 @@ export const Stake: React.FC<IStakeProps> = ({ onStake }) => {
         <span>
           Please note that you will need to wait for the warmup and cooldown periods to complete in order to unstake.
         </span>
-        <Link href="https://docs.balancer.finance/guides/staking" iconRight={IconType.LINK_EXTERNAL} className="pl-1">
+        <Link href="https://mode.mirror.xyz/" iconRight={IconType.LINK_EXTERNAL} className="pl-1">
           Learn more
         </Link>
       </div>
