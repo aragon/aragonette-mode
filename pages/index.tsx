@@ -42,7 +42,9 @@ export default function StandardHome() {
             </div>
           </Card>
         </div>
-        <DashboardResources />
+        <div className="md:mt-12">
+          <DashboardResources />
+        </div>
       </MainSection>
     </div>
   );

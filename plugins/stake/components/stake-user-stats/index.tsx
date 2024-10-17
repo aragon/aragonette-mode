@@ -18,7 +18,7 @@ export const StakeUserStats: React.FC = () => {
   });
 
   return (
-    <aside className="flex w-full flex-col gap-y-4 justify-self-center md:max-w-[420px] md:gap-y-6">
+    <aside className="flex w-full flex-col gap-y-4 justify-self-center md:mt-7 md:max-w-[420px] md:gap-y-6">
       <dl className="divide-y divide-neutral-100">
         <div className="flex flex-col items-baseline gap-y-2 py-3 lg:gap-x-6 lg:py-4">
           <dt className="line-clamp-1 shrink-0 text-xl leading-tight text-neutral-800 lg:line-clamp-6">
