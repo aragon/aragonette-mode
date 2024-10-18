@@ -57,7 +57,8 @@ export const PUB_GET_MORE_BPT_URL =
   process.env.NEXT_PUBLIC_GET_MORE_BPT_URL ??
   "https://balancer.fi/pools/mode/v2/0x7c86a44778c52a0aad17860924b53bf3f35dc932000200000000000000000007/add-liquidity";
 export const PUB_GET_MORE_BOTH_URL = process.env.NEXT_PUBLIC_GET_MORE_BOTH_URL ?? "https://web3packs.com/shop";
-export const PUB_GET_REWARDS_URL = process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://app.hedgey.finance/";
+export const PUB_GET_REWARDS_URL =
+  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://app.hedgey.finance/claim/401d2082-8933-4f2b-917f-8263f3d4b6f9";
 
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??

@@ -1,15 +1,15 @@
-import { Address } from "viem";
+import { type Address } from "viem";
 import { whatsabi } from "@shazow/whatsabi";
 import { usePublicClient } from "wagmi";
-import { AbiFunction } from "abitype";
+import { type AbiFunction } from "abitype";
 import { useQuery } from "@tanstack/react-query";
 import { ADDRESS_ZERO, isAddress, isContract } from "@/utils/evm";
-import { PUB_CHAIN, PUB_ETHERSCAN_API_KEY } from "@/constants";
+import { PUB_CHAIN, PUB_CHAIN_NAME, PUB_ETHERSCAN_API_KEY } from "@/constants";
 import { useAlerts } from "@/context/Alerts";
 import { getImplementation } from "@/utils/proxies";
-import { ChainName } from "@/utils/chains";
+import { type ChainName } from "@/utils/chains";
 
-const CHAIN_NAME = PUB_CHAIN.name.toLowerCase() as ChainName;
+const CHAIN_NAME = PUB_CHAIN_NAME as ChainName;
 
 export const useAbi = (contractAddress: Address) => {
   const { addAlert } = useAlerts();
@@ -134,7 +134,7 @@ function getEtherscanAbiLoader() {
       });
     case "mode":
       return new whatsabi.loaders.EtherscanABILoader({
-        apiKey: "",
+        apiKey: undefined,
         baseURL: "https://explorer.mode.network/api",
       });
     default:
