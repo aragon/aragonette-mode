@@ -35,9 +35,9 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
 
   const { approveToken, isConfirming: isConfirming2 } = useApproveToken(balanceToStake, token, stakeToken);
 
-  const balance = data?.balance ?? 0n;
-  const decimals = data?.decimals ?? 18;
-  const minAmount = minAmountData ?? 100n * 10n ** BigInt(decimals);
+  const balance = BigInt(data?.balance ?? 0n);
+  const decimals = Number(data?.decimals ?? 18);
+  const minAmount = BigInt(minAmountData ?? 100n * 10n ** BigInt(decimals));
   const symbol = token === Token.MODE ? "MODE" : "BPT";
   const formattedBalance = data?.formattedBalance ?? "0";
   const formattedQuantity = formatterUtils.formatNumber(formattedBalance, { format: NumberFormat.TOKEN_AMOUNT_LONG });
