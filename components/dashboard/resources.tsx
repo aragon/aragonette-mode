@@ -31,9 +31,11 @@ export const DashboardResources = () => {
     <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-6 pt-10 sm:grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] md:gap-10">
       {resources.map((resource) => (
         <Card key={resource.link} className="flex flex-col justify-between gap-y-6 bg-neutral-0 p-6 shadow-neutral-md">
-          <Heading size="h2">{resource.name}</Heading>
+          <Heading size="h2" className="text-neutral-900">
+            {resource.name}
+          </Heading>
           <div className="flex grow flex-col justify-start">
-            <p className="text-neutral-500 ">{resource.description}</p>
+            <p className="text-neutral-700 ">{resource.description}</p>
           </div>
           <span className="flex">
             <Button href={resource.link} variant="secondary" rel="noopener noreferrer" target="_blank">

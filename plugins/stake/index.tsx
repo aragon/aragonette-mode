@@ -1,11 +1,13 @@
 import { MainSection } from "@/components/layout/main-section";
 import { RadialGradients } from "@/components/radial-gradients";
-import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
+import { PUB_GET_REWARDS_URL, PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 import { SectionHeader } from "./components/section-header";
 import { Stake } from "./components/stake";
 import { StakeUserStats } from "./components/stake-user-stats";
 import { StakePositions } from "./components/ve-positions-list";
 import React from "react";
+import { Button, IconType } from "@aragon/ods";
+import GetMoreTokens from "./components/get-tokens-links";
 
 export default function PluginPage() {
   return (
@@ -21,10 +23,25 @@ export default function PluginPage() {
           <div className="mb-6">
             <Stake />
           </div>
-          <StakeUserStats />
+          <div className="mx-16 flex flex-col gap-y-4">
+            <StakeUserStats />
+            <Button
+              className="mt-6"
+              href={PUB_GET_REWARDS_URL}
+              target="_blank"
+              variant="secondary"
+              size="lg"
+              responsiveSize={{ md: "lg" }}
+              iconRight={IconType.LINK_EXTERNAL}
+            >
+              Check for Rewards
+            </Button>
+            <GetMoreTokens />
+          </div>
         </div>
-        <br />
-        <StakePositions />
+        <div className="mt-12 md:mt-6">
+          <StakePositions />
+        </div>
       </MainSection>
     </div>
   );
