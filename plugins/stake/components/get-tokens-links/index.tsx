@@ -1,6 +1,5 @@
 import { PUB_GET_MORE_BPT_URL, PUB_GET_MORE_MODE_URL, PUB_GET_MORE_BOTH_URL } from "@/constants";
 import { Button, IconType } from "@aragon/ods";
-import { DevMintTokens } from "../dev-tools";
 
 const GetMoreTokens = () => {
   return (
@@ -32,9 +31,6 @@ const GetMoreTokens = () => {
       >
         Get Both
       </Button>
-
-      {/* TODO: Remove when ready to ship */}
-      {process.env.NODE_ENV === "development" && <DevMintTokens />}
     </div>
   );
 };
