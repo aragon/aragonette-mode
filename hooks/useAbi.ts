@@ -132,6 +132,11 @@ function getEtherscanAbiLoader() {
         apiKey: PUB_ETHERSCAN_API_KEY,
         baseURL: "https://api-mumbai.polygonscan.com/api",
       });
+    case "mode":
+      return new whatsabi.loaders.EtherscanABILoader({
+        apiKey: "",
+        baseURL: "https://explorer.mode.network/api",
+      });
     default:
       throw new Error("Unknown chain");
   }
