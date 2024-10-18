@@ -47,6 +47,8 @@ export const PUB_TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https:/
 export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
 export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://gov.mode.network/";
+export const PUB_GOV_FORUM_URL = process.env.NEXT_PUBLIC_GOV_FORUM_URL ?? "https://forum.mode.network/";
+export const PUB_DEV_PAGE_URL = process.env.NEXT_PUBLIC_DEV_PAGE_URL ?? "https://www.mode.network/developers";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
 export const PUB_STAKING_LEARN_MORE_URL = "https://mode.mirror.xyz/";
 export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://mode.mirror.xyz/";

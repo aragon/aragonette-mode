@@ -1,13 +1,12 @@
 import React from "react";
-import { PUB_TELEGRAM_URL } from "@/constants";
+import { PUB_TELEGRAM_URL, PUB_GOV_FORUM_URL, PUB_DEV_PAGE_URL } from "@/constants";
 import { Button, Card, Heading } from "@aragon/ods";
 
 const resources = [
   {
     name: "Governance Forum",
-    link: "https://modenetwork.notion.site",
-    description:
-      "Visit the Mode governance forum to see the latest developments in the community. Comment on or submit proposals for partnerships, services, or general protocol improvements.",
+    link: PUB_GOV_FORUM_URL,
+    description: "Comment on or submit proposals for partnerships, services or to apply for gauge listing.",
     cta: "Visit",
   },
   {
@@ -19,7 +18,7 @@ const resources = [
   },
   {
     name: "Developers",
-    link: "https://www.mode.network/developers",
+    link: PUB_DEV_PAGE_URL,
     description:
       "Build on Mode: Push the limits with our community of hungry and talented builders. What innovations are you working on?",
     cta: "Start building",
