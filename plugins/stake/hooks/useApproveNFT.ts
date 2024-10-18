@@ -37,11 +37,11 @@ export function useApproveNFT(token: Token, tokenId: bigint, onSuccess?: () => v
   });
 
   const approveNFT = async () => {
-    if (!lockNFTContract) return;
     setIsLoading(true);
 
     try {
       await forceChain();
+      if (!lockNFTContract) return;
 
       const approvedOperator = await readContract(config, {
         address: lockNFTContract,

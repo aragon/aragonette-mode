@@ -30,43 +30,43 @@ export function useMintToken(token: Token, onSuccess?: () => void, onError?: () 
     },
   });
 
-  const mintToken = (amount: bigint) => {
-    if (!address) return;
+  const mintToken = async (amount: bigint) => {
     setIsLoading(true);
 
-    forceChain()
-      .then(() => {
-        writeContract({
-          chain: PUB_CHAIN,
-          abi: [
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "to",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "amount",
-                  type: "uint256",
-                },
-              ],
-              name: "mint",
-              outputs: [],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-          ],
-          address: tokenContract,
-          functionName: "mint",
-          args: [address, amount],
-        });
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        onError?.();
+    try {
+      if (!address) return;
+
+      await forceChain();
+      writeContract({
+        chain: PUB_CHAIN,
+        abi: [
+          {
+            inputs: [
+              {
+                internalType: "address",
+                name: "to",
+                type: "address",
+              },
+              {
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+              },
+            ],
+            name: "mint",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+        ],
+        address: tokenContract,
+        functionName: "mint",
+        args: [address, amount],
       });
+    } catch (err) {
+      setIsLoading(false);
+      onError?.();
+    }
   };
 
   return {

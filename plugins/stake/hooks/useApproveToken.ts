@@ -35,12 +35,12 @@ export function useApproveToken(amount: bigint, token: Token, onSuccess?: () => 
   });
 
   const approveToken = async () => {
-    if (!address) throw new Error("No address found");
     setIsLoading(true);
 
     try {
       await forceChain();
 
+      if (!address) throw new Error("No address found");
       const allowance = await readContract(config, {
         address: tokenContract,
         abi: erc20Abi,

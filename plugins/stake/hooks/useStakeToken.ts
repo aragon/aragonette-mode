@@ -30,11 +30,11 @@ export function useStakeToken(amount: bigint, token: Token, onSuccess?: () => vo
   });
 
   const stakeToken = async () => {
-    if (!amount) throw new Error("Amount is required");
     setIsLoading(true);
 
     try {
       await forceChain();
+      if (!amount) throw new Error("Amount is required");
       writeContract({
         chain: PUB_CHAIN,
         abi: VotingEscrowAbi,

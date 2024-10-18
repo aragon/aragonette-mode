@@ -33,7 +33,7 @@ export const DashboardHeader = () => {
           <div className="flex flex-col">
             <div className="title flex items-baseline gap-x-1">
               <span className="text-3xl text-neutral-900 md:text-4xl">
-                {formatterUtils.formatNumber(96500, {
+                {formatterUtils.formatNumber(96641, {
                   format: NumberFormat.GENERIC_SHORT,
                 })}
                 +

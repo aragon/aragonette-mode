@@ -53,7 +53,7 @@ export const Footer = () => {
           </li>
           <li className="group py-4 md:py-0">
             <a className="overflow-hidden" href={PUB_TELEGRAM_URL} target="_blank">
-              <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">Discord</span>
+              <span className="line-clamp-1 leading-tight text-neutral-500 group-hover:text-neutral-800">Telegram</span>
             </a>
           </li>
           <li className="group py-4 md:py-0">

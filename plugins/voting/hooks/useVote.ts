@@ -37,11 +37,11 @@ export function useVote(
   const voterContract = data?.voterContract.result;
 
   const vote = async () => {
-    if (!voterContract || !tokenIds.length || !gauges.length) return onSuccess?.();
     setIsLoading(true);
 
     try {
       await forceChain();
+      if (!voterContract || !tokenIds.length || !gauges.length) return onSuccess?.();
       writeContract({
         abi: SimpleGaugeVotingAbi,
         address: voterContract,

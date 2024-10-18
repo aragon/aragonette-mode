@@ -5,6 +5,7 @@ import { PUB_APP_NAME, PUB_APP_DESCRIPTION, PUB_SOCIAL_IMAGE, PUB_BASE_URL, PUB_
 import Head from "next/head";
 import "@aragon/ods/index.css";
 import "@/pages/globals.css";
+import { DevTools } from "@/plugins/stake/components/dev-tools";
 
 export default function App({ Component, pageProps }: any) {
   return (
@@ -32,6 +33,7 @@ export default function App({ Component, pageProps }: any) {
           <Component {...pageProps} />
         </Layout>
         <AlertContainer />
+        <DevTools />
       </RootContextProvider>
     </div>
   );
