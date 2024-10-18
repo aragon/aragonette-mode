@@ -11,7 +11,7 @@ interface IHeaderProps {
 export const SectionHeader: React.FC<IHeaderProps> = ({ title, children, learnMoreUrl }) => {
   return (
     <div className="flex flex-col gap-y-3">
-      <h1 className="line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
+      <h1 className="line-clamp-1 flex flex-1 shrink-0 text-3xl font-normal leading-tight text-neutral-800 md:text-3xl">
         {title}
       </h1>
       <p className="max-w-[700px]">{children}</p>
