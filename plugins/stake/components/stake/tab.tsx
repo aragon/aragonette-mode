@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { useApproveToken } from "../../hooks/useApproveToken";
 import { useGetMinDeposit } from "../../hooks/useGetMinDeposit";
+import { useAccount } from "wagmi";
 
 type PercentValues = "" | "0" | "25" | "50" | "75" | "100";
 
@@ -18,6 +19,7 @@ interface IHeaderProps {
 }
 
 export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
+  const { address } = useAccount();
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
   const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
   const { data, queryKey: balanceQueryKey } = useGetBalance(token);
@@ -100,7 +102,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
       </p>
       <Button
         className="mt-2 w-full"
-        disabled={balanceToStake < minAmount}
+        disabled={address && balanceToStake < minAmount}
         onClick={approveToken}
         isLoading={isConfirming1 || isConfirming2}
       >
