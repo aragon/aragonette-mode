@@ -53,7 +53,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
                     <p className="text-sm">{resource.value}</p>
                   </Link>
                 )}
-                <p className="text-sm text-neutral-200">{!resource.url ? resource.value : resource.url}</p>
+                <p className="truncate text-sm text-neutral-200">{!resource.url ? resource.value : resource.url}</p>
               </div>
             </div>
           </>
