@@ -31,7 +31,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
           <div className="flex flex-col">
             <p className="title text-xl">{selectedGauge.metadata?.name}</p>
             <div className="flex flex-row items-center gap-x-2">
-              <p>{shortenAddress(selectedGauge.address)}</p>
+              <p className="text-neutral-600">{shortenAddress(selectedGauge.address)}</p>
               <CopyToClipBoard value={selectedGauge.address} />
             </div>
           </div>

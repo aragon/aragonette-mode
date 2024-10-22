@@ -71,8 +71,8 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
   };
 
   return (
-    <DataListItem className="flex items-center">
-      <div className="flex w-1/4 flex-auto items-center gap-x-3">
+    <DataListItem className="flex flex-col items-center gap-4 md:flex-row">
+      <div className="flex w-full flex-auto items-center gap-x-3 md:w-1/4">
         <Avatar
           alt="Gauge icon"
           size="lg"
@@ -84,11 +84,23 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
           }
         />
         <div className="flex flex-col">
-          <div>{gauge.metadata?.name}</div>
-          <div>{shortenAddress(gauge.address)}</div>
+          <p className="title text-neutral-900">{gauge.metadata?.name}</p>
+          <p className="text-neutral-600">{shortenAddress(gauge.address)}</p>
+        </div>
+        <div className="flex w-full flex-row-reverse md:hidden">
+          <Button
+            variant="tertiary"
+            size="sm"
+            iconLeft={IconType.CLOSE}
+            onClick={() => {
+              onChange(Token.MODE, 0);
+              onChange(Token.BPT, 0);
+              onRemove();
+            }}
+          />
         </div>
       </div>
-      <div className="w-1/4 flex-auto">
+      <div className="w-full flex-auto md:w-1/4">
         <div className="mx-4 flex flex-row items-center gap-2">
           <div>Mode</div>
           <Avatar alt="Mode icon" size="sm" src="/mode-token-icon.png" />
@@ -107,7 +119,7 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
           />
         </div>
       </div>
-      <div className="w-1/4 flex-auto">
+      <div className="w-full flex-auto md:w-1/4">
         <div className="mx-4 flex flex-row items-center gap-2">
           <div>BPT</div>
           <Avatar alt="Bpt icon" size="sm" src="/bpt-token-icon.png" />
@@ -126,7 +138,7 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
           />
         </div>
       </div>
-      <div className="w-1/8 flex-row-reverse">
+      <div className="w-1/8 hidden flex-row-reverse md:block">
         <Button
           variant="tertiary"
           size="sm"

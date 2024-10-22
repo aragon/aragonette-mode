@@ -55,7 +55,7 @@ export default function Proposals() {
         <h1 className="line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
           Proposals
         </h1>
-        <div className="flex flex-row gap-2 justify-self-end">
+        <div className="flex flex-col gap-2 justify-self-end md:flex-row">
           <If true={isConnected && canCreate}>
             <Link href="#/new">
               <Button iconLeft={IconType.PLUS} size="sm" variant="primary">

@@ -90,6 +90,22 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
     }
   }, [selectedGauges.length]);
 
+  const distributeEvently = () => {
+    const votes = selectedGauges.map((gauge, index) => {
+      return {
+        address: gauge.address,
+        votes: (Math.floor(10000 / selectedGauges.length) + (index === 0 ? 10000 % selectedGauges.length : 0)) / 100,
+      };
+    });
+    if (modeVp) setModeVotes(votes);
+    if (bptVp) setBptVotes(votes);
+  };
+
+  const resetValues = () => {
+    setModeVotes([]);
+    setBptVotes([]);
+  };
+
   return (
     <>
       <Button
@@ -112,6 +128,26 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
         />
         <DialogContent className="flex flex-col gap-y-4 md:gap-y-6">
           <div className="mt-8">
+            <div className="mb-4 flex w-full flex-row items-center gap-4 md:hidden">
+              <Button
+                className="flex w-1/2"
+                size="md"
+                responsiveSize={{ md: "sm" }}
+                variant="secondary"
+                onClick={distributeEvently}
+              >
+                Distribute evently
+              </Button>
+              <Button
+                className="flex w-1/2"
+                size="md"
+                responsiveSize={{ md: "sm" }}
+                variant="tertiary"
+                onClick={resetValues}
+              >
+                Reset
+              </Button>
+            </div>
             <DataListRoot entityLabel="Projects" pageSize={selectedGauges.length} className="gap-y-6">
               <DataListContainer>
                 {selectedGauges.map((gauge, pos) => (
@@ -153,45 +189,22 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
             </DataListRoot>
           </div>
           <div className="flex flex-auto items-center gap-4 pb-2">
-            <div className="flex w-1/2 flex-auto gap-2">
-              <p>Your total votes</p>
-              <div className="flex flex-row gap-2">
-                <Avatar alt="Gauge icon" size="sm" src="/mode-token-icon.png" />
+            <div className="flex w-full flex-row gap-2 md:w-1/2 md:flex-row">
+              <p className="flex text-neutral-900">Your total votes:</p>
+              <div className="flex flex-row items-center gap-2">
+                <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
                 <p>{formattedModeVp} Mode</p>
               </div>
-              <div className="flex flex-auto gap-2">
-                <Avatar alt="Gauge icon" size="sm" src="/bpt-token-icon.png" />
+              <div className="flex flex-auto items-center gap-2">
+                <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
                 <p>{formattedBptVp} BPT</p>
               </div>
             </div>
-            <div className="flex flex-row-reverse items-center gap-4">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => {
-                  const votes = selectedGauges.map((gauge, index) => {
-                    return {
-                      address: gauge.address,
-                      votes:
-                        (Math.floor(10000 / selectedGauges.length) +
-                          (index === 0 ? 10000 % selectedGauges.length : 0)) /
-                        100,
-                    };
-                  });
-                  if (modeVp) setModeVotes(votes);
-                  if (bptVp) setBptVotes(votes);
-                }}
-              >
+            <div className="hidden w-full flex-col items-center gap-4 md:flex md:w-1/2 md:flex-row-reverse">
+              <Button size="md" responsiveSize={{ md: "sm" }} variant="secondary" onClick={distributeEvently}>
                 Distribute evently
               </Button>
-              <Button
-                size="sm"
-                variant="tertiary"
-                onClick={() => {
-                  setModeVotes([]);
-                  setBptVotes([]);
-                }}
-              >
+              <Button size="md" responsiveSize={{ md: "sm" }} variant="tertiary" onClick={resetValues}>
                 Reset
               </Button>
             </div>

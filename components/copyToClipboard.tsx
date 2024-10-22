@@ -28,7 +28,7 @@ export const CopyToClipBoard: React.FC<ICopyToClipBoard> = (props) => {
           position: copied ? "relative" : "absolute",
         }}
       >
-        {copied && <Icon icon={IconType.CHECKMARK} className="text-neutral-300" size={size ?? "md"} />}
+        {copied && <Icon icon={IconType.CHECKMARK} className="text-neutral-700" size={size ?? "md"} />}
       </div>
       <div
         style={{
@@ -38,7 +38,7 @@ export const CopyToClipBoard: React.FC<ICopyToClipBoard> = (props) => {
           position: copied ? "absolute" : "relative",
         }}
       >
-        {!copied && <Icon icon={IconType.COPY} className="text-neutral-300" size={size ?? "md"} />}
+        {!copied && <Icon icon={IconType.COPY} className="text-neutral-700" size={size ?? "md"} />}
       </div>
     </button>
   );
