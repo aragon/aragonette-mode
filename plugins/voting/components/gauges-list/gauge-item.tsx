@@ -100,13 +100,13 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
               </div>
             </div>
             <div className="flex w-full flex-row md:w-3/6">
-              <div className="flex w-1/2 flex-col md:text-right">
-                <p className="md:hidden">Total votes</p>
+              <div className="my-2 flex w-1/2 flex-col md:my-0 md:text-right">
+                <p className="mb-1 mt-3 text-neutral-900 md:hidden">Total votes</p>
                 <p>{gaugeTotalVotes} votes</p>
                 <p>{formattedPercentage}% of total</p>
               </div>
-              <div className="flex w-1/2 flex-col justify-start md:justify-center md:text-right">
-                <p className="md:hidden">Your votes</p>
+              <div className="my-2 flex w-1/2 flex-col justify-start md:my-0 md:justify-center md:text-right">
+                <p className="mb-1 mt-3 text-neutral-900 md:hidden">Your votes</p>
                 {userModeVotesBn ? (
                   <>
                     <p>{modeUserVotes} Mode</p>
@@ -124,7 +124,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
                   disabled={!hasBalance}
                   variant={selected ? "primary" : "tertiary"}
                   iconLeft={selected ? IconType.CHECKMARK : undefined}
-                  className="btn btn-primary w-1/2"
+                  className="btn btn-primary w-full md:w-1/2"
                   onClick={(ev: any) => {
                     ev.stopPropagation();
                     onSelect(!selected);
