@@ -55,7 +55,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
   });
 
   const percentage = (Number(formatUnits(gaugeTotalVotesBn, 18)) / Number(formatUnits(totalVotesBn, 18))) * 100;
-  const formattedPercentage = formatterUtils.formatNumber(percentage, {
+  const formattedPercentage = formatterUtils.formatNumber(percentage ? percentage : 0, {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
 
@@ -86,8 +86,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
             <div className="flex w-full flex-row items-center gap-x-3 md:w-1/6">
               <Avatar
                 alt="Gauge icon"
-                size="xl"
-                responsiveSize={{ md: "lg" }}
+                size="lg"
                 src={metadata?.logo}
                 fallback={
                   <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
@@ -96,16 +95,18 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
                 }
               />
               <div className="flex flex-col">
-                <p>{metadata?.name}</p>
-                <p>{shortenAddress(props.address)}</p>
+                <p className="title text-neutral-900">{metadata?.name}</p>
+                <p className="text-neutral-600">{shortenAddress(props.address)}</p>
               </div>
             </div>
             <div className="flex w-full flex-row md:w-3/6">
-              <div className="flex flex-col md:w-1/2 md:text-right">
+              <div className="flex w-1/2 flex-col md:text-right">
+                <p className="md:hidden">Total votes</p>
                 <p>{gaugeTotalVotes} votes</p>
                 <p>{formattedPercentage}% of total</p>
               </div>
-              <div className="flex flex-col justify-center md:w-1/2 md:text-right">
+              <div className="flex w-1/2 flex-col justify-start md:justify-center md:text-right">
+                <p className="md:hidden">Your votes</p>
                 {userModeVotesBn ? (
                   <>
                     <p>{modeUserVotes} Mode</p>

@@ -32,26 +32,29 @@ export default function PluginPage() {
     <div className="bg-gradient-to-b from-neutral-0 to-transparent">
       <RadialGradients />
       <MainSection>
-        <SectionHeader title="Vote to direct incentives" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
+        <h2 className="text-3xl font-semibold text-neutral-800">
+          <span className="text-neutral-900">Vote to</span> direct incentives
+        </h2>
+        <SectionHeader title="" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
           Use your voting power to support different projects and receive incentives in return. Your voting power resets
           each epoch, allowing you to vote on new projects.
         </SectionHeader>
         <br />
-        <div className="flex flex-col gap-x-20 gap-y-6 sm:flex-row md:w-4/5">
+        <div className="flex flex-row gap-x-20 gap-y-6">
           <div className="flex flex-col">
             <div className=" flex items-baseline gap-x-1">
-              <span className="title text-3xl text-primary-400 md:text-3xl">{nextVotingDate}</span>
+              <span className="title text-3xl text-neutral-900 md:text-3xl">{nextVotingDate}</span>
             </div>
-            <span className="text-md text-neutral-500">
+            <span className="text-md text-neutral-700">
               {active ? "Current" : "Next"} voting {active ? "ends" : "starts"}
             </span>
           </div>
 
           <div className="flex flex-col">
             <div className="flex items-baseline gap-x-1">
-              <span className="title text-3xl text-primary-400 md:text-3xl">{totalVp}</span>
+              <span className="title text-3xl text-neutral-900 md:text-3xl">{totalVp}</span>
             </div>
-            <span className="text-md text-neutral-500">Total voting power</span>
+            <span className="text-md text-neutral-700">Total voting power</span>
           </div>
 
           <div className="hidden flex-col">

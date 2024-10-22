@@ -60,18 +60,18 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
   return (
     <div className="sticky -bottom-2 -mb-12 md:-mx-12">
       <DataListItem>
-        <div className="flex flex-col gap-8 py-2 md:flex-row md:items-center">
-          <p className="text-xl md:text-base">Your total voting power:</p>
+        <div className="flex flex-col gap-4 py-2 md:flex-row md:items-center md:gap-8">
+          <p className="md:md text-sm">Your total voting power:</p>
           <div className="flex flex-grow flex-row gap-8">
             <div className="flex flex-row items-center gap-2">
-              <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
-              <p className="text-xl md:text-base">{formattedModeVp} Mode</p>
+              <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
+              <p className="text-md md:text-base">{formattedModeVp} Mode</p>
               {modePercentage > 0 && <p className="hidden sm:block">({formattedModePercentage} used)</p>}
             </div>
             <div className="flex flex-row items-center gap-2">
-              <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
-              <p className="text-xl md:text-base">{formattedBptVp} BPT</p>
-              {bptPercentage > 0 && <p>({formattedBptPercentage} used)</p>}
+              <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
+              <p className="text-md md:text-base">{formattedBptVp} BPT</p>
+              {bptPercentage > 0 && <p className="hidden sm:block">({formattedBptPercentage} used)</p>}
             </div>
           </div>
 
