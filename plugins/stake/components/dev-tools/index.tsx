@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, DialogContent, DialogFooter, DialogHeader, DialogRoot, InputNumber, Tag } from "@aragon/ods";
+import { Button, DialogContent, DialogFooter, DialogHeader, DialogRoot, IconType, InputNumber, Tag } from "@aragon/ods";
 import { useMintToken } from "../../hooks/useMintToken";
 import { useSetTimestamp } from "../../hooks/useSetTimestamp";
 import { Token } from "../../types/tokens";
@@ -45,10 +45,9 @@ export function DevTools() {
             onClick={() => {
               setOpen(true);
             }}
+            iconLeft={IconType.SETTINGS}
             variant="primary"
-          >
-            Dev tools
-          </Button>
+          ></Button>
           <DialogRoot open={open} onOpenChange={() => {}} onInteractOutside={close}>
             <DialogHeader title="Dev Tools" />
             <DialogContent>

@@ -1,4 +1,4 @@
-import { AddressInput, Button, IconType, InputText } from "@aragon/ods";
+import { Button, IconType, InputText, TextArea } from "@aragon/ods";
 import React, { type ReactNode, useState } from "react";
 import { Else, ElseIf, If, Then } from "@/components/if";
 import { MainSection } from "@/components/layout/main-section";
@@ -7,19 +7,21 @@ import { useAccount } from "wagmi";
 import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
 import { MissingContentView } from "@/components/MissingContentView";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { type Address, isAddress, toHex } from "viem";
+import { type Address, isAddress, toHex, zeroAddress } from "viem";
 import { ProposalActions } from "@/components/proposalActions/proposalActions";
 import { useGetContracts } from "@/plugins/stake/hooks/useGetContract";
 import { Token } from "@/plugins/stake/types/tokens";
 //import { PUB_ENS_CHAIN } from "@/constants";
 //import { config } from "@/components/WalletContainer";
 import { usePinJSONtoIPFS } from "../hooks/usePinJSONtoIPFS";
+import { GaugeDetailsDialog } from "@/plugins/voting/components/gauges-list/gauge-details-dialog";
 
 export default function Create() {
   const { address: selfAddress, isConnected } = useAccount();
   const { canCreate } = useCanCreateProposal();
   const { title, actions, setTitle, setSummary, setDescription, setActions, isCreating, submitProposal } =
     useCreateProposal();
+  const [openPreview, setOpenPreview] = useState(false);
   const [gaugeAddress, setGaugeAddress] = useState<string | undefined>();
   //const [validGaugeAddress, setValidGaugeAddress] = useState("");
   const [gaugeDescription, setGaugeDescription] = useState("");
@@ -44,7 +46,7 @@ export default function Create() {
     setSummary(`Create ${event?.target?.value} gauge`);
   };
 
-  const handleGaugeDescriptionInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGaugeDescriptionInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setGaugeDescription(event?.target?.value);
   };
 
@@ -123,8 +125,8 @@ export default function Create() {
         <PlaceHolderOr selfAddress={selfAddress} canCreate={canCreate} isConnected={isConnected}>
           <div className="mb-6">
             <InputText
-              className=""
               label="Name"
+              inputClassName="placeholder:text-neutral-600"
               maxLength={100}
               placeholder="Gauge name"
               variant="default"
@@ -139,6 +141,7 @@ export default function Create() {
               //chainId={PUB_ENS_CHAIN.id}
               //wagmiConfig={config}
               placeholder="0x12...3456"
+              inputClassName="placeholder:text-neutral-600"
               maxLength={42}
               readOnly={isCreating}
               label="Address"
@@ -150,10 +153,10 @@ export default function Create() {
           </div>
 
           <div className="mb-6">
-            <InputText
-              className=""
+            <TextArea
               label="Description"
-              placeholder="The gauge description"
+              placeholder="Gauge description"
+              inputClassName="placeholder:text-neutral-600"
               variant="default"
               value={gaugeDescription}
               readOnly={isCreating}
@@ -165,7 +168,8 @@ export default function Create() {
             <InputText
               className=""
               label="Logo"
-              placeholder="The gauge logo"
+              placeholder="https://..."
+              inputClassName="placeholder:text-neutral-600"
               variant="default"
               value={gaugeLogo}
               readOnly={isCreating}
@@ -197,6 +201,7 @@ export default function Create() {
                         value={resource.field}
                         onChange={(e) => onResourceFieldChange(e, idx)}
                         placeholder="Website, Docs, Github, etc."
+                        inputClassName="placeholder:text-neutral-600"
                         readOnly={isCreating}
                       />
                       <InputText
@@ -205,12 +210,14 @@ export default function Create() {
                         value={resource.value}
                         onChange={(e) => onResourceValueChange(e, idx)}
                         placeholder="100, Mode Network Wiki, etc."
+                        inputClassName="placeholder:text-neutral-600"
                       />
                       <InputText
                         label="URL"
                         value={resource.url}
                         onChange={(e) => onResourceUrlChange(e, idx)}
                         placeholder="https://gov.mode.network/wiki/..."
+                        inputClassName="placeholder:text-neutral-600"
                         readOnly={isCreating}
                       />
                       <Button
@@ -251,10 +258,17 @@ export default function Create() {
 
           {/* Submit */}
 
-          <div className="mt-6 flex w-full flex-col items-center">
+          <div className="mt-6 flex w-full flex-col gap-3 md:flex-row">
+            <Button
+              onClick={() => {
+                setOpenPreview(true);
+              }}
+            >
+              Preview
+            </Button>
             <Button
               isLoading={isCreating || uploadingIpfs}
-              className="mt-3 border-primary-400"
+              className="border-primary-400"
               size="lg"
               variant={actions.length ? "primary" : "secondary"}
               onClick={actions.length ? () => submitGauge() : () => createGauge()}
@@ -265,6 +279,28 @@ export default function Create() {
               </If>
             </Button>
           </div>
+
+          <GaugeDetailsDialog
+            selectedGauge={{
+              token: Token.MODE,
+              address: (gaugeAddress ?? zeroAddress) as Address,
+              info: {
+                active: true,
+                created: 0n,
+                metadataURI: "url",
+              },
+              metadata: {
+                name: title,
+                description: gaugeDescription,
+                logo: gaugeLogo,
+                resources: resources,
+              },
+            }}
+            openDialog={openPreview}
+            onClose={() => {
+              setOpenPreview(false);
+            }}
+          />
         </PlaceHolderOr>
       </div>
     </MainSection>

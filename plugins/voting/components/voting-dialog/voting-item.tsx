@@ -1,4 +1,4 @@
-import { Avatar, Button, DataListItem, IconType, type IInputContainerAlert, InputNumber } from "@aragon/ods";
+import { Avatar, Button, DataListItem, IconType, type IInputContainerAlert, InputNumber, Tooltip } from "@aragon/ods";
 import React, { useEffect } from "react";
 import { type GaugeItem } from "../gauges-list/types";
 import { shortenAddress } from "@/utils/address";
@@ -94,6 +94,7 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
           <Avatar alt="Mode icon" size="sm" src="/mode-token-icon.png" />
           <InputNumber
             value={modeVotes ?? modePerc}
+            step={1}
             variant={getModeAlert()}
             disabled={modeVp === 0n}
             suffix="%"
@@ -112,6 +113,7 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
           <Avatar alt="Bpt icon" size="sm" src="/bpt-token-icon.png" />
           <InputNumber
             value={bptVotes ?? bptPerc}
+            step={1}
             variant={getBptAlert()}
             disabled={bptVp === 0n}
             suffix="%"

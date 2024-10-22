@@ -61,7 +61,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
   const { vote: bptVote, isConfirming: bptIsConfirming } = useVote(
     Token.BPT,
     bptOwnedTokensWithVp ?? [],
-    bptVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
+    bptVotes.map((v) => ({ gauge: v.address, weight: BigInt(Math.floor(v.votes * 100)) })),
     async () => {
       await queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "gaugeVotes" }] });
       await queryClient.invalidateQueries({ queryKey: ["readContracts", { functionName: "usedVotingPower" }] });
@@ -73,14 +73,16 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
   const { vote: modeVote, isConfirming: modeIsConfirming } = useVote(
     Token.MODE,
     modeOwnedTokensWithVp ?? [],
-    modeVotes.map((v) => ({ gauge: v.address, weight: BigInt(v.votes * 100) })),
+    modeVotes.map((v) => ({ gauge: v.address, weight: BigInt(Math.floor(v.votes * 100)) })),
     bptVote
   );
 
   const totalModeVotes = modeVotes.reduce((acc, v) => acc + v.votes, 0);
   const totalBptVotes = bptVotes.reduce((acc, v) => acc + v.votes, 0);
   const isValidVotes =
-    (totalModeVotes === 100 || totalModeVotes === 0) && (totalBptVotes === 0 || totalBptVotes === 100);
+    (totalModeVotes === 100 || totalModeVotes === 0) &&
+    (totalBptVotes === 0 || totalBptVotes === 100) &&
+    (totalModeVotes === 100 || totalBptVotes === 100);
 
   useEffect(() => {
     if (!selectedGauges.length) {
@@ -170,7 +172,10 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
                   const votes = selectedGauges.map((gauge, index) => {
                     return {
                       address: gauge.address,
-                      votes: Math.floor(100 / selectedGauges.length) + (index === 0 ? 100 % selectedGauges.length : 0),
+                      votes:
+                        (Math.floor(10000 / selectedGauges.length) +
+                          (index === 0 ? 10000 % selectedGauges.length : 0)) /
+                        100,
                     };
                   });
                   if (modeVp) setModeVotes(votes);
