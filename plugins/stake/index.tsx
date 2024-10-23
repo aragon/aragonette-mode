@@ -15,8 +15,9 @@ export default function PluginPage() {
       <RadialGradients />
       <MainSection>
         <SectionHeader title="Stake" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
-          Stake and vote with your MODE and/or BPT to earn $OP. Increase your voting power by staking more tokens. The
-          longer you stake, the higher your voting power multiplier will be. New stakes will be subject to a minimum 3 day warmup before they are eligible to vote.
+          Stake and vote with your MODE and/or BPT to earn OP. Increase your voting power by staking more tokens. The
+          longer you stake, the higher your voting power multiplier will be. New stakes will be subject to a minimum 3
+          day warmup before they are eligible to vote.
         </SectionHeader>
         <div className="mt-6 grid grid-cols-1 gap-x-4 md:grid-cols-2">
           <div className="mb-6">

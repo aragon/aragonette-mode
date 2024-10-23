@@ -50,8 +50,8 @@ export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://g
 export const PUB_GOV_FORUM_URL = process.env.NEXT_PUBLIC_GOV_FORUM_URL ?? "https://forum.mode.network/";
 export const PUB_DEV_PAGE_URL = process.env.NEXT_PUBLIC_DEV_PAGE_URL ?? "https://www.mode.network/developers";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
-export const PUB_STAKING_LEARN_MORE_URL = "https://mode.mirror.xyz/";
-export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://mode.mirror.xyz/";
+export const PUB_STAKING_LEARN_MORE_URL = "https://docs.mode.network/usdmode/3-3-3-3-season-3";
+export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://docs.mode.network/usdmode/3-3-3-3-season-3";
 export const PUB_GET_MORE_MODE_URL =
   process.env.NEXT_PUBLIC_GET_MORE_MODE_URL ??
   "https://jumper.exchange/?fromChain=1&fromToken=0x0000000000000000000000000000000000000000&toChain=34443&toToken=0xDfc7C877a950e49D2610114102175A06C2e3167a";

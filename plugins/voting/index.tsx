@@ -36,8 +36,8 @@ export default function PluginPage() {
           <span className="text-neutral-900">Vote to</span> direct incentives
         </h2>
         <SectionHeader title="" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
-          Use your voting power to support different projects and receive incentives in return. Your voting power resets
-          each epoch, allowing you to vote on new projects.
+          Use your voting power to support different projects and receive incentives in return. Voting windows occur
+          every 2 weeks with the deadline on Wednesday at 23:00:00 UTC.
         </SectionHeader>
         <br />
         <div className="flex flex-row gap-x-20 gap-y-6">
