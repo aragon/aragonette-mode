@@ -58,10 +58,10 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
   const voted = (usedModeVp ?? 0n) > 0n || (usedBptVp ?? 0n) > 0n;
 
   return (
-    <div className="sticky -bottom-2 -mb-12 md:-mx-12">
+    <div className="sticky -bottom-2 -mb-12 md:-mx-8">
       <DataListItem>
-        <div className="flex flex-col gap-4 py-2 md:flex-row md:items-center md:gap-8">
-          <p className="md:md text-sm">Your total voting power:</p>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8 md:py-2">
+          <p className="title flex text-sm text-neutral-900">Your total voting power</p>
           <div className="flex flex-grow flex-row gap-8">
             <div className="flex flex-row items-center gap-2">
               <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />

@@ -1,13 +1,14 @@
 import {
+  AlertInline,
   Avatar,
   Button,
   DataListContainer,
   DataListRoot,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogRoot,
   formatterUtils,
+  IconType,
   NumberFormat,
 } from "@aragon/ods";
 import { useEffect, useState } from "react";
@@ -126,81 +127,82 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
           onCloseClick={() => setOpen(false)}
           onBackClick={() => setOpen(false)}
         />
-        <DialogContent className="flex flex-col gap-y-4 md:gap-y-6">
-          <div className="mt-8">
-            <div className="mb-4 flex w-full flex-row items-center gap-4 md:hidden">
-              <Button
-                className="flex w-1/2"
-                size="md"
-                responsiveSize={{ md: "sm" }}
-                variant="secondary"
-                onClick={distributeEvently}
-              >
-                Distribute evently
-              </Button>
-              <Button
-                className="flex w-1/2"
-                size="md"
-                responsiveSize={{ md: "sm" }}
-                variant="tertiary"
-                onClick={resetValues}
-              >
-                Reset
-              </Button>
-            </div>
-            <DataListRoot entityLabel="Projects" pageSize={selectedGauges.length} className="gap-y-6">
-              <DataListContainer>
-                {selectedGauges.map((gauge, pos) => (
-                  <VotingListItem
-                    key={pos}
-                    gauge={gauge}
-                    modeVotes={modeVotes.find((v) => v.address === gauge.address)?.votes}
-                    bptVotes={bptVotes.find((v) => v.address === gauge.address)?.votes}
-                    totalModeVotes={modeVotes.reduce((acc, v) => acc + v.votes, 0)}
-                    totalBptVotes={bptVotes.reduce((acc, v) => acc + v.votes, 0)}
-                    onRemove={() => {
-                      setModeVotes(modeVotes.filter((v) => v.address !== gauge.address));
-                      setBptVotes(bptVotes.filter((v) => v.address !== gauge.address));
-                      onRemove(gauge);
-                    }}
-                    onChange={(token, val) => {
-                      const newValue = {
-                        address: gauge.address,
-                        votes: val,
-                      };
-
-                      if (token === Token.MODE) {
-                        setModeVotes((votes) => {
-                          const oldVotes = votes.filter((v) => v.address !== gauge.address);
-                          oldVotes.push(newValue);
-                          return oldVotes;
-                        });
-                      } else {
-                        setBptVotes((votes) => {
-                          const oldVotes = votes.filter((v) => v.address !== gauge.address);
-                          oldVotes.push(newValue);
-                          return oldVotes;
-                        });
-                      }
-                    }}
-                  />
-                ))}
-              </DataListContainer>
-            </DataListRoot>
+        <DialogContent className="mt-3 flex flex-col gap-y-4 md:gap-y-6">
+          <div className="mb-4 flex w-full flex-row items-center gap-4 md:hidden">
+            <Button
+              className="flex w-1/2"
+              size="md"
+              responsiveSize={{ md: "sm" }}
+              variant="secondary"
+              onClick={distributeEvently}
+            >
+              Distribute evently
+            </Button>
+            <Button
+              className="flex w-1/2"
+              size="md"
+              responsiveSize={{ md: "sm" }}
+              variant="tertiary"
+              onClick={resetValues}
+            >
+              Reset
+            </Button>
           </div>
-          <div className="flex flex-auto items-center gap-4 pb-2">
-            <div className="flex w-full flex-row gap-2 md:w-1/2 md:flex-row">
-              <p className="flex text-neutral-900">Your total votes:</p>
-              <div className="flex flex-row items-center gap-2">
-                <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
+          <DataListRoot entityLabel="Projects" pageSize={selectedGauges.length} className="gap-y-6">
+            <DataListContainer>
+              {selectedGauges.map((gauge, pos) => (
+                <VotingListItem
+                  key={pos}
+                  gauge={gauge}
+                  modeVotes={modeVotes.find((v) => v.address === gauge.address)?.votes}
+                  bptVotes={bptVotes.find((v) => v.address === gauge.address)?.votes}
+                  totalModeVotes={modeVotes.reduce((acc, v) => acc + v.votes, 0)}
+                  totalBptVotes={bptVotes.reduce((acc, v) => acc + v.votes, 0)}
+                  onRemove={() => {
+                    setModeVotes(modeVotes.filter((v) => v.address !== gauge.address));
+                    setBptVotes(bptVotes.filter((v) => v.address !== gauge.address));
+                    onRemove(gauge);
+                  }}
+                  onChange={(token, val) => {
+                    const newValue = {
+                      address: gauge.address,
+                      votes: val,
+                    };
+
+                    if (token === Token.MODE) {
+                      setModeVotes((votes) => {
+                        const oldVotes = votes.filter((v) => v.address !== gauge.address);
+                        oldVotes.push(newValue);
+                        return oldVotes;
+                      });
+                    } else {
+                      setBptVotes((votes) => {
+                        const oldVotes = votes.filter((v) => v.address !== gauge.address);
+                        oldVotes.push(newValue);
+                        return oldVotes;
+                      });
+                    }
+                  }}
+                />
+              ))}
+            </DataListContainer>
+          </DataListRoot>
+        </DialogContent>
+        <div>
+          <div className="flex flex-col gap-x-8 gap-y-2 px-8 py-4 md:flex-row">
+            <p className="title flex text-sm text-neutral-900">Your total votes</p>
+            <div className="flex flex-row gap-2 md:flex-row md:gap-8">
+              <div className="flex flex-row items-center gap-2 md:justify-center">
+                <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
                 <p>{formattedModeVp} Mode</p>
               </div>
-              <div className="flex flex-auto items-center gap-2">
-                <Avatar alt="Gauge icon" size="md" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
+              <div className="flex flex-row items-center gap-2 md:justify-center">
+                <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
                 <p>{formattedBptVp} BPT</p>
               </div>
             </div>
-            <div className="hidden w-full flex-col items-center gap-4 md:flex md:w-1/2 md:flex-row-reverse">
+
+            <div className="hidden grow flex-row justify-end gap-4 md:flex">
               <Button size="md" responsiveSize={{ md: "sm" }} variant="secondary" onClick={distributeEvently}>
                 Distribute evently
               </Button>
@@ -209,25 +211,41 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
               </Button>
             </div>
           </div>
-        </DialogContent>
-        <DialogFooter
-          primaryAction={{
-            isLoading: modeIsConfirming || bptIsConfirming,
-            disabled: !isValidVotes,
-            label: "Submit votes",
-            onClick: () => {
-              modeVote();
-            },
-          }}
-          secondaryAction={{
-            label: "Cancel",
-            onClick: () => {
-              setModeVotes([]);
-              setBptVotes([]);
-              setOpen(false);
-            },
-          }}
-        />
+          <div className="flex w-full flex-col-reverse gap-4 px-6 pb-6 md:flex-row">
+            <div className="flex flex-row gap-4">
+              <Button
+                className="flex-grow"
+                size="md"
+                iconLeft={IconType.APP_PROPOSALS}
+                isLoading={modeIsConfirming || bptIsConfirming}
+                disabled={!isValidVotes}
+                onClick={() => {
+                  modeVote();
+                }}
+              >
+                Submit votes
+              </Button>
+              <Button
+                className="hidden md:block"
+                size="md"
+                variant="tertiary"
+                onClick={() => {
+                  resetValues();
+                  setOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+            {!isValidVotes && (
+              <AlertInline
+                className="ml-2 justify-center"
+                variant="critical"
+                message="Percentages must add up to 100%"
+              />
+            )}
+          </div>
+        </div>
       </DialogRoot>
     </>
   );

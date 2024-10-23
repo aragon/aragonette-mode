@@ -78,7 +78,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
           />
           <DataListItem
             key={metadata?.name}
-            className="flex flex-col gap-x-4 border border-neutral-100 p-4 md:flex-row md:items-center"
+            className="mt-2 flex flex-col gap-x-4 border border-neutral-100 p-4 md:flex-row md:items-center"
             onClick={() => {
               setOpenDialog(true);
             }}
@@ -102,15 +102,23 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
             <div className="flex w-full flex-row md:w-3/6">
               <div className="my-2 flex w-1/2 flex-col md:my-0 md:text-right">
                 <p className="mb-1 mt-3 text-neutral-900 md:hidden">Total votes</p>
-                <p>{gaugeTotalVotes} votes</p>
-                <p>{formattedPercentage}% of total</p>
+                <p>
+                  {gaugeTotalVotes} <span className="text-xs">votes</span>
+                </p>
+                <p>
+                  {formattedPercentage}% <span className="text-xs">of total</span>
+                </p>
               </div>
               <div className="my-2 flex w-1/2 flex-col justify-start md:my-0 md:justify-center md:text-right">
                 <p className="mb-1 mt-3 text-neutral-900 md:hidden">Your votes</p>
-                {userModeVotesBn ? (
+                {userModeVotesBn || userBptVotesBn ? (
                   <>
-                    <p>{modeUserVotes} Mode</p>
-                    <p>{bptUserVotes} BPT</p>
+                    <p>
+                      {modeUserVotes} <span className="text-xs">Mode</span>
+                    </p>
+                    <p>
+                      {bptUserVotes} <span className="text-xs">BPT</span>
+                    </p>
                   </>
                 ) : (
                   <div>None</div>

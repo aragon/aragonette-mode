@@ -75,11 +75,13 @@ export const StakePositions = () => {
           onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
         />
 
-        <div className="hidden gap-x-4 px-4 md:flex">
-          <div className="w-1/6 flex-auto">Name</div>
-          <div className="w-1/4 flex-auto text-right">Total Votes</div>
-          <div className="w-1/4 flex-auto text-right">Your Votes</div>
-          <div className="w-1/4 flex-auto"></div>
+        <div className="hidden gap-x-4 px-6 md:flex">
+          <p className="flex w-1/6 flex-row">Name</p>
+          <div className="end flex w-3/6 flex-row">
+            <p className="flex w-1/2 justify-end">Total Votes</p>
+            <p className="flex w-1/2 justify-end">Your Votes</p>
+          </div>
+          <p className="w-1/6 flex-auto"></p>
         </div>
 
         <DataListContainer>

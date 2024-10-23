@@ -102,8 +102,8 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
       </div>
       <div className="w-full flex-auto md:w-1/4">
         <div className="mx-4 flex flex-row items-center gap-2">
-          <div>Mode</div>
           <Avatar alt="Mode icon" size="sm" src="/mode-token-icon.png" />
+          <p className="w-1/5">Mode</p>
           <InputNumber
             value={modeVotes ?? modePerc}
             step={1}
@@ -121,8 +121,8 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
       </div>
       <div className="w-full flex-auto md:w-1/4">
         <div className="mx-4 flex flex-row items-center gap-2">
-          <div>BPT</div>
           <Avatar alt="Bpt icon" size="sm" src="/bpt-token-icon.png" />
+          <p className="w-1/5">BPT</p>
           <InputNumber
             value={bptVotes ?? bptPerc}
             step={1}
@@ -142,7 +142,7 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
         <Button
           variant="tertiary"
           size="sm"
-          iconLeft={IconType.CLOSE}
+          iconLeft={IconType.REMOVE}
           onClick={() => {
             onChange(Token.MODE, 0);
             onChange(Token.BPT, 0);
