@@ -22,7 +22,7 @@ export const plugins: PluginItem[] = [
     id: "voting",
     folderName: "voting",
     title: "Vote",
-    restricted: true,
+    restricted: false,
     // icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
   },
   {
