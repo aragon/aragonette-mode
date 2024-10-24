@@ -91,7 +91,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
     }
   }, [selectedGauges.length]);
 
-  const distributeEvently = () => {
+  const distributeEvenly = () => {
     const votes = selectedGauges.map((gauge, index) => {
       return {
         address: gauge.address,
@@ -134,7 +134,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
               size="md"
               responsiveSize={{ md: "sm" }}
               variant="secondary"
-              onClick={distributeEvently}
+              onClick={distributeEvenly}
             >
               Distribute evently
             </Button>
@@ -203,8 +203,8 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
             </div>
 
             <div className="hidden grow flex-row justify-end gap-4 md:flex">
-              <Button size="md" responsiveSize={{ md: "sm" }} variant="secondary" onClick={distributeEvently}>
-                Distribute evently
+              <Button size="md" responsiveSize={{ md: "sm" }} variant="secondary" onClick={distributeEvenly}>
+                Distribute evenly
               </Button>
               <Button size="md" responsiveSize={{ md: "sm" }} variant="tertiary" onClick={resetValues}>
                 Reset
