@@ -23,7 +23,7 @@ export const StakePositions = () => {
 
   const gaugesData = [...(modeInfo ?? []), ...(bptInfo ?? [])];
 
-  const gaugesInfo = gaugesData.filter((gauge) => gauge.info.active);
+  const gaugesInfo = (gaugesData ?? []).filter((gauge) => gauge.info.active);
 
   const { metadata: gaugesMetadata } = useGetGaugeMetadata<GaugeMetadata>(gaugesInfo.map((g) => g.info.metadataURI));
 
