@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
     queries: {
       gcTime: 1_000 * 60 * 6, // 10 minutes
       queryKeyHashFn: hashFn,
-      staleTime: 250 * 60, // 15 seconds
+      staleTime: 2_000 * 60, // 2 minutes
       refetchOnMount: true,
       refetchOnWindowFocus: false,
     },
