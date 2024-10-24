@@ -16,9 +16,9 @@ import { hashFn } from "@wagmi/core/query";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 1_000 * 60 * 60 * 24, // 24 hours
+      gcTime: 1_000 * 60 * 6, // 10 minutes
       queryKeyHashFn: hashFn,
-      staleTime: 0,
+      staleTime: 2_000 * 60, // 2 minutes
       refetchOnMount: true,
       refetchOnWindowFocus: false,
     },
