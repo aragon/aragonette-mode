@@ -23,8 +23,16 @@ export function useGetGaugesInfo(token: Token, gauges: Address[]) {
         results.map((result, idx) => ({
           token,
           address: gauges[idx],
-          info: result.result as GaugeInfo,
+          info: castGauge(result.result),
         })),
     },
   });
 }
+
+const castGauge = (gaugeResult: any): GaugeInfo => {
+  return {
+    active: gaugeResult.active,
+    created: gaugeResult.created,
+    metadataURI: gaugeResult.metadataURI,
+  };
+};
