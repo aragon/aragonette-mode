@@ -2,6 +2,7 @@ import { Card, IconType, Link, TabsContent, TabsList, TabsRoot, TabsTrigger } fr
 import React from "react";
 import { StakeToken } from "./tab";
 import { Token } from "../../types/tokens";
+import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 
 interface IStakeProps {
   onStake?: () => void;
@@ -30,7 +31,7 @@ export const Stake: React.FC<IStakeProps> = ({ onStake }) => {
         <span>
           Please note that you will need to wait for the warmup and cooldown periods to complete in order to unstake.
         </span>
-        <Link href="https://mode.mirror.xyz/" iconRight={IconType.LINK_EXTERNAL} className="pl-1">
+        <Link href={PUB_STAKING_LEARN_MORE_URL} iconRight={IconType.LINK_EXTERNAL} className="pl-1">
           Learn more
         </Link>
       </div>

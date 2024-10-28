@@ -61,7 +61,14 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
             />
             {id.toString()}
           </p>
-          <p className="w-32 flex-auto">{amount ? `${amount} ${symbol}` : "-"}</p>
+          {amount ? (
+            <p className="w-32 flex-auto text-neutral-900">
+              {amount}&nbsp;
+              <span className="title text-xs text-neutral-700">{symbol}</span>
+            </p>
+          ) : (
+            <p className="w-32 flex-auto">-</p>
+          )}
           <p className="w-32 flex-auto lowercase">{multiplier ? `${multiplier}x` : "-"}</p>
           <p className="w-32 flex-auto lowercase">
             {strEpochs !== "0" && strEpochs !== "-" ? (
@@ -99,7 +106,14 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                 />
                 <p>{id.toString()}</p>
               </div>
-              <p className="text-neutral-900">{amount ? `${amount} ${symbol}` : "-"}</p>
+              {amount ? (
+                <p className="w-32 flex-auto text-neutral-900">
+                  {amount}&nbsp;
+                  <span className="text-xs">{symbol}</span>
+                </p>
+              ) : (
+                <p className="w-32 flex-auto">-</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between py-2">

@@ -27,11 +27,12 @@ export default function Create() {
   const [gaugeDescription, setGaugeDescription] = useState("");
   const [gaugeLogo, setGaugeLogo] = useState("");
   const [resources, setResources] = useState<{ field: string; value: string; url: string }[]>([]);
+  const filteredResources = resources.filter((resource) => resource.field && resource.value);
   const { mutate: uploadMetadata, isPending: uploadingIpfs } = usePinJSONtoIPFS({
     name: title,
     description: gaugeDescription,
     logo: gaugeLogo,
-    resources: resources,
+    resources: filteredResources,
   });
 
   const { data: modeContracts } = useGetContracts(Token.MODE);
@@ -293,7 +294,7 @@ export default function Create() {
                 name: title,
                 description: gaugeDescription,
                 logo: gaugeLogo,
-                resources: resources,
+                resources: filteredResources,
               },
             }}
             openDialog={openPreview}

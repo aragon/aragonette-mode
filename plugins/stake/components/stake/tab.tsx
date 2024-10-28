@@ -104,7 +104,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
         <Toggle disabled={isConfirming1 || isConfirming2} value="100" label="100%" className="rounded-lg" />
       </ToggleGroup>
       <p className="mt-2 text-left">
-        Your balance: {formattedQuantity} {symbol}
+        Your balance: {formattedQuantity} <span className="text-xs text-neutral-700">{symbol}</span>
       </p>
       <Button
         className="mt-2 w-full"

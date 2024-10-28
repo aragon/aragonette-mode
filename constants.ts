@@ -50,7 +50,7 @@ export const PUB_PROJECT_URL = process.env.NEXT_PUBLIC_PROJECT_URL ?? "https://g
 export const PUB_GOV_FORUM_URL = process.env.NEXT_PUBLIC_GOV_FORUM_URL ?? "https://forum.mode.network/";
 export const PUB_DEV_PAGE_URL = process.env.NEXT_PUBLIC_DEV_PAGE_URL ?? "https://www.mode.network/developers";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
-export const PUB_STAKING_LEARN_MORE_URL = "https://docs.mode.network/usdmode/3-3-3-3-season-3";
+export const PUB_STAKING_LEARN_MORE_URL = "https://mode.mirror.xyz/p8IasF_R3wFhRZmmoP6bf8gHQ-ZfBK6O0pMXBQBOmOw";
 export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://docs.mode.network/usdmode/3-3-3-3-season-3";
 export const PUB_GET_MORE_MODE_URL =
   process.env.NEXT_PUBLIC_GET_MORE_MODE_URL ??
@@ -61,7 +61,7 @@ export const PUB_GET_MORE_BPT_URL =
 export const PUB_GET_MORE_BOTH_URL =
   process.env.NEXT_PUBLIC_GET_MORE_BOTH_URL ?? "https://web3packs.com/checkout/governance";
 export const PUB_GET_REWARDS_URL =
-  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://app.hedgey.finance/claim/401d2082-8933-4f2b-917f-8263f3d4b6f9";
+  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://app.hedgey.finance/claim/67e16815-b00d-4152-b04b-50a7936762bd";
 
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??

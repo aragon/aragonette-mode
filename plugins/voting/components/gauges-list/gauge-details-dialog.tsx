@@ -44,7 +44,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
         <div>{selectedGauge.metadata?.description}</div>
         {selectedGauge.metadata?.resources.map((resource, index) => (
           <>
-            <hr />
+            <hr className="text-neutral-600" />
             <div key={index} className="flex flex-row">
               <div className="w-1/2 text-sm">{resource.field}</div>
               <div className="flex w-1/2 flex-col">

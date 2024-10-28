@@ -136,7 +136,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
               variant="secondary"
               onClick={distributeEvenly}
             >
-              Distribute evently
+              Distribute evenly
             </Button>
             <Button
               className="flex w-1/2"
@@ -189,7 +189,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
           </DataListRoot>
         </DialogContent>
         <div>
-          <div className="flex flex-col gap-x-8 gap-y-2 px-8 py-4 md:flex-row">
+          <div className="flex flex-col gap-x-8 gap-y-2 px-8 py-4 md:flex-row md:items-center">
             <p className="title flex text-sm text-neutral-900">Your total votes</p>
             <div className="flex flex-row gap-2 md:flex-row md:gap-8">
               <div className="flex flex-row items-center gap-2 md:justify-center">

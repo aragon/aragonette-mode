@@ -35,7 +35,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
   const { vp: modeVp } = useGetAccountVp(Token.MODE);
   const { vp: bptVp } = useGetAccountVp(Token.BPT);
 
-  const hasBalance = !(modeVp === 0n && bptVp === 0n);
+  const hasBalance = !((!modeVp || modeVp === 0n) && (bptVp === 0n || !bptVp));
 
   const userModeVotesBn = BigInt(userModeVotesData ?? 0n);
   const userBptVotesBn = BigInt(userBptVotesData ?? 0n);
@@ -103,10 +103,10 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
               <div className="my-2 flex w-1/2 flex-col md:my-0 md:text-right">
                 <p className="mb-1 mt-3 text-neutral-900 md:hidden">Total votes</p>
                 <p>
-                  {gaugeTotalVotes} <span className="text-xs">votes</span>
+                  {gaugeTotalVotes} <span className="title text-xs text-neutral-600">votes</span>
                 </p>
                 <p>
-                  {formattedPercentage}% <span className="text-xs">of total</span>
+                  {formattedPercentage}% <span className="title text-xs text-neutral-600">of total</span>
                 </p>
               </div>
               <div className="my-2 flex w-1/2 flex-col justify-start md:my-0 md:justify-center md:text-right">
@@ -114,14 +114,14 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
                 {userModeVotesBn || userBptVotesBn ? (
                   <>
                     <p>
-                      {modeUserVotes} <span className="text-xs">Mode</span>
+                      {modeUserVotes} <span className="title text-xs text-neutral-600">Mode</span>
                     </p>
                     <p>
-                      {bptUserVotes} <span className="text-xs">BPT</span>
+                      {bptUserVotes} <span className="title text-xs text-neutral-600">BPT</span>
                     </p>
                   </>
                 ) : (
-                  <div>None</div>
+                  <p className="title text-neutral-700">None</p>
                 )}
               </div>
             </div>
