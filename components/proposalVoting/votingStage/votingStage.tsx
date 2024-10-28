@@ -1,4 +1,4 @@
-import { PUB_CHAIN } from "@/constants";
+import { PUB_CHAIN_BLOCK_EXPLORER } from "@/constants";
 import { getSimpleRelativeDate } from "@/utils/dates";
 import { AccordionItem, AccordionItemContent, AccordionItemHeader, Heading, Tabs } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
@@ -70,9 +70,7 @@ export const VotingStage: React.FC<IVotingStageProps> = (props) => {
     : details?.censusTimestamp
       ? dayjs(details.censusTimestamp * 1000).toString()
       : "";
-  const snapshotBlockURL = details?.censusBlock
-    ? `${PUB_CHAIN.blockExplorers?.default.url}/block/${details?.censusBlock}`
-    : "";
+  const snapshotBlockURL = details?.censusBlock ? `${PUB_CHAIN_BLOCK_EXPLORER}/block/${details?.censusBlock}` : "";
 
   return (
     <AccordionItem

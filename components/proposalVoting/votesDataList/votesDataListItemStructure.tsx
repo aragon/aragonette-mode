@@ -1,6 +1,6 @@
-import { PUB_CHAIN } from "@/constants";
+import { PUB_CHAIN_BLOCK_EXPLORER } from "@/constants";
 import { formatHexString } from "@/utils/evm";
-import { DataListItem, MemberAvatar, Tag, type IDataListItemProps, type TagVariant } from "@aragon/ods";
+import { DataListItem, MemberAvatar, Tag, type TagVariant } from "@aragon/ods";
 import classNames from "classnames";
 
 export type IVotesDataListVariant = "yes" | "approve" | "no" | "abstain";
@@ -17,7 +17,7 @@ export interface IVotesDataListItemStructureProps {
 
 export const VotesDataListItemStructure: React.FC<IVotesDataListItemStructureProps> = (props) => {
   const { address, connectedAccount, delegate, ensAvatar, ensName, variant, votingPower, ...otherProps } = props;
-  const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${address}`;
+  const explorerUrl = `${PUB_CHAIN_BLOCK_EXPLORER}/address/${address}`;
 
   const label = connectedAccount ? "You" : delegate ? "Your delegate" : null;
 

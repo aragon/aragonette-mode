@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext } from "react";
 import { type IAlert } from "@/utils/types";
 import { usePublicClient } from "wagmi";
+import { PUB_CHAIN_BLOCK_EXPLORER } from "@/constants";
 
 const DEFAULT_ALERT_TIMEOUT = 7 * 1000;
 
@@ -50,7 +51,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       type: alertOptions?.type ?? "info",
     };
     if (alertOptions?.txHash && client) {
-      newAlert.explorerLink = client.chain.blockExplorers?.default.url + "/tx/" + alertOptions.txHash;
+      newAlert.explorerLink = `${PUB_CHAIN_BLOCK_EXPLORER}/tx/${alertOptions.txHash}`;
     }
     const timeout = alertOptions?.timeout ?? DEFAULT_ALERT_TIMEOUT;
     newAlert.dismissTimeout = setTimeout(() => removeAlert(newAlert.id), timeout);

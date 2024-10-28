@@ -2,6 +2,7 @@ import { formatHexString } from "@/utils/evm";
 import { getChildrenText } from "@/utils/content";
 import { type ReactNode, useState, useEffect } from "react";
 import { usePublicClient } from "wagmi";
+import { PUB_CHAIN_BLOCK_EXPLORER } from "@/constants";
 // import { Link } from '@aragon/ods'
 
 export const AddressText = ({ children, bold }: { children: ReactNode; bold?: boolean }) => {
@@ -14,7 +15,7 @@ export const AddressText = ({ children, bold }: { children: ReactNode; bold?: bo
   useEffect(() => {
     if (!client) return;
 
-    setLink(`${client.chain.blockExplorers?.default.url}/address/${address}`);
+    setLink(`${PUB_CHAIN_BLOCK_EXPLORER}/address/${address}`);
   }, [address, client]);
 
   const formattedAddress = formatHexString(address.trim());

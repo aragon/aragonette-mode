@@ -4,6 +4,8 @@ import { type ChainName, getChain } from "./utils/chains";
 // Target chain
 export const PUB_CHAIN_NAME = (process.env.NEXT_PUBLIC_CHAIN_NAME ?? "holesky") as ChainName;
 export const PUB_CHAIN = getChain(PUB_CHAIN_NAME);
+export const PUB_CHAIN_BLOCK_EXPLORER =
+  process.env.NEXT_PUBLIC_CHAIN_BLOCK_EXPLORER ?? PUB_CHAIN.blockExplorers?.default.url;
 export const CONTRACTS_DEPLOYMENT_BLOCK = BigInt(process.env.NEXT_PUBLIC_CONTRACTS_DEPLOYMENT_BLOCK ?? "0");
 
 // ENS target chain

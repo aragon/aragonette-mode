@@ -2,6 +2,7 @@ import { formatHexString } from "@/utils/evm";
 import { getChildrenText } from "@/utils/content";
 import { type ReactNode, useState, useEffect } from "react";
 import { usePublicClient } from "wagmi";
+import { PUB_CHAIN_BLOCK_EXPLORER } from "@/constants";
 // import { Link } from '@aragon/ods'
 
 export const TransactionText = ({ children }: { children: ReactNode }) => {
@@ -12,7 +13,7 @@ export const TransactionText = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!client) return;
 
-    setLink(`${client.chain.blockExplorers?.default.url}/tx/${txHash}`);
+    setLink(`${PUB_CHAIN_BLOCK_EXPLORER}/tx/${txHash}`);
   }, [txHash, client]);
 
   const formattedHexValue = formatHexString(txHash.trim());

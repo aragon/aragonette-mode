@@ -1,4 +1,4 @@
-import { PUB_CHAIN } from "@/constants";
+import { PUB_CHAIN, PUB_CHAIN_BLOCK_EXPLORER } from "@/constants";
 import { formatHexString } from "@/utils/evm";
 import {
   AccordionContainer,
@@ -19,8 +19,7 @@ import { useAction } from "@/hooks/useAction";
 import { decodeCamelCase } from "@/utils/case";
 import { formatEther } from "viem";
 
-const DEFAULT_DESCRIPTION =
-  "When the proposal passes the community vote, the resulting amounts will be allocated.";
+const DEFAULT_DESCRIPTION = "When the proposal passes the community vote, the resulting amounts will be allocated.";
 const DEFAULT_EMPTY_LIST_DESCRIPTION = "The proposal has no actions defined, it will behave as a signaling poll.";
 
 interface IProposalActionsProps {
@@ -76,7 +75,7 @@ const ActionItem = ({ index, rawAction, onRemove }: { index: number; rawAction: 
     ? `Transfer ${coinName}`
     : decodeCamelCase(action.functionName || "(function call)");
   const functionAbi = action.functionAbi ?? null;
-  const explorerUrl = `${PUB_CHAIN.blockExplorers?.default.url}/address/${action.to}`;
+  const explorerUrl = `${PUB_CHAIN_BLOCK_EXPLORER}/address/${action.to}`;
 
   return (
     <AccordionItem className="border-t border-t-neutral-100 bg-neutral-0" value={title}>
