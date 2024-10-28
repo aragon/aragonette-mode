@@ -16,8 +16,9 @@ export default function PluginPage() {
       <MainSection>
         <SectionHeader title="Stake" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
           Stake and vote with your MODE and/or BPT to earn OP. Increase your voting power by staking more tokens. The
-          longer you stake, the higher your voting power multiplier will be. New stakes will be subject to a minimun 3
-          day warmup before they are eligible to vote.
+          longer you stake, the higher your voting power multiplier will be. New stakes will be subject to a minimum 3
+          day warmup before they are eligible to vote. Warm ups can be up to 6 days if staking well before an upcoming
+          epoch changeover.
         </SectionHeader>
         <div className="mt-6 grid grid-cols-1 gap-x-4 md:grid-cols-2">
           <div className="mb-6">
