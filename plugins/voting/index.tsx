@@ -14,14 +14,17 @@ import { useNow } from "./hooks/useNow";
 
 export default function PluginPage() {
   const { now, getRelativeTime } = useNow();
-  const { votingStartsIn } = useGetVotingStartsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
-  const { votingEndsIn } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
+  const { votingStartsIn, isLoading: startInLoading } = useGetVotingStartsIn(
+    Token.MODE,
+    BigInt(Math.floor(now / 1000))
+  );
+  const { votingEndsIn, isLoading: endsInLoading } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
 
   const { data: totalVpBn } = useGetTotalVpCast(Token.MODE);
 
-  const active = votingEndsIn && votingEndsIn > 3600n;
-  const nextVotingDateTs = Number(active ? votingEndsIn - 3600n : (votingStartsIn ?? 0n) + 3600n) * 1000 + now;
-
+  const nextVotingDateLoading = startInLoading || endsInLoading;
+  const active = !!votingEndsIn && !votingStartsIn;
+  const nextVotingDateTs = Number(active ? votingEndsIn : (votingStartsIn ?? 0n)) * 1000 + now;
   const nextVotingDate = getRelativeTime(nextVotingDateTs, DateFormat.RELATIVE);
 
   const totalVp = formatterUtils.formatNumber(formatUnits(totalVpBn ?? 0n, 18), {
@@ -43,7 +46,9 @@ export default function PluginPage() {
         <div className="flex flex-row gap-x-20 gap-y-6">
           <div className="flex flex-col">
             <div className=" flex items-baseline gap-x-1">
-              <span className="title text-3xl text-neutral-900 md:text-3xl">{nextVotingDate}</span>
+              <span className="title text-3xl text-neutral-900 md:text-3xl">
+                {nextVotingDateLoading ? "-" : nextVotingDate}
+              </span>
             </div>
             <span className="text-md text-neutral-700">
               {active ? "Current" : "Next"} voting {active ? "ends" : "starts"}
