@@ -8,7 +8,7 @@ export function useIsVoting(token: Token, tokenId: bigint) {
 
   const {
     data: isVoting,
-    isFetched,
+    isLoading,
     queryKey,
   } = useReadContract({
     address: escrowContract,
@@ -19,7 +19,7 @@ export function useIsVoting(token: Token, tokenId: bigint) {
 
   return {
     isVoting,
-    isFetched,
+    isLoading,
     queryKey,
   };
 }

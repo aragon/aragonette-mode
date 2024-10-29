@@ -12,6 +12,8 @@ import { useApproveNFT } from "../../hooks/useApproveNFT";
 import { useEffect, useState } from "react";
 import { useOwnedTokens } from "../../hooks/useOwnedTokens";
 import { useNow } from "../../hooks/useNow";
+import { useIsVoting } from "../../hooks/useIsVoting";
+import { useIsVotingActive } from "../../hooks/useIsVotingActive";
 
 type TokenActionProps = {
   tokenId: bigint;
@@ -25,6 +27,7 @@ enum TokenActionStatus {
   InWarmup = "inWarmup",
   InCooldown = "inCooldown",
   Inactive = "inactive",
+  ActiveWithLockedVotes = "activeWithLockedVotes",
   Active = "active",
 }
 
@@ -38,6 +41,8 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
   const { data: nextEpochIn, isLoading: nextEpochTsLoading } = useGetNextEpochIn(token, BigInt(created / 1000));
   const { data: canExit, isLoading: canExitLoading, queryKey: canExitQueryKey } = useCanExit(token, tokenId);
   const { queryKey: ownedQueryKey } = useOwnedTokens(token, false);
+  const { isVoting, isLoading: isVotingLoading } = useIsVoting(token, tokenId);
+  const { isVotingActive, isLoading: isVotingActiveLoading } = useIsVotingActive(token);
 
   const invalidateQueries = async () => {
     await queryClient.invalidateQueries({ queryKey: ["exitQueue", token] });
@@ -65,7 +70,14 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
     format: DateFormat.YEAR_MONTH_DAY_TIME,
   });
 
-  const isLoading = vpLoading || cooldownLoading || warmingPeriodLoading || nextEpochTsLoading || canExitLoading;
+  const isLoading =
+    vpLoading ||
+    cooldownLoading ||
+    warmingPeriodLoading ||
+    nextEpochTsLoading ||
+    canExitLoading ||
+    isVotingLoading ||
+    isVotingActiveLoading;
 
   useEffect(() => {
     const warmingPeriodDate = created + Math.max(Number(warmingPeriod ?? 0), Number(nextEpochIn ?? 0)) * 1000;
@@ -88,10 +100,12 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
       setStatus(TokenActionStatus.InCooldown);
     } else if (!vp) {
       setStatus(TokenActionStatus.Inactive);
+    } else if (isVoting && !isVotingActive) {
+      setStatus(TokenActionStatus.ActiveWithLockedVotes);
     } else {
       setStatus(TokenActionStatus.Active);
     }
-  }, [vp, cooldown, canExit, warmingPeriod, nextEpochIn, now, created, isLoading]);
+  }, [vp, cooldown, canExit, warmingPeriod, nextEpochIn, now, created, isVoting, isVotingActive, isLoading]);
 
   switch (status) {
     case TokenActionStatus.Loading:
@@ -173,6 +187,26 @@ export const TokenAction = ({ tokenId, token, created }: TokenActionProps) => {
           <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true}>
             Claimed
           </Button>
+        </div>
+      );
+    case TokenActionStatus.ActiveWithLockedVotes:
+      return (
+        <div className="flex items-center justify-between gap-x-4">
+          <Tag
+            label="Active"
+            className="rounded-[8px] bg-primary-900 normal-case [&>p]:px-[1px] [&>p]:text-neutral-0"
+          />
+          <Tooltip
+            content={
+              <div>
+                <p>You can unstake when the next voting window starts</p>
+              </div>
+            }
+          >
+            <Button className="pt-[2px]" size="sm" variant="secondary" disabled={true}>
+              Unstake
+            </Button>
+          </Tooltip>
         </div>
       );
     case TokenActionStatus.Active:

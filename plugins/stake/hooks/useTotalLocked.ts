@@ -8,7 +8,7 @@ export function useTotalLocked(token: Token) {
 
   const {
     data: totalLocked,
-    isFetched,
+    isLoading,
     queryKey,
   } = useReadContract({
     address: escrowContract,
@@ -19,7 +19,7 @@ export function useTotalLocked(token: Token) {
 
   return {
     totalLocked,
-    isFetched,
+    isLoading,
     queryKey,
   };
 }
