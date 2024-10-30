@@ -15,6 +15,7 @@ type VotingListItemProps = {
   bptVotes?: number;
   totalModeVotes: number;
   totalBptVotes: number;
+  tolerance: number;
   onChange: (token: Token, votes: number) => void;
   onRemove: () => void;
 };
@@ -24,6 +25,7 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
   bptVotes,
   totalModeVotes,
   totalBptVotes,
+  tolerance,
   onChange,
   onRemove,
 }) => {
@@ -63,11 +65,15 @@ export const VotingListItem: React.FC<VotingListItemProps> = ({
   }, [bptVotes, bptPerc, onChange]);
 
   const getModeAlert = () => {
-    return totalModeVotes !== 100 && totalModeVotes !== 0 ? ("critical" as IInputContainerAlert["variant"]) : undefined;
+    return Math.abs(totalModeVotes - 100) >= tolerance && totalModeVotes !== 0
+      ? ("critical" as IInputContainerAlert["variant"])
+      : undefined;
   };
 
   const getBptAlert = () => {
-    return totalBptVotes !== 100 && totalBptVotes !== 0 ? ("critical" as IInputContainerAlert["variant"]) : undefined;
+    return Math.abs(totalBptVotes - 100) >= tolerance && totalBptVotes !== 0
+      ? ("critical" as IInputContainerAlert["variant"])
+      : undefined;
   };
 
   return (

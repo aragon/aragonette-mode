@@ -78,12 +78,14 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
     bptVote
   );
 
+  const tolerance = 1e-9;
+
   const totalModeVotes = modeVotes.reduce((acc, v) => acc + v.votes, 0);
   const totalBptVotes = bptVotes.reduce((acc, v) => acc + v.votes, 0);
   const isValidVotes =
-    (totalModeVotes === 100 || totalModeVotes === 0) &&
-    (totalBptVotes === 0 || totalBptVotes === 100) &&
-    (totalModeVotes === 100 || totalBptVotes === 100);
+    (Math.abs(totalModeVotes - 100) < tolerance || totalModeVotes === 0) &&
+    (totalBptVotes === 0 || Math.abs(totalBptVotes - 100) < tolerance) &&
+    (Math.abs(totalModeVotes - 100) < tolerance || Math.abs(totalBptVotes - 100) < tolerance);
 
   useEffect(() => {
     if (!selectedGauges.length) {
@@ -158,6 +160,7 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
                   bptVotes={bptVotes.find((v) => v.address === gauge.address)?.votes}
                   totalModeVotes={modeVotes.reduce((acc, v) => acc + v.votes, 0)}
                   totalBptVotes={bptVotes.reduce((acc, v) => acc + v.votes, 0)}
+                  tolerance={tolerance}
                   onRemove={() => {
                     setModeVotes(modeVotes.filter((v) => v.address !== gauge.address));
                     setBptVotes(bptVotes.filter((v) => v.address !== gauge.address));
