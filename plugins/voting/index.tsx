@@ -20,14 +20,15 @@ export default function PluginPage() {
   );
   const { votingEndsIn, isLoading: endsInLoading } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
 
-  const { data: totalVpBn } = useGetTotalVpCast(Token.MODE);
+  const { data: totalModeVpBn } = useGetTotalVpCast(Token.MODE);
+  const { data: totalBptVpBn } = useGetTotalVpCast(Token.BPT);
 
   const nextVotingDateLoading = startInLoading || endsInLoading;
   const active = !!votingEndsIn && !votingStartsIn;
   const nextVotingDateTs = Number(active ? votingEndsIn : (votingStartsIn ?? 0n)) * 1000 + now;
   const nextVotingDate = getRelativeTime(nextVotingDateTs, DateFormat.RELATIVE);
 
-  const totalVp = formatterUtils.formatNumber(formatUnits(totalVpBn ?? 0n, 18), {
+  const totalVp = formatterUtils.formatNumber(formatUnits((totalModeVpBn ?? 0n) + (totalBptVpBn ?? 0n), 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
 
