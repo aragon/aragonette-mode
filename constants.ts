@@ -63,7 +63,7 @@ export const PUB_GET_MORE_BPT_URL =
 export const PUB_GET_MORE_BOTH_URL =
   process.env.NEXT_PUBLIC_GET_MORE_BOTH_URL ?? "https://web3packs.com/checkout/governance";
 export const PUB_GET_REWARDS_URL =
-  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://app.hedgey.finance/claim/67e16815-b00d-4152-b04b-50a7936762bd";
+  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://app.hedgey.finance/claim/f1de8941-e39b-4dc5-af74-4416b2a14150";
 
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??
