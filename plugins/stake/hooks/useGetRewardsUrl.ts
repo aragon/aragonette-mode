@@ -7,7 +7,7 @@ export function useGetRewardsUrl() {
     queryFn: async () => {
       const response = await fetch(PUB_GET_REWARDS_URL);
       const data = await response.text();
-      return data;
+      return data.replace(/"/g, "");
     },
   });
 }
