@@ -1,5 +1,5 @@
 import { DataListContainer, DataListFilter, DataListRoot } from "@aragon/ods";
-import { useState } from "react";
+import { use, useCallback, useMemo, useState } from "react";
 import { useGetGauges } from "../../hooks/useGetGauges";
 
 import { GaugeListItem } from "./gauge-item";
@@ -10,10 +10,14 @@ import { type Address } from "viem";
 import { VotingBar } from "../voting-bar";
 import { useGetGaugeMetadata } from "../../hooks/useGetGaugeMetadata";
 import { useGetTotalGaugeVotes } from "../../hooks/useGetTotalGaugeVotes";
+import { useGetGaugeVotesMultipleAddresses } from "../../hooks/useGetGaugeVotesMultipleAddresses";
 
 export const StakePositions = () => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
+  const [activeSort, setActiveSort] = useState("votes_desc");
+
+  const sortItems = useMemo(() => [{ value: "votes_desc", label: "Total votes", type: "DESC" as const }], []);
 
   const { gauges: modeGauges } = useGetGauges(Token.MODE);
   const { gauges: bptGauges } = useGetGauges(Token.BPT);
@@ -55,41 +59,71 @@ export const StakePositions = () => {
   const filteredGauges = gauges.filter((gauge) => {
     if (!searchValue) return true;
     return (
-      gauge.metadata?.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      gauge.metadata?.name.toLowerCase().includes(searchValue.toLowerCase()) ??
       gauge.address.toLowerCase().includes(searchValue.toLowerCase())
     );
   });
+
+  const { data: modeGaugeVotesData } = useGetGaugeVotesMultipleAddresses(
+    Token.MODE,
+    filteredGauges.map((gauge) => gauge.address)
+  );
+  const { data: bptGaugeVotesData } = useGetGaugeVotesMultipleAddresses(
+    Token.BPT,
+    filteredGauges.map((gauge) => gauge.address)
+  );
+
+  const filteredGaugesWithModeAndBptVotes = filteredGauges
+    .map((gauge) => {
+      const BPTVotes = bptGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
+      const modeVotes = modeGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
+      const totalVotes = BigInt(BPTVotes + modeVotes);
+      return {
+        ...gauge,
+        BPTVotes,
+        modeVotes,
+        totalVotes,
+      };
+    })
+    .sort((a, b) => {
+      if (activeSort === "votes_asc") return a.totalVotes < b.totalVotes ? -1 : 1;
+      return a.totalVotes > b.totalVotes ? -1 : 1;
+    });
 
   return (
     <div className="mt-8">
       <DataListRoot
         entityLabel="Projects"
-        itemsCount={filteredGauges.length}
-        pageSize={filteredGauges.length}
+        itemsCount={filteredGaugesWithModeAndBptVotes.length}
+        pageSize={filteredGaugesWithModeAndBptVotes.length}
         className="mb-12 gap-y-6"
         state={isLoading ? "initialLoading" : "idle"}
       >
         <DataListFilter
           searchValue={searchValue}
+          activeSort={activeSort}
+          onSortChange={setActiveSort}
+          sortItems={sortItems}
           placeholder="Filter projects by name or address"
           onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
         />
-
-        <div className="hidden gap-x-4 px-6 md:flex">
-          <p className="flex w-1/6 flex-row">Name</p>
-          <div className="end flex w-3/6 flex-row">
-            <p className="flex w-1/2 justify-end">Total Votes</p>
-            <p className="flex w-1/2 justify-end">Your Votes</p>
+        {filteredGaugesWithModeAndBptVotes.length === 0 && <div className="text-neutral-500">No Projects found</div>}
+        {filteredGaugesWithModeAndBptVotes.length > 0 && (
+          <div className="hidden gap-x-4 px-6 md:flex">
+            <p className="flex w-1/6 flex-row">Name</p>
+            <div className="end flex w-3/6 flex-row">
+              <p className="flex w-1/2 justify-end">Total Votes</p>
+              <p className="flex w-1/2 justify-end">Your Votes</p>
+            </div>
+            <p className="w-1/6 flex-auto"></p>
           </div>
-          <p className="w-1/6 flex-auto"></p>
-        </div>
-
+        )}
         <DataListContainer>
-          {filteredGauges.length === 0 && <div className="text-neutral-500">No Projects found</div>}
-          {filteredGauges.map((gauge, pos) => (
+          {filteredGaugesWithModeAndBptVotes.map((gauge, pos) => (
             <GaugeListItem
               key={pos}
               props={gauge}
+              gaugeVotes={gauge.totalVotes}
               totalVotes={totalVotesBn}
               selected={!!selectedGauges.find((g) => g.address === gauge.address)}
               onSelect={(selected) => {

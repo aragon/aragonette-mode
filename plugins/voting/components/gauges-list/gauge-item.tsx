@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from "react";
 import { shortenAddress } from "@/utils/address";
 import { useGetVotes } from "../../hooks/useGetVotes";
 import { useOwnedTokens } from "@/plugins/stake/hooks/useOwnedTokens";
-import { useGetGaugeVotes } from "../../hooks/useGetGaugeVotes";
 import { formatUnits } from "viem";
 import { GaugeDetailsDialog } from "./gauge-details-dialog";
 import { Token } from "../../types/tokens";
@@ -14,10 +13,17 @@ type GaugeItemProps = {
   props: GaugeItem;
   totalVotes: bigint;
   selected: boolean;
+  gaugeVotes: bigint;
   onSelect: (selected: boolean) => void;
 };
 
-export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, totalVotes: totalVotesBn, onSelect }) => {
+export const GaugeListItem: React.FC<GaugeItemProps> = ({
+  props,
+  selected,
+  totalVotes: totalVotesBn,
+  gaugeVotes,
+  onSelect,
+}) => {
   const metadata = props.metadata;
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -29,8 +35,6 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
 
   const { data: userModeVotesData } = useGetVotes(Token.MODE, [...modeTokenIds], props.address);
   const { data: userBptVotesData } = useGetVotes(Token.BPT, [...bptTokenIds], props.address);
-  const { data: modeGaugeVotesData } = useGetGaugeVotes(Token.MODE, props.address);
-  const { data: bptGaugeVotesData } = useGetGaugeVotes(Token.BPT, props.address);
 
   const { vp: modeVp } = useGetAccountVp(Token.MODE);
   const { vp: bptVp } = useGetAccountVp(Token.BPT);
@@ -39,10 +43,6 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
 
   const userModeVotesBn = BigInt(userModeVotesData ?? 0n);
   const userBptVotesBn = BigInt(userBptVotesData ?? 0n);
-  const modeGaugeTotalVotesBn = BigInt(modeGaugeVotesData ?? 0n);
-  const bptGaugeTotalVotesBn = BigInt(bptGaugeVotesData ?? 0n);
-
-  const gaugeTotalVotesBn = modeGaugeTotalVotesBn + bptGaugeTotalVotesBn;
 
   const modeUserVotes = formatterUtils.formatNumber(formatUnits(userModeVotesBn, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
@@ -50,11 +50,11 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
   const bptUserVotes = formatterUtils.formatNumber(formatUnits(userBptVotesBn, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
-  const gaugeTotalVotes = formatterUtils.formatNumber(formatUnits(gaugeTotalVotesBn, 18), {
+  const gaugeTotalVotes = formatterUtils.formatNumber(formatUnits(gaugeVotes, 18), {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
 
-  const percentage = (Number(formatUnits(gaugeTotalVotesBn, 18)) / Number(formatUnits(totalVotesBn, 18))) * 100;
+  const percentage = (Number(formatUnits(gaugeVotes, 18)) / Number(formatUnits(totalVotesBn, 18))) * 100;
   const formattedPercentage = formatterUtils.formatNumber(percentage ? percentage : 0, {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
@@ -63,7 +63,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
     if (userModeVotesBn > 0n || userBptVotesBn > 0n) {
       onSelect(true);
     }
-  }, [userModeVotesBn, userBptVotesBn]);
+  }, [userModeVotesBn, userBptVotesBn, onSelect]);
 
   return (
     <>
