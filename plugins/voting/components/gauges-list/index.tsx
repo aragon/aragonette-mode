@@ -104,7 +104,6 @@ export const StakePositions = () => {
     .map((gauge) => {
       const BPTVotes = bptGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
       const modeVotes = modeGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
-      console.log(modeVotes, BPTVotes);
       const totalVotes = BigInt(BPTVotes + modeVotes);
       const userBPTVotes = userVotesData?.find(
         (v) => v?.gaugeAddress === gauge.address && v?.token === Token.BPT
