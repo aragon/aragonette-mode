@@ -2,6 +2,7 @@ import { Avatar, Button, DialogContent, DialogRoot, IconType, Link } from "@arag
 import { type GaugeItem } from "../gauges-list/types";
 import { shortenAddress } from "@/utils/address";
 import { CopyToClipBoard } from "@/components/copyToClipboard";
+import { Fragment } from "react";
 
 type GaugeDetailsDialogProps = {
   openDialog: boolean;
@@ -43,9 +44,9 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
       <DialogContent className="flex flex-col gap-y-4 pb-8 md:gap-y-4">
         <div>{selectedGauge.metadata?.description}</div>
         {selectedGauge.metadata?.resources.map((resource, index) => (
-          <>
+          <Fragment key={resource.value}>
             <hr className="text-neutral-600" />
-            <div key={index} className="flex flex-row">
+            <div className="flex flex-row">
               <div className="w-1/2 text-sm">{resource.field}</div>
               <div className="flex w-1/2 flex-col">
                 {!!resource.url && (
@@ -56,7 +57,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
                 <p className="truncate text-sm text-neutral-200">{!resource.url ? resource.value : resource.url}</p>
               </div>
             </div>
-          </>
+          </Fragment>
         ))}
       </DialogContent>
     </DialogRoot>
