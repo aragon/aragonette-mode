@@ -89,6 +89,10 @@
     /* Component specific */
     --ods-avatar-container-position: relative;
 
+    /* Illustrations */
+    --ods-illustration-accent-color: rgb(224 254 0);
+    --ods-illustration-primary-color: rgb(255 255 255);
+
     #illustration-container path {
       fill: rgb(255 255 255);
     }

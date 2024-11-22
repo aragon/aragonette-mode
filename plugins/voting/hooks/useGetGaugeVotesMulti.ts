@@ -5,7 +5,7 @@ import { useGetContracts } from "./useGetContract";
 import { type Address } from "viem";
 import { useQueries } from "@tanstack/react-query";
 
-export function useGetGaugeVotesMultipleAddresses(token: Token, gauges: Address[]) {
+export function useGetGaugeVotesMulti(token: Token, gauges: Address[]) {
   const { data } = useGetContracts(token);
   const publicClient = usePublicClient();
 
@@ -13,7 +13,7 @@ export function useGetGaugeVotesMultipleAddresses(token: Token, gauges: Address[
 
   const queries = useQueries({
     queries: gauges.map((gauge) => ({
-      queryKey: ["gaugeVotes", gauge],
+      queryKey: ["gaugeVotes", gauge, token],
       queryFn: async () => {
         if (!publicClient || !voterContract) return;
         return {
