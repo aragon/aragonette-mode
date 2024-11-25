@@ -20,16 +20,17 @@ const reduceVotes = (data: UserVotesData[]) => {
     data.reduce(
       (acc, voteItem) => {
         if (voteItem) {
-          const { gaugeAddress, votes, token, ownedToken } = voteItem;
-          if (!acc[gaugeAddress]) {
-            acc[gaugeAddress] = {
+          const { token, ownedToken, gaugeAddress, votes } = voteItem;
+          const key = `${token}-${gaugeAddress}`;
+          if (!acc[key]) {
+            acc[key] = {
               token,
               ownedToken,
               gaugeAddress,
               votes: 0n,
             };
           }
-          acc[gaugeAddress].votes += votes;
+          acc[key].votes += votes;
         }
         return acc;
       },
@@ -64,7 +65,7 @@ export function useUserVotesData(tokenList: Token[], gaugeAddresses: Address[][]
       const gaugesForToken = gaugeAddresses[tokenIndex] || [];
 
       return gaugesForToken.map((gaugeAddress) => ({
-        queryKey: ["userVotes", ownedToken.ownedToken, gaugeAddress, address],
+        queryKey: ["userVotes", ownedToken.ownedToken, gaugeAddress, ownedToken.token],
         queryFn: async () => {
           if (!publicClient || !ownedToken.voterContract || !address) return;
           return {
