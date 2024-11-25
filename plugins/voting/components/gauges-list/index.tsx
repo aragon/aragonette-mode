@@ -11,8 +11,10 @@ import { useGetGaugeMetadata } from "../../hooks/useGetGaugeMetadata";
 import { useGetTotalGaugeVotes } from "../../hooks/useGetTotalGaugeVotes";
 import { useGetGaugeVotesMulti } from "../../hooks/useGetGaugeVotesMulti";
 import { useUserVotesData } from "../../hooks/useUserVotesData";
+import { useAccount } from "wagmi";
 
 export const StakePositions = () => {
+  const { address } = useAccount();
   const [searchValue, setSearchValue] = useState("");
   const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
   const [activeSort, setActiveSort] = useState<string>();
@@ -29,6 +31,12 @@ export const StakePositions = () => {
     ],
     []
   );
+
+  useEffect(() => {
+    if (address) {
+      setActiveSort("user_votes_desc");
+    }
+  }, [address]);
 
   const emptyState = {
     primaryButton: {
