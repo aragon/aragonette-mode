@@ -22,14 +22,10 @@ export const StakePositions = () => {
 
   const sortItems = useMemo(
     () => [
-      {
-        value: "user_votes_desc",
-        label: "Your votes",
-        type: "DESC" as const,
-      },
       { value: "votes_desc", label: "Total votes", type: "DESC" as const },
+      ...(address ? [{ value: "user_votes_desc", label: "Your votes", type: "DESC" as const }] : []),
     ],
-    []
+    [address]
   );
 
   useEffect(() => {
