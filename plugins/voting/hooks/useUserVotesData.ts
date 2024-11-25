@@ -85,6 +85,7 @@ export function useUserVotesData(tokenList: Token[], gaugeAddresses: Address[][]
       const data = reduceVotes(results.map((result) => result.data));
       const isLoading = results.some((result) => result.isLoading);
       const error = results.find((result) => result.error);
+
       return { data, isLoading, error };
     },
   });
