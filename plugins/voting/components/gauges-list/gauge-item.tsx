@@ -69,7 +69,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
             setOpenDialog(true);
           }}
         >
-          <div className="flex w-full flex-row items-center gap-x-3 md:w-1/6">
+          <div className="flex w-full flex-row items-center gap-x-3 md:w-1/3">
             <Avatar
               alt="Gauge icon"
               size="lg"
@@ -81,11 +81,11 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
               }
             />
             <div className="flex flex-col">
-              <p className="title text-neutral-900">{metadata?.name}</p>
+              <p className="title line-clamp-1 text-neutral-900">{metadata?.name}</p>
               <p className="text-neutral-600">{shortenAddress(props.address)}</p>
             </div>
           </div>
-          <div className="flex w-full flex-row md:w-3/6">
+          <div className="flex w-full flex-row md:w-1/3">
             <div className="my-2 flex w-1/2 flex-col md:my-0 md:text-right">
               <p className="mb-1 mt-3 text-neutral-900 md:hidden">Total votes</p>
               <p>
@@ -111,7 +111,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
               )}
             </div>
           </div>
-          <div className="w-full flex-auto md:w-1/6">
+          <div className="w-full flex-auto md:w-1/3">
             <div className="flex flex-row-reverse">
               <Button
                 size="sm"
