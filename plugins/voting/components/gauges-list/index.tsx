@@ -15,7 +15,7 @@ import { useUserVotesData } from "../../hooks/useUserVotesData";
 export const StakePositions = () => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
-  const [activeSort, setActiveSort] = useState("user_votes_desc");
+  const [activeSort, setActiveSort] = useState<string>();
   const [listState, setListState] = useState<DataListState>();
 
   const sortItems = useMemo(
@@ -126,7 +126,7 @@ export const StakePositions = () => {
     .sort((a, b) => {
       if (activeSort === "user_votes_desc") return a.userVotes > b.userVotes ? -1 : 1;
       if (activeSort === "votes_desc") return a.totalVotes > b.totalVotes ? -1 : 1;
-      return a.totalVotes > b.totalVotes ? -1 : 1;
+      return 0;
     });
 
   useEffect(() => {
