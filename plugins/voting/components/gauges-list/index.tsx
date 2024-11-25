@@ -142,6 +142,12 @@ export const StakePositions = () => {
     }
   }, [searchValue]);
 
+  useEffect(() => {
+    if (!address) {
+      setSelectedGauges([]);
+    }
+  }, [address]);
+
   return (
     <div className="mt-8">
       <DataListRoot
