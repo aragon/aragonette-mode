@@ -1,6 +1,6 @@
 import { Avatar, Button, DataListItem, formatterUtils, IconType, NumberFormat } from "@aragon/ods";
 import { type GaugeItem } from "./types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { shortenAddress } from "@/utils/address";
 import { formatUnits } from "viem";
 import { GaugeDetailsDialog } from "./gauge-details-dialog";
@@ -51,6 +51,13 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
   const formattedPercentage = formatterUtils.formatNumber(percentage ?? 0, {
     format: NumberFormat.TOKEN_AMOUNT_SHORT,
   });
+
+  useEffect(() => {
+    if (userModeVotesBn > 0n || userBPTVotesBn > 0n) {
+      onSelect(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userModeVotesBn, userBPTVotesBn]);
 
   return (
     <>
