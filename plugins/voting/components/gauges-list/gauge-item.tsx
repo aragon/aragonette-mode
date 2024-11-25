@@ -1,6 +1,6 @@
 import { Avatar, Button, DataListItem, formatterUtils, IconType, NumberFormat } from "@aragon/ods";
 import { type GaugeItem } from "./types";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { shortenAddress } from "@/utils/address";
 import { formatUnits } from "viem";
 import { GaugeDetailsDialog } from "./gauge-details-dialog";
@@ -118,7 +118,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
                 disabled={!hasBalance}
                 variant={selected ? "primary" : "tertiary"}
                 iconLeft={selected ? IconType.CHECKMARK : undefined}
-                className="btn btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50 md:w-1/2"
+                className="btn btn-primary w-full transition-none disabled:cursor-not-allowed disabled:opacity-50 md:w-1/2"
                 onClick={(ev: React.MouseEvent<HTMLButtonElement>) => {
                   ev.stopPropagation();
                   onSelect(!selected);

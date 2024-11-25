@@ -6,6 +6,38 @@ import { type Address } from "viem";
 import { useAllOwnedTokens } from "./useAllOwnedTokens";
 import { useQueries } from "@tanstack/react-query";
 
+export type UserVotesData =
+  | {
+      token: Token;
+      ownedToken: bigint;
+      gaugeAddress: `0x${string}`;
+      votes: bigint;
+    }
+  | undefined;
+
+const reduceVotes = (data: UserVotesData[]) => {
+  return Object.values(
+    data.reduce(
+      (acc, voteItem) => {
+        if (voteItem) {
+          const { gaugeAddress, votes, token, ownedToken } = voteItem;
+          if (!acc[gaugeAddress]) {
+            acc[gaugeAddress] = {
+              token,
+              ownedToken,
+              gaugeAddress,
+              votes: 0n,
+            };
+          }
+          acc[gaugeAddress].votes += votes;
+        }
+        return acc;
+      },
+      {} as Record<string, UserVotesData>
+    )
+  );
+};
+
 export function useUserVotesData(tokenList: Token[], gaugeAddresses: Address[][]) {
   const { address } = useAccount();
   const publicClient = usePublicClient();
@@ -32,7 +64,7 @@ export function useUserVotesData(tokenList: Token[], gaugeAddresses: Address[][]
       const gaugesForToken = gaugeAddresses[tokenIndex] || [];
 
       return gaugesForToken.map((gaugeAddress) => ({
-        queryKey: ["userVotes", ownedToken.ownedToken, gaugeAddress],
+        queryKey: ["userVotes", ownedToken.ownedToken, gaugeAddress, address],
         queryFn: async () => {
           if (!publicClient || !ownedToken.voterContract || !address) return;
           return {
@@ -50,9 +82,10 @@ export function useUserVotesData(tokenList: Token[], gaugeAddresses: Address[][]
       }));
     }),
     combine: (results) => {
-      const data = results.map((result) => result.data);
+      const data = reduceVotes(results.map((result) => result.data));
       const isLoading = results.some((result) => result.isLoading);
       const error = results.find((result) => result.error);
+
       return { data, isLoading, error };
     },
   });
