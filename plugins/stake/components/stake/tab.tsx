@@ -45,10 +45,11 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
     format: NumberFormat.TOKEN_AMOUNT_LONG,
   });
 
+  const maxInputValue = Number(formatUnits(balance, decimals)).toString();
+
   const onBalanceEnter = (newBalance: string) => {
     const newValue = parseUnits(newBalance, decimals);
-
-    if (newValue >= balance) {
+    if (newBalance === maxInputValue || newValue > balance) {
       setBalanceToStake(balance);
       setPercentToggle("100");
     } else {
@@ -72,7 +73,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
     <div className="mt-4 flex w-full flex-col gap-4">
       <InputNumberMax
         disabled={isConfirming1 || isConfirming2}
-        max={Number(formatUnits(balance, decimals))}
+        max={Number(maxInputValue)}
         alert={
           !!balanceToStake && balanceToStake < minAmount
             ? { message: `The amount is too low (min ${formattedMinAmount} ${symbol})`, variant: "critical" }
