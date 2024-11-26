@@ -21,7 +21,7 @@ interface IHeaderProps {
 export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   const { address } = useAccount();
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
-  const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
+  const [percentToggle, setPercentToggle] = useState<PercentValues>();
   const { data, queryKey: balanceQueryKey } = useGetBalance(token);
   const { queryKey: ownedTokensQueryKey } = useOwnedTokens(token, false);
   const { data: minAmountData } = useGetMinDeposit(token);
@@ -64,7 +64,6 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
 
   useEffect(() => {
     if (!percentToggle) return;
-
     const newValue = (BigInt(balance) * BigInt(percentToggle)) / BigInt(100);
     setBalanceToStake(newValue);
   }, [percentToggle, balance]);
@@ -86,7 +85,6 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
         }
         onChange={(v) => onBalanceEnter(v || "0")}
       />
-
       <ToggleGroup
         isMultiSelect={false}
         onChange={(v) => setPercentToggle(v as PercentValues)}
