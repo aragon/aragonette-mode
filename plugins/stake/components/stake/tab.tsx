@@ -49,7 +49,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
 
   const onBalanceEnter = (newBalance: string) => {
     const newValue = parseUnits(newBalance, decimals);
-    if (newBalance === maxInputValue || newValue > balance) {
+    if (newBalance === maxInputValue || newValue >= balance) {
       setBalanceToStake(balance);
       setPercentToggle("100");
     } else {
