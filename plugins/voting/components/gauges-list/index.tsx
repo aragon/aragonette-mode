@@ -1,5 +1,5 @@
 import { DataListContainer, DataListFilter, DataListRoot, type DataListState, IconType } from "@aragon/ods";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetGauges } from "../../hooks/useGetGauges";
 import { GaugeListItem } from "./gauge-item";
 import { type GaugeMetadata, type GaugeItem } from "./types";
@@ -26,6 +26,17 @@ export const StakePositions = () => {
       ...(address ? [{ value: "user_votes_desc", label: "Your votes", type: "DESC" as const }] : []),
     ],
     [address]
+  );
+
+  const pickActiveSort = useCallback(
+    (sort: string) => {
+      if (sort === activeSort) {
+        setActiveSort(undefined);
+      } else {
+        setActiveSort(sort);
+      }
+    },
+    [activeSort]
   );
 
   useEffect(() => {
@@ -160,7 +171,7 @@ export const StakePositions = () => {
         <DataListFilter
           searchValue={searchValue}
           activeSort={activeSort}
-          onSortChange={setActiveSort}
+          onSortChange={pickActiveSort}
           sortItems={sortItems}
           placeholder="Filter projects by name or address"
           onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
