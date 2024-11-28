@@ -10,7 +10,6 @@ export default async function handler(
   res: NextApiResponse<IInfiniteDataResponse<calendar_v3.Schema$Event> | IError>
 ) {
   const { calendarId, pageToken, limit } = req.query;
-  res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=59");
 
   const parsedCalendarId = checkNullableParam(calendarId, "calendarId");
   const parsedPageToken = checkNullableParam(pageToken, "pageToken");
@@ -37,6 +36,7 @@ export default async function handler(
       pagination: { hasNextPage: !!nextPageToken, cursor: nextPageToken },
     };
 
+    res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=59");
     res.status(200).json(response);
   } catch (error) {
     logger.error("Error fetching calendar events:", error);
