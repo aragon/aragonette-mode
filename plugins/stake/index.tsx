@@ -26,7 +26,7 @@ export default function PluginPage() {
           <div className="mb-6">
             <Stake />
           </div>
-          <div className="mx-16 flex flex-col gap-y-4">
+          <div className="mx-8 flex flex-col gap-y-4 md:mx-16">
             <StakeUserStats />
             <Button
               className="mt-6"
