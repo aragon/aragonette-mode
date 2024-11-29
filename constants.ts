@@ -78,4 +78,4 @@ export const PUB_WALLET_ICON =
 export const EPOCH_DURATION = 1000 * 60 * 60 * 24 * 7 * 2;
 
 export const PUB_GOOGLE_CALENDAR_CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_CALENDAR_ID ?? "";
-export const GOOGLE_CALENDAR_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY ?? "";
+export const GOOGLE_CALENDAR_API_KEY = process.env.GOOGLE_CALENDAR_API_KEY ?? "";
