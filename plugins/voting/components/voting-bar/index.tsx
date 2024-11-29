@@ -43,10 +43,6 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
   const { vp: modeVpBn } = useGetAccountVp(Token.MODE);
   const { vp: bptVpBn } = useGetAccountVp(Token.BPT);
 
-  if (!isConnected) {
-    return null;
-  }
-
   const hasVp = !(modeVpBn === 0n && bptVpBn === 0n);
 
   const modeVp = formatUnits(modeVpBn ?? 0n, 18);
@@ -71,22 +67,43 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
 
   const voted = (usedModeVp ?? 0n) > 0n || (usedBptVp ?? 0n) > 0n;
 
+  const disabledDialog = useMemo(
+    () => !hasVp || !active || !selectedGauges?.length,
+    [hasVp, active, selectedGauges?.length]
+  );
+
+  const buttonLabel = useMemo(() => {
+    if (!active) {
+      return `Voting closed, come back ${nextVoteIn}`;
+    }
+    if (voted) {
+      return "Edit votes";
+    }
+    return "Vote now";
+  }, [active, nextVoteIn, voted]);
+
+  if (!isConnected) {
+    return null;
+  }
+
   return (
     <div className="sticky -bottom-1 -mb-12 md:-bottom-2 md:-mx-8">
       <DataListItem>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-7 lg:py-2">
-          <div className="col-span-4 flex flex-col gap-4">
-            <div className="flex items-center gap-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-7 md:py-2">
+          <div className="col-span-4 flex flex-col justify-center gap-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <p className="title text-sm text-neutral-900">Your total voting power</p>
-              <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
-              <p className="text-md md:text-base">{formattedModeVp} Mode</p>
-              {modePercentage > 0 && <p className="hidden sm:block">({formattedModePercentage} used)</p>}
-              <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
-              <p className="text-md md:text-base">{formattedBptVp} BPT</p>
-              {bptPercentage > 0 && <p className="hidden sm:block">({formattedBptPercentage} used)</p>}
+              <div className="flex items-center gap-2">
+                <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/mode-token-icon.png" />
+                <p className="text-md md:text-base">{formattedModeVp} Mode</p>
+                {modePercentage > 0 && <p className="hidden sm:block">({formattedModePercentage} used)</p>}
+                <Avatar alt="Gauge icon" size="sm" responsiveSize={{ md: "sm" }} src="/bpt-token-icon.png" />
+                <p className="text-md md:text-base">{formattedBptVp} BPT</p>
+                {bptPercentage > 0 && <p className="hidden sm:block">({formattedBptPercentage} used)</p>}
+              </div>
             </div>
           </div>
-          <div className="col-span-3 flex flex-col justify-items-center gap-2 lg:flex-row lg:items-center lg:justify-end">
+          <div className="col-span-3 flex flex-col justify-items-center gap-2 md:flex-row md:items-center md:justify-end">
             {hasVp && active && (
               <div className="flex w-fit">
                 {voted || !!selectedGauges.length ? (
@@ -96,13 +113,12 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
                 )}
               </div>
             )}
-            {active ? (
-              <VotingDialog voted={voted} selectedGauges={selectedGauges} onRemove={(gauge) => onRemove(gauge)} />
-            ) : (
-              <div className="flex w-fit justify-self-center md:justify-start">
-                <Tag label={`Voting closed, come back ${nextVoteIn}`} />
-              </div>
-            )}
+            <VotingDialog
+              buttonLabel={buttonLabel}
+              selectedGauges={selectedGauges}
+              onRemove={(gauge) => onRemove(gauge)}
+              disabled={disabledDialog}
+            />
           </div>
         </div>
       </DataListItem>
