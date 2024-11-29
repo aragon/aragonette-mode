@@ -69,7 +69,7 @@ export const PUB_GET_MORE_BPT_URL =
 export const PUB_GET_MORE_BOTH_URL =
   process.env.NEXT_PUBLIC_GET_MORE_BOTH_URL ?? "https://web3packs.com/checkout/governance";
 export const PUB_GET_REWARDS_URL =
-  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://ref.mode.network/season3/hedgey/opclaim";
+  process.env.NEXT_PUBLIC_GET_REWARDS_URL ?? "https://api.mode.network/governance/opclaim";
 
 export const PUB_WALLET_ICON =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_ICON ??
