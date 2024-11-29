@@ -90,7 +90,7 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
     <div className="sticky -bottom-1 -mb-12 md:-bottom-2 md:-mx-8">
       <DataListItem>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-7 md:py-2">
-          <div className="col-span-4 flex flex-col justify-center gap-4">
+          <div className="flex flex-col justify-center gap-4 md:col-span-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <p className="title text-sm text-neutral-900">Your total voting power</p>
               <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export const VotingBar: React.FC<VotingBarProps> = ({ selectedGauges, onRemove }
               </div>
             </div>
           </div>
-          <div className="col-span-3 flex flex-col justify-items-center gap-2 md:flex-row md:items-center md:justify-end">
+          <div className="flex flex-col justify-items-center gap-2 md:col-span-3 md:flex-row md:items-center md:justify-end">
             {hasVp && active && (
               <div className="flex w-fit">
                 {voted || !!selectedGauges.length ? (
