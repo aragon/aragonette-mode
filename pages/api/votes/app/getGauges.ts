@@ -73,7 +73,13 @@ export async function getGauges(client: any, skipFetch: boolean, voterAddress: A
 
     // Write the data to 'gauges.json'
     // fs.writeFileSync(gaugesFilePath, JSON.stringify(gaugeInfos, null, 2));
-    console.log(JSON.stringify(gaugeInfos, null, 2));
+    // console.log(JSON.stringify(gaugeInfos, null, 2));
+    // return in format {gauge: Address, title: string }
+    const result = gaugeInfos.map((gauge) => {
+      return { gauge: gauge.address, title: gauge.metadata.name };
+    });
+    console.log(result);
+    return result;
 
     // Output the JSON blob
   } catch (error) {
