@@ -63,8 +63,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   }, [balance]);
 
   useEffect(() => {
-    if (!percentToggle) return;
-    const newValue = (BigInt(balance) * BigInt(percentToggle)) / BigInt(100);
+    const newValue = (BigInt(balance) * BigInt(percentToggle ?? 0n)) / BigInt(100);
     setBalanceToStake(newValue);
   }, [percentToggle, balance]);
 
