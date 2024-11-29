@@ -24,8 +24,9 @@ import { useQueryClient } from "@tanstack/react-query";
 
 type VotingDialogProps = {
   selectedGauges: GaugeItem[];
-  voted: boolean;
+  buttonLabel: string;
   onRemove: (gauge: GaugeItem) => void;
+  disabled?: boolean;
 };
 
 type Vote = {
@@ -33,7 +34,7 @@ type Vote = {
   votes: number;
 };
 
-export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, voted, onRemove }) => {
+export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, buttonLabel, onRemove, disabled }) => {
   const [open, setOpen] = useState(false);
   const [modeVotes, setModeVotes] = useState<Vote[]>([]);
   const [bptVotes, setBptVotes] = useState<Vote[]>([]);
@@ -119,9 +120,9 @@ export const VotingDialog: React.FC<VotingDialogProps> = ({ selectedGauges, vote
           setOpen(true);
         }}
         variant="primary"
-        disabled={!selectedGauges.length}
+        disabled={disabled}
       >
-        {!voted ? "Vote now" : "Edit votes"}
+        {buttonLabel}
       </Button>
       <DialogRoot open={open} onInteractOutside={() => setOpen(false)} containerClassName="!max-w-[1200px]">
         <DialogHeader

@@ -43,8 +43,14 @@ export const PUB_APP_NAME = "Mode Governance Hub";
 export const PUB_APP_DESCRIPTION = "The place for all things Mode Governance.";
 export const PUB_PROJECT_LOGO = "/mode-green.svg";
 
-export const PUB_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-export const PUB_SOCIAL_IMAGE = process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? `${PUB_BASE_URL}/og`;
+export const PUB_BASE_URL =
+  process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000");
+
+export const PUB_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+
+export const PUB_SOCIAL_IMAGE = process.env.NEXT_PUBLIC_SOCIAL_IMAGE ?? `${PUB_BASE_URL}${PUB_API_BASE_URL}/og`;
 export const PUB_TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "https://guild.xyz/mode-telegram";
 export const PUB_X_HANDLE = process.env.NEXT_PUBLIC_X_HANDLE ?? "@modenetwork";
 
@@ -70,3 +76,6 @@ export const PUB_WALLET_ICON =
   "https://cdn.prod.website-files.com/64c906a6ed3c4d809558853b/64d0b11158be9cdd5c89a2fe_webc.png";
 
 export const EPOCH_DURATION = 1000 * 60 * 60 * 24 * 7 * 2;
+
+export const PUB_GOOGLE_CALENDAR_CALENDAR_ID = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_CALENDAR_ID ?? "";
+export const GOOGLE_CALENDAR_API_KEY = process.env.GOOGLE_CALENDAR_API_KEY ?? "";

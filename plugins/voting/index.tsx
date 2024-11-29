@@ -11,6 +11,7 @@ import { Token } from "./types/tokens";
 import { useGetTotalVpCast } from "./hooks/useGetTotalVpCast";
 import { formatUnits } from "viem";
 import { useNow } from "./hooks/useNow";
+import { EventDataList } from "@/features/events/components/eventDataList/eventDataList";
 
 export default function PluginPage() {
   const { now, getRelativeTime } = useNow();
@@ -35,44 +36,55 @@ export default function PluginPage() {
   return (
     <div className="bg-gradient-to-b from-neutral-0 to-transparent">
       <RadialGradients />
+
       <MainSection>
-        <h2 className="text-3xl font-semibold text-neutral-800">
-          <span className="text-neutral-900">Vote to</span> direct incentives
-        </h2>
-        <SectionHeader title="" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
-          Use your voting power to support different projects and receive incentives in return. Voting windows occur
-          every 2 weeks with the deadline on Wednesday at 23:00:00 UTC.
-        </SectionHeader>
-        <br />
-        <div className="flex flex-row gap-x-20 gap-y-6">
-          <div className="flex flex-col">
-            <div className=" flex items-baseline gap-x-1">
-              <span className="title text-3xl text-neutral-900 md:text-3xl">
-                {nextVotingDateLoading ? "-" : nextVotingDate}
-              </span>
-            </div>
-            <span className="text-md text-neutral-700">
-              {active ? "Current" : "Next"} voting {active ? "ends" : "starts"}
-            </span>
-          </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-8">
+          <div className="relative lg:col-span-5">
+            <h2 className="text-3xl font-semibold text-neutral-800">
+              <span className="text-neutral-900">Vote to</span> direct incentives
+            </h2>
+            <SectionHeader title="" learnMoreUrl={PUB_STAKING_LEARN_MORE_URL}>
+              Use your voting power to support different projects and receive incentives in return. Voting windows occur
+              every 2 weeks with the deadline on Wednesday at 23:00:00 UTC.
+            </SectionHeader>
+            <br />
+            <div className="flex flex-row gap-x-20 gap-y-6">
+              <div className="flex flex-col">
+                <div className=" flex items-baseline gap-x-1">
+                  <span className="title text-3xl text-neutral-900 md:text-3xl">
+                    {nextVotingDateLoading ? "-" : nextVotingDate}
+                  </span>
+                </div>
+                <span className="text-md text-neutral-700">
+                  {active ? "Current" : "Next"} voting {active ? "ends" : "starts"}
+                </span>
+              </div>
 
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-x-1">
-              <span className="title text-3xl text-neutral-900 md:text-3xl">{totalVp}</span>
-            </div>
-            <span className="text-md text-neutral-700">Total voting power</span>
-          </div>
+              <div className="flex flex-col">
+                <div className="flex items-baseline gap-x-1">
+                  <span className="title text-3xl text-neutral-900 md:text-3xl">{totalVp}</span>
+                </div>
+                <span className="text-md text-neutral-700">Total voting power</span>
+              </div>
 
-          <div className="hidden flex-col">
-            <div className="flex items-baseline gap-x-1">
-              <span className="title text-3xl text-primary-400 md:text-3xl">
-                ~
-                {formatterUtils.formatNumber(457732, {
-                  format: NumberFormat.GENERIC_SHORT,
-                })}
-              </span>
+              <div className="hidden flex-col">
+                <div className="flex items-baseline gap-x-1">
+                  <span className="title text-3xl text-primary-400 md:text-3xl">
+                    ~
+                    {formatterUtils.formatNumber(457732, {
+                      format: NumberFormat.GENERIC_SHORT,
+                    })}
+                  </span>
+                </div>
+                <span className="text-md text-neutral-500">Total available incentives</span>
+              </div>
             </div>
-            <span className="text-md text-neutral-500">Total available incentives</span>
+          </div>
+          <div className="relative lg:col-span-3">
+            <div className="flex w-full flex-col gap-y-3">
+              <h2 className="text-3xl font-semibold text-neutral-800">Upcoming events</h2>
+              <EventDataList />
+            </div>
           </div>
         </div>
         <br />
