@@ -32,3 +32,11 @@ export interface GaugeVotesBlob {
   aggregatePercentage: string;
   gauges: GaugeVoteInfo[];
 }
+
+/**
+ * Tuple output from fetching onchain gauge
+ * @param (boolean) isActive
+ * @param (bigint) createdAt
+ * @param (string) ipfsURI
+ * */
+export type GaugeDetail = [boolean, bigint, string];

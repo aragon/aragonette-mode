@@ -1,24 +1,19 @@
-import { createPublicClient, http, type Address } from "viem";
-import abi from "../votes/abi/SimpleGaugeVoter";
+import { type Address } from "viem";
 import { fetchIpfsAsJson } from "@/utils/ipfs";
 import { GaugeMetadata } from "@/plugins/voting/components/gauges-list/types";
 import { NextApiRequest, NextApiResponse } from "next";
-import { mode } from "viem/chains";
-import { PUB_WEB3_ENDPOINT } from "@/constants";
-import fs from "fs";
-// import { deploymentPublicClient } from "@/scripts/lib/util/client";
-const serverClient = createPublicClient({
-  chain: mode,
-  transport: http(PUB_WEB3_ENDPOINT, {
-    batch: true,
-  }),
-});
+import { MODE_ESCROW_CONTRACT } from "@/constants";
+import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
+import { client, getVoter } from "../../_client";
+import { GaugeDetail } from "../../votes/app/types";
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
     case "GET":
-      const gauges = await getGauges(serverClient, "0x71439Ae82068E19ea90e4F506c74936aE170Cf58");
+      const voter = await getVoter(MODE_ESCROW_CONTRACT);
+      const gauges = await getGauges(client, voter);
       res.status(200).json({ data: gauges });
       break;
     default:
@@ -26,13 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
-
-/**
- * @param (boolean) isActive
- * @param (bigint) createdAt
- * @param (string) ipfsURI
- * */
-type GaugeDetail = [boolean, bigint, string];
 
 /**
  * @title Fetch the list of voting gauges for the given voting contract.
@@ -46,13 +34,13 @@ export async function getGauges(client: any, votingContract: Address) {
     // Get the list of gauges from the contract
     const gauges: Address[] = await client.readContract({
       address: votingContract,
-      abi,
+      abi: SimpleGaugeVotingAbi,
       functionName: "getAllGauges",
     });
 
     // multicall the contract again to fetch the onchain gauge details
     const calls = gauges.map((gauge) => ({
-      abi,
+      abi: SimpleGaugeVotingAbi,
       address: votingContract,
       functionName: "gauges",
       args: [gauge],

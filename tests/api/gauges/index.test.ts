@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import handler from "../../../pages/api/gauges";
+import handler from "@/pages/api/v1/gauges";
 import { createMocks } from "node-mocks-http";
 
 describe("/api/gauges API", () => {
