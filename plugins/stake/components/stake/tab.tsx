@@ -21,7 +21,7 @@ interface IHeaderProps {
 export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   const { address } = useAccount();
   const [balanceToStake, setBalanceToStake] = useState<bigint>(0n);
-  const [percentToggle, setPercentToggle] = useState<PercentValues>("0");
+  const [percentToggle, setPercentToggle] = useState<PercentValues>();
   const { data, queryKey: balanceQueryKey } = useGetBalance(token);
   const { queryKey: ownedTokensQueryKey } = useOwnedTokens(token, false);
   const { data: minAmountData } = useGetMinDeposit(token);
@@ -39,16 +39,16 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   const decimals = Number(data?.decimals ?? 18);
   const minAmount = BigInt(minAmountData ?? 100n * 10n ** BigInt(decimals));
   const symbol = token === Token.MODE ? "MODE" : "BPT";
-  const formattedBalance = data?.formattedBalance ?? "0";
-  const formattedQuantity = formatterUtils.formatNumber(formattedBalance, { format: NumberFormat.TOKEN_AMOUNT_LONG });
+  const maxNumber = Number(formatUnits(balance, decimals));
+  const formattedMax = maxNumber % 1 !== 0 ? maxNumber.toFixed(4) : maxNumber.toString();
+
   const formattedMinAmount = formatterUtils.formatNumber(formatUnits(minAmount, 18), {
     format: NumberFormat.TOKEN_AMOUNT_LONG,
   });
 
   const onBalanceEnter = (newBalance: string) => {
     const newValue = parseUnits(newBalance, decimals);
-
-    if (newValue >= balance) {
+    if (newBalance === formattedMax || newValue >= balance) {
       setBalanceToStake(balance);
       setPercentToggle("100");
     } else {
@@ -62,9 +62,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
   }, [balance]);
 
   useEffect(() => {
-    if (!percentToggle) return;
-
-    const newValue = (BigInt(balance) * BigInt(percentToggle)) / BigInt(100);
+    const newValue = (BigInt(balance) * BigInt(percentToggle ?? 0n)) / BigInt(100);
     setBalanceToStake(newValue);
   }, [percentToggle, balance]);
 
@@ -72,20 +70,15 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
     <div className="mt-4 flex w-full flex-col gap-4">
       <InputNumberMax
         disabled={isConfirming1 || isConfirming2}
-        max={Number(formatUnits(balance, decimals))}
+        max={Number(formattedMax)}
         alert={
           !!balanceToStake && balanceToStake < minAmount
             ? { message: `The amount is too low (min ${formattedMinAmount} ${symbol})`, variant: "critical" }
             : undefined
         }
-        value={
-          formatterUtils.formatNumber(formatUnits(balanceToStake, decimals), {
-            format: NumberFormat.TOKEN_AMOUNT_LONG,
-          }) ?? ""
-        }
+        value={formatUnits(balanceToStake, decimals)}
         onChange={(v) => onBalanceEnter(v || "0")}
       />
-
       <ToggleGroup
         isMultiSelect={false}
         onChange={(v) => setPercentToggle(v as PercentValues)}
@@ -104,7 +97,7 @@ export const StakeToken: React.FC<IHeaderProps> = ({ token, onStake }) => {
         <Toggle disabled={isConfirming1 || isConfirming2} value="100" label="100%" className="rounded-lg" />
       </ToggleGroup>
       <p className="mt-2 text-left">
-        Your balance: {formattedQuantity} <span className="text-xs text-neutral-700">{symbol}</span>
+        Your balance: {formattedMax} <span className="text-xs text-neutral-700">{symbol}</span>
       </p>
       <Button
         className="mt-2 w-full"
