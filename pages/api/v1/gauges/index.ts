@@ -22,6 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
+export type GetGaugeReturn = {
+  address: Address;
+  ipfsURI: string;
+  metadata: GaugeMetadata | string;
+};
+
 /**
  * @title Fetch the list of voting gauges for the given voting contract.
  * @dev Combines onchain data with IPFS fetching via Pinata.
@@ -29,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
  * @param votingContract - Address of the voting contract
  * @dev In the event of multiple voting contracts, we assume they are kept in sync
  * */
-export async function getGauges(client: any, votingContract: Address) {
+export async function getGauges(client: any, votingContract: Address): Promise<GetGaugeReturn[]> {
   try {
     // Get the list of gauges from the contract
     const gauges: Address[] = await client.readContract({
@@ -68,7 +74,7 @@ export async function getGauges(client: any, votingContract: Address) {
         return {
           address: gauge,
           ipfsURI: ipfsURI,
-          metadata: "Error fetching gauge",
+          metadata: "Error fetching gauge details from IPFS",
         };
       }
     });
@@ -77,5 +83,6 @@ export async function getGauges(client: any, votingContract: Address) {
     return await Promise.all(gaugePromises);
   } catch (error) {
     console.error("Error:", error);
+    return [] as GetGaugeReturn[];
   }
 }

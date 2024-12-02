@@ -1,9 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getGauges } from "./app/getGauges";
-import { Address, createPublicClient, getAbiItem, http } from "viem";
+import { Address, createPublicClient, getAbiItem, GetLogsReturnType, http } from "viem";
 import { mode } from "viem/chains";
 import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
 import fs from "fs";
+import { client } from "../_client";
+import { GaugeMetadata } from "@/plugins/voting/components/gauges-list/types";
+import { GetGaugeReturn } from "../v1/gauges";
 
 const VotedEvent = getAbiItem({
   abi: SimpleGaugeVotingAbi,
@@ -111,7 +114,7 @@ export type VoteAndResetRawData =
   | (BaseEvent & { eventName: "Reset"; args: ResetArgs })
   | (BaseEvent & { eventName: "Voted"; args: VotedArgs });
 
-type HiddenHandSummary = {
+export type HiddenHandSummary = {
   gauge: Address;
   title: string;
   totalVotes: bigint;
@@ -122,15 +125,10 @@ type HiddenHandSummary = {
 };
 
 /// @notice Grabs the raw vote and reset logs for all the passed voting contracts and given epoch
-export async function fetchVoteAndResetData(contracts: Address[], epoch: bigint): Promise<VoteAndResetRawData[]> {
-  const publicClient = createPublicClient({
-    chain: mode,
-    transport: http("https://mainnet.mode.network/"),
-  });
-
+export async function fetchVoteAndResetData(contracts: Address[], epoch: bigint): Promise<VoteAndResetRawData[][]> {
   const promisesVoted = contracts.map(
     async (contract) =>
-      await publicClient.getLogs({
+      await client.getLogs({
         address: contract,
         event: VotedEvent,
         args: { epoch },
@@ -140,7 +138,7 @@ export async function fetchVoteAndResetData(contracts: Address[], epoch: bigint)
   );
   const promisesReset = contracts.map(
     async (contract) =>
-      await publicClient.getLogs({
+      await client.getLogs({
         address: contract,
         event: ResetEvent,
         args: { epoch },
@@ -149,7 +147,7 @@ export async function fetchVoteAndResetData(contracts: Address[], epoch: bigint)
       })
   );
 
-  return (await Promise.all([...promisesReset, ...promisesVoted])) as any[];
+  return (await Promise.all([...promisesVoted, ...promisesReset])) as unknown as VoteAndResetRawData[][];
 }
 type ProcessedEvent = {
   tokenId: bigint;
@@ -171,12 +169,12 @@ export function flattenUnique(events: VoteAndResetRawData[][]): ProcessedEvent[]
   const processed = flattened.map((event) => {
     const votes = "votingPowerCastForGauge" in event.args ? event.args.votingPowerCastForGauge : 0; // reset
     return {
-      tokenId: BigInt(event.args.tokenId),
+      tokenId: BigInt(event.args?.tokenId ?? 0),
       voter: event.args.voter as Address,
       gauge: event.args.gauge as Address,
-      epoch: BigInt(event.args.epoch),
-      timestamp: event.args.timestamp,
-      votes: BigInt(votes),
+      epoch: BigInt(event.args?.epoch ?? 0),
+      timestamp: String(event.args.timestamp),
+      votes: BigInt(votes ?? 0),
       eventName: event.eventName,
       votingContract: event.address as Address,
     };
@@ -259,7 +257,6 @@ export function transformProcessedDataToGaugeVoteData(processedData: ProcessedEv
     const voter = event.voter as Address;
     const gaugeAddress = event.gauge as Address;
     const votes = BigInt(event.votes || 0); // Use event.votes directly
-    const reset = event.eventName === "Reset";
     const votedAt = new Date(Number(event.timestamp) * 1000);
 
     // Prepare NFTVoteData
@@ -268,7 +265,6 @@ export function transformProcessedDataToGaugeVoteData(processedData: ProcessedEv
       votes,
       votedAt,
       underlying: gaugeAddress,
-      // reset,
     };
 
     // Initialize voter entry if it doesn't exist
@@ -302,7 +298,7 @@ export function transformProcessedDataToGaugeVoteData(processedData: ProcessedEv
 
 export function createHiddenHandSummary(
   processedData: ProcessedEvent[],
-  gaugeMetadata: { gauge: Address; title: string }[]
+  gauges: GetGaugeReturn[]
 ): HiddenHandSummary[] {
   const gaugeMap: Map<Address, HiddenHandSummary> = new Map();
 
@@ -315,7 +311,7 @@ export function createHiddenHandSummary(
     if (!gaugeMap.has(gaugeAddress)) {
       gaugeMap.set(gaugeAddress, {
         gauge: gaugeAddress,
-        title: "example title", // Placeholder title
+        title: "No title found", // Placeholder title
         totalVotes: BigInt(0),
         votes: [],
       });
@@ -342,96 +338,19 @@ export function createHiddenHandSummary(
   }
 
   // update the gauge title
-  for (const gauge of gaugeMetadata) {
-    const gaugeSummary = gaugeMap.get(gauge.gauge);
+  for (const gauge of gauges) {
+    const gaugeSummary = gaugeMap.get(gauge.address);
 
     if (gaugeSummary) {
-      gaugeSummary.title = gauge.title;
+      // this will be the error title
+      if (typeof gauge.metadata === "string") {
+        continue;
+      } else {
+        gaugeSummary.title = gauge.metadata.name;
+      }
     }
   }
 
   // Convert the map values to an array
   return Array.from(gaugeMap.values());
-}
-
-// Steps:
-// 1 fetch the vote and reset data for the contract(s) in parrallel
-// 2 Apply the transformation for the given epoch
-//  --> Each voter will have an array of gauges
-// we can then
-//
-
-async function getRowLevelVoteData() {
-  const contractAddress = "0x71439Ae82068E19ea90e4F506c74936aE170Cf58";
-  // 3. Extract a Viem Client for the current active chain.
-  const publicClient = createPublicClient({
-    chain: mode,
-    transport: http("https://mainnet.mode.network/"),
-  });
-
-  const logs = await publicClient.getLogs({
-    address: contractAddress,
-    event: VotedEvent,
-    // args: { gauge, epoch },
-    fromBlock: BigInt(0),
-    toBlock: "latest",
-  });
-
-  logs.sort((a, b) => {
-    return Number(b.blockNumber - a.blockNumber);
-  });
-  const serialized = JSON.stringify(logs, (key, value) => (typeof value === "bigint" ? value.toString() : value), 2);
-
-  fs.writeFileSync("logs.json", serialized);
-
-  // Index by tokenId
-  const logsByTokenId = logs.reduce(
-    (acc, log) => {
-      const tokenId = log.args.tokenId?.toString() || "";
-      acc[tokenId] = log;
-      return acc;
-    },
-    {} as Record<string, any>
-  );
-
-  const filteredLogs = Object.values(logsByTokenId);
-
-  // Vp by voter
-  const vpByVoter: Record<string, bigint> = filteredLogs.reduce(
-    (acc: Record<string, bigint>, log: any) => {
-      const voter = log.args.voter?.toString() || "";
-      const vp = log.args.votingPowerCastForGauge || 0n;
-      acc[voter] = (acc[voter] ?? 0n) + vp;
-      return acc;
-    },
-    {} as Record<string, bigint>
-  );
-
-  const result = Object.entries(vpByVoter).map(([voter, vp]) => {
-    return { voter, vp: vp.toString() };
-  });
-
-  console.log(result.length);
-
-  // write the file to a results.json file
-  fs.writeFileSync("results.json", JSON.stringify(result, null, 2));
-
-  return {
-    voters: result,
-    // gauge,
-    // epoch: epoch.toString(),
-  };
-}
-
-async function get() {
-  // connect
-  const client = createPublicClient({
-    chain: mode,
-    transport: http("https://mainnet.mode.network/"),
-  });
-
-  // Smart contract details
-  const modeVoterAddress = "0x71439Ae82068E19ea90e4F506c74936aE170Cf58";
-
-  await getGauges(client, false, modeVoterAddress);
 }

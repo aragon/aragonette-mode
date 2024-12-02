@@ -5,9 +5,7 @@ import type { GaugeInfo } from "./types";
 import abi from "../abi/SimpleGaugeVoter";
 
 export async function getGauges(client: any, skipFetch: boolean, voterAddress: Address) {
-  console.time("getGauges");
   try {
-    console.time("readContract");
     // Get the list of gauges from the contract
 
     const gauges: Address[] = (await client.readContract({
