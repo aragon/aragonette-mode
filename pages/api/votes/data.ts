@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getGauges } from "./app/getGauges";
-import { Address, createPublicClient, getAbiItem, GetLogsReturnType, http } from "viem";
+import { AbiEvent, Address, createPublicClient, getAbiItem, GetLogsReturnType, http } from "viem";
 import { mode } from "viem/chains";
 import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
 import fs from "fs";
@@ -123,30 +123,40 @@ export type HiddenHandSummary = {
     votes: bigint;
   }[];
 };
+export const ALCHEMY_MAX_LOGS = 10_000;
+export async function paginateLogs(contract: Address, startBlock: bigint, epoch: bigint, event: AbiEvent) {
+  // run the get logs
+  let logs = await client.getLogs({
+    address: contract,
+    fromBlock: startBlock,
+    toBlock: "latest",
+    args: { epoch },
+    event,
+  });
+
+  // if we have less than the max logs, it's exhaustive so return
+  let lastBatchLength = logs.length;
+  while (lastBatchLength === ALCHEMY_MAX_LOGS) {
+    const lastLog = logs[logs.length - 1];
+    const lastBlock = lastLog.blockNumber;
+    const newLogs = await client.getLogs({
+      address: contract,
+      fromBlock: lastBlock,
+      toBlock: "latest",
+      args: { epoch },
+      event: VotedEvent,
+    });
+    logs = logs.concat(newLogs);
+    lastBatchLength = newLogs.length;
+  }
+  return logs;
+}
 
 /// @notice Grabs the raw vote and reset logs for all the passed voting contracts and given epoch
+/// TODO: fromBlock
 export async function fetchVoteAndResetData(contracts: Address[], epoch: bigint): Promise<VoteAndResetRawData[][]> {
-  const promisesVoted = contracts.map(
-    async (contract) =>
-      await client.getLogs({
-        address: contract,
-        event: VotedEvent,
-        args: { epoch },
-        fromBlock: BigInt(0),
-        toBlock: "latest",
-      })
-  );
-  const promisesReset = contracts.map(
-    async (contract) =>
-      await client.getLogs({
-        address: contract,
-        event: ResetEvent,
-        args: { epoch },
-        fromBlock: BigInt(0),
-        toBlock: "latest",
-      })
-  );
-
+  const promisesVoted = contracts.map(async (contract) => await paginateLogs(contract, BigInt(0), epoch, VotedEvent));
+  const promisesReset = contracts.map(async (contract) => await paginateLogs(contract, BigInt(0), epoch, ResetEvent));
   return (await Promise.all([...promisesVoted, ...promisesReset])) as unknown as VoteAndResetRawData[][];
 }
 type ProcessedEvent = {
@@ -332,7 +342,7 @@ export function createHiddenHandSummary(
       // Add a new voter entry
       gaugeSummary.votes.push({
         voter: voterAddress,
-        votes: votes,
+        votes,
       });
     }
   }

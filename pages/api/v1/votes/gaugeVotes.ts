@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         (_, value) => (typeof value === "bigint" ? value.toString() : value),
         2
       );
-      res.status(200).json({ data: jsonOutput });
+      res.status(200).json({ data: JSON.parse(jsonOutput) });
       break;
     default:
       res.setHeader("Allow", ["GET"]);
