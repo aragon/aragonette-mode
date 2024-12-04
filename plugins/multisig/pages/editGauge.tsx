@@ -18,7 +18,7 @@ import { useGetGaugeMetadata } from "@/plugins/voting/hooks/useGetGaugeMetadata"
 import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
 import { useGetGaugeInfo } from "@/plugins/voting/hooks/useGetGaugeInfo";
 import { useAlerts } from "@/context/Alerts";
-import { type GaugeMetadata } from "../utils/types";
+import { type GaugeMetadata } from "@/plugins/voting/components/gauges-list/types";
 import { useRouter } from "next/router";
 
 type Props = {
