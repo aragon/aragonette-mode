@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetGauges } from "@/plugins/voting/hooks/useGetGauges";
 import { type Address } from "viem";
 import { Token } from "@/plugins/stake/types/tokens";
-import { GaugeMetadata, type GaugeItem } from "@/plugins/voting/components/gauges-list/types";
+import { type GaugeMetadata, type GaugeItem } from "@/plugins/voting/components/gauges-list/types";
 import { useGetGaugeMetadata } from "@/plugins/voting/hooks/useGetGaugeMetadata";
 import { useGetGaugesInfo } from "@/plugins/voting/hooks/useGetGaugesInfo";
 import { useGetGaugeVotesMulti } from "@/plugins/voting/hooks/useGetGaugeVotesMulti";
@@ -26,7 +26,7 @@ export const GaugesList: React.FC = () => {
   const { isConnected } = useAccount();
   const { canCreate } = useCanCreateProposal();
   const [searchValue, setSearchValue] = useState("");
-  const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
+  const [selectedGauges] = useState<GaugeItem[]>([]);
   const [activeSort, setActiveSort] = useState<string>();
   const [listState, setListState] = useState<DataListState>();
 

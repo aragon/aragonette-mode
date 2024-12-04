@@ -1,6 +1,6 @@
 import { Button, IconType, InputText, Tag, TextAreaRichText } from "@aragon/ods";
-import React, { ReactNode, useState } from "react";
-import { RawAction } from "@/utils/types";
+import React, { type ReactNode, useState } from "react";
+import { type RawAction } from "@/utils/types";
 import { Else, ElseIf, If, Then } from "@/components/if";
 import { MainSection } from "@/components/layout/main-section";
 import { useCreateProposal } from "../hooks/useCreateProposal";
@@ -8,8 +8,8 @@ import { useAccount } from "wagmi";
 import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
 import { MissingContentView } from "@/components/MissingContentView";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { Address } from "viem";
-import { NewActionDialog, NewActionType } from "@/components/dialogs/NewActionDialog";
+import { type Address } from "viem";
+import { NewActionDialog, type NewActionType } from "@/components/dialogs/NewActionDialog";
 import { AddActionCard } from "@/components/cards/AddActionCard";
 import { ProposalActions } from "@/components/proposalActions/proposalActions";
 import { downloadAsFile } from "@/utils/download-as-file";
@@ -74,7 +74,7 @@ export default function Create() {
   };
 
   return (
-    <MainSection narrow>
+    <MainSection narrow={true}>
       <div className="w-full justify-between">
         <h1 className="mb-8 line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
           Create Proposal
