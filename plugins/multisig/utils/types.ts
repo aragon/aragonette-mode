@@ -37,10 +37,3 @@ export type ApprovedEvent = {
   proposalId?: bigint;
   approver?: Address;
 };
-
-export type GaugeMetadata = {
-  name: string;
-  description: string;
-  logo: string;
-  resources: { field: string; value: string; url: string }[];
-};
