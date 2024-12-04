@@ -2,16 +2,16 @@ import { fetchIpfsAsJson } from "@/utils/ipfs";
 import { type JsonValue } from "@/utils/types";
 import { useQueries, type UseQueryOptions } from "@tanstack/react-query";
 
-export function useGetGaugeMetadata<T = JsonValue>(ipfsUris: string[]) {
-  type TQueries = UseQueryOptions<
-    {
-      metadata: T;
-      ipfsUri: string;
-    },
-    Error
-  >[];
+export type TQueries<T> = UseQueryOptions<
+  {
+    metadata: T;
+    ipfsUri: string;
+  },
+  Error
+>[];
 
-  const metadata = useQueries<TQueries>({
+export function useGetGaugeMetadata<T = JsonValue>(ipfsUris: string[]) {
+  const metadata = useQueries<TQueries<T>>({
     queries: [...new Set(ipfsUris)].map((ipfsUri) => {
       return {
         queryKey: ["ipfs", ipfsUri ?? ""],
@@ -32,6 +32,7 @@ export function useGetGaugeMetadata<T = JsonValue>(ipfsUris: string[]) {
         refetchOnReconnect: false,
         retryOnMount: false,
         staleTime: 60,
+        enabled: !!ipfsUri,
       };
     }),
   });

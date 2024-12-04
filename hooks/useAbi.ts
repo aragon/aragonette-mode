@@ -133,9 +133,15 @@ function getEtherscanAbiLoader() {
         baseURL: "https://api-mumbai.polygonscan.com/api",
       });
     case "mode":
+    case "anvil":
       return new whatsabi.loaders.EtherscanABILoader({
         apiKey: undefined,
         baseURL: "https://explorer.mode.network/api",
+      });
+    case "mode-sepolia":
+      return new whatsabi.loaders.EtherscanABILoader({
+        apiKey: undefined,
+        baseURL: "https://sepolia.explorer.mode.network/api",
       });
     default:
       throw new Error("Unknown chain");
