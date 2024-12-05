@@ -165,17 +165,6 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
 
   return (
     <MainSection narrow={true}>
-      <div className="flex w-full flex-row content-center justify-between">
-        <Button
-          variant="tertiary"
-          size="sm"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          Back
-        </Button>
-      </div>
       <div className="w-full justify-between">
         <h1 className="mb-8 line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
           Edit Gauge Proposal
@@ -256,8 +245,9 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
                         name={`resources.${idx}.field` as const}
                         render={({ field }) => (
                           <InputText
+                            label="Field name"
                             readOnly={isCreating}
-                            placeholder="Title"
+                            placeholder="Website, Docs, Github, etc."
                             inputClassName="placeholder:text-neutral-600"
                             {...field}
                           />
@@ -268,8 +258,9 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
                         name={`resources.${idx}.url` as const}
                         render={({ field }) => (
                           <InputText
+                            label="Value or URL name"
                             readOnly={isCreating}
-                            placeholder="URL"
+                            placeholder="100, Mode Network Wiki, etc."
                             inputClassName="placeholder:text-neutral-600"
                             {...field}
                           />
@@ -280,8 +271,9 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
                         name={`resources.${idx}.value` as const}
                         render={({ field }) => (
                           <InputText
+                            label="URL"
                             readOnly={isCreating}
-                            placeholder="Value"
+                            placeholder="https://gov.mode.network/wiki/..."
                             inputClassName="placeholder:text-neutral-600"
                             {...field}
                           />
