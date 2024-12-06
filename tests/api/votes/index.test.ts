@@ -1,9 +1,9 @@
 import { describe, it, expect } from "bun:test";
 import handler from "@/pages/api/v1/votes/gaugeVotes";
 import { createMocks } from "node-mocks-http";
-import { GaugeVoteSummary } from "@/pages/api/votes/data";
 import { MODE_ESCROW_CONTRACT } from "@/constants";
-import { getVoter } from "@/pages/api/_client";
+import { GaugeVoteSummary } from "@/utils/api/types";
+import { getVoter } from "@/utils/api/client";
 
 describe("/api/votes/gaugeVotes API", () => {
   it("returns the list of gauges", async () => {
