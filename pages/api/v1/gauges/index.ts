@@ -2,14 +2,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { MODE_ESCROW_CONTRACT } from "@/constants";
 import { client, getVotingContract } from "@/utils/api/client";
 import { getAllGauges, getGaugeDetails } from "@/utils/api/gauges";
-import { isAddress } from "viem";
+import { Address, isAddress } from "viem";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
     case "GET": {
-      const votingContract = await getVotingContract(MODE_ESCROW_CONTRACT);
+      const votingContract = (await getVotingContract(MODE_ESCROW_CONTRACT)) as Address;
       if (!isAddress(votingContract)) {
         res.status(400).json({ error: "Invalid voting contract address" });
         return;
