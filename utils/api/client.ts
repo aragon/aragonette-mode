@@ -13,10 +13,15 @@ export const client = createPublicClient({
 /**
  * @title Fetch the voter address from the escrow contract
  */
-export async function getVotingContract(escrow: Address): Promise<Address> {
-  return await client.readContract({
-    address: escrow,
-    abi: VotingEscrowAbi,
-    functionName: "voter",
-  });
+export async function getVotingContract(escrow: Address): Promise<Address | null> {
+  try {
+    return await client.readContract({
+      address: escrow,
+      abi: VotingEscrowAbi,
+      functionName: "voter",
+    });
+  } catch (e) {
+    console.error("Error fetching voting contract", e);
+    return null;
+  }
 }

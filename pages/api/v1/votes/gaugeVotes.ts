@@ -3,12 +3,13 @@ import { client } from "@/utils/api/client";
 import { summarizeVotesByGauge, fetchVoteAndResetData } from "@/utils/api/parseVotes";
 import { Address, isAddress } from "viem";
 import { getAllGauges, getGaugeDetails } from "@/utils/api/gauges";
+import { isNumberlikeOrAll } from "@/utils/api/validation";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, query } = req;
   const votingContract = query.votingContract as Address;
-  const epoch = query.epoch as string;
-  const gauge = query.gauge as Address;
+  const epoch = query.epoch as string | "all";
+  const gauge = query.gauge as Address | "all";
   let fromBlock = query.fromBlock as string;
 
   switch (method) {
@@ -18,12 +19,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
       }
 
-      if (epoch && isNaN(Number(epoch))) {
+      if (!isNumberlikeOrAll(epoch)) {
         res.status(400).json({ error: "Invalid epoch" });
         return;
       }
 
-      if (gauge && !isAddress(gauge)) {
+      if (gauge !== "all" && !isAddress(gauge)) {
         res.status(400).json({ error: "Invalid gauge address" });
         return;
       }
@@ -33,12 +34,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // set optional fields
-      const optionalEpoch = epoch ? BigInt(epoch) : undefined;
-      const gauges = gauge ? [gauge] : await getAllGauges(client, votingContract);
+      const gauges = gauge === "all" ? await getAllGauges(client, votingContract) : [gauge];
 
       // process the data
       const gaugeDetails = await getGaugeDetails(client, votingContract, gauges);
-      const votes = await fetchVoteAndResetData(votingContract, gauges, optionalEpoch, BigInt(fromBlock));
+      const votes = await fetchVoteAndResetData(votingContract, gauges, epoch, BigInt(fromBlock));
       const summary = summarizeVotesByGauge(votes, gaugeDetails, votingContract, epoch);
 
       res.status(200).json({ data: summary });

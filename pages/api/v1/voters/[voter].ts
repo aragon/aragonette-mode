@@ -1,26 +1,33 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { client } from "@/utils/api/client";
+import { client, getVotingContract } from "@/utils/api/client";
 import { Address, isAddress } from "viem";
 import { getAllGauges } from "@/utils/api/gauges";
 import { fetchVoterData, transformVoterData } from "@/utils/api/voter";
+import { isNumberlikeOrAll } from "@/utils/api/validation";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, query } = req;
   const voter = query.voter as Address;
-  const gauge = query.gauge as Address;
-  const votingContract = query.votingContract as Address;
+  const gauge = query.gauge as Address | "all";
+  const stakingContract = query.stakingContract as Address;
   const epoch = query.epoch as string;
   const fromBlock = (query.fromBlock ?? "0") as string;
 
   switch (method) {
     case "GET":
-      console.log(`Fetching voter data for ${voter} in epoch ${epoch} from block ${fromBlock}`);
-      if (!isAddress(votingContract)) {
-        res.status(400).json({ error: "Invalid voting contract address" });
+      if (!isAddress(stakingContract)) {
+        res.status(400).json({ error: "Invalid stakingContract contract address" });
         return;
       }
 
-      if (gauge && !isAddress(gauge)) {
+      // cast here to avoid type errors but we check immediately after
+      const votingContract = (await getVotingContract(stakingContract)) as Address;
+      if (!isAddress(votingContract as string)) {
+        res.status(400).json({ error: "Error fetching voting contract" });
+        return;
+      }
+
+      if (gauge !== "all" && !isAddress(gauge)) {
         res.status(400).json({ error: "Invalid gauge address" });
         return;
       }
@@ -30,19 +37,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
       }
 
-      // require the epoch to be a number
-      if (!epoch || (epoch && isNaN(Number(epoch)))) {
-        if (epoch !== "all") {
-          res.status(400).json({ error: "Invalid epoch" });
-        }
+      if (!isNumberlikeOrAll(epoch)) {
+        res.status(400).json({ error: "Invalid epoch" });
         return;
       }
 
-      console.log(`Fetching voter data for ${voter} in epoch ${epoch} from block ${fromBlock}`);
-      const gauges = gauge ? [gauge] : await getAllGauges(client, votingContract);
+      const gauges = gauge === "all" ? await getAllGauges(client, votingContract) : [gauge];
 
       // process the data
-      const voterData = await fetchVoterData(votingContract, voter, epoch as bigint | "all", gauges, BigInt(fromBlock));
+      const voterData = await fetchVoterData(votingContract, voter, epoch, gauges, stakingContract, BigInt(fromBlock));
       const transformed = transformVoterData(voterData, votingContract);
 
       res.status(200).json({ data: transformed });

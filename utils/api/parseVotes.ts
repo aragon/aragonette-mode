@@ -29,12 +29,13 @@ export async function paginateLogs(
   startBlock: bigint,
   gauges: Address[],
   event: AbiEvent,
-  epoch?: bigint
+  epoch: string | "all"
 ) {
   // conditionally add the epoch if it's provided
+  const optionalEpoch = epoch === "all" ? undefined : epoch;
   const args = {
     gauge: gauges,
-    ...optionalProperty("epoch", epoch),
+    ...optionalProperty("epoch", optionalEpoch),
   };
 
   // fetch the initial set of logs
@@ -56,13 +57,14 @@ export async function paginateLogs(
       fromBlock: lastBlock,
       toBlock: "latest",
       args,
-      event: VotedEvent,
+      event,
     });
     logs = logs.concat(newLogs);
     lastBatchLength = newLogs.length;
   }
-
+  console.log(`Fetched ${logs.length} logs for ${event.name} event`);
   const uniqueLogs = removeDuplicateLogs(logs);
+  console.log(`Removed ${logs.length - uniqueLogs.length} duplicates for ${event.name} event`);
   return uniqueLogs;
 }
 
@@ -90,7 +92,7 @@ export function removeDuplicateLogs(logs: GetLogsReturnType): GetLogsReturnType 
 export async function fetchVoteAndResetData(
   contract: Address,
   gauges: Address[],
-  epoch?: bigint,
+  epoch: string | "all",
   fromBlock = 0n
 ): Promise<ProcessedEvent[]> {
   const promiseLogs = [VotedEvent, ResetEvent].map(
@@ -98,23 +100,50 @@ export async function fetchVoteAndResetData(
   );
 
   const logs = (await Promise.all(promiseLogs)) as unknown as VoteAndResetRawData[][];
-  return flattenUnique(logs);
+  return flattenUnique(logs, false);
+}
+
+/**
+ * @title Infers the voter address from the `Voted` logs
+ * We need this in the event that someone calls `reset` via the staking contract.
+ * In this case, the voter address is not the msg.sender but the address that called the staking contract.
+ * We can't fetch this directly from events and the tokenId is not an indexed parameter.
+ * But in the current implementation, the Voter will hold the token Id as we have not enabled transfers.
+ * This does need to be addressed in future implementations.
+ * @param logs - Array of logs from the `Voted` events
+ * @returns Record of tokenIds to voter addresses
+ */
+
+export function inferVoter(logs: VoteAndResetRawData[]): Map<string, Address> {
+  const voterMap = new Map<string, Address>();
+  for (const event of logs) {
+    voterMap.set(event.args.tokenId, event.args.voter as Address);
+  }
+  return voterMap;
 }
 
 /**
  * @title Flattens the array of raw logs and extracts relevant fields
  * @param events - Array of raw logs to flatten
  */
-export function flattenUnique(events: VoteAndResetRawData[][]): ProcessedEvent[] {
+export function flattenUnique(events: VoteAndResetRawData[][], singleVoter: boolean): ProcessedEvent[] {
+  // Step 0: infer voters to ensure reset events are accurate
+  const inferredVoters = inferVoter(events[0]);
+
   // Step 1: Flatten the array
   const flattened = events.flat();
 
+  // remove the logs containing token ids not in the inferred voters
+  // only makes sense to do this for the single voter case
+  const filtered = !singleVoter ? flattened : flattened.filter((event) => inferredVoters.has(event.args.tokenId));
+
   // Step 2: Extract relevant fields
-  const processed = flattened.map((event) => {
+  const processed = filtered.map((event) => {
     const votes = "votingPowerCastForGauge" in event.args ? event.args.votingPowerCastForGauge : 0; // reset
     return {
       tokenId: BigInt(event.args?.tokenId ?? 0),
-      voter: event.args.voter as Address,
+      // in the case of msg.sender indirection, we need to use the inferred voter
+      voter: inferredVoters.get(event.args.tokenId) as Address,
       gauge: event.args.gauge as Address,
       epoch: BigInt(event.args?.epoch ?? 0),
       logIndex: event.logIndex,
