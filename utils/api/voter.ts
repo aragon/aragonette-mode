@@ -34,14 +34,14 @@ export async function fetchVoterData(
   return awaitedLogs;
 }
 
-export function transformVoterData(voterData: VoteAndResetRawData[][]): VoterData {
+export function transformVoterData(voterData: VoteAndResetRawData[][], votingContract: Address): VoterData {
   const flattenedLogs = flattenUnique(voterData);
-  return processSingleVoterEvents(flattenedLogs);
+  return processSingleVoterEvents(flattenedLogs, votingContract);
 }
 
-export function processSingleVoterEvents(events: ProcessedEvent[]): VoterData {
+export function processSingleVoterEvents(events: ProcessedEvent[], votingContract: Address): VoterData {
   if (events.length === 0) {
-    throw new Error("No events provided.");
+    return {} as VoterData;
   }
 
   // Extract the voter from the first event
@@ -57,6 +57,7 @@ export function processSingleVoterEvents(events: ProcessedEvent[]): VoterData {
   // Initialize the voter data
   const voterData: VoterData = {
     address: voterAddress,
+    votingContract,
     gaugeVotes: [],
   };
 

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { client } from "@/utils/api/client";
 import { summarizeVotesByGauge, fetchVoteAndResetData } from "@/utils/api/parseVotes";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { getAllGauges, getGaugeDetails } from "@/utils/api/gauges";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,13 +13,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case "GET":
-      if (!votingContract || votingContract.length !== 42 || !votingContract.startsWith("0x")) {
+      if (!isAddress(votingContract)) {
         res.status(400).json({ error: "Invalid voting contract address" });
         return;
       }
 
       if (epoch && isNaN(Number(epoch))) {
         res.status(400).json({ error: "Invalid epoch" });
+        return;
+      }
+
+      if (gauge && !isAddress(gauge)) {
+        res.status(400).json({ error: "Invalid gauge address" });
         return;
       }
 

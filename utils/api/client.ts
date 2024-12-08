@@ -13,7 +13,7 @@ export const client = createPublicClient({
 /**
  * @title Fetch the voter address from the escrow contract
  */
-export async function getVoter(escrow: Address): Promise<Address> {
+export async function getVotingContract(escrow: Address): Promise<Address> {
   return await client.readContract({
     address: escrow,
     abi: VotingEscrowAbi,

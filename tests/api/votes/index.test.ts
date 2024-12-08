@@ -3,13 +3,13 @@ import handler from "@/pages/api/v1/votes/gaugeVotes";
 import { createMocks } from "node-mocks-http";
 import { MODE_ESCROW_CONTRACT } from "@/constants";
 import { GaugeVoteSummary } from "@/utils/api/types";
-import { getVoter } from "@/utils/api/client";
+import { getVotingContract } from "@/utils/api/client";
 
 describe("/api/votes/gaugeVotes API", () => {
   it("returns the list of gauges", async () => {
-    const voter = await getVoter(MODE_ESCROW_CONTRACT);
+    const votingContract = await getVotingContract(MODE_ESCROW_CONTRACT);
 
-    const { req, res } = createMocks({ method: "GET", query: { voter, epoch: "1430" } });
+    const { req, res } = createMocks({ method: "GET", query: { voter: votingContract, epoch: "1430" } });
     await handler(req, res);
     expect(res._getStatusCode()).toBe(200);
     const { data } = JSON.parse(res._getData());
@@ -31,7 +31,7 @@ describe("/api/votes/gaugeVotes API", () => {
   });
 
   it("returns votes for a single gauge", async () => {
-    const voter = await getVoter(MODE_ESCROW_CONTRACT);
+    const voter = await getVotingContract(MODE_ESCROW_CONTRACT);
     const gaugeKimExchange = "0x982fEFb576A28C988637bdf37313dD69f6483254";
     const { req, res } = createMocks({ method: "GET", query: { voter, epoch: "1430", gauge: gaugeKimExchange } });
     await handler(req, res);

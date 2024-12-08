@@ -116,6 +116,7 @@ export type GaugeVoteSummary = {
 
 export type VoterData = {
   address: Address;
+  votingContract: Address;
   gaugeVotes: {
     gauge: Address;
     totalVotes: string;
