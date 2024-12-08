@@ -6,10 +6,10 @@ import { Address, isAddress } from "viem";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
+  const votingContract = (req.query.votingContract ?? (await getVotingContract(MODE_ESCROW_CONTRACT))) as Address;
 
   switch (method) {
     case "GET": {
-      const votingContract = (await getVotingContract(MODE_ESCROW_CONTRACT)) as Address;
       if (!isAddress(votingContract)) {
         res.status(400).json({ error: "Invalid voting contract address" });
         return;

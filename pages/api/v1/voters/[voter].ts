@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { client, getVotingContract } from "@/utils/api/client";
+import { client, getStakingContract } from "@/utils/api/client";
 import { Address, isAddress } from "viem";
 import { getAllGauges } from "@/utils/api/gauges";
 import { fetchVoterData, transformVoterData } from "@/utils/api/voter";
@@ -9,21 +9,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { method, query } = req;
   const voter = query.voter as Address;
   const gauge = query.gauge as Address | "all";
-  const stakingContract = query.stakingContract as Address;
+  const votingContract = query.votingContract as Address;
   const epoch = query.epoch as string;
   const fromBlock = (query.fromBlock ?? "0") as string;
 
   switch (method) {
     case "GET":
-      if (!isAddress(stakingContract)) {
-        res.status(400).json({ error: "Invalid stakingContract contract address" });
+      if (!isAddress(votingContract)) {
+        res.status(400).json({ error: "Invalid voting contract address" });
         return;
       }
 
       // cast here to avoid type errors but we check immediately after
-      const votingContract = (await getVotingContract(stakingContract)) as Address;
-      if (!isAddress(votingContract as string)) {
-        res.status(400).json({ error: "Error fetching voting contract" });
+      const stakingContract = (await getStakingContract(votingContract)) as Address;
+      if (!isAddress(stakingContract as string)) {
+        res.status(400).json({ error: "Error fetching staking contract" });
         return;
       }
 
