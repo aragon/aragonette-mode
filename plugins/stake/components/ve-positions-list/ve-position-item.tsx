@@ -106,14 +106,16 @@ export const VePositionItem: React.FC<VePositionItemProps> = ({ props }) => {
                 />
                 <p>{id.toString()}</p>
               </div>
-              {amount ? (
-                <p className="w-32 flex-auto text-neutral-900">
-                  {amount}&nbsp;
-                  <span className="text-xs">{symbol}</span>
-                </p>
-              ) : (
-                <p className="w-32 flex-auto">-</p>
-              )}
+              <div className="text-right">
+                {amount ? (
+                  <p className="w-32 flex-auto text-neutral-900">
+                    {amount}&nbsp;
+                    <span className="text-xs">{symbol}</span>
+                  </p>
+                ) : (
+                  <p className="w-32 flex-auto">-</p>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center justify-between py-2">

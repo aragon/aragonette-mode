@@ -1,6 +1,6 @@
 import { MainSection } from "@/components/layout/main-section";
 import { RadialGradients } from "@/components/radial-gradients";
-import { PUB_GET_REWARDS_URL, PUB_STAKING_LEARN_MORE_URL } from "@/constants";
+import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 import { SectionHeader } from "./components/section-header";
 import { Stake } from "./components/stake";
 import { StakeUserStats } from "./components/stake-user-stats";
@@ -8,8 +8,10 @@ import { StakePositions } from "./components/ve-positions-list";
 import React from "react";
 import { Button, IconType } from "@aragon/ods";
 import GetMoreTokens from "./components/get-tokens-links";
+import { useGetRewardsUrl } from "./hooks/useGetRewardsUrl";
 
 export default function PluginPage() {
+  const { data: rewardsUrl, isLoading } = useGetRewardsUrl();
   return (
     <div className="bg-gradient-to-b from-neutral-0 to-transparent">
       <RadialGradients />
@@ -24,11 +26,12 @@ export default function PluginPage() {
           <div className="mb-6">
             <Stake />
           </div>
-          <div className="mx-16 flex flex-col gap-y-4">
+          <div className="mx-8 flex flex-col gap-y-4 md:mx-16">
             <StakeUserStats />
             <Button
               className="mt-6"
-              href={PUB_GET_REWARDS_URL}
+              isLoading={isLoading}
+              href={rewardsUrl}
               target="_blank"
               variant="secondary"
               size="lg"
