@@ -22,7 +22,7 @@ export async function fetchVoterData(
   startBlock: bigint | "latest" = 0n
 ) {
   // optionally add the epoch if it's provided
-  const resolvedEpoch = epoch === "all" ? undefined : epoch;
+  const resolvedEpoch = epoch === "all" ? undefined : BigInt(epoch);
   const args = {
     voter,
     ...optionalProperty("gauge", gauges),

@@ -32,7 +32,7 @@ export async function paginateLogs(
   epoch: string | "all"
 ) {
   // conditionally add the epoch if it's provided
-  const optionalEpoch = epoch === "all" ? undefined : epoch;
+  const optionalEpoch = epoch === "all" ? undefined : BigInt(epoch);
   const args = {
     gauge: gauges,
     ...optionalProperty("epoch", optionalEpoch),
