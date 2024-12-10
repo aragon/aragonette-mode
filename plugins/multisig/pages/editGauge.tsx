@@ -1,13 +1,10 @@
-import React, { type ReactNode, useEffect, useMemo, useState } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Button, IconType, InputText, TextArea } from "@aragon/ods";
-import { Else, ElseIf, If, Then } from "@/components/if";
+import React, { useEffect, useMemo, useState } from "react";
+import { type Control, Controller, type FieldErrors, useFieldArray, useForm } from "react-hook-form";
+import { Button, Card, IconType, InputText, Tag, TextArea, Tooltip } from "@aragon/ods";
 import { MainSection } from "@/components/layout/main-section";
 import { useCreateProposal } from "../hooks/useCreateProposal";
 import { useAccount } from "wagmi";
 import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
-import { MissingContentView } from "@/components/MissingContentView";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { type Address, encodeFunctionData, isAddress, zeroAddress } from "viem";
 import { ProposalActions } from "@/components/proposalActions/proposalActions";
 import { useGetContracts } from "@/plugins/stake/hooks/useGetContract";
@@ -19,14 +16,61 @@ import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
 import { useGetGaugeInfo } from "@/plugins/voting/hooks/useGetGaugeInfo";
 import { useAlerts } from "@/context/Alerts";
 import { type GaugeMetadata } from "@/plugins/voting/components/gauges-list/types";
-import { useRouter } from "next/router";
+import * as v from "valibot";
+import { isStringAddress } from "@/utils/address";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import classNames from "classnames";
+import PlaceHolderOr from "../components/proposal/PlaceHolderOr";
+import ConditionalWrapper from "@/components/ConditionalWrapper";
 
 type Props = {
   id: Address;
 };
 
+const resourceSchema = v.pipe(
+  v.object({
+    field: v.pipe(v.string(), v.nonEmpty("You must provide a title"), v.maxLength(100, "Field is too long")),
+    value: v.optional(v.pipe(v.string(), v.nonEmpty("Add your description"), v.maxLength(240, "Value is too long"))),
+    url: v.optional(
+      v.pipe(
+        v.string(),
+        v.nonEmpty("You must provide a URL for this resource"),
+        v.url("The URL is badly formatted"),
+        v.maxLength(2000, "URL is too long")
+      )
+    ),
+  }),
+  v.forward(
+    v.partialCheck(
+      [["value"], ["url"]],
+      (value) => value.url?.trim() !== "" || value.value?.trim() !== "",
+      "You must provide a value or a URL"
+    ),
+    ["value"]
+  )
+);
+
+const formSchema = v.object({
+  title: v.pipe(v.string(), v.nonEmpty("You must provide a title"), v.maxLength(100, "Title is too long")),
+  address: v.pipe(v.custom<string>(isStringAddress, "Invalid address"), v.nonEmpty("You must provide an address")),
+  description: v.pipe(
+    v.string(),
+    v.nonEmpty("You must provide a description"),
+    v.maxLength(500, "Description is too long")
+  ),
+  logo: v.pipe(
+    v.string(),
+    v.nonEmpty("You must provide a url"),
+    v.url("The URL is badly formatted"),
+    v.maxLength(2000, "URL is too long")
+  ),
+  resources: v.optional(v.array(resourceSchema)),
+});
+
+export type Form = v.InferInput<typeof formSchema>;
+export type Resource = v.InferInput<typeof resourceSchema>;
+
 export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
-  const router = useRouter();
   const { address: selfAddress, isConnected } = useAccount();
   const { data: modeInfo } = useGetGaugeInfo(Token.MODE, id);
   const { data: bptInfo } = useGetGaugeInfo(Token.BPT, id);
@@ -53,45 +97,33 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
   const {
     control,
     handleSubmit,
-    reset,
     watch,
-    formState: { isSubmitting },
-  } = useForm<{
-    title: string;
-    gaugeDescription: string;
-    gaugeLogo: string;
-    resources: { field: string; value: string; url: string }[];
-  }>({
+    reset,
+    formState: { isSubmitting, errors },
+  } = useForm<Form>({
+    resolver: valibotResolver(formSchema),
+    mode: "onTouched",
     defaultValues: {
       title: "",
-      gaugeDescription: "",
-      gaugeLogo: "",
-      resources: [],
+      address: "",
+      description: "",
+      logo: "",
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "resources",
-  });
-
-  const watchFields = watch();
+  const watchForm = watch();
+  const hasErrors = Object.keys(errors).length > 0;
 
   useEffect(() => {
-    setTitle(watchFields.title);
-  }, [watchFields.title, setTitle]);
+    setTitle(watchForm.title);
+  }, [watchForm.title, setTitle]);
 
   useEffect(() => {
-    setSummary(watchFields.gaugeDescription?.substring(0, 60).concat("..."));
-    setDescription(watchFields.gaugeDescription);
-  }, [watchFields.gaugeLogo, setDescription, watchFields.gaugeDescription, setSummary]);
+    setSummary(watchForm.description?.substring(0, 60).concat("..."));
+    setDescription(watchForm.description);
+  }, [watchForm.logo, setDescription, watchForm.description, setSummary]);
 
-  const { mutate: uploadMetadata, isPending: uploadingIpfs } = usePinJSONtoIPFS({
-    name: watchFields.title,
-    description: watchFields.gaugeDescription,
-    logo: watchFields.gaugeLogo,
-    resources: watchFields.resources,
-  });
+  const { mutate: uploadMetadata, isPending: uploadingIpfs } = usePinJSONtoIPFS();
 
   const metadataInfo = metadata?.[0]?.data?.metadata;
 
@@ -99,20 +131,20 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
     if (didInitialize && !metadataInfo) return;
     reset({
       title: metadataInfo?.name,
-      gaugeDescription: metadataInfo?.description,
-      gaugeLogo: metadataInfo?.logo,
+      description: metadataInfo?.description,
+      logo: metadataInfo?.logo,
       resources: metadataInfo?.resources,
     });
     setDidInitialize(true);
   }, [didInitialize, metadataInfo, reset]);
 
-  const createGauge = async () => {
+  const createGauge = async (data: Form) => {
     if (!gaugeAddress) return;
     if (!isAddress(gaugeAddress)) return;
     if (!modeVoterContract || !isAddress(modeVoterContract)) return;
     if (!bptVoterContract || !isAddress(bptVoterContract)) return;
 
-    uploadMetadata(undefined, {
+    uploadMetadata(data, {
       onSuccess: async (ipfsPin) => {
         const data = encodeFunctionData({
           abi: SimpleGaugeVotingAbi,
@@ -155,9 +187,9 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
     }
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: Form) => {
     if (actions.length === 0) {
-      await createGauge();
+      await createGauge(data);
     } else {
       await submitGauge();
     }
@@ -175,16 +207,19 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             <div className="mb-6">
               <Controller
                 control={control}
-                name="title"
+                name="address"
                 render={({ field }) => (
-                  <InputText
-                    label="Name"
-                    inputClassName="placeholder:text-neutral-600"
-                    maxLength={100}
-                    placeholder="Gauge name"
-                    variant="default"
-                    {...field}
-                  />
+                  <div className="flex flex-col gap-y-2">
+                    <InputText
+                      label="Title"
+                      inputClassName="placeholder:text-neutral-600"
+                      placeholder="Gauge title"
+                      maxLength={100}
+                      wrapperClassName={classNames(errors?.title?.message && "!border-critical-500")}
+                      {...field}
+                    />
+                    {errors?.title && <p className="text-sm text-critical-500">{errors?.title?.message}</p>}
+                  </div>
                 )}
               />
             </div>
@@ -192,7 +227,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             <div className="mb-6">
               <Controller
                 control={control}
-                name="gaugeDescription"
+                name="description"
                 render={({ field }) => (
                   <TextArea
                     label="Description"
@@ -209,7 +244,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             <div className="mb-6">
               <Controller
                 control={control}
-                name="gaugeLogo"
+                name="logo"
                 render={({ field }) => (
                   <InputText
                     label="Logo URL"
@@ -222,81 +257,19 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
               />
             </div>
 
-            <div className="mb-6 flex flex-col gap-y-2 md:gap-y-3">
+            {/* Nested Resources */}
+            <div className="flex flex-col gap-y-4">
               <div className="flex flex-col gap-0.5 md:gap-1">
-                <div className="flex gap-x-3">
+                <div className="flex flex-row items-center gap-3">
                   <p className="text-base font-normal leading-tight text-neutral-800 md:text-lg">Resources</p>
+                  <Tag variant="neutral" label="Optional" />
                 </div>
                 <p className="text-sm font-normal leading-normal text-neutral-500 md:text-base">
-                  Add links to external resources
+                  Provide further resources like additional metadata or external links, so people understand the gauge
+                  better.
                 </p>
               </div>
-              <div className="flex flex-col gap-y-4 rounded-xl border border-neutral-100 bg-neutral-0 p-4">
-                <If lengthOf={watchFields.resources} is={0}>
-                  <p className="text-sm font-normal leading-normal text-neutral-500 md:text-base">
-                    There are no resources yet. Click the button below to add the first one.
-                  </p>
-                </If>
-                {fields.map((field, idx) => (
-                  <div key={field.id} className="flex flex-col gap-y-3 py-3 md:py-4">
-                    <div className="flex items-center gap-x-3">
-                      <Controller
-                        control={control}
-                        name={`resources.${idx}.field` as const}
-                        render={({ field }) => (
-                          <InputText
-                            label="Field name"
-                            readOnly={isCreating}
-                            placeholder="Website, Docs, Github, etc."
-                            inputClassName="placeholder:text-neutral-600"
-                            {...field}
-                          />
-                        )}
-                      />
-                      <Controller
-                        control={control}
-                        name={`resources.${idx}.url` as const}
-                        render={({ field }) => (
-                          <InputText
-                            label="Value or URL name"
-                            readOnly={isCreating}
-                            placeholder="100, Mode Network Wiki, etc."
-                            inputClassName="placeholder:text-neutral-600"
-                            {...field}
-                          />
-                        )}
-                      />
-                      <Controller
-                        control={control}
-                        name={`resources.${idx}.value` as const}
-                        render={({ field }) => (
-                          <InputText
-                            label="URL"
-                            readOnly={isCreating}
-                            placeholder="https://gov.mode.network/wiki/..."
-                            inputClassName="placeholder:text-neutral-600"
-                            {...field}
-                          />
-                        )}
-                      />
-                      <Button size="sm" variant="tertiary" onClick={() => remove(idx)} iconLeft={IconType.MINUS} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <span className="mt-3">
-                <Button
-                  variant="tertiary"
-                  size="sm"
-                  iconLeft={IconType.PLUS}
-                  disabled={isCreating}
-                  onClick={() => {
-                    append({ field: "", value: "", url: "" });
-                  }}
-                >
-                  Add resource
-                </Button>
-              </span>
+              <NestedResourceArray control={control} errors={errors} />
             </div>
 
             {!!actions.length && (
@@ -309,27 +282,26 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             {/* Submit */}
 
             <div className="mt-6 flex w-full flex-col gap-3 md:flex-row">
-              <Button
-                onClick={() => {
-                  setOpenPreview(true);
-                }}
+              <ConditionalWrapper
+                condition={!hasErrors}
+                wrapper={(children) => (
+                  <Tooltip content="Please fill all required fields to preview the gauge">{children}</Tooltip>
+                )}
               >
-                Preview
-              </Button>
+                <Button size="md" variant="secondary" onClick={() => setOpenPreview(true)} disabled={!hasErrors}>
+                  Preview
+                </Button>
+              </ConditionalWrapper>
               <Button
                 type="submit"
                 isLoading={isCreating || uploadingIpfs || isSubmitting}
-                className="border-primary-400"
+                disabled={hasErrors}
                 size="lg"
-                variant={actions.length ? "primary" : "secondary"}
+                variant={"primary"}
               >
-                <If lengthOf={actions} above={0}>
-                  <Then>Submit proposal</Then>
-                  <Else>Upload metadata</Else>
-                </If>
+                {actions.length ? "Publish Gauges" : "Upload metadata"}
               </Button>
             </div>
-
             <GaugeDetailsDialog
               selectedGauge={{
                 token: Token.MODE,
@@ -340,10 +312,10 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
                   metadataURI: "url",
                 },
                 metadata: {
-                  name: watchFields.title,
-                  description: watchFields.gaugeDescription,
-                  logo: watchFields.gaugeLogo,
-                  resources: watchFields.resources,
+                  name: watchForm.title,
+                  description: watchForm.description,
+                  logo: watchForm.logo,
+                  resources: watchForm.resources,
                 },
               }}
               openDialog={openPreview}
@@ -358,34 +330,99 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
   );
 };
 
-const PlaceHolderOr = ({
-  selfAddress,
-  isConnected,
-  canCreate,
-  children,
-}: {
-  selfAddress: Address | undefined;
-  isConnected: boolean;
-  canCreate: boolean | undefined;
-  children: ReactNode;
-}) => {
-  const { open } = useWeb3Modal();
+const NestedResourceArray = ({ control, errors }: { control: Control<Form>; errors: FieldErrors<Form> }) => {
+  const {
+    fields: resourceFields,
+    append: appendResource,
+    remove: removeResource,
+  } = useFieldArray({
+    control,
+    name: "resources",
+  });
+
   return (
-    <If true={!selfAddress || !isConnected}>
-      <Then>
-        {/* Not connected */}
-        <MissingContentView callToAction="Connect wallet" onClick={() => open()}>
-          Please connect your wallet to continue.
-        </MissingContentView>
-      </Then>
-      <ElseIf true={!canCreate}>
-        {/* Not a member */}
-        <MissingContentView>
-          You cannot create proposals on the multisig because you are not currently defined as a member.
-        </MissingContentView>
-      </ElseIf>
-      <Else>{children}</Else>
-    </If>
+    <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-3">
+        {resourceFields.map((resource, resourceIndex) => (
+          <Card key={resource.id} className="flex flex-col gap-y-3 rounded-lg border border-neutral-100 p-6">
+            <div className="flex flex-col items-start gap-y-4">
+              <Controller
+                control={control}
+                name={`resources.${resourceIndex}.field`}
+                render={({ field }) => (
+                  <div className="flex w-full flex-col gap-y-2">
+                    <InputText className="w-full" label="Label" placeholder="e.g., Website, Docs" {...field} />
+                    {errors.resources?.[resourceIndex]?.field && (
+                      <p className="text-sm text-critical-500">{errors.resources[resourceIndex].field.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+              <Controller
+                control={control}
+                name={`resources.${resourceIndex}.value`}
+                render={({ field }) => (
+                  <div className="flex w-full flex-col gap-y-2">
+                    <TextArea
+                      maxLength={240}
+                      className="w-full"
+                      label="Value"
+                      placeholder="e.g., Documentation"
+                      wrapperClassName={errors.resources?.[resourceIndex]?.value && "!border-critical-500"}
+                      {...field}
+                    />
+                    {errors.resources?.[resourceIndex]?.value && (
+                      <p className="text-sm text-critical-500">{errors.resources[resourceIndex].value.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+
+              <Controller
+                control={control}
+                name={`resources.${resourceIndex}.url`}
+                render={({ field }) => (
+                  <div className="flex w-full flex-col gap-y-2">
+                    <InputText
+                      className="w-full"
+                      label="URL"
+                      placeholder="https://example.com"
+                      wrapperClassName={errors.resources?.[resourceIndex]?.url && "!border-critical-500"}
+                      {...field}
+                    />
+                    {errors.resources?.[resourceIndex]?.url && (
+                      <p className="text-sm text-critical-500">{errors.resources[resourceIndex].url.message}</p>
+                    )}
+                  </div>
+                )}
+              />
+              <Button
+                size="sm"
+                className="self-end"
+                variant="tertiary"
+                onClick={() => removeResource(resourceIndex)}
+                iconLeft={IconType.MINUS}
+              >
+                Remove
+              </Button>
+            </div>
+            {errors.resources?.[resourceIndex]?.root && (
+              <p className="text-sm text-critical-500">{errors.resources[resourceIndex].root.message}</p>
+            )}
+          </Card>
+        ))}
+      </div>
+      <div className="flex gap-x-3">
+        <Button
+          variant="tertiary"
+          size="md"
+          iconLeft={IconType.PLUS}
+          onClick={() => appendResource({ field: "", url: "", value: "" })}
+        >
+          Resource
+        </Button>
+      </div>
+    </div>
   );
 };
 

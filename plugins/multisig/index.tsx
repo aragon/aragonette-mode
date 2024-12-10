@@ -1,7 +1,7 @@
 import { type Address, isAddress } from "viem";
 import { NotFound } from "@/components/not-found";
 import ProposalCreate from "./pages/new";
-import ProposalCreateGauge from "./pages/createGauge";
+import ProposalCreateGauges from "./pages/createGauges";
 import ProposalDetail from "./pages/proposal";
 import { useUrl } from "@/hooks/useUrl";
 import EditGauge from "./pages/editGauge";
@@ -13,7 +13,7 @@ export default function PluginPage() {
 
   if (!hash || hash === "#/") return <MainView />;
   else if (hash === "#/new") return <ProposalCreate />;
-  else if (hash === "#/new-gauge") return <ProposalCreateGauge />;
+  else if (hash === "#/new-gauge") return <ProposalCreateGauges />;
   else if (hash.startsWith("#/proposals/")) {
     const id = hash.replace("#/proposals/", "");
 
