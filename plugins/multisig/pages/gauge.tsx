@@ -49,7 +49,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
               src={metadata?.logo}
               fallback={
                 <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
-                  {metadata?.name.slice(0, 2).toUpperCase()}
+                  {metadata?.name?.slice(0, 2).toUpperCase()}
                 </span>
               }
             />
@@ -95,7 +95,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({ props, selected, total
                   src={metadata?.logo}
                   fallback={
                     <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
-                      {metadata?.name.slice(0, 2).toUpperCase()}
+                      {metadata?.name?.slice(0, 2).toUpperCase()}
                     </span>
                   }
                 />

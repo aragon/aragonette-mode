@@ -16,13 +16,13 @@ export type GaugeInfo = {
 
 export type Resource = {
   field: string;
-  value: string;
-  url: string;
+  value?: string;
+  url?: string;
 };
 
 export type GaugeMetadata = {
   name: string;
   description: string;
   logo: string;
-  resources: Resource[];
+  resources?: Resource[];
 };
