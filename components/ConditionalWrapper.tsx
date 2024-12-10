@@ -1,11 +1,11 @@
-const ConditionalWrapper = ({
-  condition,
-  wrapper,
-  children,
-}: {
+export type Props = {
   condition: boolean;
-  wrapper: (children: React.ReactNode) => JSX.Element;
+  wrapper: (children: React.ReactNode) => React.ReactNode;
   children: React.ReactNode;
-}) => (condition ? wrapper(children) : <>{children}</>);
+};
+
+const ConditionalWrapper: React.FC<Props> = ({ condition, wrapper, children }) => {
+  return condition ? wrapper(children) : children;
+};
 
 export default ConditionalWrapper;
