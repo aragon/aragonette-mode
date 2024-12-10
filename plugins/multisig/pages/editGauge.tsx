@@ -207,7 +207,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             <div className="mb-6">
               <Controller
                 control={control}
-                name="address"
+                name="title"
                 render={({ field }) => (
                   <div className="flex flex-col gap-y-2">
                     <InputText
