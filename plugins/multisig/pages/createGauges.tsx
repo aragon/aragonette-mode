@@ -538,7 +538,7 @@ const NestedResourceArray = ({
                     <InputText
                       className="w-full"
                       label="URL"
-                      placeholder="https://example.com"
+                      placeholder="https://gov.mode.network/wiki/..."
                       wrapperClassName={
                         errors.gauges?.[gaugeIndex]?.resources?.[resourceIndex]?.url && "!border-critical-500"
                       }
