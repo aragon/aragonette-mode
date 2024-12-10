@@ -191,7 +191,10 @@ export default function CreateMultipleGauges() {
             }
           )
         );
-        setDescription((prev) => `${prev}Gauge: ${data.name}\nAddress: ${data.address}\nMetadata: ${ipfsPin}\n\n`);
+        setDescription(
+          // eslint-disable-next-line no-useless-escape
+          (prev) => `${prev}Gauge: ${data.name}<br /> Address: ${data.address}<br/> Metadata: ${ipfsPin}\n\n`
+        );
       },
       onError: (error) => {
         console.error(error);
