@@ -4,12 +4,12 @@ import {
   PUB_APP_DESCRIPTION,
   PUB_APP_NAME,
   PUB_CHAIN,
+  PUB_ENS_CHAIN,
   PUB_PROJECT_URL,
   PUB_WALLET_CONNECT_PROJECT_ID,
   PUB_WALLET_ICON,
   PUB_WEB3_ENDPOINT,
 } from "@/constants";
-import { mainnet } from "viem/chains";
 
 // wagmi config
 const metadata = {
@@ -20,7 +20,7 @@ const metadata = {
 };
 
 export const config = createConfig({
-  chains: [PUB_CHAIN, mainnet],
+  chains: [PUB_CHAIN],
   ssr: true,
   transports: {
     [PUB_CHAIN.id]: http(PUB_WEB3_ENDPOINT, { batch: true }),
@@ -33,4 +33,12 @@ export const config = createConfig({
     }),
     // coinbaseWallet({ appName: metadata.name, appLogoUrl: metadata.icons[0] }),
   ],
+});
+
+export const ensConfig = createConfig({
+  chains: [PUB_ENS_CHAIN],
+  ssr: true,
+  transports: {
+    [PUB_ENS_CHAIN.id]: http(PUB_WEB3_ENDPOINT, { batch: true }),
+  },
 });

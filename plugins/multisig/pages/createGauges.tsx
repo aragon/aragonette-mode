@@ -22,6 +22,7 @@ import { debounce } from "@/utils/debounce";
 import ConditionalWrapper from "@/components/ConditionalWrapper";
 import DeleteGaugeDialog from "../components/proposal/DeleteGaugeDialog";
 import PlaceHolderOr from "../components/proposal/PlaceHolderOr";
+import { ensConfig } from "@/context/Web3Modal";
 
 export const STEPS = {
   METADATA: "METADATA",
@@ -278,6 +279,7 @@ export default function CreateMultipleGauges() {
                           render={({ field }) => (
                             <div className="flex flex-col gap-y-2">
                               <AddressInput
+                                wagmiConfig={ensConfig}
                                 label="Address"
                                 inputClassName="placeholder:text-neutral-600"
                                 placeholder="0x12...3456"
