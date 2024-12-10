@@ -382,7 +382,7 @@ export default function CreateMultipleGauges() {
                       )}
                       <DeleteGaugeDialog
                         open={deleteGaugeIndex !== null}
-                        gaugeTitle={watchForm.gauges[gaugeIndex]?.name || `Gauge #${gaugeIndex + 1}`}
+                        gaugeName={watchForm.gauges[gaugeIndex]?.name || `Gauge #${gaugeIndex + 1}`}
                         onConfirm={handleConfirmDeleteGauge}
                         onCancel={closeDeleteDialog}
                       />

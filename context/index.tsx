@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { PUB_WALLET_CONNECT_PROJECT_ID } from "@/constants";
-import { config, odsEnrichedConfig } from "@/context/Web3Modal";
+import { config } from "@/context/Web3Modal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -46,7 +46,7 @@ export function RootContextProvider({ children, initialState }: { children: Reac
     <WagmiProvider config={config} initialState={initialState}>
       <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
         <OdsModulesProvider
-          wagmiConfig={odsEnrichedConfig}
+          wagmiConfig={config}
           queryClient={queryClient}
           wagmiInitialState={initialState}
           coreProviderValues={odsCoreProviderValues}
