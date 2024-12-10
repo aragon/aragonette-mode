@@ -1,4 +1,4 @@
-import { Button, IconType, InputText, TextArea, AddressInput, Heading, Tag, Card, Tooltip } from "@aragon/ods";
+import { Button, IconType, InputText, TextArea, Heading, Tag, Card, Tooltip } from "@aragon/ods";
 import React, { useCallback, useState } from "react";
 import { MainSection } from "@/components/layout/main-section";
 import { useCreateProposal } from "../hooks/useCreateProposal";
@@ -22,7 +22,7 @@ import { debounce } from "@/utils/debounce";
 import ConditionalWrapper from "@/components/ConditionalWrapper";
 import DeleteGaugeDialog from "../components/proposal/DeleteGaugeDialog";
 import PlaceHolderOr from "../components/proposal/PlaceHolderOr";
-import { ensConfig } from "@/context/Web3Modal";
+import { config, ensConfig } from "@/context/Web3Modal";
 
 export const STEPS = {
   METADATA: "METADATA",
@@ -278,8 +278,7 @@ export default function CreateMultipleGauges() {
                           name={`gauges.${gaugeIndex}.address`}
                           render={({ field }) => (
                             <div className="flex flex-col gap-y-2">
-                              <AddressInput
-                                wagmiConfig={ensConfig}
+                              <InputText
                                 label="Address"
                                 inputClassName="placeholder:text-neutral-600"
                                 placeholder="0x12...3456"
