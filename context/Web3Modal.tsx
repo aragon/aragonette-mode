@@ -9,6 +9,7 @@ import {
   PUB_WALLET_ICON,
   PUB_WEB3_ENDPOINT,
 } from "@/constants";
+import { mainnet } from "viem/chains";
 
 // wagmi config
 const metadata = {
@@ -19,10 +20,28 @@ const metadata = {
 };
 
 export const config = createConfig({
-  chains: [PUB_CHAIN],
+  chains: [PUB_CHAIN, mainnet],
   ssr: true,
   transports: {
     [PUB_CHAIN.id]: http(PUB_WEB3_ENDPOINT, { batch: true }),
+    [mainnet.id]: http(PUB_WEB3_ENDPOINT, { batch: true }),
+  },
+  connectors: [
+    walletConnect({
+      projectId: PUB_WALLET_CONNECT_PROJECT_ID,
+      metadata,
+      showQrModal: false,
+    }),
+    // coinbaseWallet({ appName: metadata.name, appLogoUrl: metadata.icons[0] }),
+  ],
+});
+
+export const odsEnrichedConfig = createConfig({
+  chains: [PUB_CHAIN, mainnet],
+  ssr: true,
+  transports: {
+    [PUB_CHAIN.id]: http(PUB_WEB3_ENDPOINT, { batch: true }),
+    [mainnet.id]: http(PUB_WEB3_ENDPOINT, { batch: true }),
   },
   connectors: [
     walletConnect({

@@ -1,12 +1,12 @@
 import { DialogAlertRoot, DialogAlertHeader, DialogAlertContent, DialogAlertFooter } from "@aragon/ods";
 
 const DeleteGaugeDialog = ({
-  gaugeTitle,
+  gaugeName,
   onConfirm,
   onCancel,
   open,
 }: {
-  gaugeTitle: string;
+  gaugeName: string;
   onConfirm: () => void;
   onCancel: () => void;
   open: boolean;
@@ -16,7 +16,7 @@ const DeleteGaugeDialog = ({
       <DialogAlertHeader title="Delete Gauge" />
       <DialogAlertContent className="py-2">
         <p className="text-neutral-600">
-          Are you sure you want to delete <span className="font-semibold">{gaugeTitle}</span>
+          Are you sure you want to delete <span className="font-semibold">{gaugeName}</span>
         </p>
       </DialogAlertContent>
       <DialogAlertFooter

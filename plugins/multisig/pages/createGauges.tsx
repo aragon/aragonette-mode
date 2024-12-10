@@ -30,7 +30,7 @@ export const STEPS = {
 
 const resourceSchema = v.pipe(
   v.object({
-    field: v.pipe(v.string(), v.nonEmpty("You must provide a title"), v.maxLength(100, "Field is too long")),
+    field: v.pipe(v.string(), v.nonEmpty("You must provide a name"), v.maxLength(100, "Field is too long")),
     value: v.optional(v.pipe(v.string(), v.nonEmpty("Add your description"), v.maxLength(240, "Value is too long"))),
     url: v.optional(
       v.pipe(
@@ -44,7 +44,7 @@ const resourceSchema = v.pipe(
 );
 
 const gaugeSchema = v.object({
-  title: v.pipe(v.string(), v.nonEmpty("You must provide a title"), v.maxLength(100, "Title is too long")),
+  name: v.pipe(v.string(), v.nonEmpty("You must provide a name"), v.maxLength(100, "Name is too long")),
   address: v.pipe(v.custom<string>(isStringAddress, "Invalid address"), v.nonEmpty("You must provide an address")),
   description: v.pipe(
     v.string(),
@@ -89,7 +89,7 @@ export default function CreateMultipleGauges() {
     defaultValues: {
       gauges: [
         {
-          title: "",
+          name: "",
           address: "",
           description: "",
           logo: "",
@@ -112,7 +112,7 @@ export default function CreateMultipleGauges() {
     (gaugeIndex: number) => {
       return (
         !singleGaugeHasErrors(gaugeIndex) &&
-        !!dirtyFields.gauges?.[gaugeIndex]?.title &&
+        !!dirtyFields.gauges?.[gaugeIndex]?.name &&
         !!dirtyFields.gauges?.[gaugeIndex]?.address &&
         !!dirtyFields.gauges?.[gaugeIndex]?.description &&
         !!dirtyFields.gauges?.[gaugeIndex]?.logo
@@ -191,7 +191,7 @@ export default function CreateMultipleGauges() {
             }
           )
         );
-        setDescription((prev) => `${prev}Gauge: ${data.title}\nAddress: ${data.address}\nMetadata: ${ipfsPin}\n\n`);
+        setDescription((prev) => `${prev}Gauge: ${data.name}\nAddress: ${data.address}\nMetadata: ${ipfsPin}\n\n`);
       },
       onError: (error) => {
         console.error(error);
@@ -242,7 +242,7 @@ export default function CreateMultipleGauges() {
                   <div key={gauge.id} className="w-full rounded-xl bg-neutral-0 p-8">
                     <div className="mb-5 flex flex-col">
                       <h2 className="font-medium text-lg text-neutral-800">
-                        {watchForm.gauges[gaugeIndex].title || `Gauge Name #${gaugeIndex + 1}`}
+                        {watchForm.gauges[gaugeIndex].name || `Gauge Name #${gaugeIndex + 1}`}
                       </h2>
                       {watchForm.gauges[gaugeIndex].address && isAddress(watchForm.gauges[gaugeIndex].address) ? (
                         <p className="text-neutral-600">{shortenAddress(watchForm.gauges[gaugeIndex].address)}</p>
@@ -253,21 +253,21 @@ export default function CreateMultipleGauges() {
                         {/* Gauge Fields */}
                         <Controller
                           control={control}
-                          name={`gauges.${gaugeIndex}.title`}
+                          name={`gauges.${gaugeIndex}.name`}
                           render={({ field }) => (
                             <div className="flex flex-col gap-y-2">
                               <InputText
-                                label="Title"
+                                label="name"
                                 inputClassName="placeholder:text-neutral-600"
-                                placeholder="Gauge title"
+                                placeholder="Gauge name"
                                 maxLength={100}
                                 wrapperClassName={classNames(
-                                  errors.gauges?.[gaugeIndex]?.title?.message && "!border-critical-500"
+                                  errors.gauges?.[gaugeIndex]?.name?.message && "!border-critical-500"
                                 )}
                                 {...field}
                               />
-                              {errors.gauges?.[gaugeIndex]?.title && (
-                                <p className="text-sm text-critical-500">{errors.gauges[gaugeIndex].title.message}</p>
+                              {errors.gauges?.[gaugeIndex]?.name && (
+                                <p className="text-sm text-critical-500">{errors.gauges[gaugeIndex].name.message}</p>
                               )}
                             </div>
                           )}
@@ -365,7 +365,7 @@ export default function CreateMultipleGauges() {
                               metadataURI: "url",
                             },
                             metadata: {
-                              name: watchForm.gauges[gaugeIndex].title,
+                              name: watchForm.gauges[gaugeIndex].name,
                               description: watchForm.gauges[gaugeIndex].description,
                               logo: watchForm.gauges[gaugeIndex].logo,
                               resources:
@@ -382,7 +382,7 @@ export default function CreateMultipleGauges() {
                       )}
                       <DeleteGaugeDialog
                         open={deleteGaugeIndex !== null}
-                        gaugeTitle={watchForm.gauges[gaugeIndex]?.title || `Gauge #${gaugeIndex + 1}`}
+                        gaugeTitle={watchForm.gauges[gaugeIndex]?.name || `Gauge #${gaugeIndex + 1}`}
                         onConfirm={handleConfirmDeleteGauge}
                         onCancel={closeDeleteDialog}
                       />
@@ -423,7 +423,7 @@ export default function CreateMultipleGauges() {
                     iconLeft={IconType.PLUS}
                     onClick={() =>
                       appendGauge({
-                        title: "",
+                        name: "",
                         address: "",
                         description: "",
                         logo: "",

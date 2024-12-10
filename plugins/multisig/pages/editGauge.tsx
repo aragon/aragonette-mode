@@ -29,7 +29,7 @@ type Props = {
 
 const resourceSchema = v.pipe(
   v.object({
-    field: v.pipe(v.string(), v.nonEmpty("You must provide a title"), v.maxLength(100, "Field is too long")),
+    field: v.pipe(v.string(), v.nonEmpty("You must provide a name"), v.maxLength(100, "Field is too long")),
     value: v.optional(v.pipe(v.string(), v.nonEmpty("Add your description"), v.maxLength(240, "Value is too long"))),
     url: v.optional(
       v.pipe(
@@ -51,7 +51,7 @@ const resourceSchema = v.pipe(
 );
 
 const formSchema = v.object({
-  title: v.pipe(v.string(), v.nonEmpty("You must provide a title"), v.maxLength(100, "Title is too long")),
+  name: v.pipe(v.string(), v.nonEmpty("You must provide a name"), v.maxLength(100, "Name is too long")),
   address: v.pipe(v.custom<string>(isStringAddress, "Invalid address"), v.nonEmpty("You must provide an address")),
   description: v.pipe(
     v.string(),
@@ -104,7 +104,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
     resolver: valibotResolver(formSchema),
     mode: "onTouched",
     defaultValues: {
-      title: "",
+      name: "",
       address: "",
       description: "",
       logo: "",
@@ -115,8 +115,8 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
   const hasErrors = Object.keys(errors).length > 0;
 
   useEffect(() => {
-    setTitle(watchForm.title);
-  }, [watchForm.title, setTitle]);
+    setTitle(watchForm.name);
+  }, [watchForm.name, setTitle]);
 
   useEffect(() => {
     setSummary(watchForm.description?.substring(0, 60).concat("..."));
@@ -130,7 +130,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
   useEffect(() => {
     if (didInitialize && !metadataInfo) return;
     reset({
-      title: metadataInfo?.name,
+      name: metadataInfo?.name,
       description: metadataInfo?.description,
       logo: metadataInfo?.logo,
       resources: metadataInfo?.resources,
@@ -207,18 +207,18 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             <div className="mb-6">
               <Controller
                 control={control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                   <div className="flex flex-col gap-y-2">
                     <InputText
-                      label="Title"
+                      label="Name"
                       inputClassName="placeholder:text-neutral-600"
-                      placeholder="Gauge title"
+                      placeholder="Gauge name"
                       maxLength={100}
-                      wrapperClassName={classNames(errors?.title?.message && "!border-critical-500")}
+                      wrapperClassName={classNames(errors?.name?.message && "!border-critical-500")}
                       {...field}
                     />
-                    {errors?.title && <p className="text-sm text-critical-500">{errors?.title?.message}</p>}
+                    {errors?.name && <p className="text-sm text-critical-500">{errors?.name?.message}</p>}
                   </div>
                 )}
               />
@@ -312,7 +312,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
                   metadataURI: "url",
                 },
                 metadata: {
-                  name: watchForm.title,
+                  name: watchForm.name,
                   description: watchForm.description,
                   logo: watchForm.logo,
                   resources: watchForm.resources,
