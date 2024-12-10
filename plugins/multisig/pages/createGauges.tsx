@@ -22,7 +22,6 @@ import { debounce } from "@/utils/debounce";
 import ConditionalWrapper from "@/components/ConditionalWrapper";
 import DeleteGaugeDialog from "../components/proposal/DeleteGaugeDialog";
 import PlaceHolderOr from "../components/proposal/PlaceHolderOr";
-import { config, ensConfig } from "@/context/Web3Modal";
 
 export const STEPS = {
   METADATA: "METADATA",
