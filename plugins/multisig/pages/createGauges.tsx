@@ -257,7 +257,7 @@ export default function CreateMultipleGauges() {
                           render={({ field }) => (
                             <div className="flex flex-col gap-y-2">
                               <InputText
-                                label="name"
+                                label="Name"
                                 inputClassName="placeholder:text-neutral-600"
                                 placeholder="Gauge name"
                                 maxLength={100}
