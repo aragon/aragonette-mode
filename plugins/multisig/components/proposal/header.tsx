@@ -4,14 +4,12 @@ import {
   DateFormat,
   formatterUtils,
   Heading,
-  IBreadcrumbsLink,
+  type IBreadcrumbsLink,
   IconType,
   ProposalStatus,
-  TagVariant,
 } from "@aragon/ods";
-import { MultisigProposal } from "@/plugins/multisig/utils/types";
+import { type MultisigProposal } from "@/plugins/multisig/utils/types";
 import { useProposalStatus } from "@/plugins/multisig/hooks/useProposalVariantStatus";
-import dayjs from "dayjs";
 import { HeaderSection } from "@/components/layout/header-section";
 import { Publisher } from "@/components/publisher";
 import { Else, ElseIf, If, Then } from "@/components/if";
