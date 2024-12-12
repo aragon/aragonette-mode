@@ -213,6 +213,7 @@ export default function CreateMultipleGauges() {
 
   const goBack = () => {
     setActions([]);
+    setDescription("");
     setWizardStep(STEPS.METADATA);
   };
 
