@@ -295,27 +295,18 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             {/* Submit */}
 
             <div className="mt-6 flex w-full flex-col justify-between gap-3 md:flex-row">
-              {/* {wizardStep === STEPS.METADATA && (
-                <ConditionalWrapper
-                  condition={!hasErrors}
-                  wrapper={(children) => (
-                    <Tooltip content="Please fill all required fields to preview the gauge">{children}</Tooltip>
-                  )}
+              {wizardStep === STEPS.METADATA && (
+                <Button
+                  size="lg"
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setOpenPreview(true);
+                  }}
                 >
-                  <Button
-                    size="md"
-                    type="button"
-                    variant="secondary"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenPreview(true);
-                    }}
-                    disabled={!hasErrors}
-                  >
-                    Preview
-                  </Button>
-                </ConditionalWrapper>
-              )} */}
+                  Preview
+                </Button>
+              )}
               {wizardStep === STEPS.ACTIONS && (
                 <Button size="lg" variant="tertiary" onClick={() => goBack()}>
                   Back
