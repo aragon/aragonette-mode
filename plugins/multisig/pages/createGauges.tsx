@@ -85,7 +85,7 @@ export default function CreateMultipleGauges() {
     formState: { isSubmitting, errors, dirtyFields },
   } = useForm<Form>({
     resolver: valibotResolver(formSchema),
-    mode: "onTouched",
+    mode: "onSubmit",
     defaultValues: {
       gauges: [
         {

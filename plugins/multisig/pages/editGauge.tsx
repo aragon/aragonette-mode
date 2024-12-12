@@ -102,7 +102,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
     formState: { isSubmitting, errors },
   } = useForm<Form>({
     resolver: valibotResolver(formSchema),
-    mode: "onTouched",
+    mode: "onSubmit",
     defaultValues: {
       name: "",
       address: "",
