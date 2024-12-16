@@ -93,7 +93,7 @@ export const StakePositions = () => {
   const filteredGauges = gauges.filter((gauge) => {
     if (!searchValue) return true;
     return (
-      gauge.metadata?.name.toLowerCase().includes(searchValue.toLowerCase()) ??
+      gauge.metadata?.name?.toLowerCase().includes(searchValue.toLowerCase()) ??
       gauge.address.toLowerCase().includes(searchValue.toLowerCase())
     );
   });

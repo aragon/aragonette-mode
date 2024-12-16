@@ -17,7 +17,6 @@ import { useGetGaugeInfo } from "@/plugins/voting/hooks/useGetGaugeInfo";
 import { useAlerts } from "@/context/Alerts";
 import { type GaugeMetadata } from "@/plugins/voting/components/gauges-list/types";
 import * as v from "valibot";
-import { isStringAddress } from "@/utils/address";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import classNames from "classnames";
 import PlaceHolderOr from "../components/proposal/PlaceHolderOr";
@@ -26,6 +25,11 @@ import ConditionalWrapper from "@/components/ConditionalWrapper";
 type Props = {
   id: Address;
 };
+
+export const STEPS = {
+  METADATA: "METADATA",
+  ACTIONS: "ACTIONS",
+} as const;
 
 const resourceSchema = v.pipe(
   v.object({
@@ -52,7 +56,6 @@ const resourceSchema = v.pipe(
 
 const formSchema = v.object({
   name: v.pipe(v.string(), v.nonEmpty("You must provide a name"), v.maxLength(100, "Name is too long")),
-  address: v.pipe(v.custom<string>(isStringAddress, "Invalid address"), v.nonEmpty("You must provide an address")),
   description: v.pipe(
     v.string(),
     v.nonEmpty("You must provide a description"),
@@ -80,6 +83,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
   const [openPreview, setOpenPreview] = useState(false);
   const [gaugeAddress] = useState<string | undefined>(id);
   const { addAlert } = useAlerts();
+  const [wizardStep, setWizardStep] = useState<keyof typeof STEPS>(STEPS.METADATA);
 
   const { data: modeContracts } = useGetContracts(Token.MODE);
   const { data: bptContracts } = useGetContracts(Token.BPT);
@@ -102,10 +106,9 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
     formState: { isSubmitting, errors },
   } = useForm<Form>({
     resolver: valibotResolver(formSchema),
-    mode: "onTouched",
+    mode: "onSubmit",
     defaultValues: {
       name: "",
-      address: "",
       description: "",
       logo: "",
     },
@@ -164,6 +167,7 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
             value: 0n,
           },
         ]);
+        setWizardStep(STEPS.ACTIONS);
       },
       onError: (error) => {
         console.error(error);
@@ -195,6 +199,11 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
     }
   };
 
+  const goBack = () => {
+    setActions([]);
+    setWizardStep(STEPS.METADATA);
+  };
+
   return (
     <MainSection narrow={true}>
       <div className="w-full justify-between">
@@ -204,75 +213,79 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
 
         <PlaceHolderOr selfAddress={selfAddress} canCreate={canCreate} isConnected={isConnected}>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-6">
-              <Controller
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <div className="flex flex-col gap-y-2">
-                    <InputText
-                      label="Name"
-                      inputClassName="placeholder:text-neutral-600"
-                      placeholder="Gauge name"
-                      maxLength={100}
-                      wrapperClassName={classNames(errors?.name?.message && "!border-critical-500")}
-                      {...field}
-                    />
-                    {errors?.name && <p className="text-sm text-critical-500">{errors?.name?.message}</p>}
-                  </div>
-                )}
-              />
-            </div>
-
-            <div className="mb-6">
-              <Controller
-                control={control}
-                name="description"
-                render={({ field }) => (
-                  <TextArea
-                    label="Description"
-                    inputClassName="placeholder:text-neutral-600"
-                    maxLength={500}
-                    placeholder="Gauge description"
-                    variant="default"
-                    {...field}
+            {wizardStep === STEPS.METADATA && (
+              <>
+                <div className="mb-6">
+                  <Controller
+                    control={control}
+                    name="name"
+                    render={({ field }) => (
+                      <div className="flex flex-col gap-y-2">
+                        <InputText
+                          label="Name"
+                          inputClassName="placeholder:text-neutral-600"
+                          placeholder="Gauge name"
+                          maxLength={100}
+                          wrapperClassName={classNames(errors?.name?.message && "!border-critical-500")}
+                          {...field}
+                        />
+                        {errors?.name && <p className="text-sm text-critical-500">{errors?.name?.message}</p>}
+                      </div>
+                    )}
                   />
-                )}
-              />
-            </div>
-
-            <div className="mb-6">
-              <Controller
-                control={control}
-                name="logo"
-                render={({ field }) => (
-                  <InputText
-                    label="Logo URL"
-                    inputClassName="placeholder:text-neutral-600"
-                    placeholder="https://example.com/logo.png"
-                    variant="default"
-                    {...field}
-                  />
-                )}
-              />
-            </div>
-
-            {/* Nested Resources */}
-            <div className="flex flex-col gap-y-4">
-              <div className="flex flex-col gap-0.5 md:gap-1">
-                <div className="flex flex-row items-center gap-3">
-                  <p className="text-base font-normal leading-tight text-neutral-800 md:text-lg">Resources</p>
-                  <Tag variant="neutral" label="Optional" />
                 </div>
-                <p className="text-sm font-normal leading-normal text-neutral-500 md:text-base">
-                  Provide further resources like additional metadata or external links, so people understand the gauge
-                  better.
-                </p>
-              </div>
-              <NestedResourceArray control={control} errors={errors} />
-            </div>
 
-            {!!actions.length && (
+                <div className="mb-6">
+                  <Controller
+                    control={control}
+                    name="description"
+                    render={({ field }) => (
+                      <TextArea
+                        label="Description"
+                        inputClassName="placeholder:text-neutral-600"
+                        maxLength={500}
+                        placeholder="Gauge description"
+                        variant="default"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <Controller
+                    control={control}
+                    name="logo"
+                    render={({ field }) => (
+                      <InputText
+                        label="Logo URL"
+                        inputClassName="placeholder:text-neutral-600"
+                        placeholder="https://example.com/logo.png"
+                        variant="default"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+
+                {/* Nested Resources */}
+                <div className="flex flex-col gap-y-4">
+                  <div className="flex flex-col gap-0.5 md:gap-1">
+                    <div className="flex flex-row items-center gap-3">
+                      <p className="text-base font-normal leading-tight text-neutral-800 md:text-lg">Resources</p>
+                      <Tag variant="neutral" label="Optional" />
+                    </div>
+                    <p className="text-sm font-normal leading-normal text-neutral-500 md:text-base">
+                      Provide further resources like additional metadata or external links, so people understand the
+                      gauge better.
+                    </p>
+                  </div>
+                  <NestedResourceArray control={control} errors={errors} />
+                </div>
+              </>
+            )}
+
+            {!!actions.length && wizardStep === STEPS.ACTIONS && (
               <ProposalActions
                 actions={actions}
                 emptyListDescription="The proposal has no actions defined yet. Select a type of action to add to the proposal."
@@ -281,17 +294,24 @@ export const EditGauge: React.FC<Props> = ({ id }: { id: Address }) => {
 
             {/* Submit */}
 
-            <div className="mt-6 flex w-full flex-col gap-3 md:flex-row">
-              <ConditionalWrapper
-                condition={!hasErrors}
-                wrapper={(children) => (
-                  <Tooltip content="Please fill all required fields to preview the gauge">{children}</Tooltip>
-                )}
-              >
-                <Button size="md" variant="secondary" onClick={() => setOpenPreview(true)} disabled={!hasErrors}>
+            <div className="mt-6 flex w-full flex-col justify-between gap-3 md:flex-row">
+              {wizardStep === STEPS.METADATA && (
+                <Button
+                  size="lg"
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setOpenPreview(true);
+                  }}
+                >
                   Preview
                 </Button>
-              </ConditionalWrapper>
+              )}
+              {wizardStep === STEPS.ACTIONS && (
+                <Button size="lg" variant="tertiary" onClick={() => goBack()}>
+                  Back
+                </Button>
+              )}
               <Button
                 type="submit"
                 isLoading={isCreating || uploadingIpfs || isSubmitting}

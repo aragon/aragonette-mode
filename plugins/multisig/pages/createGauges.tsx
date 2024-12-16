@@ -85,7 +85,7 @@ export default function CreateMultipleGauges() {
     formState: { isSubmitting, errors, dirtyFields },
   } = useForm<Form>({
     resolver: valibotResolver(formSchema),
-    mode: "onTouched",
+    mode: "onSubmit",
     defaultValues: {
       gauges: [
         {
@@ -139,8 +139,10 @@ export default function CreateMultipleGauges() {
 
   const onSubmit = async (data: Form) => {
     if (actions.length === 0) {
-      setTitle("Create Gauges Proposal");
-      setSummary("Create multiple gauges");
+      setTitle(data.gauges.length > 1 ? "Create Gauges Proposal" : "Create Gauge Proposal");
+      setSummary(
+        data.gauges.length > 1 ? "Create multiple gauges" : data.gauges[0].description?.slice(0, 60)?.concat("...")
+      );
       try {
         for (const gauge of data.gauges) {
           await createGauge(gauge);
@@ -211,6 +213,7 @@ export default function CreateMultipleGauges() {
 
   const goBack = () => {
     setActions([]);
+    setDescription("");
     setWizardStep(STEPS.METADATA);
   };
 

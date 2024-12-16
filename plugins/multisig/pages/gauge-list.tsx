@@ -20,6 +20,7 @@ import { GaugeListItem } from "./gauge";
 import { useAccount } from "wagmi";
 import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
 import { MissingContentView } from "@/components/MissingContentView";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 export const GaugesList: React.FC = () => {
   const { isConnected } = useAccount();
@@ -28,6 +29,7 @@ export const GaugesList: React.FC = () => {
   const [selectedGauges] = useState<GaugeItem[]>([]);
   const [activeSort, setActiveSort] = useState<string>();
   const [listState, setListState] = useState<DataListState>();
+  const { open } = useWeb3Modal();
 
   const sortItems = useMemo(() => [{ value: "votes_desc", label: "Total votes", type: "DESC" as const }], []);
 
@@ -92,7 +94,7 @@ export const GaugesList: React.FC = () => {
   const filteredGauges = gauges.filter((gauge) => {
     if (!searchValue) return true;
     return (
-      gauge.metadata?.name.toLowerCase().includes(searchValue.toLowerCase()) ??
+      gauge.metadata?.name?.toLowerCase().includes(searchValue.toLowerCase()) ??
       gauge.address.toLowerCase().includes(searchValue.toLowerCase())
     );
   });
@@ -133,61 +135,21 @@ export const GaugesList: React.FC = () => {
     }
   }, [searchValue]);
 
-  const MainContent: React.FC = () => {
-    if (!isConnected)
-      return (
-        <MissingContentView callToAction="Connect wallet" onClick={() => open()}>
-          Please connect your wallet to access the gauge section.
-        </MissingContentView>
-      );
-    else if (!noGauges)
-      return (
-        <MissingContentView>
-          No gauges have been created yet. <br />
-          Here you will see the gauges created by the Council before they can be submitted to the community veto stage.{" "}
-          {canCreate && <>Create your first gauge.</>}
-        </MissingContentView>
-      );
-    else
-      return (
-        <DataListRoot
-          entityLabel="Projects"
-          itemsCount={gaugesWithBPTAndMode.length}
-          pageSize={gaugesWithBPTAndMode.length}
-          className="mb-12 gap-y-6"
-          state={listState}
-        >
-          <DataListFilter
-            searchValue={searchValue}
-            activeSort={activeSort}
-            onSortChange={pickActiveSort}
-            sortItems={sortItems}
-            placeholder="Filter projects by name or address"
-            onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
-          />
-          {gaugesWithBPTAndMode.length > 0 && (
-            <div className="hidden gap-x-4 px-6 md:flex">
-              <p className="flex w-1/3 flex-row">Name</p>
-              <div className="end flex w-1/3 flex-row">
-                <p className="flex w-1/2 justify-end">Total Votes</p>
-              </div>
-              <p className="w-1/3 flex-auto"></p>
-            </div>
-          )}
-          <DataListContainer emptyFilteredState={emptyState}>
-            {gaugesWithBPTAndMode.map((gauge, pos) => (
-              <GaugeListItem
-                key={pos}
-                props={gauge}
-                gaugeVotes={gauge.totalVotes}
-                totalVotes={totalVotesBn}
-                selected={!!selectedGauges.find((g) => g.address === gauge.address)}
-              />
-            ))}
-          </DataListContainer>
-        </DataListRoot>
-      );
-  };
+  if (!isConnected)
+    return (
+      <MissingContentView callToAction="Connect wallet" onClick={() => open()}>
+        Please connect your wallet to access the gauge section.
+      </MissingContentView>
+    );
+
+  if (!noGauges)
+    return (
+      <MissingContentView>
+        No gauges have been created yet. <br />
+        Here you will see the gauges created by the Council before they can be submitted to the community veto stage.{" "}
+        {canCreate && <>Create your first gauge.</>}
+      </MissingContentView>
+    );
 
   return (
     <div className="flex w-full flex-col items-end justify-end gap-y-6">
@@ -198,7 +160,42 @@ export const GaugesList: React.FC = () => {
           </Button>
         </Link>
       </div>
-      <MainContent />
+      <DataListRoot
+        entityLabel="Projects"
+        itemsCount={gaugesWithBPTAndMode.length}
+        pageSize={gaugesWithBPTAndMode.length}
+        className="mb-12 gap-y-6"
+        state={listState}
+      >
+        <DataListFilter
+          searchValue={searchValue}
+          activeSort={activeSort}
+          onSortChange={pickActiveSort}
+          sortItems={sortItems}
+          placeholder="Filter projects by name or address"
+          onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
+        />
+        {gaugesWithBPTAndMode.length > 0 && (
+          <div className="hidden gap-x-4 px-6 md:flex">
+            <p className="flex w-1/3 flex-row">Name</p>
+            <div className="end flex w-1/3 flex-row">
+              <p className="flex w-1/2 justify-end">Total Votes</p>
+            </div>
+            <p className="w-1/3 flex-auto"></p>
+          </div>
+        )}
+        <DataListContainer emptyFilteredState={emptyState}>
+          {gaugesWithBPTAndMode.map((gauge, pos) => (
+            <GaugeListItem
+              key={pos}
+              props={gauge}
+              gaugeVotes={gauge.totalVotes}
+              totalVotes={totalVotesBn}
+              selected={!!selectedGauges.find((g) => g.address === gauge.address)}
+            />
+          ))}
+        </DataListContainer>
+      </DataListRoot>
     </div>
   );
 };
