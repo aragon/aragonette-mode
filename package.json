@@ -47,7 +47,7 @@
     "recharts": "^2.12.7",
     "valibot": "^1.0.0-beta.9",
     "viem": "^2.21.26",
-    "wagmi": "2.12.17"
+    "wagmi": "2.14.1"
   },
   "devDependencies": {
     "@aragon/osx-commons-configs": "^0.2.0",
