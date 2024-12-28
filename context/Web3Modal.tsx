@@ -1,5 +1,5 @@
 import { http, createConfig } from "wagmi";
-import { walletConnect } from "wagmi/connectors";
+import { walletConnect, coinbaseWallet } from "wagmi/connectors";
 import {
   PUB_APP_DESCRIPTION,
   PUB_APP_NAME,
@@ -30,6 +30,6 @@ export const config = createConfig({
       metadata,
       showQrModal: false,
     }),
-    // coinbaseWallet({ appName: metadata.name, appLogoUrl: metadata.icons[0] }),
+    coinbaseWallet({ appName: metadata.name, appLogoUrl: metadata.icons[0] }),
   ],
 });
