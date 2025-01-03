@@ -1,6 +1,6 @@
 import { AbiEvent, Address, getAbiItem, GetLogsReturnType } from "viem";
 import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
-import { client } from "./client";
+import { client } from "./serverClient";
 import { GaugeVoteSummary, GetGaugeReturn, ProcessedEvent, VoteAndResetRawData } from "./types";
 import { optionalProperty } from "../optionalProperty";
 
@@ -29,7 +29,8 @@ export async function paginateLogs(
   startBlock: bigint,
   gauges: Address[],
   event: AbiEvent,
-  epoch: string | "all"
+  epoch: string | "all",
+  toBlock: bigint | "latest"
 ) {
   // conditionally add the epoch if it's provided
   const optionalEpoch = epoch === "all" ? undefined : BigInt(epoch);
@@ -42,7 +43,7 @@ export async function paginateLogs(
   let logs = await client.getLogs({
     address: contract,
     fromBlock: startBlock,
-    toBlock: "latest",
+    toBlock,
     args,
     event,
   });
@@ -55,7 +56,7 @@ export async function paginateLogs(
     const newLogs = await client.getLogs({
       address: contract,
       fromBlock: lastBlock,
-      toBlock: "latest",
+      toBlock,
       args,
       event,
     });
@@ -93,10 +94,11 @@ export async function fetchVoteAndResetData(
   contract: Address,
   gauges: Address[],
   epoch: string | "all",
-  fromBlock = 0n
+  fromBlock = 0n,
+  toBlock: bigint | "latest" = "latest"
 ): Promise<ProcessedEvent[]> {
   const promiseLogs = [VotedEvent, ResetEvent].map(
-    async (event) => await paginateLogs(contract, fromBlock, gauges, event, epoch)
+    async (event) => await paginateLogs(contract, fromBlock, gauges, event, epoch, toBlock)
   );
 
   const logs = (await Promise.all(promiseLogs)) as unknown as VoteAndResetRawData[][];

@@ -1,15 +1,7 @@
 import { SimpleGaugeVotingAbi } from "@/artifacts/SimpleGaugeVoting.sol";
 import { VotingEscrowAbi } from "@/artifacts/VotingEscrow.sol";
-import { PUB_CHAIN } from "@/constants";
-import { Address, createPublicClient, http } from "viem";
-
-/**
- * @title Instantiates a public client for the PUB_CHAIN
- */
-export const client = createPublicClient({
-  transport: http(),
-  chain: PUB_CHAIN,
-});
+import { Address } from "viem";
+import { client } from "./serverClient";
 
 /**
  * @title Fetch the voter address from the escrow contract

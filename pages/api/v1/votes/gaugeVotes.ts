@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { client } from "@/utils/api/client";
+import { client } from "@/utils/api/serverClient";
 import { summarizeVotesByGauge, fetchVoteAndResetData } from "@/utils/api/parseVotes";
 import { Address, isAddress } from "viem";
 import { getAllGauges, getGaugeDetails } from "@/utils/api/gauges";
@@ -11,6 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const epoch = query.epoch as string | "all";
   const gauge = query.gauge as Address | "all";
   let fromBlock = query.fromBlock as string;
+  let toBlock = query.toBlock as string;
 
   switch (method) {
     case "GET":
@@ -33,12 +34,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fromBlock = "0";
       }
 
+      if (!toBlock || isNaN(Number(toBlock))) {
+        toBlock = "latest";
+      }
+
       // set optional fields
       const gauges = gauge === "all" ? await getAllGauges(client, votingContract) : [gauge];
 
       // process the data
       const gaugeDetails = await getGaugeDetails(client, votingContract, gauges);
-      const votes = await fetchVoteAndResetData(votingContract, gauges, epoch, BigInt(fromBlock));
+      const votes = await fetchVoteAndResetData(votingContract, gauges, epoch, BigInt(fromBlock), BigInt(toBlock));
       const summary = summarizeVotesByGauge(votes, gaugeDetails, votingContract, epoch);
 
       res.status(200).json({ data: summary });

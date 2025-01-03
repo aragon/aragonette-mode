@@ -2,7 +2,7 @@ import { describe, it, expect } from "bun:test";
 import handler from "@/pages/api/v1/voters/[voter]";
 import { createMocks } from "node-mocks-http";
 import { MODE_ESCROW_CONTRACT } from "@/constants";
-import { getVotingContract } from "@/utils/api/client";
+import { getVotingContract } from "@/utils/api/getContracts";
 
 describe("/api/votes/[voter] API", async () => {
   const votingContract = await getVotingContract(MODE_ESCROW_CONTRACT);

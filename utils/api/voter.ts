@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { client } from "./client";
+import { client } from "./serverClient";
 import { optionalProperty } from "../optionalProperty";
 import { flattenUnique, ResetEvent, VotedEvent } from "./parseVotes";
 import { ProcessedEvent, VoteAndResetRawData, VoterData } from "./types";

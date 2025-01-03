@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { client, getStakingContract } from "@/utils/api/client";
+import { client } from "@/utils/api/serverClient";
 import { Address, isAddress } from "viem";
 import { getAllGauges } from "@/utils/api/gauges";
 import { fetchVoterData, transformVoterData } from "@/utils/api/voter";
 import { isNumberlikeOrAll } from "@/utils/api/validation";
+import { getStakingContract } from "@/utils/api/getContracts";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, query } = req;

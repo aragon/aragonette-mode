@@ -14,12 +14,13 @@ This endpoint provides summarized voting data for one or more gauges associated 
 
 ## Request Parameters
 
-| **Parameter**    | **Type** | **Required** | **Description**                                                    |
-| ---------------- | -------- | ------------ | ------------------------------------------------------------------ |
-| `votingContract` | `string` | Yes          | Address of the voting contract.                                    |
-| `epoch`          | `string` | No           | Epoch number or `"all"` to specify the voting period.              |
-| `gauge`          | `string` | No           | Specific gauge address or `"all"` to fetch data for all gauges.    |
-| `fromBlock`      | `string` | No           | Block number from which to start fetching data (default is `"0"`). |
+| **Parameter**    | **Type** | **Required** | **Description**                                                                                                                                                                 |
+| ---------------- | -------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `votingContract` | `string` | Yes          | Address of the voting contract.                                                                                                                                                 |
+| `epoch`          | `string` | Yes          | Epoch number or `"all"` to specify the voting period.                                                                                                                           |
+| `gauge`          | `string` | Yes          | Specific gauge address or `"all"` to fetch data for all gauges.                                                                                                                 |
+| `fromBlock`      | `string` | No           | Block number from which to start fetching data (default is `"0"`).                                                                                                              |
+| `toBlock`        | `string` | No           | Block number to fetch data until. Best practice is to fetch the latest voting window end block using the epoch time endpoint to ensure current voting doesn't pollute your data |
 
 ---
 

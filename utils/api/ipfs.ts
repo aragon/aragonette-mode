@@ -1,10 +1,9 @@
 import { fromHex, type Hex } from "viem";
 import type { Metadata } from "./types";
+import { PUB_IPFS_ENDPOINTS } from "@/constants";
 
 const IPFS_FETCH_TIMEOUT = 10_000;
 const MAX_RETRIES = 3;
-
-const PUB_IPFS_ENDPOINTS = "https://externalorgs.mypinata.cloud/ipfs";
 
 export async function fetchIpfsAsJson(ipfsUri: string): Promise<Metadata> {
   const res = await fetchRawIpfs(ipfsUri);

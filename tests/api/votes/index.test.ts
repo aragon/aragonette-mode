@@ -3,7 +3,7 @@ import handler from "@/pages/api/v1/votes/gaugeVotes";
 import { createMocks } from "node-mocks-http";
 import { MODE_ESCROW_CONTRACT } from "@/constants";
 import { GaugeVoteSummary } from "@/utils/api/types";
-import { getVotingContract } from "@/utils/api/client";
+import { getVotingContract } from "@/utils/api/getContracts";
 
 describe("/api/votes/gaugeVotes API", () => {
   it("returns the list of gauges", async () => {

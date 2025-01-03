@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { MODE_ESCROW_CONTRACT } from "@/constants";
-import { client, getVotingContract } from "@/utils/api/client";
+import { client } from "@/utils/api/serverClient";
 import { getAllGauges, getGaugeDetails } from "@/utils/api/gauges";
 import { Address, isAddress } from "viem";
+import { getVotingContract } from "@/utils/api/getContracts";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
