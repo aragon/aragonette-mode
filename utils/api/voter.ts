@@ -5,7 +5,7 @@ import { flattenUnique, ResetEvent, VotedEvent } from "./parseVotes";
 import { ProcessedEvent, VoteAndResetRawData, VoterData } from "./types";
 
 /**
- * @title Fetches the logs for a voter from the voting contract.
+ * @title Fetches the logs for a voter from the voting contract
  * @param votingContract - Address of the voting contract
  * @param voter - Address of the voter - note that if reset was called via the staking contract, the voter will be the staking contract
  * @param epoch - Epoch to filter logs by, or "all" for all epochs
