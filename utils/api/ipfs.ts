@@ -1,6 +1,5 @@
 import { fromHex, type Hex } from "viem";
 import type { Metadata } from "./types";
-import { PUB_IPFS_ENDPOINTS } from "@/constants";
 
 const IPFS_FETCH_TIMEOUT = 10_000;
 const MAX_RETRIES = 3;
@@ -18,7 +17,7 @@ export async function fetchRawIpfs(ipfsUri: string): Promise<Response> {
     if (!ipfsUri) throw new Error("Invalid IPFS URI after hex conversion");
   }
 
-  const uriPrefix = PUB_IPFS_ENDPOINTS;
+  const uriPrefix = "https://externalorgs.mypinata.cloud/ipfs";
   const cid = resolvePath(ipfsUri);
 
   const controller = new AbortController();
