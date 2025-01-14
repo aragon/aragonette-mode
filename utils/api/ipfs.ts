@@ -2,7 +2,7 @@ import { fromHex, type Hex } from "viem";
 import type { Metadata } from "./types";
 
 const IPFS_FETCH_TIMEOUT = 10_000;
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5;
 
 export async function fetchIpfsAsJson(ipfsUri: string): Promise<Metadata> {
   const res = await fetchRawIpfs(ipfsUri);
