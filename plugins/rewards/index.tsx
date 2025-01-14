@@ -5,7 +5,8 @@ import { SectionHeader } from "../stake/components/section-header";
 import RewardItemList from "./components/reward-item-list";
 import { useGetUserTotalRewards } from "../voting/hooks/useGetUserRewards";
 import { useMemo } from "react";
-import { NumberFormat, StateSkeletonBar, formatterUtils } from "@aragon/ods";
+import { StateSkeletonBar } from "@aragon/ods";
+import { formatRewards } from "@/utils/numbers";
 
 export default function PluginPage() {
   const { data: userRewards, isLoading } = useGetUserTotalRewards();
@@ -31,15 +32,13 @@ export default function PluginPage() {
               <br />
               <div className="flex flex-row gap-x-20 gap-y-6">
                 <div className="flex flex-col">
-                  <div className=" flex items-baseline gap-x-1">
+                  <div className="flex items-baseline gap-x-1">
                     {isLoading ? (
                       <StateSkeletonBar className="my-2 flex h-7 !bg-primary-500/20" width={120} />
-                    ) : totalUserRewards && totalUserRewards !== 0 ? (
-                      <span className="title text-3xl text-neutral-900 md:text-3xl">
-                        {formatterUtils.formatNumber(totalUserRewards, { format: NumberFormat.FIAT_TOTAL_SHORT })}
-                      </span>
                     ) : (
-                      <span className="title text-3xl text-neutral-900 md:text-3xl">None</span>
+                      <span className="title text-3xl text-neutral-900 md:text-3xl">
+                        {formatRewards(totalUserRewards)}
+                      </span>
                     )}
                   </div>
                   <span className="text-md text-neutral-700">Claimable rewards</span>

@@ -1,11 +1,12 @@
-import { Avatar, Button, DataListItem, formatterUtils, IconType, NumberFormat } from "@aragon/ods";
-import { shortenAddress } from "@/utils/address";
-import { useClaimReward } from "../hooks/useClaimReward";
-import { useQueryClient } from "@tanstack/react-query";
+import type { TokenMetadataResponse } from "@/pages/api/token-metadata";
 import { useGetUserRewards } from "@/plugins/voting/hooks/useGetUserRewards";
-import { type RewardDatum } from "@/server/utils/api/types";
-import { type Address, formatUnits, parseUnits, zeroAddress } from "viem";
-import { type TokenMetadataResponse } from "@/pages/api/token-metadata";
+import type { RewardDatum } from "@/server/utils/api/types";
+import { shortenAddress } from "@/utils/address";
+import { formatRewards } from "@/utils/numbers";
+import { Avatar, Button, DataListItem, IconType, NumberFormat, formatterUtils } from "@aragon/ods";
+import { useQueryClient } from "@tanstack/react-query";
+import { type Address, zeroAddress } from "viem";
+import { useClaimReward } from "../hooks/useClaimReward";
 
 type GaugeItemProps = {
   rewardToken: string;
@@ -53,7 +54,7 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
           })}{" "}
           <span className="title text-xs text-neutral-600">{metadata?.symbol}</span>
         </p>
-        <p>{formatterUtils.formatNumber(userRewards.value, { format: NumberFormat.FIAT_TOTAL_SHORT })}</p>
+        <p>{formatRewards(userRewards.value)}</p>
       </div>
 
       <div className="flex justify-end md:col-span-4 lg:col-span-3">

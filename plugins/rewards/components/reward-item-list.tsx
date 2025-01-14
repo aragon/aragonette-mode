@@ -1,6 +1,6 @@
 import { useTokenMetadata } from "@/hooks/useTokenMetadata";
 import { useGetUserTotalRewards } from "@/plugins/voting/hooks/useGetUserRewards";
-import { DataListContainer, DataListRoot, IconType, type IDataListContainerState } from "@aragon/ods";
+import { DataListContainer, DataListRoot, type IDataListContainerState, IconType } from "@aragon/ods";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
@@ -42,13 +42,15 @@ export const RewardItemList: React.FC = () => {
         <div className="hidden gap-x-4 px-6 md:grid md:grid-cols-12">
           <p className="md:col-span-4">Name</p>
           <p className="text-end md:col-span-4 lg:col-span-5">Rewards</p>
-          <div className="md:col-span-4 lg:col-span-3"></div>
+          <div className="md:col-span-4 lg:col-span-3" />
         </div>
       )}
       <DataListContainer emptyState={emptyState}>
         {address &&
           orderedRewards?.map((reward) => {
-            const token = tokenMetadata?.find((metadata) => metadata?.address === reward.token);
+            const token = tokenMetadata?.find(
+              (metadata) => metadata?.address?.toLowerCase() === reward.token?.toLowerCase()
+            );
             return <RewardItem key={reward.token} rewardToken={reward.token} metadata={token} userRewards={reward} />;
           })}
       </DataListContainer>
