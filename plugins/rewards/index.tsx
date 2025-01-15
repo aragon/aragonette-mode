@@ -58,7 +58,6 @@ export default function PluginPage() {
                   Hidden Hand BPT
                 </Link>
               </div>
-              <br />
               <div className="flex flex-row gap-x-20 gap-y-6">
                 <div className="flex flex-col">
                   <div className="flex items-baseline gap-x-1">
