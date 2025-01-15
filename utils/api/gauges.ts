@@ -45,19 +45,21 @@ export async function getGaugeDetails(
 
     // fetch the metadata from the IPFS
     const gaugePromises = gaugeDetails.map(async ({ gauge, data }) => {
-      const ipfsURI = data[2];
+      const [isActive, _, ipfsURI] = data;
       try {
         const metadata: GaugeMetadata = await fetchIpfsAsJson(ipfsURI);
         return {
           address: gauge,
-          ipfsURI: ipfsURI,
+          isActive: Boolean(isActive),
+          ipfsURI,
           metadata,
         };
       } catch (e) {
         console.warn("Error fetching gauge", gauge, (e as any).message);
         return {
           address: gauge,
-          ipfsURI: ipfsURI,
+          isActive: Boolean(isActive),
+          ipfsURI,
           metadata: "Error fetching gauge details from IPFS",
         };
       }

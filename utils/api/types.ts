@@ -46,6 +46,7 @@ export type GaugeDetail = [boolean, bigint, string];
 
 export type GetGaugeReturn = {
   address: Address;
+  isActive: boolean;
   ipfsURI: string;
   metadata: GaugeMetadata | string;
 };
