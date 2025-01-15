@@ -118,7 +118,8 @@ export const StakePositions = () => {
     ]
   );
 
-  const { data } = useGetGaugeRewards();
+  const { data: modeRewardsData } = useGetGaugeRewards(Token.MODE);
+  const { data: bptRewardsData } = useGetGaugeRewards(Token.BPT);
 
   const gaugesWithBPTAndMode = filteredGauges
     .map((gauge) => {
@@ -132,7 +133,9 @@ export const StakePositions = () => {
         (v) => v?.gaugeAddress === gauge.address && v?.token === Token.MODE
       )?.votes;
       const userVotes = BigInt((userBPTVotes ?? 0n) + (userModeVotes ?? 0n));
-      const rewards = data?.find((d) => d.proposal === gauge.address) ?? ({} as ProposalDatum);
+      const modeRewards = modeRewardsData?.find((v) => v.proposal.toLowerCase() === gauge.address.toLowerCase());
+      const bptRewards = bptRewardsData?.find((v) => v.proposal.toLowerCase() === gauge.address.toLowerCase());
+      const totalRewards = (modeRewards?.totalValue ?? 0) + (bptRewards?.totalValue ?? 0);
 
       return {
         ...gauge,
@@ -142,12 +145,13 @@ export const StakePositions = () => {
         userModeVotes,
         totalVotes,
         userVotes,
-        rewards,
+        modeRewards,
+        bptRewards,
+        totalRewards,
       };
     })
     .sort((a, b) => {
-      if (activeSort === "rewards_desc")
-        return (a?.rewards?.maxTotalValue ?? 0) > (b?.rewards?.maxTotalValue ?? 0) ? -1 : 1;
+      if (activeSort === "rewards_desc") return (a?.totalRewards ?? 0) > (b?.totalRewards ?? 0) ? -1 : 1;
       if (activeSort === "user_votes_desc") return a.userVotes > b.userVotes ? -1 : 1;
       if (activeSort === "votes_desc") return a.totalVotes > b.totalVotes ? -1 : 1;
       return 0;
@@ -203,7 +207,8 @@ export const StakePositions = () => {
               totalVotes={totalVotesBn}
               userBPTVotes={gauge.userBPTVotes}
               userModeVotes={gauge.userModeVotes}
-              rewards={gauge.rewards}
+              bptRewards={gauge.bptRewards}
+              modeRewards={gauge.modeRewards}
               selected={!!selectedGauges.find((g) => g.address === gauge.address)}
               onSelect={(selected) => {
                 setSelectedGauges((selectedGauges) => {

@@ -7,6 +7,7 @@ import { GaugeDetailsDialog } from "./gauge-details-dialog";
 import { Token } from "../../types/tokens";
 import { useGetAccountVp } from "../../hooks/useGetAccountVp";
 import { type ProposalDatum } from "@/server/utils/api/types";
+import { formatRewards } from "@/utils/numbers";
 
 type GaugeItemProps = {
   props: GaugeItem;
@@ -15,7 +16,8 @@ type GaugeItemProps = {
   gaugeVotes: bigint;
   userBPTVotes?: bigint;
   userModeVotes?: bigint;
-  rewards: ProposalDatum;
+  bptRewards?: ProposalDatum;
+  modeRewards?: ProposalDatum;
   onSelect: (selected: boolean) => void;
 };
 
@@ -26,7 +28,8 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
   userBPTVotes,
   userModeVotes,
   gaugeVotes,
-  rewards,
+  modeRewards,
+  bptRewards,
   onSelect,
 }) => {
   const metadata = props.metadata;
@@ -98,22 +101,27 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
           </div>
 
           {/* Stats sections */}
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-x-8 lg:col-span-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-x-4 lg:col-span-6">
             {/* Total Value section */}
             <div className="flex flex-col lg:w-1/3 lg:text-right">
               <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Total value</p>
-              <p>
-                {formatterUtils.formatNumber(rewards.totalValue ?? 0, {
-                  format: NumberFormat.FIAT_TOTAL_LONG,
-                })}
-              </p>
-              <p>
-                {rewards?.valuePerVote ?? 0}% <span className="title text-xs text-neutral-600">of total</span>
-              </p>
+              {modeRewards?.totalValue === 0 && bptRewards?.totalValue === 0 ? (
+                <p className="title text-neutral-700">NONE</p>
+              ) : (
+                <div className="flex flex-col justify-between lg:text-right">
+                  <p className="flex items-center gap-x-1 lg:justify-end">
+                    {formatRewards(modeRewards?.totalValue, NumberFormat.FIAT_TOTAL_SHORT)}
+                    <Avatar alt="Mode Token icon" className="!md:size-5 !size-4" src="/mode-token-icon.png" />
+                  </p>
+                  <p className="flex items-center gap-x-1 lg:justify-end">
+                    {formatRewards(bptRewards?.totalValue, NumberFormat.FIAT_TOTAL_SHORT)}
+                    <Avatar alt="BPT Token icon" className="!md:size-5 !size-4" src="/bpt-token-icon.png" />
+                  </p>
+                </div>
+              )}
             </div>
-
             {/* Total Votes section */}
-            <div className="flex flex-col lg:w-1/3 lg:text-right">
+            <div className="flex flex-col justify-between lg:w-1/3 lg:text-right">
               <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Total votes</p>
               <p>
                 {gaugeTotalVotes} <span className="title text-xs text-neutral-600">votes</span>
@@ -124,7 +132,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
             </div>
 
             {/* User Votes section */}
-            <div className="flex flex-col lg:w-1/3 lg:text-right">
+            <div className="flex flex-col justify-between self-center lg:w-1/3 lg:text-right">
               <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Your votes</p>
               {userModeVotes || userBPTVotes ? (
                 <>

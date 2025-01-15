@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useAlerts } from "@/context/Alerts";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { ContractFunctionExecutionError } from "viem";
@@ -74,10 +74,14 @@ export function useTransactionManager(params: TxLifecycleParams) {
   });
   const { addAlert } = useAlerts();
 
-  useEffect(() => {
-    if (status === "idle" || status === "pending") return;
+  const prevStatus = useRef(status);
+  const prevHash = useRef(hash);
+  const prevIsConfirming = useRef(isConfirming);
+  const prevIsConfirmed = useRef(isConfirmed);
 
-    if (status === "error" && error) {
+  // Memoized error handler
+  const handleError = useCallback(
+    (error: Error) => {
       const parsedError = parseTransactionError(error);
 
       switch (parsedError.type) {
@@ -116,6 +120,37 @@ export function useTransactionManager(params: TxLifecycleParams) {
       if (typeof onError === "function") {
         onError(error);
       }
+    },
+    [
+      addAlert,
+      onError,
+      params.onDeclineMessage,
+      params.onDeclineDescription,
+      params.onErrorMessage,
+      params.onErrorDescription,
+    ]
+  );
+
+  useEffect(() => {
+    // Skip if no state changes
+    if (
+      prevStatus.current === status &&
+      prevHash.current === hash &&
+      prevIsConfirming.current === isConfirming &&
+      prevIsConfirmed.current === isConfirmed
+    ) {
+      return;
+    }
+
+    prevStatus.current = status;
+    prevHash.current = hash;
+    prevIsConfirming.current = isConfirming;
+    prevIsConfirmed.current = isConfirmed;
+
+    if (status === "idle" || status === "pending") return;
+
+    if (status === "error" && error) {
+      handleError(error);
       return;
     }
 
@@ -148,19 +183,28 @@ export function useTransactionManager(params: TxLifecycleParams) {
     isConfirming,
     isConfirmed,
     error,
-    onError,
+    handleError,
     addAlert,
-    params.onDeclineMessage,
-    params.onDeclineDescription,
-    params.onErrorMessage,
-    params.onErrorDescription,
     params.onSuccessMessage,
     params.onSuccessDescription,
     onSuccess,
   ]);
 
+  const wrappedWriteContract = useCallback(
+    async (...args: Parameters<typeof writeContract>) => {
+      try {
+        writeContract(...args);
+      } catch (err) {
+        if (err instanceof Error) {
+          handleError(err);
+        }
+      }
+    },
+    [writeContract, handleError]
+  );
+
   return {
-    writeContract,
+    writeContract: wrappedWriteContract,
     hash,
     status,
     isConfirming,

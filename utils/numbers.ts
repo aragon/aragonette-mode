@@ -39,9 +39,12 @@ export function compactNumber(input: number | string, decimalPlaces = 2): string
   return "~0.0";
 }
 
-export const formatRewards = (value: number | undefined | null) => {
+export const formatRewards = (
+  value: number | undefined | null,
+  formatter: NumberFormat = NumberFormat.FIAT_TOTAL_SHORT
+) => {
   if (!value) return "None";
   if (value === 0) return "$0.00";
   if (value < 0.01) return "< $0.01";
-  return formatterUtils.formatNumber(value, { format: NumberFormat.FIAT_TOTAL_SHORT });
+  return formatterUtils.formatNumber(value, { format: formatter });
 };

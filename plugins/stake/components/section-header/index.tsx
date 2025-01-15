@@ -3,9 +3,9 @@ import { Link } from "@aragon/ods";
 import { type ReactNode } from "react";
 
 interface IHeaderProps {
-  title: string;
+  title?: string;
   children: ReactNode;
-  learnMoreUrl: string;
+  learnMoreUrl?: string;
 }
 
 export const SectionHeader: React.FC<IHeaderProps> = ({ title, children, learnMoreUrl }) => {

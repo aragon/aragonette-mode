@@ -7,6 +7,7 @@ import { Avatar, Button, DataListItem, IconType, NumberFormat, formatterUtils } 
 import { useQueryClient } from "@tanstack/react-query";
 import { type Address, zeroAddress } from "viem";
 import { useClaimReward } from "../hooks/useClaimReward";
+import { useCallback } from "react";
 
 type GaugeItemProps = {
   rewardToken: string;
@@ -19,10 +20,16 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
   const queryClient = useQueryClient();
   const { queryKey } = useGetUserRewards();
 
-  const { claimReward, isConfirming } = useClaimReward(
-    rewardToken,
-    async () => await queryClient.invalidateQueries({ queryKey })
-  );
+  const onClaimSuccess = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey });
+  }, [queryClient, queryKey]);
+
+  const { claimReward, isConfirming } = useClaimReward(rewardToken, onClaimSuccess);
+
+  const handleClaim = useCallback(async () => {
+    if (isClaimed || isConfirming) return;
+    await claimReward();
+  }, [claimReward, isClaimed, isConfirming]);
 
   return (
     <DataListItem
@@ -62,10 +69,10 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
           size="md"
           variant="tertiary"
           iconLeft={isClaimed ? IconType.CHECKMARK : undefined}
-          disabled={isConfirming}
+          disabled={isConfirming || isClaimed}
           isLoading={isConfirming}
           className="btn btn-primary w-full transition-none disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
-          onClick={claimReward}
+          onClick={handleClaim}
         >
           {isConfirming ? "Claiming..." : isClaimed ? "Claimed" : "Claim Reward"}
         </Button>

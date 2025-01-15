@@ -5,7 +5,7 @@ import { SectionHeader } from "../stake/components/section-header";
 import RewardItemList from "./components/reward-item-list";
 import { useGetUserTotalRewards } from "../voting/hooks/useGetUserRewards";
 import { useMemo } from "react";
-import { IconType, StateSkeletonBar, Button } from "@aragon/ods";
+import { IconType, StateSkeletonBar, Button, Link } from "@aragon/ods";
 import { formatRewards } from "@/utils/numbers";
 import { useGetRewardsUrl } from "../stake/hooks/useGetRewardsUrl";
 
@@ -24,14 +24,40 @@ export default function PluginPage() {
       <MainSection>
         <div className="flex flex-col gap-y-10">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-8">
-            <div className="relative lg:col-span-5">
+            <div className="relative flex flex-col gap-y-4 lg:col-span-5">
               <h2 className="text-3xl font-semibold text-neutral-800">
                 <span className="text-neutral-900">Claim your</span> rewards
               </h2>
-              <SectionHeader title="" learnMoreUrl={PUB_REWARDS_LEARN_MORE_URL}>
+              <SectionHeader>
                 Each epoch, projects are distributing rewards for all their voters. Those are summerized as tokens in
                 this list, and if you haven’t claimed, don’t worry, they get summed up!
               </SectionHeader>
+              <div className="flex flex-row flex-wrap gap-x-6 gap-y-2">
+                <Link
+                  target="_blank"
+                  href={PUB_REWARDS_LEARN_MORE_URL}
+                  variant="primary"
+                  iconRight={IconType.LINK_EXTERNAL}
+                >
+                  Learn more about rewards
+                </Link>
+                <Link
+                  target="_blank"
+                  href="https://hiddenhand.finance/mode"
+                  variant="primary"
+                  iconRight={IconType.LINK_EXTERNAL}
+                >
+                  Hidden Hand Mode
+                </Link>
+                <Link
+                  target="_blank"
+                  href="https://hiddenhand.finance/mode-bpt"
+                  variant="primary"
+                  iconRight={IconType.LINK_EXTERNAL}
+                >
+                  Hidden Hand BPT
+                </Link>
+              </div>
               <br />
               <div className="flex flex-row gap-x-20 gap-y-6">
                 <div className="flex flex-col">

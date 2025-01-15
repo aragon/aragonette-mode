@@ -1,32 +1,19 @@
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { PUB_BASE_URL } from "@/constants";
 import { type ProposalDatum } from "@/server/utils/api/types";
-import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
+import { Token } from "../types/tokens";
 
-export function useGetGaugeRewards() {
-  return useQuery<ProposalDatum[]>({
-    queryKey: ["gaugeRewards"],
+type RewardItem = ProposalDatum;
+
+export function useGetGaugeRewards(token: Token): UseQueryResult<RewardItem[], Error> {
+  const tokenPath = token === Token.MODE ? "mode" : "bpt";
+
+  return useQuery({
+    queryKey: ["gaugeRewards", token],
     queryFn: async () => {
-      const response = await fetch(`${PUB_BASE_URL}/api/rewards`);
-      const data = await response.json();
-      return data;
+      const response = await fetch(`${PUB_BASE_URL}/api/rewards/${tokenPath}`);
+      const json = await response.json();
+      return json.data;
     },
   });
-}
-
-export function useGetGaugeTotalRewards() {
-  const { data: gaugeRewards, ...rest } = useGetGaugeRewards();
-  const totalRewards = gaugeRewards?.reduce((acc, { totalValue }) => acc + totalValue, 0) ?? 0;
-  return {
-    data: {
-      totalRewards,
-      gauges: gaugeRewards
-        ?.filter((gauge) => dayjs(gauge.proposalDeadline) > dayjs())
-        ?.map(({ totalValue, ...rest }) => ({
-          percentageValue: (totalValue / totalRewards) * 100,
-          ...rest,
-        })),
-    },
-    ...rest,
-  };
 }
