@@ -12,16 +12,18 @@ import { useGetTotalGaugeVotes } from "../../hooks/useGetTotalGaugeVotes";
 import { useGetGaugeVotesMulti } from "../../hooks/useGetGaugeVotesMulti";
 import { useUserVotesData } from "../../hooks/useUserVotesData";
 import { useAccount } from "wagmi";
+import { useGetGaugeRewards } from "../../hooks/useGetGaugeRewards";
 
 export const StakePositions = () => {
   const { address } = useAccount();
   const [searchValue, setSearchValue] = useState("");
   const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
-  const [activeSort, setActiveSort] = useState<string>();
+  const [activeSort, setActiveSort] = useState<string | undefined>("rewards_desc");
   const [listState, setListState] = useState<DataListState>();
 
   const sortItems = useMemo(
     () => [
+      { value: "rewards_desc", label: "Rewards", type: "DESC" as const },
       { value: "votes_desc", label: "Total votes", type: "DESC" as const },
       ...(address ? [{ value: "user_votes_desc", label: "Your votes", type: "DESC" as const }] : []),
     ],
@@ -100,7 +102,7 @@ export const StakePositions = () => {
 
   const { data: modeGaugeVotesData } = useGetGaugeVotesMulti(
     Token.MODE,
-    filteredGauges.filter((gauge) => gauge.token === Token.MODE).map((gauge) => gauge.address)
+    allGauges.filter((gauge) => gauge.token === Token.MODE).map((gauge) => gauge.address)
   );
   const { data: bptGaugeVotesData } = useGetGaugeVotesMulti(
     Token.BPT,
@@ -115,6 +117,9 @@ export const StakePositions = () => {
     ]
   );
 
+  const { data: modeRewardsData } = useGetGaugeRewards(Token.MODE);
+  const { data: bptRewardsData } = useGetGaugeRewards(Token.BPT);
+
   const gaugesWithBPTAndMode = filteredGauges
     .map((gauge) => {
       const BPTVotes = bptGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
@@ -127,6 +132,9 @@ export const StakePositions = () => {
         (v) => v?.gaugeAddress === gauge.address && v?.token === Token.MODE
       )?.votes;
       const userVotes = BigInt((userBPTVotes ?? 0n) + (userModeVotes ?? 0n));
+      const modeRewards = modeRewardsData?.find((v) => v.proposal.toLowerCase() === gauge.address.toLowerCase());
+      const bptRewards = bptRewardsData?.find((v) => v.proposal.toLowerCase() === gauge.address.toLowerCase());
+      const totalRewards = (modeRewards?.totalValue ?? 0) + (bptRewards?.totalValue ?? 0);
 
       return {
         ...gauge,
@@ -136,9 +144,13 @@ export const StakePositions = () => {
         userModeVotes,
         totalVotes,
         userVotes,
+        modeRewards,
+        bptRewards,
+        totalRewards,
       };
     })
     .sort((a, b) => {
+      if (activeSort === "rewards_desc") return (a?.totalRewards ?? 0) > (b?.totalRewards ?? 0) ? -1 : 1;
       if (activeSort === "user_votes_desc") return a.userVotes > b.userVotes ? -1 : 1;
       if (activeSort === "votes_desc") return a.totalVotes > b.totalVotes ? -1 : 1;
       return 0;
@@ -165,7 +177,7 @@ export const StakePositions = () => {
         entityLabel="Projects"
         itemsCount={gaugesWithBPTAndMode.length}
         pageSize={gaugesWithBPTAndMode.length}
-        className="mb-12 gap-y-6"
+        className="mb-12"
         state={listState}
       >
         <DataListFilter
@@ -177,13 +189,12 @@ export const StakePositions = () => {
           onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
         />
         {gaugesWithBPTAndMode.length > 0 && (
-          <div className="hidden gap-x-4 px-6 md:flex">
-            <p className="flex w-1/3 flex-row">Name</p>
-            <div className="end flex w-1/3 flex-row">
-              <p className="flex w-1/2 justify-end">Total Votes</p>
-              <p className="flex w-1/2 justify-end">Your Votes</p>
-            </div>
-            <p className="w-1/3 flex-auto"></p>
+          <div className="hidden gap-x-4 px-6 lg:grid lg:grid-cols-12">
+            <p className="lg:col-span-3">Name</p>
+            <p className="text-end lg:col-span-2">Total Bribes</p>
+            <p className="text-end lg:col-span-2">Total Votes</p>
+            <p className="text-end lg:col-span-2">Your Votes</p>
+            <div className="lg:col-span-3"></div>
           </div>
         )}
         <DataListContainer emptyFilteredState={emptyState}>
@@ -195,6 +206,8 @@ export const StakePositions = () => {
               totalVotes={totalVotesBn}
               userBPTVotes={gauge.userBPTVotes}
               userModeVotes={gauge.userModeVotes}
+              bptRewards={gauge.bptRewards}
+              modeRewards={gauge.modeRewards}
               selected={!!selectedGauges.find((g) => g.address === gauge.address)}
               onSelect={(selected) => {
                 setSelectedGauges((selectedGauges) => {

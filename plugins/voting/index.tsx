@@ -4,7 +4,7 @@ import { PUB_STAKING_LEARN_MORE_URL } from "@/constants";
 import { SectionHeader } from "./components/section-header";
 import { StakePositions } from "./components/gauges-list";
 import React from "react";
-import { DateFormat, formatterUtils, NumberFormat } from "@aragon/ods";
+import { DateFormat, formatterUtils, NumberFormat, Spinner, StateSkeletonBar } from "@aragon/ods";
 import { useGetVotingStartsIn } from "./hooks/useGetVotingStartsIn";
 import { useGetVotingEndsIn } from "./hooks/useGetVotingEndsIn";
 import { Token } from "./types/tokens";
@@ -21,8 +21,10 @@ export default function PluginPage() {
   );
   const { votingEndsIn, isLoading: endsInLoading } = useGetVotingEndsIn(Token.MODE, BigInt(Math.floor(now / 1000)));
 
-  const { data: totalModeVpBn } = useGetTotalVpCast(Token.MODE);
-  const { data: totalBptVpBn } = useGetTotalVpCast(Token.BPT);
+  const { data: totalModeVpBn, isLoading: isTotalModeBpBnLoading } = useGetTotalVpCast(Token.MODE);
+  const { data: totalBptVpBn, isLoading: isTotalBptBpBnLoading } = useGetTotalVpCast(Token.BPT);
+
+  const totalVpLoading = isTotalModeBpBnLoading || isTotalBptBpBnLoading;
 
   const nextVotingDateLoading = startInLoading || endsInLoading;
   const active = !!votingEndsIn && !votingStartsIn;
@@ -49,10 +51,14 @@ export default function PluginPage() {
             </SectionHeader>
             <br />
             <div className="flex flex-row gap-x-20 gap-y-6">
-              <div className="flex flex-col">
+              <div className="flex flex-col justify-between">
                 <div className=" flex items-baseline gap-x-1">
                   <span className="title text-3xl text-neutral-900 md:text-3xl">
-                    {nextVotingDateLoading ? "-" : nextVotingDate}
+                    {nextVotingDateLoading ? (
+                      <StateSkeletonBar className="my-2 flex h-7 !bg-primary-500/20" width={120} />
+                    ) : (
+                      nextVotingDate
+                    )}
                   </span>
                 </div>
                 <span className="text-md text-neutral-700">
@@ -60,9 +66,15 @@ export default function PluginPage() {
                 </span>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col justify-between">
                 <div className="flex items-baseline gap-x-1">
-                  <span className="title text-3xl text-neutral-900 md:text-3xl">{totalVp}</span>
+                  <span className="title text-3xl text-neutral-900 md:text-3xl">
+                    {totalVpLoading ? (
+                      <StateSkeletonBar className="my-2 flex h-7 !bg-primary-500/20" width={120} />
+                    ) : (
+                      totalVp
+                    )}
+                  </span>
                 </div>
                 <span className="text-md text-neutral-700">Total voting power</span>
               </div>
