@@ -1,5 +1,4 @@
 import { type UseQueryResult, useQuery } from "@tanstack/react-query";
-import { PUB_BASE_URL } from "@/constants";
 import { type ProposalDatum } from "@/server/utils/api/types";
 import { Token } from "../types/tokens";
 

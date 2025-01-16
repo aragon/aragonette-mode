@@ -60,7 +60,7 @@ export const PUB_GOV_FORUM_URL = process.env.NEXT_PUBLIC_GOV_FORUM_URL ?? "https
 export const PUB_DEV_PAGE_URL = process.env.NEXT_PUBLIC_DEV_PAGE_URL ?? "https://www.mode.network/developers";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
 export const PUB_STAKING_LEARN_MORE_URL = "https://mode.mirror.xyz/p8IasF_R3wFhRZmmoP6bf8gHQ-ZfBK6O0pMXBQBOmOw";
-export const PUB_REWARDS_LEARN_MORE_URL = "https://mode.mirror.xyz/";
+export const PUB_REWARDS_LEARN_MORE_URL = "https://mode.mirror.xyz/Sr8BF35FVSm4ySHN2ufhadNcBHcPDPdBcR_Z2tAQud0";
 export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://docs.mode.network/usdmode/3-3-3-3-season-3";
 export const PUB_GET_MORE_MODE_URL =
   process.env.NEXT_PUBLIC_GET_MORE_MODE_URL ??
