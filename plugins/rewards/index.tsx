@@ -43,6 +43,7 @@ export default function PluginPage() {
                 </Link>
                 <Link
                   target="_blank"
+                  rel="noopener noreferrer"
                   href="https://hiddenhand.finance/mode"
                   variant="primary"
                   iconRight={IconType.LINK_EXTERNAL}
@@ -51,6 +52,7 @@ export default function PluginPage() {
                 </Link>
                 <Link
                   target="_blank"
+                  rel="noopener noreferrer"
                   href="https://hiddenhand.finance/mode-bpt"
                   variant="primary"
                   iconRight={IconType.LINK_EXTERNAL}
@@ -78,8 +80,8 @@ export default function PluginPage() {
                 <span className="text-neutral-900">Staking</span> Rewards
               </h2>
               <SectionHeader title="" learnMoreUrl="">
-                When you stake your tokens, you earn rewards based on your share of the total stake. Head to the Rewards
-                page to see how many tokens you’ve earned so far and claim them.
+                When you stake your tokens, you earn rewards based on your share of the total stake. Head to the claim
+                portal to see how many tokens you’ve earned so far and claim them.
               </SectionHeader>
               <Button
                 className="mt-6"
