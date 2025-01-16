@@ -47,7 +47,7 @@ export function compactNumber(input: number | string, decimalPlaces = 2): string
 export const formatRewards = (
   value: number | undefined | null,
   formatter: NumberFormat = NumberFormat.FIAT_TOTAL_SHORT,
-  valueOrNone: ValueOrNone = ValueOrNone.VALUE
+  valueOrNone: ValueOrNone = ValueOrNone.NONE
 ) => {
   if (!value && valueOrNone === ValueOrNone.NONE) return "None";
   if (value === 0 || !value) return "$0.00";
