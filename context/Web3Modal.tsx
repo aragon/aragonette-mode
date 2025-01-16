@@ -19,6 +19,10 @@ const metadata = {
 
 export const config = defaultWagmiConfig({
   chains: [PUB_CHAIN],
+  auth: {
+    email: false,
+    socials: [],
+  },
   metadata,
   ssr: true,
   transports: {
