@@ -26,7 +26,7 @@ export default function PluginPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-8">
             <div className="relative flex flex-col gap-y-3 lg:col-span-5">
               <h2 className="text-3xl font-semibold text-neutral-800">
-                <span className="text-neutral-900">Claim your</span> rewards
+                <span className="text-neutral-900">Claim your</span> bribe rewards
               </h2>
               <SectionHeader>
                 Each epoch, projects are distributing rewards for all their voters. Those are summerized as tokens in

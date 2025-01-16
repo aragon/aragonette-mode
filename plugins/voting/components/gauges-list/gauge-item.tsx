@@ -7,7 +7,7 @@ import { GaugeDetailsDialog } from "./gauge-details-dialog";
 import { Token } from "../../types/tokens";
 import { useGetAccountVp } from "../../hooks/useGetAccountVp";
 import { type ProposalDatum } from "@/server/utils/api/types";
-import { formatRewards } from "@/utils/numbers";
+import { formatRewards, ValueOrNone } from "@/utils/numbers";
 
 type GaugeItemProps = {
   props: GaugeItem;
@@ -102,19 +102,19 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
 
           {/* Stats sections */}
           <div className="flex flex-row items-start justify-between sm:gap-x-4 lg:col-span-6 lg:items-center">
-            {/* Total Value section */}
+            {/* Total Bribes section */}
             <div className="flex flex-col lg:w-1/3 lg:self-center lg:text-right">
-              <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Total value</p>
+              <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Total Bribes</p>
               {modeRewards?.totalValue === 0 && bptRewards?.totalValue === 0 ? (
                 <p className="title text-neutral-700">NONE</p>
               ) : (
                 <div className="flex flex-col justify-between lg:text-right">
                   <p className="flex items-center gap-x-1 lg:justify-end">
-                    {formatRewards(modeRewards?.totalValue, NumberFormat.FIAT_TOTAL_SHORT)}
+                    {formatRewards(modeRewards?.totalValue, NumberFormat.FIAT_TOTAL_SHORT, ValueOrNone.VALUE)}
                     <Avatar alt="Mode Token icon" className="!md:size-5 !size-4" src="/mode-token-icon.png" />
                   </p>
                   <p className="flex items-center gap-x-1 lg:justify-end">
-                    {formatRewards(bptRewards?.totalValue, NumberFormat.FIAT_TOTAL_SHORT)}
+                    {formatRewards(bptRewards?.totalValue, NumberFormat.FIAT_TOTAL_SHORT, ValueOrNone.VALUE)}
                     <Avatar alt="BPT Token icon" className="!md:size-5 !size-4" src="/bpt-token-icon.png" />
                   </p>
                 </div>

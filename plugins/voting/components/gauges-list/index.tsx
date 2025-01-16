@@ -191,7 +191,7 @@ export const StakePositions = () => {
         {gaugesWithBPTAndMode.length > 0 && (
           <div className="hidden gap-x-4 px-6 lg:grid lg:grid-cols-12">
             <p className="lg:col-span-3">Name</p>
-            <p className="text-end lg:col-span-2">Governance Rewards</p>
+            <p className="text-end lg:col-span-2">Total Bribes</p>
             <p className="text-end lg:col-span-2">Total Votes</p>
             <p className="text-end lg:col-span-2">Your Votes</p>
             <div className="lg:col-span-3"></div>

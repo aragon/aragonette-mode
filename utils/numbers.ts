@@ -1,5 +1,10 @@
 import { NumberFormat, formatterUtils } from "@aragon/ods";
 
+export enum ValueOrNone {
+  VALUE,
+  NONE,
+}
+
 export function compactNumber(input: number | string, decimalPlaces = 2): string {
   const num = typeof input === "string" ? Number.parseFloat(input) : input;
 
@@ -41,10 +46,11 @@ export function compactNumber(input: number | string, decimalPlaces = 2): string
 
 export const formatRewards = (
   value: number | undefined | null,
-  formatter: NumberFormat = NumberFormat.FIAT_TOTAL_SHORT
+  formatter: NumberFormat = NumberFormat.FIAT_TOTAL_SHORT,
+  valueOrNone: ValueOrNone = ValueOrNone.VALUE
 ) => {
-  if (!value) return "None";
-  if (value === 0) return "$0.00";
+  if (!value && valueOrNone === ValueOrNone.NONE) return "None";
+  if (value === 0 || !value) return "$0.00";
   if (value < 0.01) return "< $0.01";
   return formatterUtils.formatNumber(value, { format: formatter });
 };
