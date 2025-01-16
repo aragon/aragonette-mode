@@ -11,7 +11,7 @@ export function useGetGaugeRewards(token: Token): UseQueryResult<RewardItem[], E
   return useQuery({
     queryKey: ["gaugeRewards", token],
     queryFn: async () => {
-      const response = await fetch(`${PUB_BASE_URL}/api/rewards/${tokenPath}`);
+      const response = await fetch(`/api/rewards/${tokenPath}`);
       const json = await response.json();
       return json.data;
     },
