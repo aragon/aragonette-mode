@@ -44,10 +44,25 @@ export const PUB_APP_NAME = "Mode Governance Hub";
 export const PUB_APP_DESCRIPTION = "The place for all things Mode Governance.";
 export const PUB_PROJECT_LOGO = "/mode-green.svg";
 
-export const PUB_BASE_URL =
-  process.env.VERCEL_TARGET_ENV === "preview"
-    ? `https://${process.env.VERCEL_URL}`
-    : (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000");
+export const PUB_BASE_URL = (() => {
+  // Environment specific check
+  const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.VERCEL_ENV;
+  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL;
+
+  if (vercelUrl) {
+    // Check if we're in a preview deployment
+    if (vercelEnv === "preview") {
+      return `https://${vercelUrl}`;
+    }
+    // Check if we're in production
+    if (vercelEnv === "production") {
+      return process.env.NEXT_PUBLIC_BASE_URL ?? `https://${vercelUrl}`;
+    }
+  }
+  console.log("everything", process.env.NEXT_PUBLIC_BASE_URL, process.env.VERCEL_URL, process.env.VERCEL_ENV);
+  // Development environment
+  return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+})();
 
 export const PUB_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
