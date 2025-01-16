@@ -25,6 +25,11 @@ export const plugins: PluginItem[] = [
     // icon: IconType.BLOCKCHAIN_BLOCKCHAIN,
   },
   {
+    id: "rewards",
+    folderName: "rewards",
+    title: "Rewards",
+  },
+  {
     id: "multisig",
     folderName: "multisig",
     title: "Multisig",

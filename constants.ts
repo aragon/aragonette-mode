@@ -15,6 +15,7 @@ export const PUB_ENS_CHAIN = getChain(PUB_ENS_CHAIN_NAME);
 // Contracts
 export const PUB_DAO_ADDRESS = (process.env.NEXT_PUBLIC_DAO_ADDRESS ?? "") as Address;
 export const PUB_MULTISIG_PLUGIN_ADDRESS = (process.env.NEXT_PUBLIC_MULTISIG_PLUGIN_ADDRESS ?? "") as Address;
+export const PUB_REWARD_DISTRIBUTOR_CONTRACT = (process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_CONTRACT ?? "") as Address;
 
 export const MODE_ESCROW_CONTRACT = (process.env.NEXT_PUBLIC_MODE_ESCROW_CONTRACT ?? "") as Address;
 export const MODE_TOKEN_CONTRACT = (process.env.NEXT_PUBLIC_MODE_TOKEN_CONTRACT ?? "") as Address;
@@ -59,6 +60,7 @@ export const PUB_GOV_FORUM_URL = process.env.NEXT_PUBLIC_GOV_FORUM_URL ?? "https
 export const PUB_DEV_PAGE_URL = process.env.NEXT_PUBLIC_DEV_PAGE_URL ?? "https://www.mode.network/developers";
 export const PUB_BLOG_URL = "https://mode.mirror.xyz/";
 export const PUB_STAKING_LEARN_MORE_URL = "https://mode.mirror.xyz/p8IasF_R3wFhRZmmoP6bf8gHQ-ZfBK6O0pMXBQBOmOw";
+export const PUB_REWARDS_LEARN_MORE_URL = "https://mode.mirror.xyz/";
 export const PUB_VE_TOKENS_LEARN_MORE_URL = "https://docs.mode.network/usdmode/3-3-3-3-season-3";
 export const PUB_GET_MORE_MODE_URL =
   process.env.NEXT_PUBLIC_GET_MORE_MODE_URL ??
