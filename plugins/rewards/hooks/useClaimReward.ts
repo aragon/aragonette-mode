@@ -34,12 +34,14 @@ export function useClaimReward(token: string, onSuccess?: () => Promise<void> | 
         address: PUB_REWARD_DISTRIBUTOR_CONTRACT,
         functionName: "claim",
         args: [
-          {
-            identifier: claimMetadata.identifier as Address,
-            account: claimMetadata.account as Address,
-            amount: BigInt(claimMetadata.amount),
-            merkleProof: claimMetadata.merkleProof as readonly Address[],
-          },
+          [
+            {
+              identifier: claimMetadata.identifier as Address,
+              account: claimMetadata.account as Address,
+              amount: BigInt(claimMetadata.amount),
+              merkleProof: claimMetadata.merkleProof as readonly Address[],
+            },
+          ],
         ],
       });
     } catch (err) {
