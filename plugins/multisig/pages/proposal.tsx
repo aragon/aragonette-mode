@@ -54,8 +54,8 @@ export default function ProposalDetail({ id: proposalId }: { id: string }) {
                 label: "Approve",
                 onClick: approveProposal,
               },
-        approvalAmount: proposal?.approvals || 0,
-        approvalThreshold: proposal?.parameters.minApprovals || 0,
+        approvalAmount: proposal?.approvals ?? 0,
+        approvalThreshold: proposal?.parameters.minApprovals ?? 0,
       },
       details: {
         censusBlock: Number(proposal?.parameters.snapshotBlock),

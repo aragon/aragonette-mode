@@ -1,5 +1,5 @@
 import { useAccount, useBlockNumber, useReadContract } from "wagmi";
-import { type ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import ProposalCard from "@/plugins/multisig/components/proposal";
 import { MultisigPluginAbi } from "@/plugins/multisig/artifacts/MultisigPlugin.sol";
 import { Button, DataList, IconType, ProposalDataListItemSkeleton, type DataListState } from "@aragon/ods";
@@ -7,7 +7,6 @@ import { useCanCreateProposal } from "@/plugins/multisig/hooks/useCanCreatePropo
 import Link from "next/link";
 import { Else, ElseIf, If, Then } from "@/components/if";
 import { PUB_MULTISIG_PLUGIN_ADDRESS, PUB_CHAIN } from "@/constants";
-import { MainSection } from "@/components/layout/main-section";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { MissingContentView } from "@/components/MissingContentView";
 
@@ -50,26 +49,16 @@ export default function Proposals() {
   }
 
   return (
-    <MainSection narrow={true}>
-      <SectionView>
-        <h1 className="line-clamp-1 flex flex-1 shrink-0 text-2xl font-normal leading-tight text-neutral-800 md:text-3xl">
-          Proposals
-        </h1>
-        <div className="flex flex-col gap-2 justify-self-end md:flex-row">
-          <If true={isConnected && canCreate}>
-            <Link href="#/new">
-              <Button iconLeft={IconType.PLUS} size="sm" variant="primary">
-                Create Proposal
-              </Button>
-            </Link>
-            <Link href="#/new-gauge">
-              <Button iconLeft={IconType.PLUS} size="sm" variant="primary">
-                Create Gauge
-              </Button>
-            </Link>
-          </If>
-        </div>
-      </SectionView>
+    <div className="flex w-full flex-col items-end justify-end gap-y-6">
+      <div className="flex w-full flex-col justify-end gap-2 justify-self-end md:flex-row">
+        <If true={isConnected && canCreate}>
+          <Link href="#/new">
+            <Button iconLeft={IconType.PLUS} size="sm" variant="primary">
+              Create Proposal
+            </Button>
+          </Link>
+        </If>
+      </div>
 
       <If not={isConnected}>
         <Then>
@@ -92,7 +81,7 @@ export default function Proposals() {
             state={dataListState}
             //onLoadMore={fetchNextPage}
           >
-            <DataList.Container SkeletonElement={ProposalDataListItemSkeleton}>
+            <DataList.Container SkeletonElement={ProposalDataListItemSkeleton} className="w-full">
               {proposalCount &&
                 Array.from(Array(proposalCount || 0)?.keys())
                   .reverse()
@@ -105,10 +94,6 @@ export default function Proposals() {
           </DataList.Root>
         </Else>
       </If>
-    </MainSection>
+    </div>
   );
-}
-
-function SectionView({ children }: { children: ReactNode }) {
-  return <div className="flex w-full flex-row content-center justify-between">{children}</div>;
 }

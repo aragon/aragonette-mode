@@ -1,34 +1,37 @@
-import { DataListContainer, DataListFilter, DataListRoot, type DataListState, IconType } from "@aragon/ods";
+import {
+  Button,
+  DataListContainer,
+  DataListFilter,
+  DataListRoot,
+  type DataListState,
+  IconType,
+  Link,
+} from "@aragon/ods";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useGetGauges } from "../../hooks/useGetGauges";
-import { GaugeListItem } from "./gauge-item";
-import { type GaugeMetadata, type GaugeItem } from "./types";
-import { Token } from "../../types/tokens";
-import { useGetGaugesInfo } from "../../hooks/useGetGaugesInfo";
+import { useGetGauges } from "@/plugins/voting/hooks/useGetGauges";
 import { type Address } from "viem";
-import { VotingBar } from "../voting-bar";
-import { useGetGaugeMetadata } from "../../hooks/useGetGaugeMetadata";
-import { useGetTotalGaugeVotes } from "../../hooks/useGetTotalGaugeVotes";
-import { useGetGaugeVotesMulti } from "../../hooks/useGetGaugeVotesMulti";
-import { useUserVotesData } from "../../hooks/useUserVotesData";
+import { Token } from "@/plugins/stake/types/tokens";
+import { type GaugeMetadata, type GaugeItem } from "@/plugins/voting/components/gauges-list/types";
+import { useGetGaugeMetadata } from "@/plugins/voting/hooks/useGetGaugeMetadata";
+import { useGetGaugesInfo } from "@/plugins/voting/hooks/useGetGaugesInfo";
+import { useGetGaugeVotesMulti } from "@/plugins/voting/hooks/useGetGaugeVotesMulti";
+import { useGetTotalGaugeVotes } from "@/plugins/voting/hooks/useGetTotalGaugeVotes";
+import { GaugeListItem } from "./gauge";
 import { useAccount } from "wagmi";
-import { useGetGaugeRewards } from "../../hooks/useGetGaugeRewards";
+import { useCanCreateProposal } from "../hooks/useCanCreateProposal";
+import { MissingContentView } from "@/components/MissingContentView";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
-export const StakePositions = () => {
-  const { address } = useAccount();
+export const GaugesList: React.FC = () => {
+  const { isConnected } = useAccount();
+  const { canCreate } = useCanCreateProposal();
   const [searchValue, setSearchValue] = useState("");
-  const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
-  const [activeSort, setActiveSort] = useState<string | undefined>("rewards_desc");
+  const [selectedGauges] = useState<GaugeItem[]>([]);
+  const [activeSort, setActiveSort] = useState<string>();
   const [listState, setListState] = useState<DataListState>();
+  const { open } = useWeb3Modal();
 
-  const sortItems = useMemo(
-    () => [
-      { value: "rewards_desc", label: "Rewards", type: "DESC" as const },
-      { value: "votes_desc", label: "Total votes", type: "DESC" as const },
-      ...(address ? [{ value: "user_votes_desc", label: "Your votes", type: "DESC" as const }] : []),
-    ],
-    [address]
-  );
+  const sortItems = useMemo(() => [{ value: "votes_desc", label: "Total votes", type: "DESC" as const }], []);
 
   const pickActiveSort = useCallback(
     (sort: string) => {
@@ -40,12 +43,6 @@ export const StakePositions = () => {
     },
     [activeSort]
   );
-
-  useEffect(() => {
-    if (address) {
-      setActiveSort("user_votes_desc");
-    }
-  }, [address]);
 
   const emptyState = {
     primaryButton: {
@@ -59,6 +56,8 @@ export const StakePositions = () => {
 
   const { gauges: modeGauges } = useGetGauges(Token.MODE);
   const { gauges: bptGauges } = useGetGauges(Token.BPT);
+
+  const noGauges = modeGauges?.length !== 0 || bptGauges?.length !== 0;
 
   const { data: modeInfo } = useGetGaugesInfo(Token.MODE, (modeGauges as Address[]) ?? []);
   const { data: bptInfo } = useGetGaugesInfo(Token.BPT, (bptGauges as Address[]) ?? []);
@@ -102,56 +101,27 @@ export const StakePositions = () => {
 
   const { data: modeGaugeVotesData } = useGetGaugeVotesMulti(
     Token.MODE,
-    allGauges.filter((gauge) => gauge.token === Token.MODE).map((gauge) => gauge.address)
+    filteredGauges.filter((gauge) => gauge.token === Token.MODE).map((gauge) => gauge.address)
   );
   const { data: bptGaugeVotesData } = useGetGaugeVotesMulti(
     Token.BPT,
     allGauges.filter((gauge) => gauge.token === Token.BPT).map((gauge) => gauge.address)
   );
 
-  const { data: userVotesData } = useUserVotesData(
-    [Token.BPT, Token.MODE],
-    [
-      allGauges.filter((gauge) => gauge.token === Token.BPT).map((gauge) => gauge.address),
-      allGauges.filter((gauge) => gauge.token === Token.MODE).map((gauge) => gauge.address),
-    ]
-  );
-
-  const { data: modeRewardsData } = useGetGaugeRewards(Token.MODE);
-  const { data: bptRewardsData } = useGetGaugeRewards(Token.BPT);
-
   const gaugesWithBPTAndMode = filteredGauges
     .map((gauge) => {
       const BPTVotes = bptGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
       const modeVotes = modeGaugeVotesData?.find((v) => v?.address === gauge.address)?.amount ?? 0n;
       const totalVotes = BigInt(BPTVotes + modeVotes);
-      const userBPTVotes = userVotesData?.find(
-        (v) => v?.gaugeAddress === gauge.address && v?.token === Token.BPT
-      )?.votes;
-      const userModeVotes = userVotesData?.find(
-        (v) => v?.gaugeAddress === gauge.address && v?.token === Token.MODE
-      )?.votes;
-      const userVotes = BigInt((userBPTVotes ?? 0n) + (userModeVotes ?? 0n));
-      const modeRewards = modeRewardsData?.find((v) => v.proposal.toLowerCase() === gauge.address.toLowerCase());
-      const bptRewards = bptRewardsData?.find((v) => v.proposal.toLowerCase() === gauge.address.toLowerCase());
-      const totalRewards = (modeRewards?.totalValue ?? 0) + (bptRewards?.totalValue ?? 0);
 
       return {
         ...gauge,
         BPTVotes,
         modeVotes,
-        userBPTVotes,
-        userModeVotes,
         totalVotes,
-        userVotes,
-        modeRewards,
-        bptRewards,
-        totalRewards,
       };
     })
     .sort((a, b) => {
-      if (activeSort === "rewards_desc") return (a?.totalRewards ?? 0) > (b?.totalRewards ?? 0) ? -1 : 1;
-      if (activeSort === "user_votes_desc") return a.userVotes > b.userVotes ? -1 : 1;
       if (activeSort === "votes_desc") return a.totalVotes > b.totalVotes ? -1 : 1;
       return 0;
     });
@@ -165,19 +135,36 @@ export const StakePositions = () => {
     }
   }, [searchValue]);
 
-  useEffect(() => {
-    if (!address) {
-      setSelectedGauges([]);
-    }
-  }, [address]);
+  if (!isConnected)
+    return (
+      <MissingContentView callToAction="Connect wallet" onClick={() => open()}>
+        Please connect your wallet to access the gauge section.
+      </MissingContentView>
+    );
+
+  if (!noGauges)
+    return (
+      <MissingContentView>
+        No gauges have been created yet. <br />
+        Here you will see the gauges created by the Council before they can be submitted to the community veto stage.{" "}
+        {canCreate && <>Create your first gauge.</>}
+      </MissingContentView>
+    );
 
   return (
-    <div className="mt-8">
+    <div className="flex w-full flex-col items-end justify-end gap-y-6">
+      <div className="flex w-full flex-col justify-end gap-2 justify-self-end md:flex-row">
+        <Link href="#/new-gauge">
+          <Button iconLeft={IconType.PLUS} size="sm" variant="primary">
+            Create Gauge
+          </Button>
+        </Link>
+      </div>
       <DataListRoot
         entityLabel="Projects"
         itemsCount={gaugesWithBPTAndMode.length}
         pageSize={gaugesWithBPTAndMode.length}
-        className="mb-12"
+        className="mb-12 gap-y-6"
         state={listState}
       >
         <DataListFilter
@@ -189,12 +176,12 @@ export const StakePositions = () => {
           onSearchValueChange={(v) => setSearchValue((v ?? "").trim())}
         />
         {gaugesWithBPTAndMode.length > 0 && (
-          <div className="hidden gap-x-4 px-6 lg:grid lg:grid-cols-12">
-            <p className="lg:col-span-3">Name</p>
-            <p className="text-end lg:col-span-2">Total Bribes</p>
-            <p className="text-end lg:col-span-2">Total Votes</p>
-            <p className="text-end lg:col-span-2">Your Votes</p>
-            <div className="lg:col-span-3"></div>
+          <div className="hidden gap-x-4 px-6 md:flex">
+            <p className="flex w-1/3 flex-row">Name</p>
+            <div className="end flex w-1/3 flex-row">
+              <p className="flex w-1/2 justify-end">Total Votes</p>
+            </div>
+            <p className="w-1/3 flex-auto"></p>
           </div>
         )}
         <DataListContainer emptyFilteredState={emptyState}>
@@ -204,31 +191,13 @@ export const StakePositions = () => {
               props={gauge}
               gaugeVotes={gauge.totalVotes}
               totalVotes={totalVotesBn}
-              userBPTVotes={gauge.userBPTVotes}
-              userModeVotes={gauge.userModeVotes}
-              bptRewards={gauge.bptRewards}
-              modeRewards={gauge.modeRewards}
               selected={!!selectedGauges.find((g) => g.address === gauge.address)}
-              onSelect={(selected) => {
-                setSelectedGauges((selectedGauges) => {
-                  const cleanedGauges = selectedGauges.filter((g) => g.address !== gauge.address);
-                  if (selected) {
-                    cleanedGauges.splice(pos, 0, gauge);
-                  }
-                  return cleanedGauges;
-                });
-              }}
             />
           ))}
         </DataListContainer>
       </DataListRoot>
-      <VotingBar
-        selectedGauges={selectedGauges}
-        onRemove={(gauge) => {
-          const index = selectedGauges.findIndex((g) => g.address === gauge.address);
-          if (index !== -1) setSelectedGauges(selectedGauges.filter((_, i) => i !== index));
-        }}
-      />
     </div>
   );
 };
+
+export default GaugesList;

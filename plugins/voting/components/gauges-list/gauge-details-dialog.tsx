@@ -25,7 +25,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
             src={selectedGauge.metadata?.logo}
             fallback={
               <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
-                {selectedGauge.metadata?.name.slice(0, 2).toUpperCase()}
+                {selectedGauge.metadata?.name?.slice(0, 2).toUpperCase()}
               </span>
             }
           />
@@ -43,7 +43,7 @@ export const GaugeDetailsDialog: React.FC<GaugeDetailsDialogProps> = ({ selected
       </div>
       <DialogContent className="flex flex-col gap-y-4 pb-8 md:gap-y-4">
         <div>{selectedGauge.metadata?.description}</div>
-        {selectedGauge.metadata?.resources.map((resource, index) => (
+        {selectedGauge.metadata?.resources?.map((resource, index) => (
           <Fragment key={resource.value}>
             <hr className="text-neutral-600" />
             <div className="flex flex-row">
