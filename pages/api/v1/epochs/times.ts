@@ -1,18 +1,19 @@
 import { PublicClient, Block } from "viem";
 import { NextApiRequest, NextApiResponse } from "next";
 import { client } from "@/utils/api/serverClient";
+import { CONTRACTS_DEPLOYMENT_BLOCK } from "@/constants";
 
 async function findBlockByTimestampLimited(
   client: PublicClient,
   targetTimestamp: number,
   startBlock?: bigint,
   endBlock?: bigint,
-  maxIterations: number = 15,
+  maxIterations: number = 22, // 2 ^ 22 = 4.2 million blocks
   timeThreshold: number = 10 // In seconds
 ): Promise<{ blockNumber: number; timestamp: number; exact: boolean }> {
   // Fetch the start and end block dynamically if not provided
   if (!startBlock) {
-    startBlock = 1n; // Typically the genesis block
+    startBlock = CONTRACTS_DEPLOYMENT_BLOCK;
   }
   if (!endBlock) {
     endBlock = await client.getBlockNumber(); // Fetch latest block number
@@ -122,7 +123,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             voteEnd: timestamps.voteEndTs,
             distributionEnd: timestamps.distributionEndTs,
           },
-          nearestBlocks: { iterations: 15, voteStart, voteEnd, distributionEnd },
+          nearestBlocks: { iterations: 22, voteStart, voteEnd, distributionEnd },
         },
       });
       break;
