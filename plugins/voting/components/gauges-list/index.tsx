@@ -13,19 +13,18 @@ import { useGetGaugeVotesMulti } from "../../hooks/useGetGaugeVotesMulti";
 import { useUserVotesData } from "../../hooks/useUserVotesData";
 import { useAccount } from "wagmi";
 import { useGetGaugeRewards } from "../../hooks/useGetGaugeRewards";
-import { type ProposalDatum } from "@/server/utils/api/types";
 
 export const StakePositions = () => {
   const { address } = useAccount();
   const [searchValue, setSearchValue] = useState("");
   const [selectedGauges, setSelectedGauges] = useState<GaugeItem[]>([]);
-  const [activeSort, setActiveSort] = useState<string>();
+  const [activeSort, setActiveSort] = useState<string | undefined>("rewards_desc");
   const [listState, setListState] = useState<DataListState>();
 
   const sortItems = useMemo(
     () => [
-      { value: "votes_desc", label: "Total votes", type: "DESC" as const },
       { value: "rewards_desc", label: "Rewards", type: "DESC" as const },
+      { value: "votes_desc", label: "Total votes", type: "DESC" as const },
       ...(address ? [{ value: "user_votes_desc", label: "Your votes", type: "DESC" as const }] : []),
     ],
     [address]
@@ -192,7 +191,7 @@ export const StakePositions = () => {
         {gaugesWithBPTAndMode.length > 0 && (
           <div className="hidden gap-x-4 px-6 lg:grid lg:grid-cols-12">
             <p className="lg:col-span-3">Name</p>
-            <p className="text-end lg:col-span-2">Rewards</p>
+            <p className="text-end lg:col-span-2">Governance Rewards</p>
             <p className="text-end lg:col-span-2">Total Votes</p>
             <p className="text-end lg:col-span-2">Your Votes</p>
             <div className="lg:col-span-3"></div>

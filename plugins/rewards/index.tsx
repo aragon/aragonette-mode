@@ -24,7 +24,7 @@ export default function PluginPage() {
       <MainSection>
         <div className="flex flex-col gap-y-10">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-8">
-            <div className="relative flex flex-col gap-y-4 lg:col-span-5">
+            <div className="relative flex flex-col gap-y-3 lg:col-span-5">
               <h2 className="text-3xl font-semibold text-neutral-800">
                 <span className="text-neutral-900">Claim your</span> rewards
               </h2>
@@ -73,7 +73,7 @@ export default function PluginPage() {
                 </div>
               </div>
             </div>
-            <div className="relative lg:col-span-3">
+            <div className="relative flex flex-col gap-y-3 lg:col-span-3">
               <h2 className="text-3xl font-semibold text-neutral-800">
                 <span className="text-neutral-900">Staking</span> Rewards
               </h2>

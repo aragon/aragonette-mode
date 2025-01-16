@@ -48,7 +48,7 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
           }
         />
         <div className="flex flex-col">
-          <p className="title line-clamp-1 text-neutral-900">{metadata?.name}</p>
+          <p className="title line-clamp-1 text-neutral-900">{metadata?.symbol}</p>
           <p className="text-neutral-600">{shortenAddress((metadata?.address as Address) ?? zeroAddress)}</p>
         </div>
       </div>

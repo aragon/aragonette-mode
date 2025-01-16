@@ -7,6 +7,20 @@ const supportedRewardTokens = [
     name: "USD Coin",
     symbol: "USDC",
   },
+  {
+    address: "0xDfc7C877a950e49D2610114102175A06C2e3167a",
+    decimals: "18",
+    icon_url: "/mode-token-icon.png",
+    name: "Mode",
+    symbol: "MODE",
+  },
+  {
+    address: "0x4200000000000000000000000000000000000006",
+    decimals: "18",
+    icon_url: "/tokens/weth-logo.png",
+    name: "Wrapped Ether",
+    symbol: "WETH",
+  },
 ];
 
 export default supportedRewardTokens;

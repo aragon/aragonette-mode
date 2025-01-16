@@ -101,9 +101,9 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
           </div>
 
           {/* Stats sections */}
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-x-4 lg:col-span-6">
+          <div className="flex flex-row items-start justify-between sm:gap-x-4 lg:col-span-6 lg:items-center">
             {/* Total Value section */}
-            <div className="flex flex-col lg:w-1/3 lg:text-right">
+            <div className="flex flex-col lg:w-1/3 lg:self-center lg:text-right">
               <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Total value</p>
               {modeRewards?.totalValue === 0 && bptRewards?.totalValue === 0 ? (
                 <p className="title text-neutral-700">NONE</p>
@@ -132,7 +132,7 @@ export const GaugeListItem: React.FC<GaugeItemProps> = ({
             </div>
 
             {/* User Votes section */}
-            <div className="flex flex-col justify-between self-center lg:w-1/3 lg:text-right">
+            <div className="flex flex-col justify-between lg:w-1/3 lg:self-center lg:text-right">
               <p className="mb-1 mt-3 text-neutral-900 lg:hidden">Your votes</p>
               {userModeVotes || userBPTVotes ? (
                 <>
