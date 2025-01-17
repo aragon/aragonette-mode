@@ -94,6 +94,16 @@ function epochToTimestamps(epoch: number): {
   };
 }
 
+async function checkMinTs(client: PublicClient, voteStart: number, epoch: number): Promise<void> {
+  const useGenesis = CONTRACTS_DEPLOYMENT_BLOCK === undefined;
+  const block = await client.getBlock({ blockNumber: CONTRACTS_DEPLOYMENT_BLOCK ?? 0n });
+  if (voteStart < block.timestamp) {
+    throw new Error(
+      `Epoch ${epoch} with vote start ${voteStart} is before ${useGenesis ? "the genesis block" : "the deployment block"}`
+    );
+  }
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, query } = req;
   const epoch = query.epoch as string;
@@ -106,6 +116,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       const timestamps = epochToTimestamps(Number(epoch));
+
+      try {
+        await checkMinTs(client, timestamps.voteStartTs, Number(epoch));
+      } catch (e) {
+        res.status(400).json({ error: (e as { message: string }).message });
+        return;
+      }
 
       const voteStartBlock = findBlockByTimestampLimited(client, timestamps.voteStartTs);
       const voteEndBlock = findBlockByTimestampLimited(client, timestamps.voteEndTs);

@@ -30,10 +30,11 @@ export async function paginateLogs(
   gauges: Address[],
   event: AbiEvent,
   epoch: string | "all",
-  toBlock: bigint | "latest"
+  toBlock: bigint
 ) {
   // conditionally add the epoch if it's provided
   const optionalEpoch = epoch === "all" ? undefined : BigInt(epoch);
+  const toOrLatest = toBlock === 0n ? "latest" : toBlock;
   const args = {
     gauge: gauges,
     ...optionalProperty("epoch", optionalEpoch),
@@ -43,7 +44,7 @@ export async function paginateLogs(
   let logs = await client.getLogs({
     address: contract,
     fromBlock: startBlock,
-    toBlock,
+    toBlock: toOrLatest,
     args,
     event,
   });
@@ -56,16 +57,14 @@ export async function paginateLogs(
     const newLogs = await client.getLogs({
       address: contract,
       fromBlock: lastBlock,
-      toBlock,
+      toBlock: toOrLatest,
       args,
       event,
     });
     logs = logs.concat(newLogs);
     lastBatchLength = newLogs.length;
   }
-  console.log(`Fetched ${logs.length} logs for ${event.name} event`);
   const uniqueLogs = removeDuplicateLogs(logs);
-  console.log(`Removed ${logs.length - uniqueLogs.length} duplicates for ${event.name} event`);
   return uniqueLogs;
 }
 
@@ -95,7 +94,7 @@ export async function fetchVoteAndResetData(
   gauges: Address[],
   epoch: string | "all",
   fromBlock = 0n,
-  toBlock: bigint | "latest" = "latest"
+  toBlock: bigint = 0n
 ): Promise<ProcessedEvent[]> {
   const promiseLogs = [VotedEvent, ResetEvent].map(
     async (event) => await paginateLogs(contract, fromBlock, gauges, event, epoch, toBlock)
