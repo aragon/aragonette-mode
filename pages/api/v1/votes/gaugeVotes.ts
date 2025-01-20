@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       if (!toBlock || isNaN(Number(toBlock))) {
-        toBlock = "latest";
+        toBlock = "0";
       }
 
       // set optional fields
