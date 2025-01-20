@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     "react/jsx-boolean-value": ["warn", "always"],
     "no-console": "warn",
+    "no-case-declarations": "off",
     "prefer-template": "warn",
     "@typescript-eslint/consistent-type-imports": ["warn", { fixStyle: "inline-type-imports" }],
     "@typescript-eslint/no-explicit-any": "off",

@@ -4,17 +4,17 @@ import { useEffect, useState } from "react";
 import { useBlock } from "wagmi";
 
 export function useNow() {
-  const [realTimestamp, setTimestamp] = useState(0);
+  const [realTimestamp, setTimestamp] = useState(Date.now());
   const { data } = useBlock({
     query: {
       enabled: PUB_USE_BLOCK_TIMESTAMP,
     },
   });
 
-  const timestamp = Number(data?.timestamp ?? 0n) * 1000;
+  const blockTimestamp = Number(data?.timestamp ?? 0n) * 1000;
   useEffect(() => {
-    setTimestamp(PUB_USE_BLOCK_TIMESTAMP && timestamp ? timestamp : Date.now());
-  }, [timestamp]);
+    setTimestamp(PUB_USE_BLOCK_TIMESTAMP && blockTimestamp ? blockTimestamp : Date.now());
+  }, [blockTimestamp]);
 
   const getRelativeTime = (timestamp: number, format: DateFormat) => {
     const diffTime = realTimestamp - Date.now();
