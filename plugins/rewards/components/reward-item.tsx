@@ -1,6 +1,6 @@
 import type { TokenMetadataResponse } from "@/pages/api/token-metadata";
 import { useGetUserRewards } from "@/plugins/voting/hooks/useGetUserRewards";
-import type { RewardDatum } from "@/server/utils/api/types";
+import type { Reward, RewardDatum } from "@/server/utils/api/types";
 import { shortenAddress } from "@/utils/address";
 import { formatRewards } from "@/utils/numbers";
 import { Avatar, Button, DataListItem, IconType, NumberFormat, formatterUtils } from "@aragon/ods";
@@ -21,8 +21,14 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
   const { queryKey } = useGetUserRewards();
 
   const onClaimSuccess = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey });
-  }, [queryClient, queryKey]);
+    queryClient.setQueryData(queryKey, (oldData: Reward | undefined) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        data: oldData.data.filter((datum) => datum.claimMetadata.identifier !== userRewards.claimMetadata.identifier),
+      };
+    });
+  }, [queryClient, queryKey, userRewards.claimMetadata.identifier]);
 
   const { claimReward, isConfirming } = useClaimReward(rewardToken, onClaimSuccess);
 
