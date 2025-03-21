@@ -50,7 +50,7 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
           src={metadata?.icon_url}
           fallback={
             <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
-              {metadata?.name}
+              {metadata?.name?.[0]}
             </span>
           }
         />
