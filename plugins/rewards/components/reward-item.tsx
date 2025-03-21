@@ -5,9 +5,9 @@ import { shortenAddress } from "@/utils/address";
 import { formatRewards } from "@/utils/numbers";
 import { Avatar, Button, DataListItem, IconType, NumberFormat, formatterUtils } from "@aragon/ods";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { type Address, zeroAddress } from "viem";
 import { useClaimReward } from "../hooks/useClaimReward";
-import { useCallback } from "react";
 
 type GaugeItemProps = {
   rewardToken: string;
@@ -19,6 +19,7 @@ type GaugeItemProps = {
 export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, rewardToken, isClaimed = false }) => {
   const queryClient = useQueryClient();
   const { queryKey } = useGetUserRewards();
+  const modeOrBpt = userRewards.protocol === "mode" ? "mode" : "bpt";
 
   const onClaimSuccess = useCallback(async () => {
     queryClient.setQueryData(queryKey, (oldData: Reward | undefined) => {
@@ -49,12 +50,15 @@ export const RewardItem: React.FC<GaugeItemProps> = ({ metadata, userRewards, re
           src={metadata?.icon_url}
           fallback={
             <span className="flex size-full items-center justify-center bg-primary-400 text-neutral-0">
-              {metadata?.name}
+              {metadata?.name?.[0]}
             </span>
           }
         />
         <div className="flex flex-col">
-          <p className="title line-clamp-1 text-neutral-900">{metadata?.symbol}</p>
+          <div className="flex items-center gap-x-2">
+            <Avatar alt="Gauge icon" className="!md:size-5 !size-4" src={`/${modeOrBpt}-token-icon.png`} />
+            <p className="title line-clamp-1 text-neutral-900">{metadata?.symbol}</p>
+          </div>
           <p className="text-neutral-600">{shortenAddress((metadata?.address as Address) ?? zeroAddress)}</p>
         </div>
       </div>
