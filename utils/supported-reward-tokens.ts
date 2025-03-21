@@ -77,6 +77,18 @@ const supportedRewardTokens = [
     icon_url:
       "https://imgproxy-mainnet.routescan.io/joeTrEps0bAW_nmNvOBm-1hMBtCP8RldYo4qT3SRwjE/pr:thumb_32/aHR0cHM6Ly9jbXMtY2RuLmF2YXNjYW4uY29tL2NtczIvY2hhcmdlZHBhcnRpY2xlcy1kYXBwLWRlZmktZXRoZXJldW0tbG9nb184MTI4YjdlNGVlZTdmYTZlYTZlNWI2OTNhYjk1YzM3My42NzVlZmIxOTBlOWMucG5n",
   },
+  {
+    address: "0x99abb182e574dad9e238a529126051f01db380d5",
+    decimals: "18",
+    symbol: "PACKY",
+    name: "PACKY",
+  },
+  {
+    address: "0x98E0AD23382184338dDcEC0E13685358EF845f30",
+    decimals: "18",
+    symbol: "CARTEL",
+    name: "CARTEL",
+  },
 ];
 
 export default supportedRewardTokens;
