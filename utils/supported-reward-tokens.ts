@@ -82,12 +82,14 @@ const supportedRewardTokens = [
     decimals: "18",
     symbol: "PACKY",
     name: "PACKY",
+    icon_url: "",
   },
   {
     address: "0x98E0AD23382184338dDcEC0E13685358EF845f30",
     decimals: "18",
     symbol: "CARTEL",
     name: "CARTEL",
+    icon_url: "",
   },
 ];
 
