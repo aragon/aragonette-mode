@@ -2,11 +2,9 @@ import { useTokenMetadata } from "@/hooks/useTokenMetadata";
 import { useGetUserTotalRewards } from "@/plugins/voting/hooks/useGetUserRewards";
 import { DataListContainer, DataListRoot, type IDataListContainerState, IconType } from "@aragon/ods";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { type FC, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { RewardItem } from "./reward-item";
-
-import React from "react";
 
 const RewardItemSkeleton = () => {
   return (
@@ -32,7 +30,7 @@ const RewardItemSkeleton = () => {
   );
 };
 
-export const RewardItemList: React.FC = () => {
+export const RewardItemList: FC = () => {
   const router = useRouter();
   const { address } = useAccount();
   const { data: userRewards, isLoading } = useGetUserTotalRewards();
@@ -77,7 +75,14 @@ export const RewardItemList: React.FC = () => {
             const token = tokenMetadata?.find(
               (metadata) => metadata?.address?.toLowerCase() === reward.token?.toLowerCase()
             );
-            return <RewardItem key={reward.token} rewardToken={reward.token} metadata={token} userRewards={reward} />;
+            return (
+              <RewardItem
+                key={`${reward.token}-${reward.protocol}`}
+                rewardToken={reward.token}
+                metadata={token}
+                userRewards={reward}
+              />
+            );
           })}
       </DataListContainer>
     </DataListRoot>

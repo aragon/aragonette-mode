@@ -1,4 +1,4 @@
-import { type Reward } from "@/server/utils/api/types";
+import type { Reward } from "@/server/utils/api/types";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 
@@ -8,7 +8,7 @@ export function useGetUserRewards() {
     queryKey: ["userRewards", address],
     enabled: !!address,
     queryFn: async () => {
-      const response = await fetch(`/api/rewards/user`, {
+      const response = await fetch("/api/rewards/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

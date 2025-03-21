@@ -69,6 +69,14 @@ const supportedRewardTokens = [
     name: "Alex Token",
     symbol: "ALEX",
   },
+  {
+    address: "0x77e7bcfee826b12cd498faa9831d7055b7478272",
+    decimals: "18",
+    symbol: "ionx",
+    name: "Charged Particles",
+    icon_url:
+      "https://imgproxy-mainnet.routescan.io/joeTrEps0bAW_nmNvOBm-1hMBtCP8RldYo4qT3SRwjE/pr:thumb_32/aHR0cHM6Ly9jbXMtY2RuLmF2YXNjYW4uY29tL2NtczIvY2hhcmdlZHBhcnRpY2xlcy1kYXBwLWRlZmktZXRoZXJldW0tbG9nb184MTI4YjdlNGVlZTdmYTZlYTZlNWI2OTNhYjk1YzM3My42NzVlZmIxOTBlOWMucG5n",
+  },
 ];
 
 export default supportedRewardTokens;
